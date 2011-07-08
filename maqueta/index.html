@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
 <head>
-        <title>Greenmine</title>
+	<title>Greenmine</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="./css/general.css" type="text/css" media="handheld, all" />
 </head>
@@ -12,16 +12,16 @@
 	<div id="login">
 		<form id="login-form" method="post" action="auxiliar/json/login.json" class="validate" >
 			<fieldset>
-				<p>
+				<p class="form-field">
 					<label for="login-user">Usuario</label>
 					<input type="text" id="login-user" name="login-user" class="required" />
 				</p>
-				<p>
+				<p class="form-field">
 					<label for="login-pass">Contraseña</label>
 					<input type="password" id="login-pass" name="login-pass" class="required" />
 				</p>
 				<p class="forgot-pass"><a id="open-forgotten-password-form" href="">¿Olvidaste la contraseña?</a></p>
-				<p>
+				<p class="form-field">
 					<input class="btn01" type="submit" value="Entrar" />
 					<span class="ajax-loader"></span>		
 				</p>
@@ -29,11 +29,11 @@
 		</form>
 		<form id="forgotten-password-form" method="post" action="http://www.google.es/" class="validate">
 			<fieldset>
-				<p>
+				<p class="form-field">
 					<label for="fp-email">Email</label>
 					<input type="text" id="fp-email" name="fp-email" class="required email" />
 				</p>
-				<p>
+				<p class="form-field">
 					<span class="ajax-loader"></span>
 					<input class="btn01" type="submit" value="Recordar" />
 					<a id="close-forgotten-password-form" class="btn01" href="">Cancelar</a>

@@ -1,5 +1,10 @@
 $(document).ready(function(){
 	forms.init();
+	
+	//multiselect
+	$(".multiselect").multiselect();
+	$.localise('ui-multiselect', {/*language: 'en',*/ path: 'js/external/locale/'});
+	//multiselect
 
 	if($("#login-form").length){
 		$("#open-forgotten-password-form").click(function(e){

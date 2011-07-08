@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
+<head>
+	<title>Greenmine</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<link rel="stylesheet" href="./css/ui-lightness/jquery-ui-1.8.13.custom.css" type="text/css" media="handheld, all" />
+	<link rel="stylesheet" href="./css/ui.multiselect.css" type="text/css" media="handheld, all" />
+	<link rel="stylesheet" href="./css/general.css" type="text/css" media="handheld, all" />
+
+</head>
+<body>
+	<div id="head">
+		<h1>greenmine</h1>
+	</div>
+	<div id="menu">
+		<ul>
+			<li><a href="">Configuración</a></li>
+		</ul>
+	</div>
+	<div id="wrapper">
+		<div id="project">
+			<div id="sub-menu">
+				<ul>
+					<li><a href="">Mi perfil</a></li>
+					<li><a href="">Usuarios</a></li>
+					<li class="selected"><a href="">Proyectos</a></li>
+				</ul>
+			</div>
+			<form id="edit-profile-form" method="post" action="auxiliar/json/login.json" class="validate inline" >
+				<fieldset>
+					<p class="form-field">
+						<label for="nombre">Nombre</label>
+						<input type="text" id="nombre" name="nombre" class="required" />
+					</p>
+					<p class="form-field">
+						<label for="description">Descripción</label>
+						<textarea rows="10" id="description" name="description"></textarea>
+					</p>
+					<p class="form-field">
+						<label for="owner">Propietario</label>
+						<select id="owner" name="owner">
+							<option>Juan</option>
+							<option>Andrei</option>
+						</select>
+					</p>
+					<div class="width100 float-left">
+						<select id="countries" class="multiselect" multiple="multiple" name="countries[]">
+							<option value="AFG">Afghanistan</option>
+							<option value="ALB">Albania</option>
+							<option value="DZA">Algeria</option>
+							<option value="AND">Andorra</option>
+							<option value="ARG">Argentina</option>
+							<option value="ARM">Armenia</option>
+							<option value="ABW">Aruba</option>
+							<option value="AUS">Australia</option>
+							<option value="AUT" selected="selected">Austria</option>
+						</select>
+					</div>
+					<p class="width100 float-left">
+						<input class="btn01" type="submit" value="Guardar" />
+						<span class="ajax-loader"></span>		
+					</p>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div id="footer">
+		<p>Powered by Greenmine ©</p>
+	</div>
+	<script type="text/javascript" src="./js/external/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/external/jquery-ui.js"></script>
+	<script type="text/javascript" src="./js/external/jquery-validation/jquery.validate.min.js"></script>
+	<!--librerias multiselect -->
+	<script type="text/javascript" src="./js/external/jquery.localisation-min.js"></script>
+	<script type="text/javascript" src="./js/external/jquery.scrollTo-min.js"></script>
+	<script type="text/javascript" src="./js/external/ui.multiselect.js"></script>
+	<!--fin librerias multiselect -->
+	<script type="text/javascript" src="./js/general.js"></script>
+</body>
+</html>
