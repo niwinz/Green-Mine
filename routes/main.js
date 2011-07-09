@@ -4,6 +4,9 @@ module.exports = function(app){
         next();
     });
     app.get('/', function(req, res) {
-        res.send('Hello World');
+        res.redirect('/login');
+    });
+    app.get('/login', function(req, res) {
+        res.render('login');
     });
 }

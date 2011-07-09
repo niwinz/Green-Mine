@@ -1,6 +1,18 @@
-!!!
+!!! strict
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+    meta(charset='utf-8')
+    title= glob.title
+    link(rel='stylesheet', href='/css/general.css')
+  body
+    div#head
+        h1!= glob.title
+    
+    != body
+
+    div#footer
+        p Powered by Greenmine ©
+
+    script(type='text/javascript', src='/js/external/jquery.min.js')
+    script(type='text/javascript', src='/js/external/jquery-validation/jquery.validate.min.js')
+    script(type='text/javascript', src='/js/general.js')

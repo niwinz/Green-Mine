@@ -9,7 +9,12 @@ var express = require('express')
 var app = module.exports = express.createServer();
 
 app.dynamicHelpers({
-    messages: messages
+    messages: messages,
+    glob: function(req){
+        return {
+            title: 'Green-Mine'
+        }
+    }
 });
 
 // Configuration
@@ -37,11 +42,5 @@ app.configure('production', function(){
 // Routes
 require('./routes/main.js')(app);
 
-/*app.get('/', function(req, res){
-  res.render('index', {
-    title: 'Express'
-  });
-});*/
-
 app.listen(3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+console.log("Express server listening on port http://localhost:%d in %s mode", app.address().port, app.settings.env);
