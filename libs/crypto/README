@@ -1,0 +1,26 @@
+node-crypto
+===========
+
+A wrapper around openssl for node.js, currently exposing Hashing, Signing
+and Verifying methods.
+
+Version 0.0.5 : test.js now uses mjsunit
+
+Version 0.0.4 : Added package.json and updated tests to latest node version.
+
+Version 0.0.3 : Added cipher / decipher, thanks to Frans-Willem Hardijzer.
+
+To install, ensure that you have openssl installed, and run:
+
+node-waf configure 
+node-waf build
+
+This will put the crypto.node binary module in build/default. 
+
+The hashing, signing and verifying methods can work with binary, hex or 
+base64 encoded strings.
+
+The encrypt / decrypt methods work with binary, hex or base64 encodings,
+with streaming.
+
+See test.js for example usage.
