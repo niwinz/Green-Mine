@@ -41,6 +41,9 @@ var print_help = function() {
     console.log('Options: compact_db, loaddata\n');
 }
 
+var create_superuser = function(username, password) {
+}
+
 if (process.argv.length == 3){
     switch(process.argv[2]){
         case 'compact_db':
