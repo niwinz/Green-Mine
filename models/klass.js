@@ -37,6 +37,16 @@ var ModelKlass = Klass(null, {
         this.constructor.new = function(data) {
             return new self.constructor(data);
         }
+        this.constructor.get = function(doc, db, callback) {
+            /* TODO: add _rev optional parameter */
+            var objid = null;
+            if(typeof doc == 'string') { objid = doc; }
+            else { objid = doc._id; }
+
+            db.get(objid, function(err, doc) {
+                callback(err, new self.constructor(doc));
+            });
+        }
     },
     is_valid: function(callback) {
         if (!this.constructor.required){ 
