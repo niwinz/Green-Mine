@@ -26,13 +26,40 @@ var processess_file = function(filename){
     });
 }
 
-//console.log('Current directory: ' + process.cwd());
+var compact_db = function() {
+    console.log('Not implemented');
+}
 
-if (process.argv.length > 2){
-    for(var i=2; i < process.argv.length; ++i) {
-        processess_file(process.argv[i]);
+var load_data = function(files) {
+    files.forEach(function(file) {
+        processess_file(file);
+    });
+}
+
+var print_help = function() {
+    console.log('Command: node bin/manage.js <option> [arg1[,argN]]');
+    console.log('Options: compact_db, loaddata\n');
+}
+
+if (process.argv.length == 3){
+    switch(process.argv[2]){
+        case 'compact_db':
+            compact_db();
+            break;
+
+        default:
+            print_help();
+    }
+}
+else if (process.argv.length > 3){
+    switch(process.argv[2]){
+        case 'loaddata':
+            load_data(process.argv.slice(3));
+            break
+        default:
+            print_help();
     }
 }
 else {
-    console.log('Invalid parameters...');
+    print_help();
 }
