@@ -1,3 +1,5 @@
+var uuid = require('node-uuid');
+
 var Klass = function(Parent, props){
     var Child = function() {
         if (Child._super && Child._super.hasOwnProperty('_construct')) {
@@ -26,9 +28,15 @@ var Klass = function(Parent, props){
     return Child;
 }
 
+
 var ModelKlass = Klass(null, {
-    _construct: function(name) {
-        console.log("debug: ModelKlass constructor");
+    _construct: function(obj) {
+        var self = this;
+        this._id = obj._id || uuid();
+        this._rev = obj._rev || null;
+        this.constructor.new = function(data) {
+            return new self.constructor(data);
+        }
     },
     is_valid: function(callback) {
         if (!this.constructor.required){ 
@@ -45,18 +53,44 @@ var ModelKlass = Klass(null, {
             }
         }
         callback(true, null);
+    },
+    _save: function(){
+        var copy = {};
+        for (var attr in this) {
+            if (this.hasOwnProperty(attr) && attr != '_id' && attr != '_rev') {
+                copy[attr] = this[attr];
+            }
+        }
+        return copy;
+    },
+    save: function(db, callback) {
+        var self = this;
+        var save_callback = function(err, res) {
+            if(!err){
+                self._id = res.id;
+                self._rev = res.rev;
+            }
+            callback(err, res, self);
+        }
+
+        if (self._rev) {
+            db.save(self._id, self._rev, self._save(), save_callback);
+        }
+        else {
+            db.save(self._id, self._save(), save_callback);
+        }
     }
 });
 
 /* Test only */
-var User = Klass(ModelKlass,{
-    _construct: function(name){
-        this.name = name.toUpperCase();
-    },
-});
-User.required = ['name'];
-
-var b = new User('Andrei');
-b.is_valid(function(valid, error) {
-    console.log('debug:', valid, error);
-});
+//var User = Klass(ModelKlass,{
+//    _construct: function(obj){
+//        this.name = obj.name || 'Ana';
+//    },
+//});
+//User.required = ['name'];
+//
+//var b = new User('Andrei');
+//b.is_valid(function(valid, error) {
+//    console.log('debug:', valid, error);
+//});
