@@ -15,7 +15,7 @@ var User = Klass(ModelKlass, {
         /* specific modification of new static method */
         this.constructor.new = function(obj){
             if(obj.password && obj.password.match(password_rx)) {
-                obj.password = auth_utils.encrypt_password(descobject.password);
+                obj.password = auth_utils.encrypt_password(obj.password);
             }
             return new User(obj);
         }
