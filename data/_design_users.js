@@ -1,16 +1,12 @@
-module.exports = [{
+module.exports = [
+{
     _id:'_design/user',
     views: {
-        all_over_project:{
-            map: function(doc) {
-                if (doc.type == 'project') {
-                    doc.users.forEach(function(item) {
-                        emit(item, doc.title);
-                    });
+        all:{
+            map: function(doc){
+                if(doc.type == 'user'){
+                    emit(doc.username, doc);
                 }
-            },
-            reduce: function(keys, values, rereduce) {
-                return values.length;
             }
         }
     }
