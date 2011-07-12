@@ -48,8 +48,9 @@ form.inline .form-field{float:left; margin-right: 15px;}
 .pagination{margin-top: 20px;}
 .pagination li{display: inline; margin-right: 5px;}
 .pagination .selected a{color: #000;}
-
-/* multiselect */
-.multiselect {height: 200px; width: 460px;}
-.ui-multiselect{margin-bottom: 20px;}
-/* multiselect */
+#user-project{width:100%; float: left; margin: 20px 0;} 
+#user-project .table01{max-height: 600px; overflow: auto; display:block;}
+#user-project .users-added{width: 515px; float: left;}
+#user-project .users-roles{padding-left: 20px; width: 430px; float: left;}
+#user-project fieldset{border: 1px solid #EFEFEF; padding: 20px; margin-bottom: 15px;}
+#user-project legend{font-weight:bold;}
