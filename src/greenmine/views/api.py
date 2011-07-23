@@ -38,17 +38,26 @@ from greenmine.utils import *
 
 
 class ApiView(View):
-    standard_response = {'id': None, 'valid': False, 'errors':[]}
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context):
         if isinstance(context, dict):
-            if len(context['errors']) == 0:
-                context['valid'] = True
-
             response_data = simplejson.dumps(context, cls=LazyEncoder, indent=4, sort_keys=True)
         else:
             response_data = context
-
         return HttpResponse(response_data, mimetype='text/plain')
+
+    def render_to_error(self, context):
+        response_dict = {'valid': False, 'errors':[]}
+        if isinstance(context, (str, unicode)):
+            response_dict['errors'].append(context)
+        elif isinstance(context, (list,tuple)):
+            response_dict['errors'] = context
+
+        return self.render_to_response(response_dict)
+
+    def render_to_ok(self, context):
+        response = {'valid': True, 'errors': []}
+        response.update(context)
+        return self.render_to_response(response)
 
 
 class RestrictedApiView(ApiView):
@@ -59,19 +68,16 @@ class RestrictedApiView(ApiView):
 
 class ApiLogin(ApiView):
     def post(self, request):
-        context = copy.deepcopy(self.standard_response)
         if "username" not in request.POST or "password" not in request.POST:
-            context['errors'].append(_(u'Debe especificar las credenciales para poder autenticarse'))
+            return self.render_to_error([_(u'Debe especificar las credenciales para poder autenticarse')])
         else:
             try:
                 userobj = User.objects.get(username=request.POST['username'], password=encrypt_password(request.POST['password']))
-                context['valid'] = True
-                context['id'] = userobj.id
                 request.session['current_user_id'] = userobj.id
             except User.DoesNotExist:
-                context['errors'].append(_(u'Usuario o contraseña son incorrectos'))
+                return self.render_to_error([_(u'Usuario o contraseña son incorrectos')])
 
-        return self.render_to_response(context)
+            return self.render_to_ok({'id': userobj.id})
 
 
 class ApiUserView(RestrictedApiView):

@@ -32,7 +32,6 @@ def clear_model_dict(data):
             new_dict[key] = val
 
     return new_dict
-    
 
 
 class LazyEncoder(simplejson.JSONEncoder):
