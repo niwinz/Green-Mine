@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block body %}
+<div id="login">
+	<form id="login-form" method="post" action="{{ current_url }}?next=/">
+        {% csrf_token %}
+		<fieldset>
+			<p>
+				<label for="login-user">{% trans "Usuario" %}</label>
+                {{ form.username }}
+			</p>
+			<p>
+				<label for="login-pass">{% trans "Password" %}</label>
+                {{ form.password }}
+			</p>
+			<p class="forgot-pass"><a href="">{% trans "¿Olvidaste la contraseña?" %}</a></p>
+			<p>
+				<input class="btn01" type="submit" value="{% trans "Entrar" %}" />
+			</p>
+		</fieldset>
+	</form>
+</div>
+{% endblock %}
