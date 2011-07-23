@@ -12,7 +12,7 @@ body{background-color: #EFEFEF; padding-bottom: 36px;}
 h1{color: #FFF; font-size: 28px; font-weight: bold;}
 input[type="text"], input[type="password"]{height: 26px; padding: 2px 10px 0 6px; font-size: 17px; vertical-align: top;}
 a{color: #458745;}
-.btn01[type="submit"]{background-color:#EFEFEF; border: 0; padding: 5px 20px; font-size: 17px;  color: #000; font-weight:bold;}
+.btn01[type="submit"], .btn01[type="button"]{background-color:#EFEFEF; border: 0; padding: 5px 20px; font-size: 17px;  color: #000; font-weight:bold;}
 a.btn01{background-color:#EFEFEF; border: 0; padding: 5px 20px; font-size: 17px; color: #000; line-height: 22px; color: #000; text-decoration: none; font-weight:bold;}
 label.error{color: red;}
 #head{line-height: 55px; background-color: #458745; float: left; padding: 0 25px; position: absolute; top: 0; left: 0;}
@@ -41,15 +41,16 @@ form.inline .form-field{float:left; margin-right: 15px;}
 .float-left{float: left;}
 .float-right{float: right;}
 .table01 img{float: left; margin-right:10px;}
-.table01 td{line-height: 30px; padding:15px;}
+.table01 td{line-height: 30px; padding:12px;}
 .table01 th{background-color: #458745; color: #FFFFFF; font-weight: bold; padding-left: 15px;}
 .table01 tr{border-bottom:1px solid #458745;}
 .table01 tr:hover{background-color:#EFEFEF;}
 .pagination{margin-top: 20px;}
 .pagination li{display: inline; margin-right: 5px;}
 .pagination .selected a{color: #000;}
-
-/* multiselect */
-.multiselect {height: 200px; width: 460px;}
-.ui-multiselect{margin-bottom: 20px;}
-/* multiselect */
+#user-project{width:100%; float: left; margin: 20px 0;} 
+#user-project .table01{max-height: 600px; overflow: auto; display:block;}
+#user-project .users-added{width: 515px; float: left;}
+#user-project .users-roles{padding-left: 20px; width: 430px; float: left;}
+#user-project fieldset{border: 1px solid #EFEFEF; padding: 20px; margin-bottom: 15px;}
+#user-project legend{font-weight:bold;}

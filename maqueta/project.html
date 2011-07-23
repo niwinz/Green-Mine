@@ -27,7 +27,7 @@
 					<li class="selected"><a href="">Proyectos</a></li>
 				</ul>
 			</div>
-			<form id="edit-profile-form" method="post" action="auxiliar/json/login.json" class="validate inline" >
+			<form id="edit-profile-form" method="post" action="auxiliar/json/login.json" ajaxsubmit="0" class="validate inline" >
 				<fieldset>
 					<p class="form-field">
 						<label for="nombre">Nombre</label>
@@ -37,25 +37,36 @@
 						<label for="description">Descripción</label>
 						<textarea rows="10" id="description" name="description"></textarea>
 					</p>
-					<p class="form-field">
-						<label for="owner">Propietario</label>
-						<select id="owner" name="owner">
-							<option>Juan</option>
-							<option>Andrei</option>
-						</select>
-					</p>
-					<div class="width100 float-left">
-						<select id="countries" class="multiselect" multiple="multiple" name="countries[]">
-							<option value="AFG">Afghanistan</option>
-							<option value="ALB">Albania</option>
-							<option value="DZA">Algeria</option>
-							<option value="AND">Andorra</option>
-							<option value="ARG">Argentina</option>
-							<option value="ARM">Armenia</option>
-							<option value="ABW">Aruba</option>
-							<option value="AUS">Australia</option>
-							<option value="AUT" selected="selected">Austria</option>
-						</select>
+					<div id="user-project">
+						<div class="users-added">
+							<table class="table01">
+								<tbody>
+									<tr>
+										<th>Propietario</th>
+										<th>Rol</th>
+										<th>Opciones</th>
+									</tr>
+								
+								</tbody>
+							</table>
+						</div>
+						<div class="users-roles">
+							<fieldset>
+								<legend>Usuarios</legend>
+								<ul class="users">
+									<li><input class="valid" name="user-aux[]" username="Juanfran" gravatar="./auxiliar/imgs/gravatar.jpg" value="2" type="checkbox" /> Juanfran</li>
+									<li><input class="valid" name="user-aux[]" username="Andrei" gravatar="./auxiliar/imgs/gravatar.jpg" value="3" type="checkbox" /> Andrei</li> 
+								</ul>
+							</fieldset>
+							<fieldset>
+								<legend>Roles</legend>
+								<ul class="roles">	
+									<li><input name="rol-aux" type="radio" rolname="Administrador" value="1" /> Administrador</li>
+									<li><input name="rol-aux" type="radio" rolname="Desarrollador" value="2" /> Desarrollador</li> 
+								</ul>
+							</fieldset>
+							<input id="btn-usr-project" type="button" value="Añadir" class="btn01" />
+						</div>
 					</div>
 					<p class="width100 float-left">
 						<input class="btn01" type="submit" value="Guardar" />
@@ -71,11 +82,6 @@
 	<script type="text/javascript" src="./js/external/jquery.min.js"></script>
 	<script type="text/javascript" src="./js/external/jquery-ui.js"></script>
 	<script type="text/javascript" src="./js/external/jquery-validation/jquery.validate.min.js"></script>
-	<!--librerias multiselect -->
-	<script type="text/javascript" src="./js/external/jquery.localisation-min.js"></script>
-	<script type="text/javascript" src="./js/external/jquery.scrollTo-min.js"></script>
-	<script type="text/javascript" src="./js/external/ui.multiselect.js"></script>
-	<!--fin librerias multiselect -->
 	<script type="text/javascript" src="./js/general.js"></script>
 </body>
 </html>
