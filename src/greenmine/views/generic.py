@@ -18,6 +18,7 @@ from django.utils.decorators import method_decorator
 
 class GenericView(View):
     """ Generic view with some util methods. """
+
     def get_context(self):
         self.user = self.request.user
         if self.request.user.is_authenticated():
@@ -31,6 +32,7 @@ class GenericView(View):
     
 class ProjectGenericView(GenericView):
     """ Generic View Template for all views relationed with projects. """
+
     def get_context(self):
         context = super(ProjectGenericView, self).get_context()
         return context

@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 
-from .generic import GenericView
+from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
 
 
@@ -28,9 +28,20 @@ class LoginView(GenericView):
 class ProjectsView(GenericView):
     def get(self, request, *args, **kwargs):
         context = self.get_context()
-        return self.render('project.html', context)
+        return self.render('projects.html', context)
     
     @login_required
     def dispatch(self, *args, **kwargs):
         return super(ProjectsView, self).dispatch(*args, **kwargs)
+
+
+class ProjectView(ProjectGenericView):
+    def get(self, request, *args, **kwargs):
+        context = self.get_context()
+        return self.render('project.html', context)
+
+    @login_required
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectView, self).dispatch(*args, **kwargs)
+
 
