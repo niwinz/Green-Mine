@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
@@ -17,7 +17,9 @@ from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 
 class GenericView(View):
+    """ Generic view with some util methods. """
     def get_context(self):
+        self.user = self.request.user
         if self.request.user.is_authenticated():
             return {'user': self.request.user}
         else:
@@ -25,10 +27,19 @@ class GenericView(View):
 
     def render(self, template_name, context={}, **kwargs):
         return render_to_response(template_name, context, **kwargs)
-    
 
+    
 class ProjectGenericView(GenericView):
+    """ Generic View Template for all views relationed with projects. """
     def get_context(self):
         context = super(ProjectGenericView, self).get_context()
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.project = Project.objects.get(pk=kwargs['projectid'])
+        except Project.DoesNotExist:
+            raise Http404('project does not exist')
+
+        return super(ProjectGenericView, self).dispatch(request, *args, **kwargs)
 
