@@ -30,6 +30,7 @@ form .form-field{width: 305px;}
 .ajax-loader{background: url("../imgs/ajax-loader.gif") no-repeat top left; display: block; float: right; margin-right: 5px;}
 .init-loader{width: 32px; height: 32px;}
 #menu{position:absolute; right:20px; top:0;}
+#menu li{float: left; margin-left: 15px;}
 #menu a{font-weight:bold; color:#000; line-height: 55px;}
 #wrapper{width:980px; background-color:#FFF; padding: 20px; margin: 80px auto 0 auto; overflow: auto;}
 #sub-menu{width: 100%; overflow: auto; margin-bottom: 20px;}
