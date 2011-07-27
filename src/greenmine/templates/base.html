@@ -1,43 +1,14 @@
-{% load url from future %}
-{% load i18n %}
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ LANGUAGE_CODE }}" lang="{{ LANGUAGE_CODE }}">
-<head>
-    <meta charset="utf-8" />
-	<title>Greenmine</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
-    {% block extra-headers %}{% endblock %}
-</head>
-<body>
-	<div id="head">
-		<div class="inner">
-			<h1>Greenmine</h1>
-		</div>
-        <div class="head-menu">
-            <!-- TODO: se personalizara mas adelante dependiento de tipo de proyecto o usuario. -->
-            <span class="menuitem"><a href="">{% trans "Home" %}</a></span>
-            <span class="menuitem"><a href="">{% trans "Roadmap" %}</a></span>
-        </div>
-	</div>
-    {% block body %}
-    <div class="middle">
-        {% block middle %}{% endblock %}
-	</div>
-    {% endblock %}
-	<div id="footer">
-        <div class="footer-content">
-            {% block footer-content %}{% endblock %}
-        </div>
-        <div class="powered-by">
-		    <p>Powered by Greenmine ©</p>
-        </div>
-	</div>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-validation-1.8.0/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' 'core' %}"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/general.js"></script>
-    {% block extra-javascript %}{% endblock %}
-</body>
-</html>
+{% extends "base_base.html" %}
+
+{% block middle-box %}
+<div id="menu">
+    <ul>
+        <li><a href="">Juanfran Alcántara</a></li>
+        <li><a href="">Configuración</a></li>
+        <li><a href="">Logout</a></li>
+    </ul>
+</div>
+<div id="wrapper">
+    {% block wrapper %}{% endblock %}
+</div>
+{% endblock %}

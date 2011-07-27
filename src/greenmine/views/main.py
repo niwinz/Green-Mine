@@ -27,8 +27,7 @@ class LoginView(GenericView):
 
 class ProjectsView(GenericView):
     def get(self, request, *args, **kwargs):
-        context = self.get_context()
-        return self.render('projects.html', context)
+        return self.render('projects.html')
     
     @login_required
     def dispatch(self, *args, **kwargs):
