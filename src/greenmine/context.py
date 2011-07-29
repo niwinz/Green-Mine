@@ -9,7 +9,8 @@ def main(request):
         debug = settings.DEBUG,
         previous_url = request.META.get("HTTP_REFERER", u"/"),
     )
-
+    
+    context_extra['MAIN_TITLE'] = settings.MAIN_TITLE
     # Make current_url manually
     context_extra['current_url'] = request.META.get('PATH_INFO')
     context_extra['full_current_url'] = context_extra['current_url']

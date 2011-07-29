@@ -1,6 +1,4 @@
 .*.swp
 *.log
-node_modules*
-libs/crypto/build
-libs/crypto/crypto.node
-libs/crypto/.lock-wscript
+src/settings/local.py
+*.pyc

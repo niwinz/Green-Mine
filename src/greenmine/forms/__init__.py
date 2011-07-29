@@ -11,6 +11,18 @@ from django.forms.fields import CharField as DjangoCharField
 from greenmine.models import *
 from greenmine.utils import encrypt_password
 
+class Form(forms.Form):
+    """ Custom form with some jquery validator friendly propertys. """
+    @property
+    def jquery_errors(self):
+        errors_object = {}
+        for key, value in self.errors.iteritems():
+            if isinstance(value, (list,tuple)) and len(value) > 0:
+                errors_object[key] = value[0]
+
+        return errors_object
+
+
 class CharField(DjangoCharField):
     """ jQuery-validator friendly charfield """
     def __init__(self, *args, **kwargs):
@@ -37,7 +49,7 @@ class CharField(DjangoCharField):
         return attrs
 
 
-class LoginForm(forms.Form):
+class LoginForm(Form):
     username = CharField(max_length=200, min_length=4, required=True, type='email')
     password = CharField(max_length=200, min_length=8, required=True, type='password')
 
