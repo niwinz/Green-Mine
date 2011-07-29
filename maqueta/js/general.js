@@ -89,7 +89,7 @@ var forms = {
                 var form = this.form;
                 if(!data.valid){
                     for(var i=0; i<data.errors.length;i++){
-                        form.showErrors(data.errors[i]);
+                        form.showErrors(data.errors);
                     }
                 } else {
                     forms.ajaxSuccess();
