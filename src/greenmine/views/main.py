@@ -18,11 +18,13 @@ from django.utils.decorators import method_decorator
 
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
+from .forms import LoginForm
 
 
 class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
-        return self.render('login.html')
+        login_form = LoginForm()
+        return self.render('login.html', {'form': login_form})
 
 
 class ProjectsView(GenericView):

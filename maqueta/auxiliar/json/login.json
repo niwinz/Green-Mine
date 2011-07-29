@@ -1,6 +1,6 @@
 {"valid":false,
- "errors": {
-    "login-user": ["Prueba validación nombre"],
-    "login-pass": ["Prueba validación password"]
- }
+ "errors": [{
+    "login-user": "Prueba validación nombre",
+    "login-pass": "Prueba validación password"
+ }]
 }

@@ -28,7 +28,7 @@ SEND_BROKEN_LINK_EMAILS = True
 IGNORABLE_404_ENDS = ('.php', '.cgi')
 IGNORABLE_404_STARTS = ('/phpmyadmin/',)
 
-REPO_ROOT = os.path.join(project_root, 'repos')
+REPO_ROOT = os.path.join(PROJECT_ROOT, 'repos')
 AUTH_REALM = "Greenmine mercurial proxy"
 
 TIME_ZONE = 'Europe/Madrid'
@@ -91,19 +91,19 @@ LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, 'greenmine', 'locale'),
 )
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
+]
 
 SECRET_KEY = 'aw3+t2r(8(0kkrhg8)gx6i96v5^kv%6cfep9wxfom0%7dy0m9e'
 
-TEMPLATE_LOADERS = (
+TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,16 +111,16 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'greenmine.middleware.SelfAuthMiddleware.SelfAuthMiddleware',
-)
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
+TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     'django.core.context_processors.static',
     "django.contrib.messages.context_processors.messages",
     "greenmine.context.main",
-)
+]
 
 ROOT_URLCONF = 'greenmine.urls'
 
