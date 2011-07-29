@@ -44,7 +44,13 @@ $(document).ready(function(){
                             }
                         }
 		});
-	}//#project	
+	}//#project
+
+        if($("#dashboard").length){
+            $("#dashboard .edit").click(function(){
+                alert("popup")
+            })
+        }
 });
 
 function deleteUserRolProject(elm, id){
