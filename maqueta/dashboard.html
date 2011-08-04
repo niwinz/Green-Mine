@@ -19,23 +19,41 @@
 	<div id="wrapper">
             <div id="dashboard">
                 <ul id="milestones">
-                    <li>Fase 1 <span>12/03/2011 (10/10)</span></li>
-                    <li>Fase 2 <span>26/12/2011 (5/15)</span></li>                       
-                    <li>Fase 3 <span>26/12/2011 (5/15)</span></li>
-                    <li>Sin asignar <span>(5)</span></li>
                 </ul>
                 <ul id="tasks">
-                    <li>1- Arreglar estropicio <span>[Asignado a: Juanfran | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Andrei | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Juanfran | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Andrei | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Juanfran | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Andrei | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Juanfran | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>
-                    <li>1- Arreglar estropicio <span>[Asignado a: Andrei | Estado: Abierta | Prioridad: Alta | Tipo: Tarea]</span><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>                    
                 </ul>
             </div>
 	</div>
+        <script>
+            var dashboard = {
+                "milestones": [
+                    {
+                        "id":1, "name": "Fase 1", "enddate": "12/03/2011",
+                        "tasks":[
+                            {"id":1, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                            {"id":2, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},                            
+                        ]
+                    },
+                    {
+                        "id":2, "name": "Fase 2", "enddate": "06/11/2011",
+                        "tasks":[
+                            {"id":3, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                            {"id":8, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}, 
+                            {"id":9, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                            {"id":10, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                            {"id":11, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                            {"id":12, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
+                        ]
+                    }                    
+                ],
+                "tasks": [
+                    {"id":4, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                    {"id":5, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
+                    {"id":6, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
+                    {"id":7, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+                ]
+            }
+        </script>
 	<div id="footer">
 		<p>Powered by Greenmine ©</p>
 	</div>
