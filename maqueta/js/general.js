@@ -7,24 +7,24 @@ $(document).ready(function(){
                 $("#forgotten-password-form").fadeIn("fast");
             });
             e.preventDefault();
-        })    
+        });   
     
         $("#close-forgotten-password-form").click(function(e){
             $("#forgotten-password-form").fadeOut("fast", function() {
                 $("#login-form").fadeIn("fast");
             });
             e.preventDefault();
-        })
+        });
     }
 
     if($("#project").length){
         $("#btn-usr-project").click(function(){
             var users = $("#edit-profile-form .valid[name='user-aux[]']:checked");
-            if(users.length==0){
+            if(users.length == 0){
                 alert("Selecciona al menos un usuario");
-            }else{
+            } else {
                 var roles = $("#edit-profile-form [name='rol-aux']:checked");
-                if(roles.length==0){
+                if(roles.length == 0){
                     alert("Selecciona un rol");
                 } else {
                     var html = '';
@@ -43,18 +43,19 @@ $(document).ready(function(){
                     $("#user-project tbody").append(html);
                 }
             }
+            return false;
         });
-    }//#project 
+    }
     
     if($("#dashboard").length){
         $("#dashboard .edit").click(function(){
-            alert("popup")
-        })
-    }//#dashboard  
-}    
+            alert("popup");
+        });
+    }
+});
 
 
-function deleteUserRolProject(elm, id){
+var deleteUserRolProject = function(elm, id){
     var input = $("#edit-profile-form [value='"+id+"']");
     $(input).removeClass('invalid');
     $(input).addClass('valid');    
@@ -62,7 +63,7 @@ function deleteUserRolProject(elm, id){
     $(input).parent().show();
     $(elm).parent().parent().remove();
     return false;
-}
+};
 
 var forms = {
     ajaxSuccess: '',
@@ -89,7 +90,7 @@ var forms = {
         $.ajax({
             form: form,
             url : $(form.currentForm).attr('action'),
-            type : "GET",
+            type : $(form.currentForm).attr('method').toUpperCase(),
             data: $(form.currentForm).serialize(),
             dataType: "json",
             success: function(data){

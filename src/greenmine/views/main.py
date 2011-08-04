@@ -18,13 +18,14 @@ from django.utils.decorators import method_decorator
 
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
-from .forms import LoginForm
+from ..forms import LoginForm, ForgottenPasswordForm
 
 
 class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
-        login_form = LoginForm()
-        return self.render('login.html', {'form': login_form})
+        login_form, forgotten_password_form = LoginForm(), ForgottenPasswordForm()
+        return self.render('login.html', 
+            {'form': login_form, 'form2': forgotten_password_form})
 
 
 class ProjectsView(GenericView):

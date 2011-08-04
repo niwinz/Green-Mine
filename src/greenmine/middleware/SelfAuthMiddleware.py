@@ -38,12 +38,11 @@ class SelfAuthMiddleware(object):
 
         if "current_user_id" in request.session:
             request.user = User.objects.get(pk=request.session['current_user_id'])
-
         else:
             auth_string = request.META.get('HTTP_AUTHORIZATION')
             
             if auth_string is None or not auth_string.startswith("Basic"):
-                request.current_user = AnonUser()
+                request.user = AnonUser()
                 return None
 
             _, basic_hash = auth_string.split(' ', 1)

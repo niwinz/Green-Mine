@@ -1,16 +1,17 @@
 {% extends "base_base.html" %}
+{% load url from future %}
 
 {% block middle-box %}
 <div id="login">
-    <form id="login-form" method="post" action="auxiliar/json/login.json" class="validate" >
+    <form id="login-form" method="post" action="{% url 'api:login' %}" class="validate" >
         <fieldset>
             <p class="form-field">
-                <label for="login-user">Usuario</label>
-                <input type="text" id="login-user" name="login-user" class="required" />
+                {{ form.username.label }}
+                {{ form.username }}
             </p>
             <p class="form-field">
-                <label for="login-pass">Contraseña</label>
-                <input type="password" id="login-pass" name="login-pass" class="required" />
+                {{ form.password.label }}
+                {{ form.password }}
             </p>
             <p class="forgot-pass"><a id="open-forgotten-password-form" href="">¿Olvidaste la contraseña?</a></p>
             <p class="form-field">
@@ -22,8 +23,8 @@
     <form id="forgotten-password-form" method="post" action="http://www.google.es/" class="validate">
         <fieldset>
             <p class="form-field">
-                <label for="fp-email">Email</label>
-                <input type="text" id="fp-email" name="fp-email" class="required email" />
+                {{ form2.email.label }}
+                {{ form2.email }}
             </p>
             <p class="form-field">
                 <span class="ajax-loader"></span>

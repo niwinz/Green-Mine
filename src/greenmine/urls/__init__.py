@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import patterns, include, url
-from greenmine.views import HomeView, LoginView 
 
 urlpatterns = patterns('',
-    #url(r'^api/', include('greenmine.urls.api')),
-    url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^api/', include('greenmine.urls.api', namespace='api')),
+    url(r'^', include('greenmine.urls.main', namespace='web')),
 )
-
 
 # Djangojs domain tranlation strings (gettext for js)
 urlpatterns += patterns('',
