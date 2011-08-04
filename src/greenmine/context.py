@@ -8,6 +8,7 @@ from .models import GSettings
 
 def main(request):
     context_extra = dict(
+        user = request.user,
         debug = settings.DEBUG,
         current_url = request.META.get('PATH_INFO'),
         previous_url = request.META.get("HTTP_REFERER", u"/"),

@@ -6,6 +6,7 @@ from django.utils import simplejson
 from django.forms.widgets import PasswordInput, TextInput
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
 from greenmine.models import *
@@ -50,8 +51,10 @@ class CharField(DjangoCharField):
 
 
 class LoginForm(Form):
-    username = CharField(max_length=200, min_length=4, required=True, type='text')
-    password = CharField(max_length=200, min_length=4, required=True, type='password')
+    username = CharField(max_length=200, min_length=4, 
+        required=True, type='text', label=_(u'Nombre de usuario'))
+    password = CharField(max_length=200, min_length=4, 
+        required=True, type='password', label=_(u'Contraseña'))
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -71,4 +74,26 @@ class LoginForm(Form):
 
 
 class ForgottenPasswordForm(Form):
-    email = CharField(max_length=200, min_length=4, required=True, type='text')
+    email = CharField(max_length=200, min_length=4, 
+        required=True, type='text', label=_(u'E-Mail'))
+
+
+class ProfileForm(Form):
+    username = CharField(max_length=200, min_length=4, 
+        required=True, type='text', label=_(u'Nombre de usuario'))
+    password = CharField(max_length=200, min_length=4, 
+        required=False, type='password', label=_(u'Contraseña'))
+    email = CharField(max_length=200, min_length=4, 
+        required=True, type='text', label=_(u'E-Mail'))
+    description = forms.CharField(widget=Textarea, required=False,
+        label=_(u'Descripcion'))
+    photo = forms.ImageField(required=False, label=_(u'Foto'))
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance')
+        kwargs['initial'] = {
+            'username': self.instance.username,
+            'password': '',
+            'description': self.instance.description,
+        }
+        super(ProfileForm, self).__init__(*args, **kwargs)

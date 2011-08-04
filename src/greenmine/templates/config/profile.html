@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block wrapper %}
+<div id="my-profile">
+    <form id="edit-profile-form" method="post" action="auxiliar/json/login.json" class="validate inline" >
+        {% include "config/menu.html" %}
+        <fieldset>
+            <p class="form-field">
+                {{ form.username.label }}
+                {{ form.username.errors }}
+                {{ form.username }}
+            </p>
+            <p class="form-field">
+                {{ form.password.label }}
+                {{ form.password.errors }}
+                {{ form.password }}
+            </p>
+            <p class="form-field">
+                {{ form.email.label }}
+                {{ form.email.errors }}
+                {{ form.email }}
+            </p>    
+            <p class="form-field">
+                {{ form.description.label }}
+                {{ form.description }}
+            </p>
+            <p class="form-field">
+                {% if not user.photo %}
+                <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                {% else %}
+                <img width="50" src="{{ user.photo.url }}" />
+                {% endif %}
+
+                {{ form.photo.label }}
+                {{ form.photo.errors }}
+                {{ form.photo }}
+            </p>
+            <p class="width100 float-left">
+                <input class="btn01" type="submit" value="Guardar" />
+                <span class="ajax-loader"></span>        
+            </p>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

@@ -20,20 +20,9 @@ class GenericView(View):
     """ Generic view with some util methods. """
 
     def get_context(self):
-        return self.get_auth_context()
-
-    def get_auth_context(self):
-        print 1
-        self.user = self.request.user
-        if self.request.user.is_authenticated():
-            return {'user': self.request.user}
-        else:
-            return {'user': None}
+        return {}
 
     def render(self, template_name, context={}, **kwargs):
-        if not context:
-            context = self.get_context()
-
         return render_to_response(template_name, context, 
             context_instance=RequestContext(self.request))
 

@@ -1,4 +1,6 @@
 {% extends "base_base.html" %}
+{% load url from future %}
+{% load i18n %}
 
 {% block top-headers %}{% endblock %}
 {% block bottom-headers %}{% endblock %}
@@ -6,9 +8,9 @@
 {% block middle-box %}
 <div id="menu">
     <ul>
-        <li><a href="">{{ user.name }}</a></li>
-        <li><a href="">Configuración</a></li>
-        <li><a href="">Logout</a></li>
+        <li><a href="{% url "web:profile-show" %}">{{ user.name }}</a></li>
+        <li><a href="">{% trans "Configuracion" %}</a></li>
+        <li><a href="">{% trans "Logout" %}</a></li>
     </ul>
 </div>
 <div id="wrapper">
