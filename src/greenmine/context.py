@@ -17,7 +17,7 @@ def main(request):
     try:
         tmp_main_title = GSettings.objects.get(key='core.maintitle')
     except GSettings.DoesNotExist:
-        tmp_main_title = 'Greenmine Temporal Title'
+        tmp_main_title = 'Greenmine'
     finally:
         context_extra['MAIN_TITLE'] = tmp_main_title
 
