@@ -56,13 +56,16 @@ form.inline .form-field{float:left; margin-right: 15px;}
 #user-project .users-roles{padding-left: 20px; width: 430px; float: left;}
 #user-project fieldset{border: 1px solid #EFEFEF; padding: 20px; margin-bottom: 15px;}
 #user-project legend{font-weight:bold;}
-
-#milestones{width: 300px; float: left;}
-#milestones li{line-height: 25px; padding: 0px 15px; position: relative; border: 1px solid #000; color: #FFF; font-weight: bold; background-color: #458745; margin-bottom: 2px;}
-#milestones li:hover{background-color: #99b5a3; cursor: pointer}
-#milestones li span{float: right; font-size: 12px;}
+#milestones{float: left;}
+#milestones li{line-height: 25px; position: relative; border: 1px solid #000; color: #FFF; font-weight: bold; background-color: #458745; margin-bottom: 2px; width: 298px}
+#milestones .ml{padding-left: 15px;}
+#milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
+#milestones li span{float: right; font-size: 12px; margin-right: 28px;}
+#milestones a{position: absolute; right: 2px; top: 2px;}
 #tasks{float: right; width: 650px;}
-#tasks li{border: 1px solid #458745; line-height: 25px; margin-bottom: 2px; padding: 0px 15px; position: relative;}
-#tasks li:hover{cursor: pointer; background-color: #EFEFEF;}
+#tasks li{border: 1px solid #458745; line-height: 25px; margin-bottom: 2px; position: relative; width: 618px; background-color: #FFF;}
+#tasks .dg{padding: 0px 15px;}
+#tasks li:hover{cursor: move; background-color: #EFEFEF;}
 #tasks .edit{position: absolute; right: 4px; top: 2px;}
 #tasks span{font-size: 12px; position: absolute; right: 35px; line-height: 25px;}
+#inmove{z-index: 999; cursor: move;}
