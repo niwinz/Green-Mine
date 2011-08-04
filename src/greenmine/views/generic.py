@@ -23,6 +23,7 @@ class GenericView(View):
         return self.get_auth_context()
 
     def get_auth_context(self):
+        print 1
         self.user = self.request.user
         if self.request.user.is_authenticated():
             return {'user': self.request.user}
@@ -30,12 +31,11 @@ class GenericView(View):
             return {'user': None}
 
     def render(self, template_name, context={}, **kwargs):
-        if 'user' not in context:
-            new_context = self.get_auth_context()
-            new_context.update(context)
-            context = new_context
+        if not context:
+            context = self.get_context()
 
-        return render_to_response(template_name, context, **kwargs)
+        return render_to_response(template_name, context, 
+            context_instance=RequestContext(self.request))
 
     
 class ProjectGenericView(GenericView):
@@ -43,6 +43,7 @@ class ProjectGenericView(GenericView):
 
     def get_context(self):
         context = super(ProjectGenericView, self).get_context()
+        context['project'] = self.project
         return context
 
     def dispatch(self, request, *args, **kwargs):

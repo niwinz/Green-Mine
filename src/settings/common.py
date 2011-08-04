@@ -35,6 +35,7 @@ TIME_ZONE = 'Europe/Madrid'
 LANGUAGE_CODE = 'es'
 USE_I18N = True
 USE_L10N = True
+LOGIN_URL='/login/'
 
 #SESSION BACKEND
 SESSION_ENGINE='django.contrib.sessions.backends.db'

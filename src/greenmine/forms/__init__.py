@@ -50,18 +50,25 @@ class CharField(DjangoCharField):
 
 
 class LoginForm(Form):
-    username = CharField(max_length=200, min_length=4, required=True, type='email')
-    password = CharField(max_length=200, min_length=8, required=True, type='password')
+    username = CharField(max_length=200, min_length=4, required=True, type='text')
+    password = CharField(max_length=200, min_length=4, required=True, type='password')
 
     def clean(self):
         cleaned_data = self.cleaned_data
 
         if "username" in cleaned_data and "password" in cleaned_data:
             try:
-                self._user = User.objects.get(username=form.cleaned_data['username'],
-                    password=encrypt_password(form.cleaned_data['password']))
+                self._user = User.objects.get(username=cleaned_data['username'],
+                    password=encrypt_password(cleaned_data['password']))
 
             except User.DoesNotExist:
-                pass
+                msg = _(u'Username not exists or incorrect password')
+                self._errors["username"] = self.error_class([msg])
+                del cleaned_data["username"]
+                del cleaned_data["password"]
 
         return cleaned_data
+
+
+class ForgottenPasswordForm(Form):
+    email = CharField(max_length=200, min_length=4, required=True, type='text')
