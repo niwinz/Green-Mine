@@ -52,7 +52,6 @@ class User(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
-            #self.password = encrypt_password(self.password)
         else:
             self.modified_date = datetime.datetime.now()
 
@@ -63,6 +62,10 @@ class User(models.Model):
 
     def is_superuser(self):
         return self.superuser
+
+    def set_password(self, password):
+        self.password = encrypt_password(password)
+        self.save()
 
 
 class Message(models.Model):
