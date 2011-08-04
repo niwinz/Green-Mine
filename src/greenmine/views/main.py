@@ -19,6 +19,7 @@ from django.utils.decorators import method_decorator
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
 from ..forms import LoginForm, ForgottenPasswordForm
+from ..models import Project
 
 
 class LoginView(GenericView):
@@ -30,7 +31,25 @@ class LoginView(GenericView):
 
 class ProjectsView(GenericView):
     def get(self, request, *args, **kwargs):
-        return self.render('projects.html')
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        
+        if request.user.is_superuser:
+            projects = Project.objects.all()
+        else:
+            projects = request.user.projects.all()
+
+        paginator = Paginator(projects, 20)
+        page = paginator.page(page)
+
+        context = {
+            'is_paginated': True if paginator.count else False,
+            'page': page,
+        }
+        
+        return self.render('projects.html', context)
     
     @login_required
     def dispatch(self, *args, **kwargs):

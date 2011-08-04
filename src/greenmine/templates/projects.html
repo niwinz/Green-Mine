@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block wrapper %}
+<div id="projects">
+    {% if page.paginator.count > 0 %}
+    <table class="table01">
+        <tr>
+            <th>Nombre</th>
+            <th>Propietario</th>
+            <th>Opciones</th>
+        </tr>
+        {% for project in page.object_list %}
+        <tr>
+            <td>{{ project.name }}</td>
+            <td><img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />{{ project.owner.name }}</td>
+            <td><a href="">Editar</a> | <a class="delete" href="">Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <h2>No tiene ningun proyecto, crea uno!</h2>
+    {% endif %}
+    {% include "paginator.html" %}
+    <a href="" class="btn01 float-right">Crear proyecto</a>
+</div>
+{% endblock %}
