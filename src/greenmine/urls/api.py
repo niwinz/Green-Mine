@@ -8,9 +8,9 @@ from greenmine.views.api import (
 )
 
 urlpatterns = patterns('',
-    url(r'^user$', ApiUserView.as_view(), name='api-user-view'),
-    url(r'^user/add$', ApiUserAdd.as_view(), name='api-user-add'),
-    url(r'^user/edit$', ApiUserEdit.as_view(), name='api-user-edit'),
+    #url(r'^user$', ApiUserView.as_view(), name='api-user-view'),
+    #url(r'^user/add$', ApiUserAdd.as_view(), name='api-user-add'),
+    #url(r'^user/edit$', ApiUserEdit.as_view(), name='api-user-edit'),
 )
 
 #urlpatterns += patterns()

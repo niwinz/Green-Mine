@@ -1,17 +1,10 @@
+# -*- coding: utf-8 -*-
+
 from django.conf.urls.defaults import patterns, include, url
-
-from greenmine.views import (
-    HomeView,
-    LoginView,
-)
-
-# Uncomment the next two lines to enable the admin:
-#from django.contrib import admin
-#admin.autodiscover()
+from greenmine.views import HomeView, LoginView 
 
 urlpatterns = patterns('',
-    #url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/', include('greenmine.urls.api')),
+    #url(r'^api/', include('greenmine.urls.api')),
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^login/$', LoginView.as_view(), name='login'),
 )

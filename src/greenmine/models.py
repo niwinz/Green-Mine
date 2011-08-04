@@ -91,7 +91,6 @@ class MessageFile(models.Model):
     file = models.FileField(upload_to="files/msg/%Y/%m/%d", storage=fs, max_length=300, null=True, blank=True)
 
 
-
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
@@ -163,7 +162,6 @@ class ProjectUser(models.Model):
 #            delete_repository(full_path)
 #
 #        super(Repo, self).delete(*args, **kwargs)
-
 
 
 MARKUP_TYPE = (
@@ -331,4 +329,9 @@ class Blacklist(models.Model):
     """ Sirve para poner una lista negra de ips que directamente no pueden
     acceder al sitio. """
     remote_host = models.CharField(max_length=200, unique=True)
+
+
+class GSettings(models.Model):
+    key = models.CharField(max_length=200, unique=True)
+    value = models.TextField(blank=True, default='')
 
