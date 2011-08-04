@@ -90,7 +90,7 @@ $(document).ready(function(){
                         }
                         if(task)break;
                     }
-
+                    
                     if(!task){
                         length_tasks = dashboard.tasks.length;
                         for(z=0; z<length_tasks; z++){
@@ -174,8 +174,11 @@ function printMilestones(sel){
         else html+='<li milestone="'+dashboard.milestones[i].id+'" class="milestone">';
         html+='<div class="ml">'+dashboard.milestones[i].name+'<span>'+dashboard.milestones[i].enddate+' ('+completedtasks+'/'+length_tasks+')</span></div><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>';
     }
+    
+    if(sel==0)html+='<li milestone="0" class="selected milestone">';
+    else html+='<li milestone="0" class="milestone">';    
 
-    html+='<li class="milestone" milestone="0" ><div class="ml">Sin asignar <span>('+dashboard.tasks.length+')</span></div></li>';
+    html+='<div class="ml">Sin asignar <span>('+dashboard.tasks.length+')</span></div></li>';
     $("#milestones").html(html);
 }
 
