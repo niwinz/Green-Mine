@@ -100,6 +100,7 @@ var forms = {
                         form.showErrors(data.errors[i]);
                     }
                 } else {
+                    if(data.redirect_to) location.href = data.redirect_to;
                     forms.ajaxSuccess();
                 }
 

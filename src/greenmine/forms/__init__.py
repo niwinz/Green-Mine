@@ -51,7 +51,7 @@ class CharField(DjangoCharField):
 
 class LoginForm(Form):
     username = CharField(max_length=200, min_length=4, required=True, type='text')
-    password = CharField(max_length=200, min_length=8, required=True, type='password')
+    password = CharField(max_length=200, min_length=4, required=True, type='password')
 
     def clean(self):
         cleaned_data = self.cleaned_data
