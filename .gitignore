@@ -1,4 +1,4 @@
-.*.swp
+.*.sw*
 *.log
 src/settings/local.py
 src/database.sqlite
