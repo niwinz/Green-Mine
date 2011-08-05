@@ -95,5 +95,14 @@ class ProfileForm(Form):
             'username': self.instance.username,
             'password': '',
             'description': self.instance.description,
+            'email': self.instance.email,
         }
         super(ProfileForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        self.instance.username = self.cleaned_data['username']
+        self.instance.password = encrypt_password(self.cleaned_data['password'])
+        self.instance.description = self.cleaned_data['description']
+        self.instance.photo = self.cleaned_data['photo']
+        self.instance.save()
+        return self.instance

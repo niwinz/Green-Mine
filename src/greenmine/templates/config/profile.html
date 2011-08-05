@@ -1,28 +1,32 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block wrapper %}
 <div id="my-profile">
-    <form id="edit-profile-form" method="post" action="auxiliar/json/login.json" class="validate inline" >
+    {% include "messages.html" %}
+    <form id="edit-profile-form" method="post" enctype="multipart/form-data"
+        action="{% url 'web:profile-show' %}" class="inline">
         {% include "config/menu.html" %}
         <fieldset>
             <p class="form-field">
                 {{ form.username.label }}
-                {{ form.username.errors }}
                 {{ form.username }}
+                {{ form.username.errors }}
             </p>
             <p class="form-field">
                 {{ form.password.label }}
-                {{ form.password.errors }}
                 {{ form.password }}
+                {{ form.password.errors }}
             </p>
             <p class="form-field">
                 {{ form.email.label }}
-                {{ form.email.errors }}
                 {{ form.email }}
+                {{ form.email.errors }}
             </p>    
             <p class="form-field">
                 {{ form.description.label }}
                 {{ form.description }}
+                {{ form.description.errors }}
             </p>
             <p class="form-field">
                 {% if not user.photo %}
@@ -32,8 +36,8 @@
                 {% endif %}
 
                 {{ form.photo.label }}
-                {{ form.photo.errors }}
                 {{ form.photo }}
+                {{ form.photo.errors }}
             </p>
             <p class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />

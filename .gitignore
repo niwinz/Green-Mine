@@ -3,4 +3,5 @@
 src/settings/local.py
 src/database.sqlite
 src/logs
+src/media
 *.pyc
