@@ -32,7 +32,6 @@ def slugify_uniquely(value, model, slugfield="slug"):
 
 class User(models.Model):
     name = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250, unique=True, blank=True)
     
     username = models.CharField(max_length=250, unique=True)
     password = models.CharField(max_length=250)
@@ -50,11 +49,7 @@ class User(models.Model):
         return u"<User %s>" % (self.username)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.name, self.__class__)
-        else:
-            self.modified_date = datetime.datetime.now()
-
+        self.modified_date = datetime.datetime.now()
         super(User, self).save(*args, **kwargs)
 
     def is_authenticated(self):

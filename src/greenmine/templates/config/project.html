@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block wrapper %}
+<div id="project">
+    {% include "config/menu.html" %}
+    <form id="edit-profile-form" method="post" ajaxsubmit="0" class="inline" >
+        <fieldset>
+            <p class="form-field">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="required" />
+            </p>
+            <p class="form-field">
+                <label for="description">Descripción</label>
+                <textarea rows="10" id="description" name="description"></textarea>
+            </p>
+            <div id="user-project">
+                <div class="users-added">
+                    <table class="table01">
+                        <tbody>
+                            <tr>
+                                <th>Propietario</th>
+                                <th>Rol</th>
+                                <th>Opciones</th>
+                            </tr>
+                        
+                        </tbody>
+                    </table>
+                </div>
+                <div class="users-roles">
+                    <fieldset>
+                        <legend>Usuarios</legend>
+                        <ul class="users">
+                            <li><input class="valid" name="user-aux[]" username="Juanfran" gravatar="./auxiliar/imgs/gravatar.jpg" value="2" type="checkbox" /> Juanfran</li>
+                            <li><input class="valid" name="user-aux[]" username="Andrei" gravatar="./auxiliar/imgs/gravatar.jpg" value="3" type="checkbox" /> Andrei</li> 
+                        </ul>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Roles</legend>
+                        <ul class="roles">    
+                            <li><input name="rol-aux" type="radio" rolname="Administrador" value="1" /> Administrador</li>
+                            <li><input name="rol-aux" type="radio" rolname="Desarrollador" value="2" /> Desarrollador</li> 
+                        </ul>
+                    </fieldset>
+                    <input id="btn-usr-project" type="button" value="Añadir" class="btn01" />
+                </div>
+            </div>
+            <p class="width100 float-left">
+                <input class="btn01" type="submit" value="Guardar" />
+                <span class="ajax-loader"></span>        
+            </p>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

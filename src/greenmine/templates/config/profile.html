@@ -3,10 +3,10 @@
 
 {% block wrapper %}
 <div id="my-profile">
-    {% include "messages.html" %}
     <form id="edit-profile-form" method="post" enctype="multipart/form-data"
         action="{% url 'web:profile-show' %}" class="inline">
         {% include "config/menu.html" %}
+        {% include "messages.html" %}
         <fieldset>
             <p class="form-field">
                 {{ form.username.label }}
