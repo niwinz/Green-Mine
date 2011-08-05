@@ -20,7 +20,7 @@ from django.db import transaction
 from .generic import GenericView
 from .decorators import login_required
 
-from ..forms import ProfileForm
+from ..forms import ProfileForm, ProjectForm
 from ..models import User
 from ..utils import encrypt_password
 
@@ -29,28 +29,63 @@ class ProfileView(GenericView):
 
     def get(self, request):
         form = ProfileForm(instance=request.user)
-        context = {'form':form}
-        return self.render(self.template_name, context)
+        return self.render(self.template_name, {'form':form})
 
     def post(self, request):
         form = ProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            sem = transaction.savepoint()
-            try:
-                request.user = form.save()
-                transaction.savepoint_commit(sem)
-            except IntegrityError as e:
-                transaction.savepoint_rollback(sem)
-                messages.error(request, _(u'Integrity error: %(error)') % (unicode(e)))
-                return self.render(self.template_name)
-            
-            messages.info(request, _(u'Profile save success!'))
-            return HttpResponseRedirect(reverse('web:profile-show'))
+        context = {'form':form}
 
+        if not form.is_valid():
+            return self.render(self.template_name, context)
 
-                
+        sem = transaction.savepoint()
+        try:
+            request.user = form.save()
+        except IntegrityError as e:
+            transaction.savepoint_rollback(sem)
             
+            messages.error(request, _(u'Integrity error: %(e)') % {'e':unicode(e)})
+            return self.render(self.template_name, context)
+        
+        transaction.savepoint_commit(sem)
+
+        messages.info(request, _(u'Profile save success!'))
+        return HttpResponseRedirect(reverse('web:profile'))
 
     @login_required
     def dispatch(self, *args, **kwargs):
         return super(ProfileView, self).dispatch(*args, **kwargs)
+
+
+class ProjectCreateView(GenericView):
+    template_name = 'config/project.html'
+
+    def get(self, request):
+        form = ProjectForm()
+        return self.render(self.template_name, {'form':form})
+
+    def post(self, request):
+        form = ProjectForm(request.POST)
+        context = {'form': form}
+        
+        if not form.is_valid():
+            return self.render(self.template_name, context)
+
+        sem = transaction.savepoint()
+        try:
+            project = form.save()
+        except IntegrityError as e:
+            transaction.savepoint_rollback(sem)
+            
+            messages.error(request, _(u'Integrity error: %(e)') % {'e':unicode(e)})
+            return self.render(self.template_name, {'form': form})
+        
+        transaction.savepoint_commit(sem)
+
+        messages.info(request, _(u'Project %(pname) is successful saved.') % {'pname':project.name})
+        return HttpResponseRedirect(reverse('web:projects'))
+
+    @login_required
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreateView, self).dispatch(*args, **kwargs)
+

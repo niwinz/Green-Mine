@@ -21,7 +21,8 @@
     {% else %}
     <h2>No tiene ningun proyecto, crea uno!</h2>
     {% endif %}
+
     {% include "paginator.html" %}
-    <a href="" class="btn01 float-right">Crear proyecto</a>
+    <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
 </div>
 {% endblock %}

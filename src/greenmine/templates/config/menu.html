@@ -2,7 +2,7 @@
 {% load url from future %}
 <div id="sub-menu">
     <ul>
-        <li {% if csel == 'perfil' %}class="selected"{% endif %}><a href="{% url 'web:profile-show' %}">{% trans "Mi perfil" %}</a></li>
+        <li {% if csel == 'perfil' %}class="selected"{% endif %}><a href="{% url 'web:profile' %}">{% trans "Mi perfil" %}</a></li>
         {% if user.is_superuser %}
         <li {% if csel == 'users' %}class="selected"{% endif %}><a href="">{% trans "Usuarios" %}</a></li>
         {% endif %}

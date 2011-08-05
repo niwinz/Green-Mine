@@ -92,7 +92,7 @@ class MessageFile(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
-    desc = models.TextField(blank=False)
+    description = models.TextField(blank=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)

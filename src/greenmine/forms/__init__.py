@@ -32,12 +32,15 @@ class CharField(DjangoCharField):
 
     def widget_attrs(self, widget):
         attrs = super(CharField, self).widget_attrs(widget)
+        if not attrs:
+            attrs = {}
+
         if self.min_length:
             attrs.update({'minlength':self.min_length})
-            
+
         if "class" not in attrs:
             attrs['class'] = ''
-
+        
         current_clases = attrs['class'].split()
         if self.required:
             if "required" not in current_clases:
@@ -106,3 +109,28 @@ class ProfileForm(Form):
         self.instance.photo = self.cleaned_data['photo']
         self.instance.save()
         return self.instance
+
+
+class ProjectForm(Form):
+    projectname = CharField(max_length=200, min_length=4,
+        required=True, type='text', label=_(u'Nombre de proyecto'))
+    description = CharField(widget=Textarea(), label=_(u'Descripcion'))
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if "projectname" in cleaned_data and Project.objects\
+            .filter(name=cleaned_data['projectname']).count() > 0:
+
+            msg = _(u'Nombre de proyecto ya esta ocupado.')
+            self._errors['projectname'] = self.error_class([msg])
+            del cleaned_data['projectname']
+
+        return cleaned_data
+
+    def save(self):
+        self.project = Project.objects.create(
+            name = self.cleaned_data['projectname'],
+            description = self.cleaned_data['description']
+        )
+        return self.project
+
