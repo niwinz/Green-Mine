@@ -17,6 +17,8 @@ from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 from django.db import transaction
 
+import re
+
 from .generic import GenericView
 from .decorators import login_required
 
@@ -59,6 +61,7 @@ class ProfileView(GenericView):
 
 class ProjectCreateView(GenericView):
     template_name = 'config/project.html'
+    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
     def get(self, request):
         form = ProjectForm()
@@ -74,9 +77,20 @@ class ProjectCreateView(GenericView):
         sem = transaction.savepoint()
         try:
             project = form.save()
-        except IntegrityError as e:
+            #for post_key in request.POST.keys():
+            #    user_rx_pos = self.user_rx.match(post_key)
+            #    if not user_rx_pos:
+            #        continue
+
+            #    try:
+            #        uproject = UserProject.objects.create(
+            #        userobj = User.objects.get(pk=user_rx_pos.group('userid'))
+
+                    
+
+
+        except Exception as e:
             transaction.savepoint_rollback(sem)
-            
             messages.error(request, _(u'Integrity error: %(e)') % {'e':unicode(e)})
             return self.render(self.template_name, {'form': form})
         

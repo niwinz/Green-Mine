@@ -32,15 +32,26 @@ $(document).ready(function(){
                         html += '<tr>';
                         html += '<td><img width="30" src="'+$(users[i]).attr('gravatar')+'">'+$(users[i]).attr('username')+'</td>';
                         html += '<td>'+$(roles[0]).attr('rolname')+'</td>';
-                        html += '<td><a class="delete" href="" onclick="return deleteUserRolProject(this, \''+$(users[i]).val()+'\')">Borrar</a></td>';
-                        html += '<input type="hidden" name="users[]['+$(users[i]).val()+']" value="'+$(roles[0]).val()+'" />';
+                        html += '<td><a class="delete" rel="' + $(users[i]).val() + '" href="">Borrar</a></td>';
+                        html += '<input type="hidden" name="user_'+$(users[i]).val()+'" value="'+$(roles[0]).val()+'" />';
                         html += '</tr>';
                         
                         $(users[i]).removeClass('valid');
                         $(users[i]).addClass('invalid');
                         $(users[i]).parent().hide();
                     }
+
                     $("#user-project tbody").append(html);
+                    $("#user-project tbody").find("a.delete").click(function() {
+                         var input = $("#edit-profile-form input[value='"+$(this).attr('rel')+"']");
+                         $(input).removeClass('invalid');
+                         $(input).addClass('valid');    
+                         $(input).attr('checked', false);
+                         $(input).parent().show();
+                         $(this).parents('tr').remove();
+                         return false;
+                    });
+
                 }
             }
             return false;
@@ -181,16 +192,6 @@ function printMilestones(sel){
     html+='<div class="ml">Sin asignar <span>('+dashboard.tasks.length+')</span></div></li>';
     $("#milestones").html(html);
 }
-
-var deleteUserRolProject = function(elm, id){
-    var input = $("#edit-profile-form [value='"+id+"']");
-    $(input).removeClass('invalid');
-    $(input).addClass('valid');    
-    $(input).attr('checked', false);
-    $(input).parent().show();
-    $(elm).parent().parent().remove();
-    return false;
-};
 
 var forms = {
     ajaxSuccess: '',
