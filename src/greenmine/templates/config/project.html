@@ -5,15 +5,18 @@
 {% block wrapper %}
 <div id="project">
     {% include "config/menu.html" %}
-    <form id="edit-profile-form" method="post" ajaxsubmit="0" class="inline" >
+    <form id="edit-profile-form" method="post" ajaxsubmit="0" >
+        {% include "messages.html" %}
         <fieldset>
             <p class="form-field">
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="required" />
+                {{ form.projectname.label }}
+                {{ form.projectname.errors }}
+                {{ form.projectname }}
             </p>
             <p class="form-field">
-                <label for="description">Descripción</label>
-                <textarea rows="10" id="description" name="description"></textarea>
+                {{ form.description.label }}
+                {{ form.description.errors }}
+                {{ form.description }}
             </p>
             <div id="user-project">
                 <div class="users-added">

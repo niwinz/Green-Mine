@@ -23,7 +23,7 @@ from .generic import GenericView
 from .decorators import login_required
 
 from ..forms import ProfileForm, ProjectForm
-from ..models import User
+from ..models import User, ROLE_CHOICES
 from ..utils import encrypt_password
 
 class ProfileView(GenericView):
@@ -46,7 +46,7 @@ class ProfileView(GenericView):
         except IntegrityError as e:
             transaction.savepoint_rollback(sem)
             
-            messages.error(request, _(u'Integrity error: %(e)') % {'e':unicode(e)})
+            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
             return self.render(self.template_name, context)
         
         transaction.savepoint_commit(sem)
@@ -68,7 +68,7 @@ class ProjectCreateView(GenericView):
         return self.render(self.template_name, {'form':form})
 
     def post(self, request):
-        form = ProjectForm(request.POST)
+        form = ProjectForm(request.POST, request=request)
         context = {'form': form}
         
         if not form.is_valid():
@@ -76,22 +76,39 @@ class ProjectCreateView(GenericView):
 
         sem = transaction.savepoint()
         try:
+            user_role = {}
+
+            for post_key in request.POST.keys():
+                user_rx_pos = self.user_rx.match(post_key)
+                if not user_rx_pos:
+                    continue
+
+                user_role[user_rx_pos.group('userid')] = request.POST[post_key]
+            
+            if not user_role:
+                transaction.savepoint_rollback(sem)
+                emsg = _(u'Debe especificar al menos una persona al proyecto')
+                messages.error(request, emsg)
+                return self.render(self.template_name, context)
+
+            #: test user roles
+            role_values = dict(ROLE_CHOICES).keys()
+            invalid_role = False
+            for role in user_role.values():
+                if role not in role_values:
+                    invalid_role = True
+                    break
+
+            if invalid_role:
+                emsg = _(u'Uno o mas roles son invalidos.')
+                messages.error(request, emsg)
+                return self.render(self.template_name, context)
+
             project = form.save()
-            #for post_key in request.POST.keys():
-            #    user_rx_pos = self.user_rx.match(post_key)
-            #    if not user_rx_pos:
-            #        continue
-
-            #    try:
-            #        uproject = UserProject.objects.create(
-            #        userobj = User.objects.get(pk=user_rx_pos.group('userid'))
-
-                    
-
 
         except Exception as e:
             transaction.savepoint_rollback(sem)
-            messages.error(request, _(u'Integrity error: %(e)') % {'e':unicode(e)})
+            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
             return self.render(self.template_name, {'form': form})
         
         transaction.savepoint_commit(sem)

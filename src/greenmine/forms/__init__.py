@@ -116,6 +116,10 @@ class ProjectForm(Form):
         required=True, type='text', label=_(u'Nombre de proyecto'))
     description = CharField(widget=Textarea(), label=_(u'Descripcion'))
 
+    def __init__(self, *args, **kwargs):
+        self._request = kwargs.pop('request', None)
+        super(ProjectForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = self.cleaned_data
         if "projectname" in cleaned_data and Project.objects\
@@ -130,7 +134,8 @@ class ProjectForm(Form):
     def save(self):
         self.project = Project.objects.create(
             name = self.cleaned_data['projectname'],
-            description = self.cleaned_data['description']
+            description = self.cleaned_data['description'],
+            owner = self._request.user,
         )
         return self.project
 
