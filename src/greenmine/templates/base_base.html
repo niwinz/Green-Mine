@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{{ MAIN_TITLE }}</title>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>
     {% block top-headers %}{% endblock %}
 </head>
 <body>
@@ -14,9 +15,9 @@
         <p>Powered by Greenmine ©</p>
     </div>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
-    <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery-validation/jquery.validate.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/general.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/messages.js"></script>
     {% block bottom-headers %}{% endblock %}
 </body>
 </html>

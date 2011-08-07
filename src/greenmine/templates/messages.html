@@ -1,7 +1,14 @@
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+<div class="messages-container">
+    <ul class="messages">
+        {% if messages %}
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        <script type="text/javascript">
+        $(document).ready(function() {
+            setTimeout(removeErrors, 2000);
+        });
+        </script>
+        {% endif %}
+    </ul>
+</div>
