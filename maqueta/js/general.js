@@ -156,7 +156,13 @@ $(document).ready(function(){
             e.preventDefault();
         })        
         
-    }//#dashboard  
+    }
+    
+    if($(".messages-container li").length>0){
+        setTimeout(function(){
+            $(".messages-container").fadeOut('slow', function(){$(this).find("li").remove()});
+        }, $(".messages-container li").length*4000);
+    }
 })
 
 function printTasks(list){
