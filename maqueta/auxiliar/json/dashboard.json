@@ -1,0 +1,10 @@
+{
+    "tasks":[
+        {"id":3, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+        {"id":8, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}, 
+        {"id":9, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+        {"id":10, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+        {"id":11, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
+        {"id":12, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}
+    ]
+}   
