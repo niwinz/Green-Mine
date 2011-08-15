@@ -19,7 +19,52 @@
 	<div id="wrapper">
             <div id="dashboard">
                 <ul id="milestones">
+                    <li class="selected milestone" milestone="1">
+                        <div class="ml">Fase 1<div>12/03/2011 (<span>1/2</span>)</div></div>
+                        <a href="" class="edit"><img width="21" src="imgs/cog.png" /></a>
+                    </li>
+                    <li class="milestone" milestone="2">
+                        <div class="ml">Fase 2<div>06/11/2011 (<span>2/6</span>)</div></div>
+                        <a href="" class="edit"><img width="21" src="imgs/cog.png" /></a>
+                    </li>
+                    <li class="milestone" milestone="0">
+                        <div class="ml">Sin asignar <div>(<span>4/20</span>)</div></div>
+                    </li>
                 </ul>
+                <div id="tasks-filters">
+                    <p>
+                        <label>Asignado a</label>
+                        <select name="to">
+                            <option value="0">Todos</option>
+                            <option value="Andrei">Andrei</option>
+                            <option value="Juanfran">Juanfran</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>Estado</label>
+                        <select name="state">
+                            <option value="0">Todos</option>
+                            <option value="Abierta">Abierta</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>Prioridad</label>
+                        <select name="priority">
+                            <option value="0">Todos</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>Tipo</label>
+                        <select name="type">
+                            <option value="0">Todos</option>
+                            <option value="Tarea">Tarea</option>
+                            <option value="Bug">Bug</option>
+                        </select>
+                    </p>                    
+                </div>
                 <ul id="tasks">
                 </ul>
             </div>

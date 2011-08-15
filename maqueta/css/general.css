@@ -60,7 +60,7 @@ form.inline .form-field{float:left; margin-right: 15px;}
 #milestones li{line-height: 25px; position: relative; border: 1px solid #000; color: #FFF; font-weight: bold; background-color: #458745; margin-bottom: 2px; width: 298px}
 #milestones .ml{padding-left: 15px;}
 #milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
-#milestones li span{float: right; font-size: 12px; margin-right: 28px;}
+#milestones li div div{float: right; font-size: 12px; margin-right: 28px;}
 #milestones a{position: absolute; right: 2px; top: 2px;}
 #tasks{float: right; width: 650px;}
 #tasks li{border: 1px solid #458745; line-height: 25px; margin-bottom: 2px; position: relative; width: 618px; background-color: #FFF; height: 50px;}
@@ -73,4 +73,6 @@ form.inline .form-field{float:left; margin-right: 15px;}
 .messages-container li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
 .messages-container li.info{color: #458745;}
 .messages-container li.error{color: red;}
+#tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
+#tasks-filters p{float: left; margin-right: 10px;}
 
