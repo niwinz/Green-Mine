@@ -63,9 +63,13 @@ class LoginForm(Form):
         cleaned_data = self.cleaned_data
 
         if "username" in cleaned_data and "password" in cleaned_data:
+            print cleaned_data
             try:
-                self._user = User.objects.get(username=cleaned_data['username'],
-                    password=encrypt_password(cleaned_data['password']))
+                user = User.objects.get(username=cleaned_data['username'])
+                if not user.check_password(cleaned_data['password']):
+                    raise User.DoesNotExist()
+                else:
+                    self._user = user
 
             except User.DoesNotExist:
                 msg = _(u'Username not exists or incorrect password')

@@ -112,7 +112,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'greenmine.middleware.SelfAuthMiddleware.SelfAuthMiddleware',
 ]
 
 import django

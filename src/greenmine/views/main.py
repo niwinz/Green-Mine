@@ -59,7 +59,7 @@ class ProjectsView(GenericView):
 class ProjectView(ProjectGenericView):
     def get(self, request, *args, **kwargs):
         context = self.get_context()
-        return self.render('project.html', context)
+        return self.render('dashboard.html', context)
 
     @login_required
     def dispatch(self, *args, **kwargs):

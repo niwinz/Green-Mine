@@ -16,6 +16,9 @@ from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 
+from django.utils import simplejson
+from ..utils import LazyEncoder
+
 class GenericView(View):
     """ Generic view with some util methods. """
 
@@ -25,6 +28,29 @@ class GenericView(View):
     def render(self, template_name, context={}, **kwargs):
         return render_to_response(template_name, context, 
             context_instance=RequestContext(self.request))
+    
+    """ Api methods """
+
+    def render_to_response(self, context):
+        if isinstance(context, dict):
+            response_data = simplejson.dumps(context, cls=LazyEncoder, indent=4, sort_keys=True)
+        else:
+            response_data = context
+        return HttpResponse(response_data, mimetype='text/plain')
+
+    def render_to_error(self, context):
+        response_dict = {'valid': False, 'errors':[]}
+        if isinstance(context, (str, unicode, dict)):
+            response_dict['errors'].append(context)
+        elif isinstance(context, (list,tuple)):
+            response_dict['errors'] = context
+
+        return self.render_to_response(response_dict)
+
+    def render_to_ok(self, context):
+        response = {'valid': True, 'errors': []}
+        response.update(context)
+        return self.render_to_response(response)
 
     
 class ProjectGenericView(GenericView):
