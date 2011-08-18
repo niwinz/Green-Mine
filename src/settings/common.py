@@ -109,13 +109,21 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.csrf.CsrfResponseMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'greenmine.middleware.SelfAuthMiddleware.SelfAuthMiddleware',
 ]
 
+import django
+# django 1.4 compatibility
+if django.VERSION[:2] > (1,3):
+    i = MIDDLEWARE_CLASSES.index("django.middleware.csrf.CsrfResponseMiddleware")
+    del MIDDLEWARE_CLASSES[i]
+
+
 TEMPLATE_CONTEXT_PROCESSORS = [
-    "django.core.context_processors.debug",
+    "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     'django.core.context_processors.static',
