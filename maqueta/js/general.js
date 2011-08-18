@@ -168,7 +168,11 @@ function printTasks(milestone){
             length_tasks = data.tasks.length;
             var html = '';        
             for(var i=0; i<length_tasks; i++){
-                html+= '<li state="'+data.tasks[i].state+'"  to="'+data.tasks[i].assignedto+'" priority="'+data.tasks[i].priority+'" type="'+data.tasks[i].type+'" task="'+data.tasks[i].id+'" ><div class="dg">'+data.tasks[i].name+'<span>[Asignado a: '+data.tasks[i].assignedto+' | Estado: '+data.tasks[i].state+' | Prioridad: '+data.tasks[i].priority+' | Tipo: '+data.tasks[i].type+']</span></div><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>';
+                html += '<li state="' + data.tasks[i].state + '"  to="' + data.tasks[i].assignedto + '" priority="'+
+                    data.tasks[i].priority + '" type="' + data.tasks[i].type + '" task="'+data.tasks[i].id + '" ><div class="dg">'+
+                    data.tasks[i].name + '<span>[Asignado a: ' + data.tasks[i].assignedto + ' | Estado: ' +
+                    data.tasks[i].state + ' | Prioridad: ' + data.tasks[i].priority + ' | Tipo: ' +
+                    data.tasks[i].type + ']</span></div><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>';
             }
             $("#tasks").html(html);
         }
