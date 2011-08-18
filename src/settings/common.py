@@ -130,7 +130,8 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    #'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -195,3 +196,4 @@ LOGGING = {
     }
 }
 
+AUTH_PROFILE_MODULE = 'greenmine.Profile'
