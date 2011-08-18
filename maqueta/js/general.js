@@ -139,8 +139,16 @@ $(document).ready(function(){
             $("#milestones").find(".selected").removeClass("selected");
             var li = $(this).parent()
             $(li).addClass("selected");
-            printTasks(parseInt($(li).attr("milestone")))
-        });            
+            printTasks(parseInt($(li).attr("milestone")), $(li).attr("milestoneurl"))
+        });
+
+        // Load tasks for initial selected milestone
+        (function() {
+            var li = $("#milestones").find(".selected");
+            var id = parseInt(li.attr('milestone'));
+            var url = li.attr('milestoneurl');
+            printTasks(id, url);
+        })();
         
         $("#dashboard").delegate(".edit", "click", function(e){
             alert("popup");
@@ -155,12 +163,12 @@ $(document).ready(function(){
     }
 })
 
-function printTasks(milestone){
+function printTasks(milestone, url){
     $("#tasks").attr('milestone', milestone);
     var data = {};
     data.milestone = milestone;
     $.ajax({
-        url : 'auxiliar/json/dashboard.json',
+        url : url,
         type : 'GET',
         data: data,
         dataType: "json",
