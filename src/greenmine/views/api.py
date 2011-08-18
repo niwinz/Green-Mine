@@ -29,7 +29,7 @@ from .generic import GenericView
 
 class ApiLogin(GenericView):
     def post(self, request):
-        login_form = LoginForm(request.POST)
+        login_form = LoginForm(request.POST, request = request)
         if not login_form.is_valid():
             return self.render_to_error(login_form.jquery_errors)
 

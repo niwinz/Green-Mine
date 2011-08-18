@@ -59,23 +59,31 @@ class LoginForm(Form):
     password = CharField(max_length=200, min_length=4, 
         required=True, type='password', label=_(u'Contraseña'))
 
+    def __init__(self, *args, **kwargs):
+        self._request = kwargs.pop('request', None)
+        super(LoginForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = self.cleaned_data
 
         if "username" in cleaned_data and "password" in cleaned_data:
-            print cleaned_data
-            try:
-                user = User.objects.get(username=cleaned_data['username'])
-                if not user.check_password(cleaned_data['password']):
-                    raise User.DoesNotExist()
-                else:
-                    self._user = user
-
-            except User.DoesNotExist:
+            from django.contrib.auth import authenticate, login
+            self._user = authenticate(
+                username = cleaned_data['username'], 
+                password = cleaned_data['password']
+            )
+            if not self._user:
                 msg = _(u'Username not exists or incorrect password')
                 self._errors["username"] = self.error_class([msg])
                 del cleaned_data["username"]
                 del cleaned_data["password"]
+            elif not self._user.is_active:
+                msg = _(u'Username is deactivated')
+                self._errors["username"] = self.error_class([msg])
+                del cleaned_data["username"]
+                del cleaned_data["password"]
+            else:
+                login(self._request, self._user)
 
         return cleaned_data
 

@@ -24,7 +24,7 @@ from ..models import Project
 
 class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
-        login_form, forgotten_password_form = LoginForm(), ForgottenPasswordForm()
+        login_form, forgotten_password_form = LoginForm(request=request), ForgottenPasswordForm()
         return self.render('login.html', 
             {'form': login_form, 'form2': forgotten_password_form})
 
