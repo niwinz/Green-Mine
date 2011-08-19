@@ -16,6 +16,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, RedirectView, View
+from django.db.models import Q
 
 import logging, re
 logger = logging.getLogger('greenmine')
@@ -35,3 +36,21 @@ class ApiLogin(GenericView):
 
         request.session['current_user_id'] = login_form._user.id
         return self.render_to_ok({'userid': login_form._user.id, 'redirect_to': '/'})
+
+
+class UserListApiView(GenericView):
+    #: TODO: control permissions
+    def get(self, request):
+        if "term" not in request.GET:
+            return self.render_to_ok({'list':[]})
+        
+        term = request.GET['term']
+        users = User.objects.filter(
+            Q(username__istartswith=term) | Q(first_name__istartswith=term)
+        )
+        context = {'list': [{'id':x.id, 'label':x.first_name, 'value':x.first_name,
+            'gravatar':'/static/auxiliar/imgs/gravatar.jpg'} for x in users]}
+        return self.render_to_ok(context)
+
+
+

@@ -18,43 +18,55 @@ $(document).ready(function(){
     }
 
     if($("#project").length){
-        $("#btn-usr-project").click(function(){
-            var users = $("#edit-profile-form .valid[name='user-aux[]']:checked");
-            if(users.length == 0){
-                alert("Selecciona al menos un usuario");
+        var autocomplete_selector = "input.user-autocomplete";
+
+        var getRemoteData = function(request, response) {
+            var url = $(autocomplete_selector).attr('url');
+            url = url + "?term=" + request.term;
+            $.get(url,  function(data) {
+                if (data.valid){
+                    response(data.list);
+                }
+            }, 'json');
+        };
+        var selectItem = function(event, ui) {
+            var currentuser_dom = $(autocomplete_selector).parent().find("input.user-currentvalue");
+            currentuser_dom.val(ui.item.id);
+            currentuser_dom.attr('name', ui.item.value);
+            currentuser_dom.attr('gravatar', ui.item.gravatar);
+
+            console.log(ui.item);
+        };
+
+        $(autocomplete_selector).autocomplete({
+            source: getRemoteData,
+            minLength: 1,
+            select: selectItem
+        });
+
+        $("#btn-usr-project").click(function(e){
+            var roles = $("#edit-profile-form [name='rol-aux']:checked");
+            if (roles.length == 0){
+                alert("Selecciona un rol");
             } else {
-                var roles = $("#edit-profile-form [name='rol-aux']:checked");
-                if(roles.length == 0){
-                    alert("Selecciona un rol");
-                } else {
-                    var html = '';
-                    for(var i=0; i<users.length; i++){
-                        html += '<tr>';
-                        html += '<td><img width="30" src="'+$(users[i]).attr('gravatar')+'">'+$(users[i]).attr('username')+'</td>';
-                        html += '<td>'+$(roles[0]).attr('rolname')+'</td>';
-                        html += '<td><a class="delete" rel="' + $(users[i]).val() + '" href="">Borrar</a></td>';
-                        html += '<input type="hidden" name="user_'+$(users[i]).val()+'" value="'+$(roles[0]).val()+'" />';
-                        html += '</tr>';
-                        
-                        $(users[i]).removeClass('valid');
-                        $(users[i]).addClass('invalid');
-                        $(users[i]).parent().hide();
+                var user = $(autocomplete_selector).parent().find("input.user-currentvalue");
+                if (user.val().length){
+                    if($("#user-project tbody").find('input[name="user_' + user.val() + '"]').length < 1){
+                        var html = "<tr>" +
+                            '<td><img width="30" src="'+ user.attr('gravatar') +'">' + user.attr('name') + '</td>' +
+                            '<td>'+$(roles[0]).attr('rolname')+'</td>' +
+                            '<td><a class="delete" rel="' + user.val() + '" href="">Borrar</a></td>' +
+                            '<input type="hidden" name="user_' + user.val() + '" value="' + $(roles[0]).val() + '" /></tr>';
+                        $("#user-project tbody").append(html);
+                        $("#user-project tbody").find("a.delete").click(function(event){
+                            $(this).parents('tr').remove();
+                            event.preventDefault();
+                        });
+                        $(autocomplete_selector).val("");
                     }
-
-                    $("#user-project tbody").append(html);
-                    $("#user-project tbody").find("a.delete").click(function() {
-                         var input = $("#edit-profile-form input[value='"+$(this).attr('rel')+"']");
-                         $(input).removeClass('invalid');
-                         $(input).addClass('valid');    
-                         $(input).attr('checked', false);
-                         $(input).parent().show();
-                         $(this).parents('tr').remove();
-                         return false;
-                    });
-
                 }
             }
-            return false;
+            e.preventDefault();
         });
     }
     

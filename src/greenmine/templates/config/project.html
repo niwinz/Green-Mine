@@ -2,6 +2,10 @@
 {% load url from future %}
 {% load i18n %}
 
+{% block top-headers %}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+{% endblock %}
+
 {% block wrapper %}
 <div id="project">
     {% include "config/menu.html" %}
@@ -34,10 +38,8 @@
                 <div class="users-roles">
                     <fieldset>
                         <legend>Usuarios</legend>
-                        <ul class="users">
-                            <li><input class="valid" name="user-aux[]" username="juanfran" gravatar="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" value="2" type="checkbox" /> Juanfran</li>
-                            <li><input class="valid" name="user-aux[]" username="andrei" gravatar="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" value="3" type="checkbox" /> Andrei</li> 
-                        </ul>
+                        <input type="text" name="username" class="user-autocomplete" url="{% url "api:user-list" %}" />
+                        <input type="hidden" class="user-currentvalue" value="" />
                     </fieldset>
                     <fieldset>
                         <legend>Roles</legend>
