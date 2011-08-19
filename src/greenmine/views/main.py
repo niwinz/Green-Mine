@@ -18,8 +18,8 @@ from django.utils.decorators import method_decorator
 
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
-from ..forms import LoginForm, ForgottenPasswordForm
-from ..models import Project
+from ..forms import LoginForm, ForgottenPasswordForm, FiltersForm
+from ..models import Project, User
 
 
 class LoginView(GenericView):
@@ -56,9 +56,13 @@ class ProjectsView(GenericView):
         return super(ProjectsView, self).dispatch(*args, **kwargs)
 
 
-class ProjectView(ProjectGenericView):
-    def get(self, request, *args, **kwargs):
-        context = self.get_context()
+class ProjectView(GenericView):
+    def get(self, request, slug):
+        project = get_object_or_404(Project, slug=slug)
+        context = {
+            'filtersform': FiltersForm(queryset=project.participants.all()),
+            'project': project
+        }
         return self.render('dashboard.html', context)
 
     @login_required

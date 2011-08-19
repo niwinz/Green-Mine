@@ -38,7 +38,7 @@ ISSUE_STATUS_CHOICES = (
 )
 
 ISSUE_PRIORITY_CHOICES = (
-    (0, 'Lower'),
+    (1, 'Lower'),
     (2, 'Normal'),
     (4, 'High'),
     (6, 'Urgent'),
@@ -117,8 +117,17 @@ class Project(models.Model):
     participants = models.ManyToManyField('auth.User', related_name="projects_participant", through="ProjectUserRole", null=True, blank=True)
     public = models.BooleanField(default=True)
 
+
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
+
+    @models.permalink
+    def get_dashboard_url(self):
+        return ('web:project', (), {'slug':self.slug})
+
+    @models.permalink
+    def get_unasigned_tasks_api_url(self):
+        return ('api:unasigned-tasks-for-poject', (), {'pslug':self.slug})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -187,6 +196,11 @@ class Milestone(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
 
+    @models.permalink
+    def get_tasks_for_milestone_api_url(self):
+        return ('api:tasks-for-milestone', (), 
+            {'pslug':self.project.slug, 'mslug':self.slug})
+
     class Meta(object):
         unique_together = ('name', 'project')
     
@@ -203,11 +217,10 @@ class Milestone(models.Model):
 
 
 class Issue(models.Model):
-    priority = models.IntegerField(choices=ISSUE_TYPE_CHOICES)
     status = models.CharField(max_length=50, choices=ISSUE_STATUS_CHOICES)
-    milestone = models.ForeignKey("Milestone", related_name="issues")
+    milestone = models.ForeignKey("Milestone", related_name="issues", null=True, default=None)
     project = models.ForeignKey("Project", related_name="issues")
-    type = models.CharField(max_length="50", default="task")
+    type = models.CharField(max_length="50", default="task", choices=ISSUE_TYPE_CHOICES)
     author = models.ForeignKey("auth.User", null=True, default=None, related_name="issues")
 
     priority = models.IntegerField(choices=ISSUE_PRIORITY_CHOICES, default=2)
@@ -223,6 +236,9 @@ class Issue(models.Model):
     finish_date = models.DateTimeField(null=True, blank=True)
     files = generic.GenericRelation("GenericFile")
     responses = generic.GenericRelation("GenericResponse")
+
+    assigned_to = models.ForeignKey('auth.User', related_name='issues_assigned_to_me', null=True, default=None)
+    parent = models.ForeignKey('self', related_name='subtasks', null=True, default=None)
 
     def __repr__(self):
         return u"<Issue %s>" % (self.id)

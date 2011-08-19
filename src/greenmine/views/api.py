@@ -39,7 +39,6 @@ class ApiLogin(GenericView):
 
 
 class UserListApiView(GenericView):
-    #: TODO: control permissions
     def get(self, request):
         if "term" not in request.GET:
             return self.render_to_ok({'list':[]})
@@ -52,5 +51,41 @@ class UserListApiView(GenericView):
             'gravatar':'/static/auxiliar/imgs/gravatar.jpg'} for x in users]}
         return self.render_to_ok(context)
 
+
+class TasksForMilestoneApiView(GenericView):
+    def get(self, request, pslug, mslug=None):
+        try:
+            project = Project.objects.get(slug=pslug)
+        except Project.DoesNotExist:
+            return self.render_to_error("project does not exists")
+        
+        issues = Issue.objects.none()
+        if mslug:
+            
+            try:
+                milestone = project.milestones.get(slug=mslug)
+                issues = milestone.issues.all()
+            except Milestone.DoesNotExists:
+                return self.render_to_error("milestone does not exists")
+        else:
+            issues = project.issues.filter(milestone__isnull=True)
+
+        response_list = []
+        for issue in issues:
+            response_dict = {
+                'id': issue.id,
+                'name': issue.subject,
+                'to': issue.assigned_to.first_name,
+                'to_id': issue.assigned_to.id,
+                'state': issue.status,
+                'state_view': issue.get_status_display(),
+                'priority': issue.priority,
+                'priority_view': issue.get_priority_display(),
+                'type': issue.type,
+                'type_view': issue.get_type_display(),
+                'project_slug': issue.project.slug,
+            }
+            response_list.append(response_dict)
+        return self.render_to_ok({"tasks": response_list})
 
 

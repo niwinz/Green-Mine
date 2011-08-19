@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*- 
 from django.conf.urls.defaults import patterns, include, url
 
-from greenmine.views.api import ApiLogin, UserListApiView
+from greenmine.views.api import ApiLogin, UserListApiView, TasksForMilestoneApiView
 
 urlpatterns = patterns('',
     url(r'^login$', ApiLogin.as_view(), name='login'),
     url(r'^user/list/$', UserListApiView.as_view(), name='user-list'),
+    url(r'^project/(?P<pslug>[\w\d\-]+)/m/(?P<mslug>[\w\d\-]+)/tasks/$', 
+        TasksForMilestoneApiView.as_view(), name="tasks-for-milestone"),
+    url(r'^project/(?P<pslug>[\w\d\-]+)/tasks/$',
+        TasksForMilestoneApiView.as_view(), name="unasigned-tasks-for-poject"),
     #url(r'^project/create$', ApiCreateProject.as_view(), name='api-progect-create'),
 )
 

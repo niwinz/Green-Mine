@@ -72,7 +72,7 @@ $(document).ready(function(){
     
     if($("#dashboard").length){
         //printMilestones(dashboard.milestones[0].id);
-        printTasks($("#milestones li.selected").attr("milestone"));
+        printTasks($("#milestones li.selected").attr("milestone"), $("#milestones li.selected").attr('milestoneurl'));
 
         //long polling new milestones, new tasks¿?
         
@@ -81,10 +81,11 @@ $(document).ready(function(){
             var selects = $("#tasks-filters select");
             var filters = new Array();
             for(var i=0; i<selects.length; i++){
-                if($(selects[i]).val()!='0'){
+                if($(selects[i]).val()!=''){
                     filters.push("["+$(selects[i]).attr('name')+"!="+$(selects[i]).val()+"]");
                 }
             }
+            console.log(filters);
             
             //$("#tasks li").filter("[to!=Juanfran],[state!=Cerrada]").hide()
             
@@ -154,14 +155,6 @@ $(document).ready(function(){
             printTasks(parseInt($(li).attr("milestone")), $(li).attr("milestoneurl"))
         });
 
-        // Load tasks for initial selected milestone
-        (function() {
-            var li = $("#milestones").find(".selected");
-            var id = parseInt(li.attr('milestone'));
-            var url = li.attr('milestoneurl');
-            printTasks(id, url);
-        })();
-        
         $("#dashboard").delegate(".edit", "click", function(e){
             alert("popup");
             e.preventDefault();
@@ -177,22 +170,19 @@ $(document).ready(function(){
 
 function printTasks(milestone, url){
     $("#tasks").attr('milestone', milestone);
-    var data = {};
-    data.milestone = milestone;
     $.ajax({
         url : url,
         type : 'GET',
-        data: data,
         dataType: "json",
         success: function(data){
             length_tasks = data.tasks.length;
             var html = '';        
             for(var i=0; i<length_tasks; i++){
-                html += '<li state="' + data.tasks[i].state + '"  to="' + data.tasks[i].assignedto + '" priority="'+
+                html += '<li state="' + data.tasks[i].state + '"  to="' + data.tasks[i].to_id + '" priority="'+
                     data.tasks[i].priority + '" type="' + data.tasks[i].type + '" task="'+data.tasks[i].id + '" ><div class="dg">'+
-                    data.tasks[i].name + '<span>[Asignado a: ' + data.tasks[i].assignedto + ' | Estado: ' +
-                    data.tasks[i].state + ' | Prioridad: ' + data.tasks[i].priority + ' | Tipo: ' +
-                    data.tasks[i].type + ']</span></div><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>';
+                    data.tasks[i].name + '<span>[Asignado a: ' + data.tasks[i].to + ' | Estado: ' +
+                    data.tasks[i].state_view + ' | Prioridad: ' + data.tasks[i].priority_view + ' | Tipo: ' +
+                    data.tasks[i].type_view + ']</span></div><a class="edit" href=""><img width="21" src="/static/imgs/cog.png" /></a></li>';
             }
             $("#tasks").html(html);
         }

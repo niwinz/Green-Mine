@@ -1,10 +1,53 @@
 {
     "tasks":[
-        {"id":3, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-        {"id":8, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}, 
-        {"id":9, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Baja", "type": "Tarea"},
-        {"id":10, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Bug"},
-        {"id":11, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-        {"id":12, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}
+        {
+            "id":3, 
+            "name": "Arreglar bla bla bla", 
+            "to_id": "2", 
+            "to": "Juanfran", 
+            "state": "new",    
+            "state_view": "New",
+            "priority": "0", 
+            "priority_view": "Lower",
+            "type": "task",
+            "type_view": "Task"
+        },
+        {
+            "id":4, 
+            "name": "Modificar xxxx", 
+            "to_id": "1", 
+            "to": "Andrei", 
+            "state": "fixed", 
+            "state_view":"Fixed",
+            "priority": "0",
+            "priority_view": "Lower",
+            "type": "task",
+            "type_view": "Task"
+
+        }, 
+        {
+            "id":5, 
+            "name": "Modificar xxxx", 
+            "to_id": "1", 
+            "to": "Andrei", 
+            "state": "accepted", 
+            "state_view":"In progress",
+            "priority": "6",
+            "priority_view": "Urgent",
+            "type": "task",
+            "type_view": "Task"
+        }, 
+        {
+            "id":6,
+            "name": "Modificar xxxx", 
+            "to_id": "1", 
+            "to": "Andrei", 
+            "state": "new", 
+            "state_view":"New",
+            "priority": "4", 
+            "priority_view": "Hight",
+            "type": "bug",
+            "type_view": "Bug"
+        }
     ]
 }   
