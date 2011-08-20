@@ -11,7 +11,6 @@ from greenmine.utils import make_repo_location, encrypt_password
 from .repos.hg.api import create_repository, delete_repository
 from .fields import DictField
 
-fs = FileSystemStorage()
 import datetime
 
 ROLE_CHOICES = (
@@ -75,7 +74,7 @@ class GenericFile(models.Model):
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to="files/msg/%Y/%m/%d", storage=fs, max_length=500, null=True, blank=True)
+    file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
 
 
 class GenericResponse(models.Model):
@@ -92,6 +91,8 @@ class GenericResponse(models.Model):
 
 class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
+    description = models.TextField(blank=True)
+    photo = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
     settings = DictField(default={})
 
 

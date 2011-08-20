@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^config/profile/$', ProfileView.as_view(), name='profile'),
     url(r'^config/project/create/$', ProjectCreateView.as_view(), name='project-create'),
     url(r'^(?P<slug>[\w\d\-]+)/dashboard/$', ProjectView.as_view(), name='project'),
+    url(r'^media/', include('django_dbstorage.urls'))
 )
 
 

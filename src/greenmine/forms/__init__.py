@@ -109,17 +109,19 @@ class ProfileForm(Form):
         kwargs['initial'] = {
             'username': self.instance.username,
             'password': '',
-            'description': self.instance.description,
+            'description': self.instance.get_profile().description,
             'email': self.instance.email,
         }
         super(ProfileForm, self).__init__(*args, **kwargs)
 
     def save(self):
         self.instance.username = self.cleaned_data['username']
-        self.instance.password = encrypt_password(self.cleaned_data['password'])
-        self.instance.description = self.cleaned_data['description']
-        self.instance.photo = self.cleaned_data['photo']
-        self.instance.save()
+        self.instance.email = self.cleaned_data['email']
+        profile = self.instance.get_profile()
+        profile.description = self.cleaned_data['description']
+        profile.photo = self.cleaned_data['photo']
+        profile.save()
+        self.instance.set_password(self.cleaned_data['password'])
         return self.instance
 
 

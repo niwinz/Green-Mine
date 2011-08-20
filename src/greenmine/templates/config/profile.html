@@ -7,6 +7,7 @@
         action="{% url 'web:profile' %}" class="inline">
         {% include "config/menu.html" %}
         {% include "messages.html" %}
+        {% csrf_token %}
         <fieldset>
             <p class="form-field">
                 {{ form.username.label }}
@@ -29,10 +30,10 @@
                 {{ form.description.errors }}
             </p>
             <p class="form-field">
-                {% if not user.photo %}
+                {% if not user.get_profile.photo %}
                 <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
                 {% else %}
-                <img width="50" src="{{ user.photo.url }}" />
+                <img width="50" src="{{ user.get_profile.photo.url }}" />
                 {% endif %}
 
                 {{ form.photo.label }}

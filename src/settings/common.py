@@ -132,18 +132,18 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 
 ROOT_URLCONF = 'greenmine.urls'
 
-TEMPLATE_DIRS = (
+TEMPLATE_DIRS = [
     #os.path.join(project_root, "templates"),
-)
+]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'greenmine',
-)
+]
 
 LOGGING = {
     'version': 1,
