@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
+<head>
+    <title>Greenmine</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="./css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="./css/general.css" type="text/css" media="handheld, all" />
+</head>
+<body>
+    <div id="head">
+        <h1><a href="">greenmine</a> > IOU</h1>
+    </div>
+    <div id="menu">
+        <ul>
+            <li><a href="">Juanfran Alcántara</a></li>
+            <li><a href="">Configuración</a></li>
+            <li><a href="">Logout</a></li>
+        </ul>
+    </div>
+    
+    <div id="wrapper">
+        <div id="issue">
+            <form method="post" action="" ajaxsubmit="0" class="inline validate">
+                <fieldset>
+                    <p class="form-field">
+                        <label for="">Asunto</label>
+                        <input type="text" name="" class="required" />
+                    </p>
+                    <p class="form-field">
+                        <label for="">Estado</label>
+                        <select class="required">
+                            <option value="new">New</option>
+                            <option value="accepted">In progress</option>
+                            <option value="fixed">Fixed</option>
+                            <option value="invalid">Invalid</option>
+                            <option value="wontfix">Wontfix</option>
+                            <option value="workaround">Workaround</option>
+                            <option value="duplicate">Duplicated</option>                            
+                        </select>
+                    </p>  
+                    <p class="form-field">
+                        <label for="">Tipo</label>
+                        <select class="required">
+                            <option value="task">Task</option>
+                            <option value="bug">Bug</option>
+                            <option value="enhacement">Enhancement</option>                  
+                        </select>
+                    </p>                      
+                    <p class="form-field">
+                        <label for="">Prioridad</label>
+                        <select class="required">
+                            <option value="1">Lower</option>
+                            <option value="2">Normal</option>
+                            <option value="4">High</option>
+                            <option value="6">Urgent</option>
+                            <option value="8">Critical</option>
+                        </select>
+                    </p> 
+                    <p class="form-field">
+                        <label for="">Probado</label>
+                        <input type="checkbox" />
+                    </p>
+                    <p class="form-field">
+                        <label for="">Fecha fin</label>
+                        <input type="text" id="datepicker" />
+                    </p>
+                  <p class="form-field width100">
+                        <label for="">Descripción</label>
+                        <textarea class="required"></textarea>
+                    </p>                       
+                    
+                    <p class="width100 float-left">
+                        <a class="btn01" href="">Cancelar</a>    
+                        <input class="btn01" type="submit" value="Guardar" />
+                        <span class="ajax-loader"></span>		
+                    </p>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div id="footer">
+        <p>Powered by Greenmine ©</p>
+    </div>
+    <script type="text/javascript" src="./js/external/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/external/jquery-ui.js"></script>
+    <script type="text/javascript" src="./js/external/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="./js/general.js"></script>
+</body>
+</html>
