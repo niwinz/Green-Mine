@@ -1,6 +1,6 @@
 <div class="messages-container">
+    {% if messages %}
     <ul class="messages">
-        {% if messages %}
         {% for message in messages %}
         <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
@@ -9,6 +9,6 @@
             setTimeout(removeErrors, 2000);
         });
         </script>
-        {% endif %}
     </ul>
+    {% endif %}
 </div>

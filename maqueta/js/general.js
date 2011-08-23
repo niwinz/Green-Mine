@@ -22,38 +22,36 @@ $(document).ready(function(){
     }
 
     if($("#project").length){
-        var autocomplete_selector = "input.user-autocomplete";
-
-        var getRemoteData = function(request, response) {
-            var url = $(autocomplete_selector).attr('url');
-            url = url + "?term=" + request.term;
-            $.get(url,  function(data) {
-                if (data.valid){
-                    response(data.list);
-                }
-            }, 'json');
-        };
-        var selectItem = function(event, ui) {
-            var currentuser_dom = $(autocomplete_selector).parent().find("input.user-currentvalue");
-            currentuser_dom.val(ui.item.id);
-            currentuser_dom.attr('name', ui.item.value);
-            currentuser_dom.attr('gravatar', ui.item.gravatar);
-
-            console.log(ui.item);
-        };
-
-        $(autocomplete_selector).autocomplete({
+        $("input.user-autocomplete").autocomplete({
             source: getRemoteData,
             minLength: 1,
-            select: selectItem
+            select: function(event, ui) {
+                var currentuser_dom = $("input.user-autocomplete").parent().find("input.user-currentvalue");
+                currentuser_dom.val(ui.item.id);
+                currentuser_dom.attr('name', ui.item.value);
+                currentuser_dom.attr('gravatar', ui.item.gravatar);
+            },
+            source: function(request, response) {
+                var url = $("input.user-autocomplete").attr('url');
+                url = url + "?term=" + request.term;
+                $.get(url,  function(data) {
+                    if (data.valid){ response(data.list); }
+                }, 'json');
+            }
         });
+        
+        /*
+        formUtils.ajax("#edit-profile-form", function(data){
+            if(data.redirect_to) location.href = data.redirect_to;
+        });
+        */
 
         $("#btn-usr-project").click(function(e){
             var roles = $("#edit-profile-form [name='rol-aux']:checked");
             if (roles.length == 0){
                 alert("Selecciona un rol");
             } else {
-                var user = $(autocomplete_selector).parent().find("input.user-currentvalue");
+                var user = $("input.user-autocomplete").parent().find("input.user-currentvalue");
                 if (user.val().length){
                     if($("#user-project tbody").find('input[name="user_' + user.val() + '"]').length < 1){
                         var html = "<tr>" +
@@ -66,7 +64,7 @@ $(document).ready(function(){
                             $(this).parents('tr').remove();
                             event.preventDefault();
                         });
-                        $(autocomplete_selector).val("");
+                        $("input.user-autocomplete").val("");
                     }
                 }
             }

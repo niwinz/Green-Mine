@@ -5,7 +5,7 @@
  * */
 
 var removeErrors = function() {
-    $(".messages-container ul li").hide(function() { $(this).remove(); });
+    $(".messages-container ul").hide(function() { $(this).find('li').remove(); });
 };
 
 /* selector == 'div.messages-container' */
@@ -16,6 +16,10 @@ var Messages = function(selector) {
     if ( this.msgbox.length ){
         this.active = true;
     }
+    if (!this.msgbox.find('ul.messages').length) {
+        this.msgbox.append($('<ul class="messages" />'));
+        this.msgbox.find('ul.messages').hide();
+    }
 }
 
 Messages.prototype = {
@@ -24,8 +28,8 @@ Messages.prototype = {
             return null;
         }
         var msgdom = $('<li />').addClass(type).html(messagetext);
-        console.log(msgdom);
         this.msgbox.find('ul.messages').append(msgdom);
+        this.msgbox.find('ul.messages').show();
         setTimeout(removeErrors, 4000);
     },
     error: function(msg) {

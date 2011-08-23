@@ -2,25 +2,21 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block top-headers %}
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
-{% endblock %}
-
 {% block wrapper %}
 <div id="project">
     {% include "config/menu.html" %}
-    <form id="edit-profile-form" method="post" ajaxsubmit="0" >
+    <form id="edit-profile-form" method="post">
         {% include "messages.html" %}
         <fieldset>
             <p class="form-field">
                 {{ form.projectname.label }}
-                {{ form.projectname.errors }}
                 {{ form.projectname }}
+                {{ form.projectname.errors }}
             </p>
             <p class="form-field">
                 {{ form.description.label }}
-                {{ form.description.errors }}
                 {{ form.description }}
+                {{ form.description.errors }}
             </p>
             <div id="user-project">
                 <div class="users-added">
@@ -31,7 +27,6 @@
                                 <th>Rol</th>
                                 <th>Opciones</th>
                             </tr>
-                        
                         </tbody>
                     </table>
                 </div>
@@ -53,7 +48,7 @@
             </div>
             <p class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />
-                <span class="ajax-loader"></span>        
+                <span class="ajax-loader"></span>
             </p>
         </fieldset>
     </form>

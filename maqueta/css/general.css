@@ -69,10 +69,10 @@ form.inline .form-field{float:left; margin-right: 15px; min-height: 75px;}
 #tasks li:hover{cursor: move; background-color: #EFEFEF;}
 #tasks .edit{position: absolute; right: 4px; top: 2px;}
 #tasks span{font-size: 12px; position: absolute; right: 35px; line-height: 25px;}
-.messages-container{padding: 10px 0; margin: 10px 0; background-color: #EFEFEF;}
-.messages-container li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
-.messages-container li.info{color: #458745;}
-.messages-container li.error{color: red;}
+.messages-container ul.messages {padding: 10px 0; margin: 10px 0; background-color: #EFEFEF;}
+.messages-container ul.messages li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
+.messages-container ul.messages li.info{color: #458745;}
+.messages-container ul.messages li.error{color: red;}
 #tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
 #tasks-filters p{float: left; margin-right: 10px;}
 #dashboard-actions{margin-bottom: 20px; width: 100%; overflow: auto;}
