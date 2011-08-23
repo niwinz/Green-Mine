@@ -5,6 +5,11 @@
 {% block wrapper %}
 <div id="dashboard">
     <ul id="milestones">
+        <div id="dashboard-actions">
+            <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
+            <a id="new-issue" class="btn01" href="">Nueva tarea</a>
+        </div>
+        
         {% for mls in project.milestones.all %}
         <li class="milestone {% if forloop.first %}selected{% endif %}" 
             milestone="{{ mls.id }}" 
@@ -14,6 +19,7 @@
             <a href="" class="edit"><img width="21" src="{{ STATIC_URL }}imgs/cog.png" /></a>
         </li>
         {% endfor %}
+
         <li class="milestone" milestone="0" milestoneurl="{{ project.get_unasigned_tasks_api_url }}">
             <div class="ml">{% trans "Unassigned" %}<div>(<span>4/20</span>)</div></div>
         </li>
@@ -38,5 +44,26 @@
     </div>
     <ul id="tasks">
     </ul>
+
+    <div id="milestone-lb">
+        <form method="post" action="{{ STATIC_URL }}auxiliar/json/milestone.json" class="inline">
+            <fieldset>
+                <p class="form-field">
+                    <label for="">Nombre</label>
+                    <input type="text" id="nombre-milestone" name="nombre-milestone" class="required" />
+                </p>
+                <p class="form-field">
+                    <label for="">Fecha fin</label>
+                    <input type="text" readonly id="fecha-milestone" name="fecha-milestone" class="datepicker" />
+                </p>
+                <p class="width100 float-left">
+                    <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
+                    <input class="btn01" type="submit" value="Guardar" />
+                    <span class="ajax-loader"></span>
+                </p>
+            </fieldset>
+        </form> 
+    </div>
+
 </div>
 {% endblock %}

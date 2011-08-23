@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{{ MAIN_TITLE }}</title>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.django.patch.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
     {% block top-headers %}{% endblock %}
 </head>
 <body>
@@ -15,8 +15,9 @@
     <div id="footer">
         <p>Powered by Greenmine ©</p>
     </div>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.8.13.custom.css" type="text/css" media="handheld, all" />
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.django.patch.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery-ui.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery-validation/jquery.validate.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/general.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/messages.js"></script>
