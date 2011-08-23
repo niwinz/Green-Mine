@@ -1,0 +1,9 @@
+{"valid":true,
+ "name": "hola",
+ "id": 2,
+ "date": "15/06/2010",
+ "milestoneurl": "auxiliar/json/dashboard.json",
+ "errors": [{
+    "nombre-milestone": "Prueba validación nombre"
+ }]
+}

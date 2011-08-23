@@ -1,7 +1,11 @@
 $(document).ready(function(){
-    forms.init();
+    $(".validate").validate();
     
     if($("#login-form").length){
+        formUtils.ajax("#login-form, #forgotten-password-form", function(data){
+            if(data.redirect_to) location.href = data.redirect_to;
+        });
+        
         $("#open-forgotten-password-form").click(function(e){
             $("#login-form").fadeOut("fast", function() {
                 $("#forgotten-password-form").fadeIn("fast");
@@ -71,10 +75,7 @@ $(document).ready(function(){
     }
     
     if($("#dashboard").length){
-        //printMilestones(dashboard.milestones[0].id);
         printTasks($("#milestones li.selected").attr("milestone"), $("#milestones li.selected").attr('milestoneurl'));
-
-        //long polling new milestones, new tasks¿?
         
         $("#tasks-filters select").val(0);
         $("#tasks-filters").delegate("select", "change", function(){
@@ -85,9 +86,6 @@ $(document).ready(function(){
                     filters.push("["+$(selects[i]).attr('name')+"!="+$(selects[i]).val()+"]");
                 }
             }
-            console.log(filters);
-            
-            //$("#tasks li").filter("[to!=Juanfran],[state!=Cerrada]").hide()
             
             if(filters.length>0){
                 $("#tasks").hide();
@@ -97,57 +95,45 @@ $(document).ready(function(){
                 $("#tasks").show();
             }else $("#tasks li").show();
         }); 
-
-        $("#tasks").delegate(".dg", "mousedown", function(e){
-            var li = $(this).parent();
-            $(li).css("position", "absolute");
-            $(li).attr('id', 'inmove');
-            $(li).css({'top': e.pageY+10, 'left':e.pageX+20});
-            e.preventDefault();
-
-           $(document).mousemove(function(e){
-              $('#inmove').css({'top': e.pageY+10, 'left':e.pageX+10});
-            });        
-
-            $(document).mouseup(function(e){
-                var milestone = new Array();
-                if($(e.target).hasClass("milestone"))milestone = $(e.target);
-                else{
-                   milestone = $(e.target).closest('li.milestone');
-                }
-                $(document).unbind('mousemove');
-                $(document).unbind('mouseup');
-
-                if(milestone.length && !$(milestone).hasClass('selected')){
-                    //move the task    
-                    var data = {};
-                    data.milestone = parseInt($(milestone).attr('milestone'));
-                    data.task = parseInt($('#inmove').attr('task'));
-                    $.ajax({url : '', type : 'POST', data: data});
-                    
-                    var tasks = $(milestone).find('span').html().split("/");
-                    if($('#inmove').attr('state')=='Cerrada')tasks[0] = parseInt(tasks[0])+1;
-                    
-                    tasks[1] = parseInt(tasks[1])+1;
-                    $(milestone).find('span').html(tasks[0]+"/"+tasks[1]);
-                    
-                    var old_milestone_span = $("#milestones li[milestone='"+$("#tasks").attr('milestone')+"'] span");
-                    tasks = $(old_milestone_span).html().split("/");
-                    
-                    if($('#inmove').attr('state')=='Cerrada')tasks[0] = parseInt(tasks[0])-1;
-                    
-                    tasks[1] = parseInt(tasks[1])-1;
-                    $(old_milestone_span).html(tasks[0]+"/"+tasks[1]);                    
-
-                    $('#inmove').remove();
-                }else{
-                    $('#inmove').css("position", "relative");
-                    $('#inmove').css({"top": 0, "left": 0}); 
-                    $('#inmove').attr('id', '');                        
-                }
-            });   
-        });        
         
+        $('#tasks').delegate('li', 'mouseenter', function() {
+            var milestones = $("li.milestone");
+            var milestones_length = milestones.length;
+            for(var i=0; i<milestones_length; i++){
+                if(!$(milestones[i]).is(':data(droppable)')) {
+                    $(milestones[i]).droppable({activeClass: 'add',  tolerance: 'pointer', 
+                    drop: function(ev, ui){
+                        ui.draggable.draggable('option','revert',false);
+                        if(!$(this).hasClass('selected')){
+                            var data = {};
+                            data.milestone = parseInt($(this).attr('milestone'));
+                            data.task = parseInt($(ui.draggable).attr('task'));
+                            $.ajax({url : '', type : 'POST', data: data});
+
+                            var tasks = $(this).find('span').html().split("/");
+                            if($(ui.draggable).attr('state')=='fixed')tasks[0] = parseInt(tasks[0])+1;
+
+                            tasks[1] = parseInt(tasks[1])+1;
+                            $(this).find('span').html(tasks[0]+"/"+tasks[1]);
+
+                            var old_milestone_span = $("#milestones li[milestone='"+$("#tasks").attr('milestone')+"'] span");
+                            tasks = $(old_milestone_span).html().split("/");
+
+                            if($(ui.draggable).attr('state')=='fixed')tasks[0] = parseInt(tasks[0])-1;
+
+                            tasks[1] = parseInt(tasks[1])-1;
+                            $(old_milestone_span).html(tasks[0]+"/"+tasks[1]); 
+
+                            $(ui.draggable).remove();
+                        }else{
+                            ui.draggable.draggable('option','revert',true);
+                        }
+                    }
+                    });
+                }
+            }
+        });
+
         $("#milestones").delegate(".ml", "click", function(e){
             $("#milestones").find(".selected").removeClass("selected");
             var li = $(this).parent()
@@ -159,7 +145,33 @@ $(document).ready(function(){
             alert("popup");
             e.preventDefault();
         })
+        
+        $("#new-milestone").click(function(e){
+            e.preventDefault();
+            var left = ($(document).width()/2)-155; 
+            var top = $(window).scrollTop()+100;
+            $("#milestone-lb").css({'top': top, 'left': left});
+            $("#milestone-lb").fadeIn('fast');
+        });
+        
+        $("#close-milestone-lb").click(function(e){
+            e.preventDefault();
+            $("#milestone-lb").fadeOut('fast');
+        });
+        
+        formUtils.ajax("#milestone-lb form", function(data){
+            var html = '<li milestoneurl="'+data.milestoneurl+'" milestone="'+data.milestoneurl+'" class="milestone ui-droppable">' +
+                        '<div class="ml">'+data.name+'<div>'+data.date+' (<span>0/0</span>)</div></div>' +
+                        '<a class="edit" href=""><img width="21" src="imgs/cog.png"></a></li>';
+            $("#milestones").append(html);                        
+            $("#milestone-lb").fadeOut('fast');
+        });
     }
+    
+    $( ".datepicker" ).datepicker({
+        changeMonth: true,
+        changeYear: true
+    });         
     
     if($(".messages-container li").length>0){
         setTimeout(function(){
@@ -170,10 +182,7 @@ $(document).ready(function(){
 
 function printTasks(milestone, url){
     $("#tasks").attr('milestone', milestone);
-    $.ajax({
-        url : url,
-        type : 'GET',
-        dataType: "json",
+    $.ajax({url : url, type : 'GET', dataType: "json",
         success: function(data){
             length_tasks = data.tasks.length;
             var html = '';        
@@ -185,78 +194,50 @@ function printTasks(milestone, url){
                     data.tasks[i].type_view + ']</span></div><a class="edit" href=""><img width="21" src="/static/imgs/cog.png" /></a></li>';
             }
             $("#tasks").html(html);
+            $("#tasks li").draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});
         }
     });
 }
 
-//borrar¿?
-function printMilestones(sel){
-    var length_milestones  = dashboard.milestones.length;
-    var length_tasks = 0;
-    var completedtasks = 0;
-    var html = '';
-    for(var i=0; i<length_milestones; i++){
-        length_tasks = dashboard.milestones[i].tasks.length;
-        completedtasks = 0;
-        for(var z=0; z<length_tasks; z++){
-            if(dashboard.milestones[i].tasks[z].state=='Cerrada'){
-                completedtasks++;
-            }
-        }
-        if(dashboard.milestones[i].id==sel)html+='<li milestone="'+dashboard.milestones[i].id+'" class="selected milestone">';
-        else html+='<li milestone="'+dashboard.milestones[i].id+'" class="milestone">';
-        html+='<div class="ml">'+dashboard.milestones[i].name+'<span>'+dashboard.milestones[i].enddate+' ('+completedtasks+'/'+length_tasks+')</span></div><a class="edit" href=""><img width="21" src="imgs/cog.png" /></a></li>';
-    }
-    
-    if(sel==0)html+='<li milestone="0" class="selected milestone">';
-    else html+='<li milestone="0" class="milestone">';    
-
-    html+='<div class="ml">Sin asignar <span>('+dashboard.tasks.length+')</span></div></li>';
-    $("#milestones").html(html);
+function subClass() {
+  this.inheritFrom = superClass;
+  this.inheritFrom();
+  this.subtest = subTest; //attach method subTest
 }
 
-var forms = {
-    ajaxSuccess: '',
-    init: function(){
-        $(".validate").each(function(){
-            $(this).validate({
-                submitHandler: function() {
-                    var ajaxsumit = $(this.currentForm).attr('ajaxsubmit');
-                    if(ajaxsumit==undefined) ajaxsumit = 1;
-                    else ajaxsumit = parseInt(ajaxsumit);
-                    
-                    if(ajaxsumit){    
-                        forms.validate(this);
-                    } else {
-                       this.currentForm.submit();
-                    }    
-                }
-            })
-        })
+var formUtils = {
+    showLoader:function(form){
+        $(form).find(":submit").hide();
+        $(form).find(".ajax-loader").addClass("init-loader");        
     },
-    validate:function(form){
-        $(form.currentForm).find(":submit").hide();
-        $(form.currentForm).find(".ajax-loader").addClass("init-loader");
-        $.ajax({
-            form: form,
-            url : $(form.currentForm).attr('action'),
-            type : $(form.currentForm).attr('method').toUpperCase(),
-            data: $(form.currentForm).serialize(),
-            dataType: "json",
-            success: function(data){
-                var form = this.form;
-                if(!data.valid){
-                    for(var i=0; i<data.errors.length;i++){
-                        form.showErrors(data.errors[i]);
+    hideLoader:function(form){
+        $(form).find(".ajax-loader").removeClass("init-loader");
+        $(form).find(":submit").show();        
+    },
+    showErrors:function(validator, errors){
+        for(var i=0; i<errors.length;i++){
+            validator.showErrors(errors[i]);
+        }
+    },
+    getJSON:function(form, validator){
+        return {form: form, validator: validator, url : $(form).attr('action'), type : $(form).attr('method').toUpperCase(), data: $(form).serialize(), dataType: "json"}
+    },
+    ajax:function(selector, success){
+        $(selector).validate({
+            submitHandler: function(form) {
+                formUtils.showLoader(form);
+                var json = formUtils.getJSON(form, this);
+                json.success = function(data){
+                    
+                    if(!data.valid){
+                        formUtils.showErrors(this.validator, data.errors);
+                    } else {
+                        success(data);
                     }
-                } else {
-                    if(data.redirect_to) location.href = data.redirect_to;
-                    forms.ajaxSuccess();
-                }
-
-                $(form.currentForm).find(".ajax-loader").removeClass("init-loader");
-                $(form.currentForm).find(":submit").show();
+                    formUtils.hideLoader(this.form);
+                };
+                $.ajax(json);
             }
-        });
+        })        
     }
 }

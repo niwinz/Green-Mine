@@ -3,6 +3,7 @@
 <head>
     <title>Greenmine</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="./css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
     <link rel="stylesheet" href="./css/general.css" type="text/css" media="handheld, all" />
 </head>
 <body>
@@ -18,6 +19,10 @@
     </div>
     <div id="wrapper">
             <div id="dashboard">
+                <div id="dashboard-actions">
+                    <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
+                    <a id="new-issue" class="btn01" href="">Nueva tarea</a>
+                </div>
                 <ul id="milestones">
                     <li class="selected milestone" milestone="1" milestoneurl="auxiliar/json/dashboard.json">
                         <div class="ml">Fase 1<div>12/03/2011 (<span>1/2</span>)</div></div>
@@ -36,8 +41,8 @@
                         <label>Asignado a</label>
                         <select name="to">
                             <option value="0">Todos</option>
-                            <option value="Andrei">Andrei</option>
-                            <option value="Juanfran">Juanfran</option>
+                            <option value="1">Andrei</option>
+                            <option value="2">Juanfran</option>
                         </select>
                     </p>
                     <p>
@@ -67,42 +72,33 @@
                 </div>
                 <ul id="tasks">
                 </ul>
+                
+                <div id="milestone-lb">
+                    <form method="post" action="auxiliar/json/milestone.json" class="inline">
+                        <fieldset>
+                            <p class="form-field">
+                                <label for="">Nombre</label>
+                                <input type="text" id="nombre-milestone" name="nombre-milestone" class="required" />
+                            </p>
+                            <p class="form-field">
+                                <label for="">Fecha fin</label>
+                                <input type="text" readonly id="fecha-milestone" name="fecha-milestone" class="datepicker" />
+                            </p>
+                            <p class="width100 float-left">
+                                <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
+                                <input class="btn01" type="submit" value="Guardar" />
+                                <span class="ajax-loader"></span>
+                            </p>
+                        </fieldset>
+                    </form>                    
+                </div>
             </div>
     </div>
-        <script>
-            var dashboard = {
-                "milestones": [
-                    {
-                        "id":1, "name": "Fase 1", "enddate": "12/03/2011",
-                        "tasks":[
-                            {"id":1, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                            {"id":2, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},                            
-                        ]
-                    },
-                    {
-                        "id":2, "name": "Fase 2", "enddate": "06/11/2011",
-                        "tasks":[
-                            {"id":3, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                            {"id":8, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"}, 
-                            {"id":9, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                            {"id":10, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                            {"id":11, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                            {"id":12, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
-                        ]
-                    }                    
-                ],
-                "tasks": [
-                    {"id":4, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                    {"id":5, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
-                    {"id":6, "name": "Modificar xxxx", "assignedto": "Andrei", "state": "Cerrada", "priority": "Alta", "type": "Tarea"},
-                    {"id":7, "name": "Arreglar bla bla bla", "assignedto": "Juanfran", "state": "Abierta", "priority": "Alta", "type": "Tarea"},
-                ]
-            }
-        </script>
     <div id="footer">
         <p>Powered by Greenmine ©</p>
     </div>
     <script type="text/javascript" src="./js/external/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/external/jquery-ui.js"></script>
     <script type="text/javascript" src="./js/external/jquery-validation/jquery.validate.min.js"></script>
     <script type="text/javascript" src="./js/general.js"></script>
 </body>
