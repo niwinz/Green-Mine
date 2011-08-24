@@ -54,14 +54,10 @@ class UserListApiView(GenericView):
 
 class TasksForMilestoneApiView(GenericView):
     def get(self, request, pslug, mslug=None):
-        try:
-            project = Project.objects.get(slug=pslug)
-        except Project.DoesNotExist:
-            return self.render_to_error("project does not exists")
+        project = get_object_or_404(Project, slug=pslug)
         
         issues = Issue.objects.none()
         if mslug:
-            
             try:
                 milestone = project.milestones.get(slug=mslug)
                 issues = milestone.issues.all()
@@ -89,3 +85,9 @@ class TasksForMilestoneApiView(GenericView):
         return self.render_to_ok({"tasks": response_list})
 
 
+class ProjectDeleteApiView(GenericView):
+    """ API Method for delete projects. """
+    def post(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+        project.delete()
+        return self.render_to_ok()

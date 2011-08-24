@@ -38,7 +38,7 @@ class GenericView(View):
             response_data = context
         return HttpResponse(response_data, mimetype='text/plain')
 
-    def render_to_error(self, context):
+    def render_to_error(self, context=[]):
         response_dict = {'valid': False, 'errors':[]}
         if isinstance(context, (str, unicode, dict)):
             response_dict['errors'].append(context)
@@ -47,7 +47,7 @@ class GenericView(View):
 
         return self.render_to_response(response_dict)
 
-    def render_to_ok(self, context):
+    def render_to_ok(self, context={}):
         response = {'valid': True, 'errors': []}
         response.update(context)
         return self.render_to_response(response)

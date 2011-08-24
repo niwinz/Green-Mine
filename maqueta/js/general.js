@@ -21,9 +21,18 @@ $(document).ready(function(){
         });
     }
 
+    if($('#projects').length){
+        $('.table01 a.delete').click(function(e){
+            var self = $(this);
+            $.post($(this).attr('rel'), function(data){
+                self.parents('tr').remove();
+            });
+            e.preventDefault();
+        });
+    }
+
     if($("#project").length){
         $("input.user-autocomplete").autocomplete({
-            source: getRemoteData,
             minLength: 1,
             select: function(event, ui) {
                 var currentuser_dom = $("input.user-autocomplete").parent().find("input.user-currentvalue");
@@ -40,12 +49,6 @@ $(document).ready(function(){
             }
         });
         
-        /*
-        formUtils.ajax("#edit-profile-form", function(data){
-            if(data.redirect_to) location.href = data.redirect_to;
-        });
-        */
-
         $("#btn-usr-project").click(function(e){
             var roles = $("#edit-profile-form [name='rol-aux']:checked");
             if (roles.length == 0){
@@ -171,11 +174,11 @@ $(document).ready(function(){
         changeYear: true
     });         
     
-    if($(".messages-container li").length>0){
+    /*if($(".messages-container li").length>0){
         setTimeout(function(){
             $(".messages-container").fadeOut('slow', function(){$(this).find("li").remove()});
         }, $(".messages-container li").length*4000);
-    }
+    }*/
 })
 
 function printTasks(milestone, url){

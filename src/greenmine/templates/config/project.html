@@ -5,7 +5,8 @@
 {% block wrapper %}
 <div id="project">
     {% include "config/menu.html" %}
-    <form id="edit-profile-form" method="post">
+    <form id="edit-profile-form" method="post" class="validate">
+        {% csrf_token %}
         {% include "messages.html" %}
         <fieldset>
             <p class="form-field">
@@ -38,9 +39,10 @@
                     </fieldset>
                     <fieldset>
                         <legend>Roles</legend>
-                        <ul class="roles">    
-                            <li><input name="rol-aux" type="radio" rolname="Administrador" value="1" /> Administrador</li>
-                            <li><input name="rol-aux" type="radio" rolname="Desarrollador" value="2" /> Desarrollador</li> 
+                        <ul class="roles">
+                            {% for rolid, rolname in roles %}
+                            <li><input name="rol-aux" type="radio" rolname="{{ rolname }}" value="{{ rolid }}" />{{ rolname }}</li>
+                            {% endfor %}
                         </ul>
                     </fieldset>
                     <input id="btn-usr-project" type="button" value="Añadir" class="btn01" />

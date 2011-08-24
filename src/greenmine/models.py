@@ -130,6 +130,10 @@ class Project(models.Model):
     def get_unasigned_tasks_api_url(self):
         return ('api:unasigned-tasks-for-poject', (), {'pslug':self.slug})
 
+    @models.permalink
+    def get_delete_api_url(self):
+        return ('api:project-delete', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)

@@ -124,6 +124,7 @@ class ProfileForm(Form):
         self.instance.set_password(self.cleaned_data['password'])
         return self.instance
 
+from django.contrib import messages
 
 class ProjectForm(Form):
     projectname = CharField(max_length=200, min_length=4,
@@ -139,9 +140,8 @@ class ProjectForm(Form):
         if "projectname" in cleaned_data and Project.objects\
             .filter(name=cleaned_data['projectname']).count() > 0:
 
-            msg = _(u'Nombre de proyecto ya esta ocupado.')
-            self._errors['projectname'] = self.error_class([msg])
-            del cleaned_data['projectname']
+            messages.error(self._request, _(u'Nombre de proyecto ya esta ocupado.'))
+            raise forms.ValidationError(u'Nombre de proyecto ya esta ocupado.')
 
         return cleaned_data
 

@@ -8,7 +8,7 @@
 {% block middle-box %}
 <div id="menu">
     <ul>
-        <li><a href="{% url "web:profile" %}">{{ user.name }}</a></li>
+        <li><a href="{% url "web:profile" %}">{{ user.username }}</a></li>
         <li><a href="">{% trans "Configuracion" %}</a></li>
         <li><a href="">{% trans "Logout" %}</a></li>
     </ul>
