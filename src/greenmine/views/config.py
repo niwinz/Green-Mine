@@ -46,6 +46,28 @@ class AdminProjectsView(GenericView):
         return super(AdminProjectsView, self).dispatch(*args, **kwargs)
 
 
+from django.core import serializers
+import zipfile
+from StringIO import StringIO
+
+class AdminProjectExport(GenericView):
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        
+        tmpfile = StringIO()
+        zfile = zipfile.ZipFile(tmpfile, 'a')
+        project_data = serializers.serialize("json", [project])
+        milestones_data = serializers.serialize("json", project.milestones.all())
+        zfile.writestr('project.json', project_data)
+        zfile.writestr('milestones.json', milestones_data)
+        zfile.close()
+
+        response = HttpResponse(tmpfile.getvalue(), mimetype='application/zip')
+        tmpfile.close()
+        response['Content-Disposition'] = 'attachment; filename=%s-backup.zip' % (project.slug)
+        return response
+
+
 class ProfileView(GenericView):
     template_name = 'config/profile.html'
 
