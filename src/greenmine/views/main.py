@@ -18,13 +18,14 @@ from django.utils.decorators import method_decorator
 
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
-from ..forms import LoginForm, ForgottenPasswordForm, FiltersForm
-from ..models import Project, User
+from .. import models, forms
+
+import re
 
 
 class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
-        login_form, forgotten_password_form = LoginForm(request=request), ForgottenPasswordForm()
+        login_form, forgotten_password_form = forms.LoginForm(request=request), forms.ForgottenPasswordForm()
         return self.render('login.html', 
             {'form': login_form, 'form2': forgotten_password_form})
 
@@ -36,11 +37,7 @@ class ProjectsView(GenericView):
         except ValueError:
             page = 1
         
-        if request.user.is_superuser:
-            projects = Project.objects.all()
-        else:
-            projects = request.user.projects.all()
-
+        projects = request.user.projects.all()
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
 
@@ -58,9 +55,9 @@ class ProjectsView(GenericView):
 
 class ProjectView(GenericView):
     def get(self, request, slug):
-        project = get_object_or_404(Project, slug=slug)
+        project = get_object_or_404(models.Project, slug=slug)
         context = {
-            'filtersform': FiltersForm(queryset=project.participants.all()),
+            'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project
         }
         return self.render('dashboard.html', context)
@@ -68,5 +65,72 @@ class ProjectView(GenericView):
     @login_required
     def dispatch(self, *args, **kwargs):
         return super(ProjectView, self).dispatch(*args, **kwargs)
+
+
+class ProjectCreateView(GenericView):
+    template_name = 'config/project.html'
+    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+
+    def get(self, request):
+        form = forms.ProjectForm()
+        context = {'form':form, 'roles': ROLE_CHOICES}
+        return self.render(self.template_name, context)
+
+    def post(self, request):
+        form = forms.ProjectForm(request.POST, request=request)
+        context = {'form': form, 'roles': ROLE_CHOICES}
+        
+        if not form.is_valid():
+            return self.render(self.template_name, context)
+        
+        sem = transaction.savepoint()
+        try:
+            user_role = {}
+
+            for post_key in request.POST.keys():
+                user_rx_pos = self.user_rx.match(post_key)
+                if not user_rx_pos:
+                    continue
+
+                user_role[user_rx_pos.group('userid')] = request.POST[post_key]
+
+            if not user_role:
+                transaction.savepoint_rollback(sem)
+                emsg = _(u'Debe especificar al menos una persona al proyecto')
+                messages.error(request, emsg)
+                return self.render(self.template_name, context)
+
+            role_values = dict(ROLE_CHOICES).keys()
+            invalid_role = False
+            for role in user_role.values():
+                if role not in role_values:
+                    invalid_role = True
+                    break
+
+            if invalid_role:
+                emsg = _(u'Uno o mas roles son invalidos.')
+                messages.error(request, emsg)
+                return self.render(self.template_name, context)
+            
+            project = form.save()
+            for userid, role in user_role.iteritems():
+                models.ProjectUserRole.objects.create(
+                    project = project,
+                    user = User.objects.get(pk=userid),
+                    role = role
+                )
+
+        except Exception as e:
+            transaction.savepoint_rollback(sem)
+            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
+            return self.render(self.template_name, {'form': form})
+        
+        transaction.savepoint_commit(sem)
+        messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
+        return HttpResponseRedirect(reverse('web:projects'))
+
+    @login_required
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreateView, self).dispatch(*args, **kwargs)
 
 

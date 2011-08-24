@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block wrapper %}
+<div id="projects">
+    {% include "config/menu.html" %}
+    {% include "messages.html" %}
+    {% if page.paginator.count > 0 %}
+    <table class="table01">
+        <tr>
+            <th>Nombre</th>
+            <th>Propietario</th>
+            <th>Opciones</th>
+        </tr>
+        {% for project in page.object_list %}
+        <tr>
+            <td><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></td>
+            <td><img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />{{ project.owner.first_name }}</td>
+            <td><a href="">Editar</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <h2>No tiene ningun proyecto, crea uno!</h2>
+    {% endif %}
+
+    {% include "paginator.html" %}
+    <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
+</div>
+{% endblock %}

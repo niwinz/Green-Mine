@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load url from future %}
 
-{% block wrapper %}
+nclude "config/menu.html" %}{% block wrapper %}
 <div id="my-profile">
+    {% include "config/menu.html" %}
     <form id="edit-profile-form" method="post" enctype="multipart/form-data"
         action="{% url 'web:profile' %}" class="inline">
-        {% include "config/menu.html" %}
         {% include "messages.html" %}
         {% csrf_token %}
         <fieldset>
