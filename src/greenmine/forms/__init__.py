@@ -166,3 +166,8 @@ class FiltersForm(Form):
 
         if queryset:
             self.fields['to'].queryset = queryset
+
+
+class MilestoneCreateForm(Form):
+    name = forms.CharField(max_length=200)
+    finish_date = forms.DateField(required=False, localize=True)

@@ -134,6 +134,10 @@ class Project(models.Model):
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_milestone_create_api_url(self):
+        return ('api:project-milestone-create', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)

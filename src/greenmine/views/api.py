@@ -91,3 +91,26 @@ class ProjectDeleteApiView(GenericView):
         project = get_object_or_404(Project, slug=pslug)
         project.delete()
         return self.render_to_ok()
+
+
+from greenmine.forms import MilestoneCreateForm
+
+class MilestoneCreateApiView(GenericView):
+    def post(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+        form = MilestoneCreateForm(request.POST)
+        if form.is_valid():
+            print form.cleaned_data
+            milestone = Milestone.objects.create(
+                name = form.cleaned_data['name'],
+                project = project,
+            )
+            context = {
+                'name':form.cleaned_data['name'],
+                'id': milestone.id,
+                'milestoneurl': milestone.get_tasks_for_milestone_api_url(),
+                'date': milestone.estimated_finish or '',
+            }
+            return self.render_to_ok(context)
+        
+        return self.render_to_error(form.jquery_errors)

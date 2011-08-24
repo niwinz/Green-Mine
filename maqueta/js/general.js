@@ -163,8 +163,8 @@ $(document).ready(function(){
         formUtils.ajax("#milestone-lb form", function(data){
             var html = '<li milestoneurl="'+data.milestoneurl+'" milestone="'+data.milestoneurl+'" class="milestone ui-droppable">' +
                         '<div class="ml">'+data.name+'<div>'+data.date+' (<span>0/0</span>)</div></div>' +
-                        '<a class="edit" href=""><img width="21" src="imgs/cog.png"></a></li>';
-            $("#milestones").append(html);                        
+                        '<a class="edit" href=""><img width="21" src="/static/imgs/cog.png"></a></li>';
+            $("#milestones").prepend(html);                        
             $("#milestone-lb").fadeOut('fast');
         });
     }

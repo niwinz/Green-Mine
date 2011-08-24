@@ -204,3 +204,7 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'greenmine.Profile'
+FORMAT_MODULE_PATH = 'greenmine.formats'
+DATE_INPUT_FORMATS = ('%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',
+'%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
+'%B %d, %Y', '%d %B %Y', '%d %B, %Y')

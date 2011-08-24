@@ -4,12 +4,11 @@
 
 {% block wrapper %}
 <div id="dashboard">
+    <div id="dashboard-actions">
+        <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
+        <a id="new-issue" class="btn01" href="">Nueva tarea</a>
+    </div>
     <ul id="milestones">
-        <div id="dashboard-actions">
-            <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
-            <a id="new-issue" class="btn01" href="">Nueva tarea</a>
-        </div>
-        
         {% for mls in project.milestones.all %}
         <li class="milestone {% if forloop.first %}selected{% endif %}" 
             milestone="{{ mls.id }}" 
@@ -46,15 +45,15 @@
     </ul>
 
     <div id="milestone-lb">
-        <form method="post" action="{{ STATIC_URL }}auxiliar/json/milestone.json" class="inline">
+        <form method="post" action="{{ project.get_milestone_create_api_url }}" class="inline">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>
-                    <input type="text" id="nombre-milestone" name="nombre-milestone" class="required" />
+                    <input type="text" id="nombre-milestone" name="name" class="required" />
                 </p>
                 <p class="form-field">
                     <label for="">Fecha fin</label>
-                    <input type="text" readonly id="fecha-milestone" name="fecha-milestone" class="datepicker" />
+                    <input type="text" readonly id="fecha-milestone" name="finish_date" class="datepicker" />
                 </p>
                 <p class="width100 float-left">
                     <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
@@ -64,6 +63,5 @@
             </fieldset>
         </form> 
     </div>
-
 </div>
 {% endblock %}

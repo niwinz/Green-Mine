@@ -13,5 +13,7 @@ urlpatterns = patterns('',
         api.TasksForMilestoneApiView.as_view(), name="unasigned-tasks-for-poject"),
     url(r'^project/(?P<pslug>[\w\d\-]+)/delete/$', 
         api.ProjectDeleteApiView.as_view(), name="project-delete"),
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/create/$',
+        api.MilestoneCreateApiView.as_view(), name="project-milestone-create"),
 )
 
