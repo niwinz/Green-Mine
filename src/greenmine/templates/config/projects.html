@@ -25,6 +25,8 @@
     {% endif %}
     {% include "paginator.html" %}
     <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
-    <h3 style="display:block; margin-top:30px;">Sitio para un formulario para importar un backup exportado.</h3>
+    <fieldset class="admin-project-options">
+        <legend>{% trans "Importar un proyecto nuevo:" %}</legend>
+    </fieldset>
 </div>
 {% endblock %}
