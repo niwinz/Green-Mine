@@ -81,7 +81,6 @@ def ref_uniquely(model, field='ref'):
         time.sleep(0.6)
 
 
-
 class GenericFile(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -121,6 +120,10 @@ class Message(models.Model):
     responses = generic.GenericRelation("GenericResponse")
 
 
+class ProjectManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
+
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
@@ -133,6 +136,10 @@ class Project(models.Model):
     participants = models.ManyToManyField('auth.User', related_name="projects_participant", through="ProjectUserRole", null=True, blank=True)
     public = models.BooleanField(default=True)
 
+    objects = ProjectManager()
+
+    def natural_key(self):
+        return (self.slug,)
 
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
@@ -209,6 +216,11 @@ class WikiPage(models.Model):
         super(WikiPage, self).save(*args, **kwargs)
 
 
+class MilestoneManager(models.Manager):
+    def get_by_natural_key(self, name, project):
+        return self.get(name=name, project__slug=project)
+
+
 class Milestone(models.Model):
     name = models.CharField(max_length=200,)
     project = models.ForeignKey('Project', related_name="milestones")
@@ -218,6 +230,8 @@ class Milestone(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
 
+    objects = MilestoneManager()
+
     @models.permalink
     def get_tasks_for_milestone_api_url(self):
         return ('api:tasks-for-milestone', (), 
@@ -225,6 +239,11 @@ class Milestone(models.Model):
 
     class Meta(object):
         unique_together = ('name', 'project')
+
+    def natural_key(self):
+        return (self.name,) + self.project.natural_key()
+
+    natural_key.dependencies = ['greenmine.Project']
     
     def __repr__(self):
         return u"<Milestone %s>" % (self.slug)
