@@ -63,5 +63,35 @@
             </fieldset>
         </form> 
     </div>
+
+    <div id="issue-lb">
+        <form method="post" action="auxiliar/json/task.json">
+            <fieldset>
+                <p class="form-field">
+                    <label for="">Nombre</label>
+                    <input type="text" id="nombre-issue" name="nombre-issue" class="required" />
+                </p>
+                <p class="form-field">
+                    <label>Tipo</label>
+                    <select class="required" name="type">
+                        <option value="Tarea">Tarea</option>
+                        <option value="Bug">Bug</option>
+                    </select>                                
+                </p>                              
+                <p class="form-field">
+                    <label for="">Descripción</label>
+                    <textarea></textarea>
+                </p>                          
+                <p class="width100 float-left">
+                    <a id="close-issue-lb" class="btn01" href="">Cancelar</a>    
+                    <input class="btn01" type="submit" value="Guardar" />
+                    <span class="ajax-loader"></span>
+                </p>
+                <p class="width100 float-left mt10">
+                    <input class="btn01" type="submit" value="Guardar e ir al detalle" />
+                </p>
+            </fieldset>
+        </form>                    
+    </div>                
 </div>
 {% endblock %}
