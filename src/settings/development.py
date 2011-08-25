@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os.path
 from .common import *
-
-sys.path.append(os.path.join(PROJECT_ROOT, 'extern'))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

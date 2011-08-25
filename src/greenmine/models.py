@@ -1,6 +1,7 @@
 # -* coding: utf-8 -*-
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -14,40 +15,40 @@ from .fields import DictField
 import datetime
 
 ROLE_CHOICES = (
-    ('developer', 'Developer'),
-    ('manager', 'Project manager'),
-    ('partner', 'Partner'),
-    ('client', 'Client'),
+    ('observer', _(u'Observer')),
+    ('developer', _(u'Developer')),
+    ('manager', _(u'Project manager')),
+    ('partner', _(u'Partner')),
+    ('client', _(u'Client')),
 )
 
 MARKUP_TYPE = (
     ('', 'None'),
-    ('markdown', 'Markdown'),
-    ('rest', 'Restructured Text'),
+    ('markdown', _(u'Markdown')),
+    ('rest', _('Restructured Text')),
 )
 
 ISSUE_STATUS_CHOICES = (
-    ('new', 'New'),
-    ('accepted', 'In progress'),
-    ('fixed', 'Fixed'),
-    ('invalid', 'Invalid'),
-    ('wontfix', 'Wontfix'),
-    ('workaround', 'Workaround'),
-    ('duplicate', 'Duplicated'),
+    ('new', _(u'New')),
+    ('accepted', _(u'In progress')),
+    ('fixed', _(u'Fixed')),
+    ('invalid', _(u'Invalid')),
+    ('wontfix', _(u'Wontfix')),
+    ('workaround', _(u'Workaround')),
+    ('duplicate', _(u'Duplicated')),
 )
 
 ISSUE_PRIORITY_CHOICES = (
-    (1, 'Lower'),
-    (2, 'Normal'),
-    (4, 'High'),
-    (6, 'Urgent'),
-    (8, 'Critical'),
+    (1, _(u'Lower')),
+    (2, _(u'Normal')),
+    (4, _(u'High')),
+    (6, _(u'Urgent')),
+    (8, _(u'Critical')),
 )
 
 ISSUE_TYPE_CHOICES = (
-    ('task', 'Task'),
-    ('bug', 'Bug'),
-    ('enhacement', 'Enhancement'),
+    ('task', _(u'Task')),
+    ('bug', _(u'Bug')),
 )
 
 def slugify_uniquely(value, model, slugfield="slug"):
@@ -65,6 +66,20 @@ def slugify_uniquely(value, model, slugfield="slug"):
         if not model.objects.filter(**{slugfield: potential}).count():
             return potential
         suffix += 1
+
+
+def ref_uniquely(model, field='ref'):
+    """
+    Returns a unique reference code based on base64 and time.
+    """
+
+    import time, baseconv
+    potential = baseconv.base62.encode(int(time.time()))
+    while True:
+        if not model.objects.filter(**{field: potential}).exists():
+            return potential
+        time.sleep(0.6)
+
 
 
 class GenericFile(models.Model):
@@ -226,6 +241,7 @@ class Milestone(models.Model):
 
 
 class Issue(models.Model):
+    ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
     status = models.CharField(max_length=50, choices=ISSUE_STATUS_CHOICES)
     milestone = models.ForeignKey("Milestone", related_name="issues", null=True, default=None)
     project = models.ForeignKey("Project", related_name="issues")
@@ -233,7 +249,7 @@ class Issue(models.Model):
     author = models.ForeignKey("auth.User", null=True, default=None, related_name="issues")
 
     priority = models.IntegerField(choices=ISSUE_PRIORITY_CHOICES, default=2)
-    watchers = models.ManyToManyField("auth.User", related_name="issues_watching", 
+    watchers = models.ManyToManyField("auth.User", related_name="issues_watchin", 
         blank=True, null=True, default=None)
     
     created_date = models.DateTimeField(auto_now_add=True)
@@ -255,6 +271,8 @@ class Issue(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
+        if not self.ref:
+            self.ref = ref_uniquely(self.__class__)
 
         super(Issue,self).save(*args, **kwargs)
 
