@@ -124,6 +124,7 @@ class ProfileForm(Form):
         self.instance.set_password(self.cleaned_data['password'])
         return self.instance
 
+
 from django.contrib import messages
 
 class ProjectForm(Form):
@@ -133,6 +134,12 @@ class ProjectForm(Form):
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop('request', None)
+        self.project = kwargs.pop('instance', None)
+        if self.project:
+            kwargs['initial_data'] = {
+                'projectname': self.project.name,
+                'description': self.project.description,
+            }
         super(ProjectForm, self).__init__(*args, **kwargs)
 
     def clean(self):
@@ -146,11 +153,16 @@ class ProjectForm(Form):
         return cleaned_data
 
     def save(self):
-        self.project = Project.objects.create(
-            name = self.cleaned_data['projectname'],
-            description = self.cleaned_data['description'],
-            owner = self._request.user,
-        )
+        if self.project:
+            self.project.name = self.cleaned_data['projectname']
+            self.project.description = self.cleaned_data['description']
+            self.project.save()
+        else:
+            self.project = Project.objects.create(
+                name = self.cleaned_data['projectname'],
+                description = self.cleaned_data['description'],
+                owner = self._request.user,
+            )
         return self.project
 
 

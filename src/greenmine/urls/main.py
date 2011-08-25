@@ -15,5 +15,3 @@ urlpatterns = patterns('',
 
     url(r'^media/', include('django_dbstorage.urls'))
 )
-
-
