@@ -155,6 +155,19 @@ $(document).ready(function(){
             $("#milestone-lb").fadeIn('fast');
         });
         
+        $("#new-issue").click(function(e){
+            e.preventDefault();
+            var left = ($(document).width()/2)-155; 
+            var top = $(window).scrollTop()+100;
+            $("#issue-lb").css({'top': top, 'left': left});
+            $("#issue-lb").fadeIn('fast');
+        });        
+        
+        $("#close-issue-lb").click(function(e){
+            e.preventDefault();
+            $("#issue-lb").fadeOut('fast');
+        });        
+        
         $("#close-milestone-lb").click(function(e){
             e.preventDefault();
             $("#milestone-lb").fadeOut('fast');
@@ -167,6 +180,19 @@ $(document).ready(function(){
             $("#milestones").prepend(html);                        
             $("#milestone-lb").fadeOut('fast');
         });
+        
+        formUtils.ajax("#issue-lb form", function(data){
+            if(data.redirect_to) location.href = data.redirect_to;
+            else{
+                var html = '<li state="' + data.state + '" priority="'+
+                        data.priority + '" type="' + data.type + '" task="'+data.id + '" ><div class="dg">'+
+                        data.name + '<span>[Estado: ' +
+                        data.state_view + ' | Prioridad: ' + data.priority_view + ' | Tipo: ' +
+                        data.type_view + ']</span></div><a class="edit" href=""><img width="21" src="/static/imgs/cog.png" /></a></li>';
+                $("#tasks").append(html);                
+                $("#issue-lb").fadeOut('fast');
+            }
+        });        
     }
     
     $( ".datepicker" ).datepicker({
@@ -181,6 +207,14 @@ $(document).ready(function(){
     }*/
 })
 
+function printTask(data){
+    return '<li state="' + data.state + '"  to="' + data.to_id + '" priority="'+
+                    data.priority + '" type="' + data.type + '" task="'+data.id + '" ><div class="dg">'+
+                    data.name + '<span>[Asignado a: ' + data.to + ' | Estado: ' +
+                    data.state_view + ' | Prioridad: ' + data.priority_view + ' | Tipo: ' +
+                    data.type_view + ']</span></div><a class="edit" href=""><img width="21" src="/static/imgs/cog.png" /></a></li>';
+}
+
 function printTasks(milestone, url){
     $("#tasks").attr('milestone', milestone);
     $.ajax({url : url, type : 'GET', dataType: "json",
@@ -188,11 +222,7 @@ function printTasks(milestone, url){
             length_tasks = data.tasks.length;
             var html = '';        
             for(var i=0; i<length_tasks; i++){
-                html += '<li state="' + data.tasks[i].state + '"  to="' + data.tasks[i].to_id + '" priority="'+
-                    data.tasks[i].priority + '" type="' + data.tasks[i].type + '" task="'+data.tasks[i].id + '" ><div class="dg">'+
-                    data.tasks[i].name + '<span>[Asignado a: ' + data.tasks[i].to + ' | Estado: ' +
-                    data.tasks[i].state_view + ' | Prioridad: ' + data.tasks[i].priority_view + ' | Tipo: ' +
-                    data.tasks[i].type_view + ']</span></div><a class="edit" href=""><img width="21" src="/static/imgs/cog.png" /></a></li>';
+                 html +=printTask(data.tasks[i]);
             }
             $("#tasks").html(html);
             $("#tasks li").draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});

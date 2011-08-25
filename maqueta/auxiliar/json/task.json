@@ -1,0 +1,13 @@
+{"valid":true,
+ "id":29, 
+ "name": "Arreglar bla bla bla", 
+ "state": "new",    
+ "state_view": "New",
+ "priority": "0", 
+ "priority_view": "Normal",
+ "type": "task",
+ "type_view": "Task",
+ "errors": [{
+    "nombre-issue": "Prueba validación nombre"
+ }]
+}

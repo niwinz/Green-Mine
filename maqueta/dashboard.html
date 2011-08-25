@@ -26,11 +26,11 @@
                 <ul id="milestones">
                     <li class="selected milestone" milestone="1" milestoneurl="auxiliar/json/dashboard.json">
                         <div class="ml">Fase 1<div>12/03/2011 (<span>1/2</span>)</div></div>
-                        <a href="" class="edit"><img width="21" src="imgs/cog.png" /></a>
+                        <a href="" class="edit"></a>
                     </li>
                     <li class="milestone" milestone="2" milestoneurl="auxiliar/json/dashboard.json">
                         <div class="ml">Fase 2<div>06/11/2011 (<span>2/6</span>)</div></div>
-                        <a href="" class="edit"><img width="21" src="imgs/cog.png" /></a>
+                        <a href="" class="edit"></a>
                     </li>
                     <li class="milestone" milestone="0" milestoneurl="auxiliar/json/dashboard.json">
                         <div class="ml">Sin asignar <div>(<span>4/20</span>)</div></div>
@@ -74,7 +74,7 @@
                 </ul>
                 
                 <div id="milestone-lb">
-                    <form method="post" action="auxiliar/json/milestone.json" class="inline">
+                    <form method="post" action="auxiliar/json/milestone.json">
                         <fieldset>
                             <p class="form-field">
                                 <label for="">Nombre</label>
@@ -92,6 +92,36 @@
                         </fieldset>
                     </form>                    
                 </div>
+                
+                <div id="issue-lb">
+                    <form method="post" action="auxiliar/json/task.json">
+                        <fieldset>
+                            <p class="form-field">
+                                <label for="">Nombre</label>
+                                <input type="text" id="nombre-issue" name="nombre-issue" class="required" />
+                            </p>
+                            <p class="form-field">
+                                <label>Tipo</label>
+                                <select class="required" name="type">
+                                    <option value="Tarea">Tarea</option>
+                                    <option value="Bug">Bug</option>
+                                </select>                                
+                            </p>                              
+                            <p class="form-field">
+                                <label for="">Descripción</label>
+                                <textarea></textarea>
+                            </p>                          
+                            <p class="width100 float-left">
+                                <a id="close-issue-lb" class="btn01" href="">Cancelar</a>    
+                                <input class="btn01" type="submit" value="Guardar" />
+                                <span class="ajax-loader"></span>
+                            </p>
+                            <p class="width100 float-left mt10">
+                                <input class="btn01" type="submit" value="Guardar e ir al detalle" />
+                            </p>
+                        </fieldset>
+                    </form>                    
+                </div>                
             </div>
     </div>
     <div id="footer">
