@@ -211,8 +211,6 @@ class WikiPage(models.Model):
 
 class Milestone(models.Model):
     name = models.CharField(max_length=200,)
-    slug = models.CharField(max_length=200, unique=True)
-
     project = models.ForeignKey('Project', related_name="milestones")
     estimated_finish = models.DateField(null=True, default=None)
     
@@ -223,7 +221,7 @@ class Milestone(models.Model):
     @models.permalink
     def get_tasks_for_milestone_api_url(self):
         return ('api:tasks-for-milestone', (), 
-            {'pslug':self.project.slug, 'mslug':self.slug})
+            {'pslug':self.project.slug, 'mid':self.id})
 
     class Meta(object):
         unique_together = ('name', 'project')
@@ -232,9 +230,7 @@ class Milestone(models.Model):
         return u"<Milestone %s>" % (self.slug)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.name, self.__class__)
-        else:
+        if self.id:
             self.modified_date = datetime.datetime.now()
 
         super(Milestone, self).save(*args, **kwargs)

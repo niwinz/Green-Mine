@@ -53,13 +53,13 @@ class UserListApiView(GenericView):
 
 
 class TasksForMilestoneApiView(GenericView):
-    def get(self, request, pslug, mslug=None):
+    def get(self, request, pslug, mid=None):
         project = get_object_or_404(Project, slug=pslug)
         
         issues = Issue.objects.none()
-        if mslug:
+        if mid:
             try:
-                milestone = project.milestones.get(slug=mslug)
+                milestone = project.milestones.get(pk=mid)
                 issues = milestone.issues.all()
             except Milestone.DoesNotExists:
                 return self.render_to_error("milestone does not exists")
