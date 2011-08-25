@@ -21,6 +21,9 @@ from .generic import GenericView
 from .decorators import login_required
 from .. import models, forms
 
+from django.core import serializers
+import zipfile
+from StringIO import StringIO
 
 class AdminProjectsView(GenericView):
     def context(self):
@@ -47,20 +50,52 @@ class AdminProjectsView(GenericView):
         context = self.context()
         context['dumpform'] = form = forms.DumpUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            messages.info(request, _(u'El backup fue restaurado con exito.'))
+            self.upload_backup(form.cleaned_data)
             return HttpResponseRedirect(reverse('web:admin-projects'))
 
-        messages.error(request, _(u"Los archivos que intenta subir son invalidos."))
+        messages.error(request, _(u"Datos erroneos, seguramente por que se le olvido especificar un fichero."))
         return self.render('config/projects.html', context)
+
+    def upload_backup(self, data):
+        try:
+            zfile = zipfile.ZipFile(data['dumpfile'], 'r')
+        except zipfile.BadZipfile:
+            messages.error(self.request, _(u"El archivo debe ser un zip valido."))
+            return
+
+        zfile_names = zfile.namelist()
+        print zfile_names
+        if "project.json" not in zfile_names or "milestones.json" not in zfile_names:
+            messages.error(self.request, _(u"El archivo que ha subido no es un backup valido."))
+            return
+
+        project_data = zfile.read('project.json')
+        milestone_data = zfile.read('milestones.json')
+        
+        projects = list(serializers.deserialize('json', project_data))
+        if len(projects) > 1 or len(projects) < 1:
+            messages.error(self.request, _(u"Backup invalido"))
+            return
+        
+        project = projects[0]
+        if models.Project.objects.filter(slug=project.object.slug).exists():
+            messages.error(self.request, _(u"El proyecto ya existe, abortado."))
+            return
+        
+        project.object.id = None
+        project.save()
+
+        for ml in serializers.deserialize('json', milestone_data):
+            ml.object.id = None
+            ml.save()
+
+        messages.info(self.request, _(u"Backup restaurado con exito."))
     
     @login_required
     def dispatch(self, *args, **kwargs):
         return super(AdminProjectsView, self).dispatch(*args, **kwargs)
 
 
-from django.core import serializers
-import zipfile
-from StringIO import StringIO
 
 class AdminProjectExport(GenericView):
     def get(self, request, pslug):

@@ -186,5 +186,5 @@ class MilestoneCreateForm(Form):
 
 class DumpUploadForm(forms.Form):
     dumpfile = forms.FileField(required=True)
-    overwrite = forms.BooleanField(initial=True)
+    overwrite = forms.BooleanField(initial=True, required=False)
 
