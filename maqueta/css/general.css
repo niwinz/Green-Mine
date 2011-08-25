@@ -81,3 +81,7 @@ form.inline .form-field{float:left; margin-right: 15px; min-height: 75px;}
 .ui-draggable-dragging{z-index: 999;}
 #issue textarea{width: 500px; height: 200px;}
 #milestone-lb{position: absolute; display: none; background-color: #FFF; border: 2px solid #000; padding: 20px; width: 310px;}
+
+
+#admin-project-options { margin-top: 30px; display: block; border: 1px solid #999; }
+#admin-project-options div.field { padding:3px; }

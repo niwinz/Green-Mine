@@ -183,3 +183,8 @@ class FiltersForm(Form):
 class MilestoneCreateForm(Form):
     name = forms.CharField(max_length=200)
     finish_date = forms.DateField(required=False, localize=True)
+
+class DumpUploadForm(forms.Form):
+    dumpfile = forms.FileField(required=True)
+    overwrite = forms.BooleanField(initial=True)
+

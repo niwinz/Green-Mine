@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load i18n %}
 
 {% block wrapper %}
 <div id="projects">
@@ -25,8 +26,17 @@
     {% endif %}
     {% include "paginator.html" %}
     <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
-    <fieldset class="admin-project-options">
+
+
+    <fieldset id="admin-project-options">
         <legend>{% trans "Importar un proyecto nuevo:" %}</legend>
+        <form method="post" action="{{ current_url }}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="field">{{ dumpform.dumpfile.label }}: {{ dumpform.dumpfile }}</div>
+            <div class="field">{{ dumpform.overwrite.label }}: {{ dumpform.overwrite }}</div>
+            <input type="submit" value="{% trans "Subir" %}"></input>
+        </form>
     </fieldset>
+
 </div>
 {% endblock %}

@@ -23,22 +23,34 @@ from .. import models, forms
 
 
 class AdminProjectsView(GenericView):
-    def get(self, request, *args, **kwargs):
+    def context(self):
         try:
-            page = int(request.GET.get('page', '1'))
+            page = int(self.request.GET.get('page', '1'))
         except ValueError:
             page = 1
         
         projects = models.Project.objects.all()
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
-
-        context = {
+        return {
             'is_paginated': True if paginator.count else False,
             'page': page,
             'csel': 'projects',
         }
-        
+
+    def get(self, request, *args, **kwargs):
+        context = self.context()
+        context['dumpform'] = forms.DumpUploadForm()
+        return self.render('config/projects.html', context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.context()
+        context['dumpform'] = form = forms.DumpUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            messages.info(request, _(u'El backup fue restaurado con exito.'))
+            return HttpResponseRedirect(reverse('web:admin-projects'))
+
+        messages.error(request, _(u"Los archivos que intenta subir son invalidos."))
         return self.render('config/projects.html', context)
     
     @login_required
