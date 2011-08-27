@@ -12,12 +12,12 @@
 from django.db import models
 from base64 import b64encode, b64decode
 
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
-
+#try:
+#	import cPickle as pickle
+#except ImportError:
+import pickle
 import logging
+
 logger = logging.getLogger("niwi")
 
 class DictField(models.Field):

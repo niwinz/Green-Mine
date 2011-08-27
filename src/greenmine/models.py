@@ -8,9 +8,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User, UserManager
 
-from greenmine.utils import make_repo_location, encrypt_password
-from .repos.hg.api import create_repository, delete_repository
-from .fields import DictField
+#from greenmine.utils import make_repo_location, encrypt_password
+#from .repos.hg.api import create_repository, delete_repository
+from greenmine.fields import DictField
 
 import datetime
 

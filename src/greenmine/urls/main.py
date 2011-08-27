@@ -17,7 +17,7 @@ urlpatterns = patterns('',
         config.AdminProjectExport.as_view(), name="admin-project-export"),
     url(r'^project/create/$', main.ProjectCreateView.as_view(), name='project-create'),
     url(r'^(?P<slug>[\w\d\-]+)/dashboard/$', main.ProjectView.as_view(), name='project'),
-    url(r'^media/', include('django_dbstorage.urls'))
+    #url(r'^media/', include('django_dbstorage.urls'))
 )
 
 urlpatterns += patterns('',
