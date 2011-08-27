@@ -7,7 +7,6 @@ import os.path, sys, os
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 LOGS_PATH = os.path.join(PROJECT_ROOT, 'logs')
 
-sys.path.append(os.path.join(PROJECT_ROOT, 'extern'))
 if not os.path.exists(LOGS_PATH):
     os.mkdir(LOGS_PATH)
 
