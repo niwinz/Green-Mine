@@ -116,7 +116,7 @@ class MilestoneCreateApiView(GenericView):
 
 
 class I18NLangChangeApiView(GenericView):
-    """ View for set language.
+    """ View for set language."""
     def get(self, request):
         if 'lang' in request.GET and request.GET['lang'] \
                                     in dict(settings.LANGUAGES).keys():
