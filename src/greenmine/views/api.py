@@ -21,12 +21,11 @@ from django.db.models import Q
 import logging, re
 logger = logging.getLogger('greenmine')
 
-from ..models import *
-from ..forms import LoginForm
-from ..utils import encrypt_password
-
-from .decorators import login_required
-from .generic import GenericView
+from greenmine.models import *
+from greenmine.forms import LoginForm
+from greenmine.utils import encrypt_password
+from greenmine.views.decorators import login_required
+from greenmine.generic import GenericView
 
 class ApiLogin(GenericView):
     def post(self, request):
@@ -114,3 +113,18 @@ class MilestoneCreateApiView(GenericView):
             return self.render_to_ok(context)
         
         return self.render_to_error(form.jquery_errors)
+
+
+class I18NLangChangeApiView(GenericView):
+    """ View for set language.
+    def get(self, request):
+        if 'lang' in request.GET and request.GET['lang'] \
+                                    in dict(settings.LANGUAGES).keys():
+            request.session['django_language'] = request.GET['lang']
+            if request.META.get('HTTP_REFERER', ''):
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+            elif "next" in request.GET and request.GET['next']:
+                return HttpResponseRedirect(request.GET['next']:
+        
+        return HttpResponseRedirect('/')
+            

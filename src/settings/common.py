@@ -14,6 +14,12 @@ ADMINS = (
     ('Andrei Antoukh', 'niwi@niwi.be'),
 )
 
+LANGUAGES = (
+    ('es', _('Spanish')),
+    ('en', _('English')),
+    ('ru', _('Russian')),
+)
+
 MANAGERS = ADMINS
 
 DATABASES = {
