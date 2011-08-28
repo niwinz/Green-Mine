@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     url(r'^login$', api.ApiLogin.as_view(), name='login'),
     url(r'^user/list/$', api.UserListApiView.as_view(), name='user-list'),
 
-    url(r'^project/(?P<pslug>[\w\d\-]+)/m/(?P<mslug>[\w\d\-]+)/tasks/$', 
+    url(r'^project/(?P<pslug>[\w\d\-]+)/m/(?P<mid>\d+)/tasks/$', 
         api.TasksForMilestoneApiView.as_view(), name="tasks-for-milestone"),
     url(r'^project/(?P<pslug>[\w\d\-]+)/tasks/$',
         api.TasksForMilestoneApiView.as_view(), name="unasigned-tasks-for-poject"),

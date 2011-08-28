@@ -76,6 +76,10 @@ $(document).ready(function(){
     }
     
     if($("#dashboard").length){
+        // If project no has milestones, select unasigned.
+        if(!$("#milestones li.selected").length){
+            $("#milestones li:first").addClass('selected');
+        }
         printTasks($("#milestones li.selected").attr("milestone"), $("#milestones li.selected").attr('milestoneurl'));
         
         $("#tasks-filters select").val(0);

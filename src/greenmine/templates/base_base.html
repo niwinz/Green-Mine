@@ -1,3 +1,4 @@
+{% load url from future %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
 <head>
@@ -15,6 +16,7 @@
     <div id="footer">
         <p>Powered by Greenmine ©</p>
     </div>
+    <script type="text/javascript" src="{% url "web:jsi18n" %}"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.django.patch.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery-ui.js"></script>

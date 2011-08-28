@@ -1,53 +1,54 @@
 # -* coding: utf-8 -*-
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User, UserManager
 
-from greenmine.utils import make_repo_location, encrypt_password
-from .repos.hg.api import create_repository, delete_repository
-from .fields import DictField
+#from greenmine.utils import make_repo_location, encrypt_password
+#from .repos.hg.api import create_repository, delete_repository
+from greenmine.fields import DictField
 
 import datetime
 
 ROLE_CHOICES = (
-    ('developer', 'Developer'),
-    ('manager', 'Project manager'),
-    ('partner', 'Partner'),
-    ('client', 'Client'),
+    ('observer', _(u'Observer')),
+    ('developer', _(u'Developer')),
+    ('manager', _(u'Project manager')),
+    ('partner', _(u'Partner')),
+    ('client', _(u'Client')),
 )
 
 MARKUP_TYPE = (
     ('', 'None'),
-    ('markdown', 'Markdown'),
-    ('rest', 'Restructured Text'),
+    ('markdown', _(u'Markdown')),
+    ('rest', _('Restructured Text')),
 )
 
 ISSUE_STATUS_CHOICES = (
-    ('new', 'New'),
-    ('accepted', 'In progress'),
-    ('fixed', 'Fixed'),
-    ('invalid', 'Invalid'),
-    ('wontfix', 'Wontfix'),
-    ('workaround', 'Workaround'),
-    ('duplicate', 'Duplicated'),
+    ('new', _(u'New')),
+    ('accepted', _(u'In progress')),
+    ('fixed', _(u'Fixed')),
+    ('invalid', _(u'Invalid')),
+    ('wontfix', _(u'Wontfix')),
+    ('workaround', _(u'Workaround')),
+    ('duplicate', _(u'Duplicated')),
 )
 
 ISSUE_PRIORITY_CHOICES = (
-    (1, 'Lower'),
-    (2, 'Normal'),
-    (4, 'High'),
-    (6, 'Urgent'),
-    (8, 'Critical'),
+    (1, _(u'Lower')),
+    (2, _(u'Normal')),
+    (4, _(u'High')),
+    (6, _(u'Urgent')),
+    (8, _(u'Critical')),
 )
 
 ISSUE_TYPE_CHOICES = (
-    ('task', 'Task'),
-    ('bug', 'Bug'),
-    ('enhacement', 'Enhancement'),
+    ('task', _(u'Task')),
+    ('bug', _(u'Bug')),
 )
 
 def slugify_uniquely(value, model, slugfield="slug"):
@@ -65,6 +66,19 @@ def slugify_uniquely(value, model, slugfield="slug"):
         if not model.objects.filter(**{slugfield: potential}).count():
             return potential
         suffix += 1
+
+
+def ref_uniquely(model, field='ref'):
+    """
+    Returns a unique reference code based on base64 and time.
+    """
+
+    import time, baseconv
+    potential = baseconv.base62.encode(int(time.time()))
+    while True:
+        if not model.objects.filter(**{field: potential}).exists():
+            return potential
+        time.sleep(0.6)
 
 
 class GenericFile(models.Model):
@@ -106,6 +120,10 @@ class Message(models.Model):
     responses = generic.GenericRelation("GenericResponse")
 
 
+class ProjectManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
+
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
@@ -118,6 +136,10 @@ class Project(models.Model):
     participants = models.ManyToManyField('auth.User', related_name="projects_participant", through="ProjectUserRole", null=True, blank=True)
     public = models.BooleanField(default=True)
 
+    objects = ProjectManager()
+
+    def natural_key(self):
+        return (self.slug,)
 
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
@@ -194,10 +216,13 @@ class WikiPage(models.Model):
         super(WikiPage, self).save(*args, **kwargs)
 
 
+class MilestoneManager(models.Manager):
+    def get_by_natural_key(self, name, project):
+        return self.get(name=name, project__slug=project)
+
+
 class Milestone(models.Model):
     name = models.CharField(max_length=200,)
-    slug = models.CharField(max_length=200, unique=True)
-
     project = models.ForeignKey('Project', related_name="milestones")
     estimated_finish = models.DateField(null=True, default=None)
     
@@ -205,27 +230,33 @@ class Milestone(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
 
+    objects = MilestoneManager()
+
     @models.permalink
     def get_tasks_for_milestone_api_url(self):
         return ('api:tasks-for-milestone', (), 
-            {'pslug':self.project.slug, 'mslug':self.slug})
+            {'pslug':self.project.slug, 'mid':self.id})
 
     class Meta(object):
         unique_together = ('name', 'project')
+
+    def natural_key(self):
+        return (self.name,) + self.project.natural_key()
+
+    natural_key.dependencies = ['greenmine.Project']
     
     def __repr__(self):
         return u"<Milestone %s>" % (self.slug)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.name, self.__class__)
-        else:
+        if self.id:
             self.modified_date = datetime.datetime.now()
 
         super(Milestone, self).save(*args, **kwargs)
 
 
 class Issue(models.Model):
+    ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
     status = models.CharField(max_length=50, choices=ISSUE_STATUS_CHOICES)
     milestone = models.ForeignKey("Milestone", related_name="issues", null=True, default=None)
     project = models.ForeignKey("Project", related_name="issues")
@@ -233,7 +264,7 @@ class Issue(models.Model):
     author = models.ForeignKey("auth.User", null=True, default=None, related_name="issues")
 
     priority = models.IntegerField(choices=ISSUE_PRIORITY_CHOICES, default=2)
-    watchers = models.ManyToManyField("auth.User", related_name="issues_watching", 
+    watchers = models.ManyToManyField("auth.User", related_name="issues_watchin", 
         blank=True, null=True, default=None)
     
     created_date = models.DateTimeField(auto_now_add=True)
@@ -255,6 +286,8 @@ class Issue(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
+        if not self.ref:
+            self.ref = ref_uniquely(self.__class__)
 
         super(Issue,self).save(*args, **kwargs)
 

@@ -21,12 +21,11 @@ from django.db.models import Q
 import logging, re
 logger = logging.getLogger('greenmine')
 
-from ..models import *
-from ..forms import LoginForm
-from ..utils import encrypt_password
-
-from .decorators import login_required
-from .generic import GenericView
+from greenmine.models import *
+from greenmine.forms import LoginForm
+from greenmine.utils import encrypt_password
+from greenmine.views.decorators import login_required
+from greenmine.views.generic import GenericView
 
 class ApiLogin(GenericView):
     def post(self, request):
@@ -53,13 +52,13 @@ class UserListApiView(GenericView):
 
 
 class TasksForMilestoneApiView(GenericView):
-    def get(self, request, pslug, mslug=None):
+    def get(self, request, pslug, mid=None):
         project = get_object_or_404(Project, slug=pslug)
         
         issues = Issue.objects.none()
-        if mslug:
+        if mid:
             try:
-                milestone = project.milestones.get(slug=mslug)
+                milestone = project.milestones.get(pk=mid)
                 issues = milestone.issues.all()
             except Milestone.DoesNotExists:
                 return self.render_to_error("milestone does not exists")
@@ -71,8 +70,8 @@ class TasksForMilestoneApiView(GenericView):
             response_dict = {
                 'id': issue.id,
                 'name': issue.subject,
-                'to': issue.assigned_to.first_name,
-                'to_id': issue.assigned_to.id,
+                'to': issue.assigned_to and issue.assigned_to.first_name or None,
+                'to_id': issue.assigned_to and issue.assigned_to.id or None,
                 'state': issue.status,
                 'state_view': issue.get_status_display(),
                 'priority': issue.priority,
@@ -114,3 +113,18 @@ class MilestoneCreateApiView(GenericView):
             return self.render_to_ok(context)
         
         return self.render_to_error(form.jquery_errors)
+
+
+class I18NLangChangeApiView(GenericView):
+    """ View for set language."""
+    def get(self, request):
+        if 'lang' in request.GET and request.GET['lang'] \
+                                    in dict(settings.LANGUAGES).keys():
+            request.session['django_language'] = request.GET['lang']
+            if request.META.get('HTTP_REFERER', ''):
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+            elif "next" in request.GET and request.GET['next']:
+                return HttpResponseRedirect(request.GET['next'])
+        
+        return HttpResponseRedirect('/')
+            

@@ -8,13 +8,14 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
-from django.utils import simplejson
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext, loader
 from django.contrib import messages
 from django.db.utils import IntegrityError
+from django.db import transaction
 from django.utils.decorators import method_decorator
+from django.utils import simplejson
 
 from .generic import GenericView, ProjectGenericView
 from .decorators import login_required
@@ -76,31 +77,30 @@ class ProjectCreateView(GenericView):
     def parse_roles(self):
         user_role = {}
 
-        for post_key in request.POST.keys():
+        for post_key in self.request.POST.keys():
             user_rx_pos = self.user_rx.match(post_key)
             if not user_rx_pos:
                 continue
 
-            user_role[user_rx_pos.group('userid')] = request.POST[post_key]
+            user_role[user_rx_pos.group('userid')] = self.request.POST[post_key]
 
-        role_values = dict(ROLE_CHOICES).keys()
+        role_values = dict(models.ROLE_CHOICES).keys()
         invalid_role = False
         for role in user_role.values():
             if role not in role_values:
                 invalid_role = True
                 break
             
-        return {} if not invalid_role else user_role
-
+        return {} if invalid_role else user_role
 
     def get(self, request):
         form = forms.ProjectForm()
-        context = {'form':form, 'roles': ROLE_CHOICES}
+        context = {'form':form, 'roles': models.ROLE_CHOICES}
         return self.render(self.template_name, context)
 
     def post(self, request):
         form = forms.ProjectForm(request.POST, request=request)
-        context = {'form': form, 'roles': ROLE_CHOICES}
+        context = {'form': form, 'roles': models.ROLE_CHOICES}
         
         if not form.is_valid():
             return self.render(self.template_name, context)
@@ -118,7 +118,7 @@ class ProjectCreateView(GenericView):
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(
                     project = project,
-                    user = User.objects.get(pk=userid),
+                    user = models.User.objects.get(pk=userid),
                     role = role
                 )
 

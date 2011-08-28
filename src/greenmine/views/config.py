@@ -98,15 +98,24 @@ class AdminProjectsView(GenericView):
 
 
 class AdminProjectExport(GenericView):
+    def serialize(self, objects):
+        return serializers.serialize("json", objects, indent=4, use_natural_keys=True)
+
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         
         tmpfile = StringIO()
         zfile = zipfile.ZipFile(tmpfile, 'a')
-        project_data = serializers.serialize("json", [project])
-        milestones_data = serializers.serialize("json", project.milestones.all())
+        project_data = self.serialize([project])
+        milestones_data = self.serialize(project.milestones.all())
+        issues = self.serialize(project.issues.filter(parent__isnull=True))
+        issues_childs = self.serialize(project.issues.filter(parent__isnull=False))
+
+        
         zfile.writestr('project.json', project_data)
         zfile.writestr('milestones.json', milestones_data)
+        zfile.writestr('issues.json', issues)
+        zfile.writestr('issues_childs.json', issues_childs)
         zfile.close()
 
         response = HttpResponse(tmpfile.getvalue(), mimetype='application/zip')
