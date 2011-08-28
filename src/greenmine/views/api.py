@@ -25,7 +25,7 @@ from greenmine.models import *
 from greenmine.forms import LoginForm
 from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
-from greenmine.generic import GenericView
+from greenmine.views.generic import GenericView
 
 class ApiLogin(GenericView):
     def post(self, request):
@@ -124,7 +124,7 @@ class I18NLangChangeApiView(GenericView):
             if request.META.get('HTTP_REFERER', ''):
                 return HttpResponseRedirect(request.META['HTTP_REFERER'])
             elif "next" in request.GET and request.GET['next']:
-                return HttpResponseRedirect(request.GET['next']:
+                return HttpResponseRedirect(request.GET['next'])
         
         return HttpResponseRedirect('/')
             
