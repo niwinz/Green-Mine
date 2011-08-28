@@ -220,9 +220,14 @@ $(document).ready(function(){
         $("#issue").delegate(".delete-user", "click", function(e){
             $(this).parent().fadeOut("400", function(){  
                 var realinput = $(this).parent().find("input[type='hidden']");
-                var values = $(realinput).val().split(',');
-                values.splice(jQuery.inArray($(this).attr('rel'),values),1);
-                $(realinput).val(values.join(','));
+                if($(realinput).val().length){    
+                    var values = $(realinput).val().split(',');
+                    values.splice(jQuery.inArray($(this).attr('rel'),values),1);
+                    $(realinput).val(values.join(','));
+                }else{
+                    $(realinput).val($(this).attr('rel'));
+                }
+                $(this).remove();
             });
             e.preventDefault();
         })
@@ -234,7 +239,11 @@ $(document).ready(function(){
                 var values = $(realinput).val().split(',');     
                 if(jQuery.inArray(ui.item.id,values)==-1){
                     values.push(ui.item.id)
-                    $(realinput).val(values.join(','));
+                    if($(realinput).val().length){    
+                        $(realinput).val(values.join(','));
+                    }else{
+                        $(realinput).val(ui.item.id);
+                    }
                     var html = "<span rel='"+ui.item.id+"' class='delete-user-ac'>"+ui.item.label+"<a class='delete-user' href=''></a></span>";
                     $(this).parent().append(html);
                 }
@@ -261,12 +270,20 @@ $(document).ready(function(){
             }
         }); 
         
-        $("#issue").delegate(".file", "change", function(e){
-            if(!$(this).attr('rel')){
-                $(this).parent().append('<input type="file" class="file ">');
-                $(this).attr('rel', 1);
-            }
-        })
+        $("#issue").delegate(".delete-file", "click", function(e){
+            $(this).parent().fadeOut("400", function(){  
+                var realinput = $("#input-delete-files");
+                if($(realinput).val().length){
+                    var values = $(realinput).val().split(',');
+                    values.push($(this).attr('rel'));
+                    $(realinput).val(values.join(','));
+                }else{
+                    $(realinput).val($(this).attr('rel'));
+                }
+                $(this).remove();
+            });
+            e.preventDefault();
+        })     
     }
     
     $( ".datepicker" ).datepicker({
@@ -274,6 +291,13 @@ $(document).ready(function(){
         changeYear: true,
         dateFormat: "dd/mm/yy"
     });
+    
+    $(".file").live("change", function(e){
+        if(!$(this).attr('rel')){
+            $(this).parent().append('<input type="file" class="file ">');
+            $(this).attr('rel', 1);
+        }
+    })    
 })
 
 function openLightBoxIssue(){

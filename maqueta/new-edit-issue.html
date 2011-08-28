@@ -82,11 +82,16 @@
                         <label>Ficheros</label>
                         <input class="file" type="file" />
                     </p>
+                    <ul class="list-files form-field width100">
+                        <li rel="1" ><a href="">Fichero 1 (2 mb)</a><a href="" class="delete-file"></a></li>
+                        <li rel="2" ><a href="">Fichero 2 (2 mb)</a><a href="" class="delete-file"></a></li>
+                        <li rel="3" ><a href="">Fichero 3 (2 mb)</a><a href="" class="delete-file"></a></li>
+                    </ul>                    
+                    <input id="input-delete-files" autocomplete="off" type="hidden" value=""/>
                     
                     <p class="width100 float-left">
                         <a class="btn01" href="">Cancelar</a>    
                         <input class="btn01" type="submit" value="Guardar" />
-                        <span class="ajax-loader"></span>		
                     </p>                 
                 </fieldset>
             </form>
