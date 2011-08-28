@@ -67,7 +67,7 @@
         </form>                    
     </div>
     <div id="issue-lb">
-        <form method="post" action="" editaction="auxiliar/json/task.json" newaction="auxiliar/json/task.json">
+        <form method="post" action="" editaction="auxiliar/json/task.json" newaction="{{ project.get_issue_create_api_url }}">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>

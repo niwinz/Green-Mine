@@ -23,14 +23,14 @@ import logging, re
 logger = logging.getLogger('greenmine')
 
 from greenmine.models import *
-from greenmine.forms import LoginForm
+from greenmine import models, forms
 from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 
 class ApiLogin(GenericView):
     def post(self, request):
-        login_form = LoginForm(request.POST, request = request)
+        login_form = forms.LoginForm(request.POST, request = request)
         if not login_form.is_valid():
             return self.render_to_error(login_form.jquery_errors)
 
@@ -44,7 +44,7 @@ class UserListApiView(GenericView):
             return self.render_to_ok({'list':[]})
         
         term = request.GET['term']
-        users = User.objects.filter(
+        users = models.User.objects.filter(
             Q(username__istartswith=term) | Q(first_name__istartswith=term)
         )
         context = {'list': [{'id':x.id, 'label':x.first_name, 'value':x.first_name,
@@ -54,14 +54,14 @@ class UserListApiView(GenericView):
 
 class TasksForMilestoneApiView(GenericView):
     def get(self, request, pslug, mid=None):
-        project = get_object_or_404(Project, slug=pslug)
+        project = get_object_or_404(models.Project, slug=pslug)
         
-        issues = Issue.objects.none()
+        issues = models.Issue.objects.none()
         if mid:
             try:
                 milestone = project.milestones.get(pk=mid)
                 issues = milestone.issues.all()
-            except Milestone.DoesNotExists:
+            except models.Milestone.DoesNotExists:
                 return self.render_to_error("milestone does not exists")
         else:
             issues = project.issues.filter(milestone__isnull=True)
@@ -80,6 +80,7 @@ class TasksForMilestoneApiView(GenericView):
                 'type': issue.type,
                 'type_view': issue.get_type_display(),
                 'project_slug': issue.project.slug,
+                'edit_url': issue.get_edit_api_url(),
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})
@@ -88,19 +89,17 @@ class TasksForMilestoneApiView(GenericView):
 class ProjectDeleteApiView(GenericView):
     """ API Method for delete projects. """
     def post(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
+        project = get_object_or_404(models.Project, slug=pslug)
         project.delete()
         return self.render_to_ok()
 
 
-from greenmine.forms import MilestoneCreateForm
-
 class MilestoneCreateApiView(GenericView):
     def post(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-        form = MilestoneCreateForm(request.POST)
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.MilestoneCreateForm(request.POST)
         if form.is_valid():
-            milestone = Milestone.objects.create(
+            milestone = models.Milestone.objects.create(
                 name = form.cleaned_data['name'],
                 project = project,
             )
@@ -116,16 +115,26 @@ class MilestoneCreateApiView(GenericView):
 
 
 class IssueCreateApiView(GenericView):
-    def post(self, request, pslug, mid):
-        project = get_object_or_404(Project, slug=pslug)
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestones = project.milestones.all()
+        form = forms.IssueForm(milestone_queryset=milestones)
+        if form.is_valid():
+            issue = form.save()
+            return self.render_to_ok()
 
-        try:
-            milestone = project.milestones.get(pk=mid)
-        except Milestone.DoesNotExists:
-            raise Http404('milestone does not exists')
+        return self.render_to_error(form.jquery_errors)
 
 
-    
+class IssueEditApiView(GenericView):
+    def post(self, request, pslug, issueid):
+        issue = get_object_or_404(models.Issue, pk=issueid, project__slug=pslug)
+        form = forms.IssueForm(request.POST, instance=issue)
+        if form.is_valid():
+            issue = form.save()
+            return self.render_to_ok()
+
+        return self.render_to_error(form.jquery_errors)
 
 
 class I18NLangChangeApiView(GenericView):
@@ -140,4 +149,3 @@ class I18NLangChangeApiView(GenericView):
                 return HttpResponseRedirect(request.GET['next'])
         
         return HttpResponseRedirect('/')
-            

@@ -136,7 +136,7 @@ class ProjectForm(Form):
         self._request = kwargs.pop('request', None)
         self.project = kwargs.pop('instance', None)
         if self.project:
-            kwargs['initial_data'] = {
+            kwargs['initial'] = {
                 'projectname': self.project.name,
                 'description': self.project.description,
             }
@@ -181,8 +181,44 @@ class FiltersForm(Form):
 
 
 class MilestoneCreateForm(Form):
-    name = forms.CharField(max_length=200)
+    name = CharField(max_length=200, required=True)
     finish_date = forms.DateField(required=False, localize=True)
+
+
+class IssueForm(Form):
+    name = CharField(max_length=200, required=True)
+    type = forms.ChoiceField(choices=ISSUE_TYPE_CHOICES)
+    status = forms.ChoiceField(choices=ISSUE_STATUS_CHOICES)
+    description = CharField(max_length=1000, required=False)
+    milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        milestone_queryset = kwargs.pop('milestone_queryset', Milestone.objects.none())
+        self._instance = kwargs.pop('instance', None)
+        if self._instance:
+            kwargs['initial'] = {
+                'name': self._instance.subject,
+                'type': self._instance.type,
+                'status': self._instance.status,
+                'description': self._instance.description,
+                'milestone': self._instance.milestone,
+            }
+
+        super(IssueCreateForm, self).__init__(*args, **kwargs)
+        self.fields['milestone'].queryset = milestone_queryset
+
+    def save(self):
+        if not self._instance:
+            self._instance = Issue()
+
+        self._instance.subject = self.cleaned_data['name']
+        self._instance.type = self.cleaned_data['type']
+        self._instance.status = self.cleaned_data['status']
+        self._instance.description = self.cleaned_data['description']
+        self._instance.milestone = self.cleaned_data['milestone']
+        self._instance.save()
+        return self._instance
+
 
 class DumpUploadForm(forms.Form):
     dumpfile = forms.FileField(required=True)

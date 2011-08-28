@@ -160,6 +160,10 @@ class Project(models.Model):
     def get_milestone_create_api_url(self):
         return ('api:project-milestone-create', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_issue_create_api_url(self):
+        return ('api:project-issue-create', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
@@ -290,6 +294,10 @@ class Issue(models.Model):
             self.ref = ref_uniquely(self.__class__)
 
         super(Issue,self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_edit_api_url(self):
+        return ('api:issue-edit', (), {'pslug': self.project.slug, 'issueid': self.id})
 
 
 class PostSecurity(models.Model):
