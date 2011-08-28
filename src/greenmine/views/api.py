@@ -100,7 +100,6 @@ class MilestoneCreateApiView(GenericView):
         project = get_object_or_404(Project, slug=pslug)
         form = MilestoneCreateForm(request.POST)
         if form.is_valid():
-            print form.cleaned_data
             milestone = Milestone.objects.create(
                 name = form.cleaned_data['name'],
                 project = project,
@@ -108,12 +107,24 @@ class MilestoneCreateApiView(GenericView):
             context = {
                 'name':form.cleaned_data['name'],
                 'id': milestone.id,
-                'milestoneurl': milestone.get_tasks_for_milestone_api_url(),
+                'url': milestone.get_tasks_for_milestone_api_url(),
                 'date': milestone.estimated_finish or '',
             }
             return self.render_to_ok(context)
         
         return self.render_to_error(form.jquery_errors)
+
+class IssueCreateApiView(GenericView):
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(Project, slug=pslug)
+
+        try:
+            milestone = project.milestones.get(pk=mid)
+        except Milestone.DoesNotExists:
+            raise Http404('milestone does not exists')
+
+
+    
 
 
 class I18NLangChangeApiView(GenericView):

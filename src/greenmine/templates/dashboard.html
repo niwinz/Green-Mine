@@ -11,8 +11,7 @@
     <ul id="milestones">
         {% for mls in project.milestones.all %}
         <li class="milestone {% if forloop.first %}selected{% endif %}" 
-            milestone="{{ mls.id }}" 
-            milestoneurl="{{ mls.get_tasks_for_milestone_api_url }}">
+            milestone="{{ mls.id }}" url="{{ mls.get_tasks_for_milestone_api_url }}">
 
             <div class="ml">{{ mls.name }}<div>12/03/2011 (<span>1/2</span>)</div></div>
             <a href="" class="edit"><img width="21" src="{{ STATIC_URL }}imgs/cog.png" /></a>
@@ -45,7 +44,7 @@
     </ul>
 
     <div id="milestone-lb">
-        <form method="post" action="{{ project.get_milestone_create_api_url }}" class="inline">
+        <form method="post" action="" editaction="auxiliar/json/milestone.json" newaction="{{ project.get_milestone_create_api_url }}">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>
@@ -53,7 +52,7 @@
                 </p>
                 <p class="form-field">
                     <label for="">Fecha fin</label>
-                    <input type="text" readonly id="fecha-milestone" name="finish_date" class="datepicker" />
+                    <input type="text" readonly id="fecha-milestone" name="estimated_finish" class="datepicker" />
                 </p>
                 <p class="width100 float-left">
                     <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
@@ -61,26 +60,33 @@
                     <span class="ajax-loader"></span>
                 </p>
             </fieldset>
-        </form> 
+            <input type="hidden" name="id" />
+        </form>                    
     </div>
-
     <div id="issue-lb">
-        <form method="post" action="auxiliar/json/task.json">
+        <form method="post" action="" editaction="auxiliar/json/task.json" newaction="auxiliar/json/task.json">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>
-                    <input type="text" id="nombre-issue" name="nombre-issue" class="required" />
+                    <input type="text" id="nombre-issue" name="subject" class="required" />
                 </p>
                 <p class="form-field">
                     <label>Tipo</label>
                     <select class="required" name="type">
-                        <option value="Tarea">Tarea</option>
-                        <option value="Bug">Bug</option>
+                        <option value="task">Tarea</option>
+                        <option value="bug">Bug</option>
                     </select>                                
                 </p>                              
                 <p class="form-field">
+                    <label>Estado</label>
+                    <select class="required" name="type">
+                        <option value="Abierta">Abierta</option>
+                        <option value="Cerrada">Cerrada</option>
+                    </select>                                
+                </p>                                  
+                <p class="form-field width100">
                     <label for="">Descripción</label>
-                    <textarea></textarea>
+                    <textarea name="description"></textarea>
                 </p>                          
                 <p class="width100 float-left">
                     <a id="close-issue-lb" class="btn01" href="">Cancelar</a>    
@@ -91,6 +97,7 @@
                     <input class="btn01" type="submit" value="Guardar e ir al detalle" />
                 </p>
             </fieldset>
+            <input type="hidden" name="id" />
         </form>                    
     </div>                
 </div>

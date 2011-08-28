@@ -143,7 +143,7 @@ $(document).ready(function(){
             $("#milestones").find(".selected").removeClass("selected");
             var li = $(this).parent()
             $(li).addClass("selected");
-            printTasks(parseInt($(li).attr("milestone")), $(li).attr("milestoneurl"))
+            printTasks(parseInt($(li).attr("milestone")), $(li).attr("url"))
         });
 
         $("#milestones").delegate(".edit", "click", function(e){
@@ -200,7 +200,7 @@ $(document).ready(function(){
         });
         
         var milestoneform = formUtils.ajax("#milestone-lb form", function(data){
-            var html = '<li milestoneurl="'+data.milestoneurl+'" milestone="'+data.milestoneurl+'" class="milestone ui-droppable">' +
+            var html = '<li url="'+data.url+'" milestone="'+data.id+'" class="milestone ui-droppable">' +
                         '<div class="ml"><span class="name">'+data.name+'</span><div><span class="estimated_finish">'+data.date+'</span> (<span class="issue">0/0</span>)</div></div>' +
                         '<a class="edit" href=""></a></li>';
             $("#milestones").prepend(html);                        
