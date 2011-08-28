@@ -25,15 +25,15 @@
                 </div>
                 <ul id="milestones">
                     <li class="selected milestone" milestone="1" milestoneurl="auxiliar/json/dashboard.json">
-                        <div class="ml">Fase 1<div>12/03/2011 (<span>1/2</span>)</div></div>
+                        <div class="ml"><span class="name">Fase 1</span><div><span class="estimated_finish">12/03/2011</span> (<span class="issue">1/2</span>)</div></div>
                         <a href="" class="edit"></a>
                     </li>
                     <li class="milestone" milestone="2" milestoneurl="auxiliar/json/dashboard.json">
-                        <div class="ml">Fase 2<div>06/11/2011 (<span>2/6</span>)</div></div>
+                        <div class="ml"><span class="name">Fase 2</span><div><span class="estimated_finish">06/11/2011</span> (<span class="issue">2/6</span>)</div></div>
                         <a href="" class="edit"></a>
                     </li>
                     <li class="milestone" milestone="0" milestoneurl="auxiliar/json/dashboard.json">
-                        <div class="ml">Sin asignar <div>(<span>4/20</span>)</div></div>
+                        <div class="ml"><span class="name">Sin asignar</span><div>(<span class="issue">4/20</span>)</div></div>
                     </li>
                 </ul>
                 <div id="tasks-filters">
@@ -74,15 +74,15 @@
                 </ul>
                 
                 <div id="milestone-lb">
-                    <form method="post" action="auxiliar/json/milestone.json">
+                    <form method="post" action="" editaction="auxiliar/json/milestone.json" newaction="auxiliar/json/milestone.json">
                         <fieldset>
                             <p class="form-field">
                                 <label for="">Nombre</label>
-                                <input type="text" id="nombre-milestone" name="nombre-milestone" class="required" />
+                                <input type="text" id="nombre-milestone" name="name" class="required" />
                             </p>
                             <p class="form-field">
                                 <label for="">Fecha fin</label>
-                                <input type="text" readonly id="fecha-milestone" name="fecha-milestone" class="datepicker" />
+                                <input type="text" readonly id="fecha-milestone" name="estimated_finish" class="datepicker" />
                             </p>
                             <p class="width100 float-left">
                                 <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
@@ -90,26 +90,27 @@
                                 <span class="ajax-loader"></span>
                             </p>
                         </fieldset>
+                        <input type="hidden" name="id" />
                     </form>                    
                 </div>
                 
                 <div id="issue-lb">
-                    <form method="post" action="auxiliar/json/task.json">
+                    <form method="post" action="" editaction="auxiliar/json/task.json" newaction="auxiliar/json/task.json">
                         <fieldset>
                             <p class="form-field">
                                 <label for="">Nombre</label>
-                                <input type="text" id="nombre-issue" name="nombre-issue" class="required" />
+                                <input type="text" id="nombre-issue" name="subject" class="required" />
                             </p>
                             <p class="form-field">
                                 <label>Tipo</label>
                                 <select class="required" name="type">
-                                    <option value="Tarea">Tarea</option>
-                                    <option value="Bug">Bug</option>
+                                    <option value="task">Tarea</option>
+                                    <option value="bug">Bug</option>
                                 </select>                                
                             </p>                              
-                            <p class="form-field">
+                            <p class="form-field width100">
                                 <label for="">Descripción</label>
-                                <textarea></textarea>
+                                <textarea name="description"></textarea>
                             </p>                          
                             <p class="width100 float-left">
                                 <a id="close-issue-lb" class="btn01" href="">Cancelar</a>    
@@ -120,6 +121,7 @@
                                 <input class="btn01" type="submit" value="Guardar e ir al detalle" />
                             </p>
                         </fieldset>
+                        <input type="hidden" name="id" />
                     </form>                    
                 </div>                
             </div>

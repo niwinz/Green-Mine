@@ -20,7 +20,7 @@
     
     <div id="wrapper">
         <div id="issue">
-            <form method="post" action="" ajaxsubmit="0" class="inline validate">
+            <form method="post" action="" class="inline validate">
                 <fieldset>
                     <p class="form-field">
                         <label for="">Asunto</label>
@@ -62,18 +62,32 @@
                     </p>
                     <p class="form-field">
                         <label for="">Fecha fin</label>
-                        <input type="text" id="datepicker" />
+                        <input type="text" readonly class="datepicker" />
                     </p>
-                  <p class="form-field width100">
+                    <p class="form-field">
+                        <label for="">Watchers</label>
+                        <input urlautocomplete="/Green-Mine/maqueta/auxiliar/json/autocomplete.json" class="users-autocomplete" type="text" />
+                        <input name="watchers" autocomplete="off" type="hidden" value="" />
+                    </p>                  
+                    <p class="form-field">
+                        <label for="">Asignado a</label>
+                        <input urlautocomplete="/Green-Mine/maqueta/auxiliar/json/autocomplete.json" class="user-autocomplete" type="text" />
+                    </p>                    
+                    <p class="form-field width100">
                         <label for="">Descripción</label>
                         <textarea class="required"></textarea>
-                    </p>                       
+                    </p>  
+                    
+                    <p class="form-field width100">
+                        <label>Ficheros</label>
+                        <input class="file" type="file" />
+                    </p>
                     
                     <p class="width100 float-left">
                         <a class="btn01" href="">Cancelar</a>    
                         <input class="btn01" type="submit" value="Guardar" />
                         <span class="ajax-loader"></span>		
-                    </p>
+                    </p>                 
                 </fieldset>
             </form>
         </div>
