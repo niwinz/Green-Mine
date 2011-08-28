@@ -81,6 +81,7 @@ class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
     photo = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
+    default_language = models.CharField(max_length=20, null=True, blank=True, default=None)
 
 
 class ProjectManager(models.Manager):

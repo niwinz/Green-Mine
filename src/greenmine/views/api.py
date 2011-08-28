@@ -35,7 +35,10 @@ class ApiLogin(GenericView):
         if not login_form.is_valid():
             return self.render_to_error(login_form.jquery_errors)
 
-        request.session['current_user_id'] = login_form._user.id
+        user_profile = login_form._user.get_profile()
+        if user_profile.default_language:
+            request.session['django_language'] = user_profile.default_language
+
         return self.render_to_ok({'userid': login_form._user.id, 'redirect_to': '/'})
 
 
