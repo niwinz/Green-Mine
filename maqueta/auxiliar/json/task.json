@@ -7,6 +7,7 @@
  "priority_view": "Normal",
  "type": "task",
  "type_view": "Task",
+ "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
  "errors": [{
     "nombre-issue": "Prueba validación nombre"
  }]

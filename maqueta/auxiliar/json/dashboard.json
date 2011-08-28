@@ -10,6 +10,7 @@
             "priority": "0", 
             "priority_view": "Lower",
             "type": "task",
+            "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
             "type_view": "Task"
         },
         {
@@ -22,8 +23,9 @@
             "priority": "0",
             "priority_view": "Lower",
             "type": "task",
+            "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
             "type_view": "Task"
-
+                
         }, 
         {
             "id":5, 
@@ -35,6 +37,7 @@
             "priority": "6",
             "priority_view": "Urgent",
             "type": "task",
+            "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
             "type_view": "Task"
         }, 
         {
@@ -47,6 +50,7 @@
             "priority": "4", 
             "priority_view": "Hight",
             "type": "bug",
+            "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
             "type_view": "Bug"
         }
     ]
