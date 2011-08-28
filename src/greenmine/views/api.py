@@ -28,6 +28,7 @@ from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 
+
 class ApiLogin(GenericView):
     def post(self, request):
         login_form = forms.LoginForm(request.POST, request = request)

@@ -81,28 +81,6 @@ def ref_uniquely(model, field='ref'):
         time.sleep(0.6)
 
 
-class GenericFile(models.Model):
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    owner = models.ForeignKey("auth.User", related_name="files")
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
-
-
-class GenericResponse(models.Model):
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    response_to = generic.GenericForeignKey('content_type', 'object_id')
-    
-    owner = models.ForeignKey('auth.User', related_name='myresponses')
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    content = models.TextField()
-    attached_files = generic.GenericRelation("GenericFile")
-
-
 class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
@@ -110,19 +88,10 @@ class Profile(models.Model):
     settings = DictField(default={})
 
 
-class Message(models.Model):
-    project = models.ForeignKey('Project', related_name='messages')
-    milestone = models.ForeignKey('Milestone', related_name='messages', null=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey('auth.User', related_name='mymessages')
-    content = models.TextField()
-    responses = generic.GenericRelation("GenericResponse")
-
-
 class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
+
 
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
@@ -180,44 +149,13 @@ class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project")
     user = models.ForeignKey("auth.User")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
+    tags = models.CharField(max_length=500, blank=True)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)
 
     class Meta:
         unique_together = ('project', 'user')
-
-
-class Wiki(models.Model):
-    """ Individual project wiki system. Realation table"""
-    project = models.OneToOneField('Project', related_name="wiki", null=True)
-    markup = models.CharField(max_length=50, choices=MARKUP_TYPE, blank=True, default='markdown')
-    
-    def __repr__(self):
-        return u"<Wiki %s>" % (self.id)
-
-
-class WikiPage(models.Model):
-    wiki = models.ForeignKey('Wiki', related_name="pages")
-    owner = models.ForeignKey('auth.User', related_name="wikipages")
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
-
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    content = models.TextField()
-    files = generic.GenericRelation("GenericFile")
-
-    def __repr__(self):
-        return u"<WikiPage %s>" % (self.slug)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.name, self.__class__)
-        else:
-            self.modified_date = datetime.datetime.now()
-
-        super(WikiPage, self).save(*args, **kwargs)
 
 
 class MilestoneManager(models.Manager):
@@ -278,9 +216,6 @@ class Issue(models.Model):
     subject = models.CharField(max_length=500)
     description = models.TextField()
     finish_date = models.DateTimeField(null=True, blank=True)
-    files = generic.GenericRelation("GenericFile")
-    responses = generic.GenericRelation("GenericResponse")
-
     assigned_to = models.ForeignKey('auth.User', related_name='issues_assigned_to_me', null=True, default=None)
     parent = models.ForeignKey('self', related_name='subtasks', null=True, default=None)
 
@@ -300,10 +235,23 @@ class Issue(models.Model):
         return ('api:issue-edit', (), {'pslug': self.project.slug, 'issueid': self.id})
 
 
-class PostSecurity(models.Model):
-    """ Sirve para controlar el ratio de posts y asi evitar spam massivo. """
-    remote_host = models.CharField(max_length=200, unique=True)
-    last_post = models.DateTimeField(auto_now_add=True)
+class IssueResponse(models.Model):
+    issue = models.ForeignKey('Issue', related_name='responses')
+    owner = models.ForeignKey('auth.User', related_name='responses')
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+
+
+class IssueFile(models.Model):
+    response = models.ForeignKey('IssueFile', related_name='attached_files', null=True, blank=True)
+    issue = models.ForeignKey('Issue', related_name='attached_files', null=True, blank=True)
+
+    owner = models.ForeignKey("auth.User", related_name="files")
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
 
 
 class Blacklist(models.Model):
