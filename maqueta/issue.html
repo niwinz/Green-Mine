@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
+<head>
+    <title>Greenmine</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="./css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="./css/general.css" type="text/css" media="handheld, all" />
+</head>
+<body>
+    <div id="head">
+        <h1><a href="">greenmine</a> > IOU</h1>
+    </div>
+    <div id="menu">
+        <ul>
+            <li><a href="">Juanfran Alcántara</a></li>
+            <li><a href="">Configuración</a></li>
+            <li><a href="">Logout</a></li>
+        </ul>
+    </div>
+    
+    <div id="wrapper">
+        <div id="issue-detail">
+            <div class="inline">
+                <div class="form-field">
+                    <span class="label">Asunto</span>
+                    <span>xxxxxxxxxxx</span>
+                </div>
+                <div class="form-field">
+                    <span class="label">Estado</span>
+                    <span>Fixed</span>
+                </div>  
+                <div class="form-field">
+                    <span class="label">Tipo</span>
+                    <span>Enhancement</span>
+                </div>                      
+                <div class="form-field">
+                    <span class="label">Prioridad</span>
+                    <span>Urgent</span>
+                </div> 
+                <div class="form-field">
+                    <span class="label">Probado</span>
+                    <span>Sí</span>
+                </div>
+                <div class="form-field">
+                    <span class="label">Fecha fin</span>
+                    <span>12/12/2012</span>
+                </div>
+                <div class="form-field">
+                    <span class="label">Watchers</span>
+                    <span>juan, andrei</span>
+                </div>                  
+                <div class="form-field">
+                    <span class="label">Asignado a</span>
+                    <span>Andrei</span>
+                </div>                    
+                <div class="form-field width100">
+                    <span class="label">Descripción</span>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
+                    <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
+                </div>  
+                <div class="form-field width100">
+                    <span class="label">Subtareas</span>
+                    <div class="subissue">
+                        <ul>
+                            <li><a href="">Subtarea 1 (Estado: completada)</a></li>
+                            <li><a href="">Subtarea 2 (Estado: completada)</a></li>
+                            <li><a href="">Subtarea 3 (Estado: completada)</a></li>                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-field width100">
+                    <span class="label">Ficheros</span>
+                    <ul>
+                        <li><a href="">Fichero 1 (1 mb)</a></li>
+                        <li><a href="">Fichero 2 (2 mb)</a></li>
+                        <li><a href="">Fichero 3 (2 mb)</a></li>
+                    </ul>
+                </div>
+                <div class="width100 float-left">
+                    <a href="" class="btn01 float-right">Editar</a>
+                    <a href="" class="btn01 float-right">Añadir subtarea</a>
+                </div>                
+                <hr/>
+            </div>
+            <div id="responses">
+                <div class="response">
+                    <p class="name"><img width="30" src="./auxiliar/imgs/gravatar.jpg" /> Andrei</p>
+                    <div class="txt">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
+                        <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
+                    </div>
+                    <p class="files"><a href="">Fichero 1 (2 mb)</a>, <a href="">Fichero 2 (1 mb)</a></p>
+                </div>
+                <div class="response">
+                    <p class="name"><img width="30" src="./auxiliar/imgs/gravatar.jpg" /> Andrei</p>
+                    <div class="txt">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
+                        <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
+                    </div>
+                </div> 
+                
+                <form class="validate" enctype="multipart/form-data" method="post" action="">
+                    <fieldset>
+                        <p class="form-field width100">
+                            <textarea class="required" name="description"></textarea>
+                        </p>      
+                        <p class="form-field width100">
+                            <label>Ficheros</label>
+                            <input class="file" type="file" />
+                        </p>                        
+                        <p class="width100 float-left">
+                            <input class="btn01" type="submit" value="Enviar" />
+                        </p>
+                    </fieldset>
+                </form>                             
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <p>Powered by Greenmine ©</p>
+    </div>
+    <script type="text/javascript" src="./js/external/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/external/jquery-ui.js"></script>
+    <script type="text/javascript" src="./js/external/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="./js/general.js"></script>
+</body>
+</html>
