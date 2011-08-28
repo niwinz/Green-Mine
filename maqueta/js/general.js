@@ -370,7 +370,6 @@ var formUtils = {
                 formUtils.showLoader(form);
                 var json = formUtils.getJSON(form, this);
                 json.success = function(data){
-                    
                     if(!data.valid){
                         formUtils.showErrors(this.validator, data.errors);
                     } else {

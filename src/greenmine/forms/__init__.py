@@ -2,9 +2,10 @@
 from django import forms
 from django.conf import settings
 from django.utils import simplejson
+from django.contrib import messages
 
-from django.forms.widgets import PasswordInput, TextInput
 from django.utils.translation import ugettext_lazy as _
+from django.forms.widgets import PasswordInput, TextInput
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
@@ -125,7 +126,6 @@ class ProfileForm(Form):
         return self.instance
 
 
-from django.contrib import messages
 
 class ProjectForm(Form):
     projectname = CharField(max_length=200, min_length=4,

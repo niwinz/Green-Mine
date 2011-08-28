@@ -21,5 +21,7 @@ urlpatterns = patterns('',
         api.IssueEditApiView.as_view(), name="issue-edit"),
     url(r'^i18n/lang/$', api.I18NLangChangeApiView.as_view(), 
         name='i18n-setlang'),
+    url(r'^password/forgotten/$', 
+        api.ForgottenPasswordApiView.as_view(), name='password-forgotten'),
 )
 

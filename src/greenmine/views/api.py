@@ -62,7 +62,7 @@ class TasksForMilestoneApiView(GenericView):
             try:
                 milestone = project.milestones.get(pk=mid)
                 issues = milestone.issues.all()
-            except models.Milestone.DoesNotExists:
+            except models.Milestone.DoesNotExist:
                 return self.render_to_error("milestone does not exists")
         else:
             issues = project.issues.filter(milestone__isnull=True)
@@ -150,3 +150,12 @@ class I18NLangChangeApiView(GenericView):
                 return HttpResponseRedirect(request.GET['next'])
         
         return HttpResponseRedirect('/')
+
+
+class ForgottenPasswordApiView(GenericView):
+    def post(self, request):
+        form = forms.ForgottenPasswordForm(request.POST)
+        if form.is_valid():
+            return self.render_to_ok({'redirect_to':'/'})
+
+        return self.render_to_error(form.jquery_errors)

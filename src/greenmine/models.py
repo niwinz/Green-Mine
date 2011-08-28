@@ -8,10 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User, UserManager
 
-#from greenmine.utils import make_repo_location, encrypt_password
-#from .repos.hg.api import create_repository, delete_repository
-from greenmine.fields import DictField
-
 import datetime
 
 ROLE_CHOICES = (
@@ -85,7 +81,6 @@ class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
     photo = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
-    settings = DictField(default={})
 
 
 class ProjectManager(models.Manager):
@@ -141,15 +136,17 @@ class Project(models.Model):
 
         super(Project, self).save(*args, **kwargs)
 
-        if not hasattr(self, 'wiki'):
-            Wiki.objects.create(project=self)
-
 
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project")
     user = models.ForeignKey("auth.User")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
     tags = models.CharField(max_length=500, blank=True)
+    
+    # email notification settings
+    send_email_on_group_message = models.BooleanField(default=True)
+    send_email_on_issue_asignement = models.BooleanField(default=True)
+    send_email_on_new_issue = models.BooleanField(default=False)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)

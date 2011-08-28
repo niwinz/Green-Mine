@@ -20,7 +20,7 @@
             </p>
         </fieldset>
     </form>
-    <form id="forgotten-password-form" method="post" action="http://www.google.es/" class="validate">
+    <form id="forgotten-password-form" method="post" action="{% url 'api:password-forgotten' %}">
         <fieldset>
             <p class="form-field">
                 {{ form2.email.label }}
