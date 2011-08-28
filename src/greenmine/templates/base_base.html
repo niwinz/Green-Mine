@@ -14,7 +14,12 @@
     </div>
     {% block middle-box %}{% endblock %}
     <div id="footer">
-        <p>Powered by Greenmine ©</p>
+        <p>
+            {% for code, name in LANGUAGES %}
+            <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ name }}</a>
+            {% endfor %}
+            | Powered by Greenmine © 2011
+        </p>
     </div>
     <script type="text/javascript" src="{% url "web:jsi18n" %}"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/external/jquery.min.js"></script>

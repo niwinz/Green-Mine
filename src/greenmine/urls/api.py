@@ -15,5 +15,7 @@ urlpatterns = patterns('',
         api.ProjectDeleteApiView.as_view(), name="project-delete"),
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/create/$',
         api.MilestoneCreateApiView.as_view(), name="project-milestone-create"),
+    url(r'^i18n/lang/$', api.I18NLangChangeApiView.as_view(), 
+        name='i18n-setlang'),
 )
 

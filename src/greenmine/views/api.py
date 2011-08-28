@@ -4,6 +4,7 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.http import HttpResponseRedirect, HttpResponse
+from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
