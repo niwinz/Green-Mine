@@ -80,7 +80,7 @@ $(document).ready(function(){
         if(!$("#milestones li.selected").length){
             $("#milestones li:first").addClass('selected');
         }
-        printTasks($("#milestones li.selected").attr("milestone"), $("#milestones li.selected").attr('milestoneurl'));
+        printTasks($("#milestones li.selected").attr("milestone"), $("#milestones li.selected").attr('url'));
         
         $("#tasks-filters select").val(0);
         $("#tasks-filters").delegate("select", "change", function(){
@@ -145,11 +145,6 @@ $(document).ready(function(){
             $(li).addClass("selected");
             printTasks(parseInt($(li).attr("milestone")), $(li).attr("url"))
         });
-
-        (function() {
-            var selected = $("#milestones").find(".selected");
-            printTasks(parseInt(selected.attr('milestone')), selected.attr('url'));
-        })();
 
         $("#milestones").delegate(".edit", "click", function(e){
             e.preventDefault();
