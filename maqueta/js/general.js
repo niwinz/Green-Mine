@@ -146,6 +146,11 @@ $(document).ready(function(){
             printTasks(parseInt($(li).attr("milestone")), $(li).attr("url"))
         });
 
+        (function() {
+            var selected = $("#milestones").find(".selected");
+            printTasks(parseInt(selected.attr('milestone')), selected.attr('url'));
+        })();
+
         $("#milestones").delegate(".edit", "click", function(e){
             e.preventDefault();
             var milestone = $(this).parent();

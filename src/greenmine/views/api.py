@@ -114,6 +114,7 @@ class MilestoneCreateApiView(GenericView):
         
         return self.render_to_error(form.jquery_errors)
 
+
 class IssueCreateApiView(GenericView):
     def post(self, request, pslug, mid):
         project = get_object_or_404(Project, slug=pslug)

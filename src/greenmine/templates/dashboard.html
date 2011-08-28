@@ -8,20 +8,23 @@
         <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
         <a id="new-issue" class="btn01" href="">Nueva tarea</a>
     </div>
+
     <ul id="milestones">
         {% for mls in project.milestones.all %}
         <li class="milestone {% if forloop.first %}selected{% endif %}" 
             milestone="{{ mls.id }}" url="{{ mls.get_tasks_for_milestone_api_url }}">
-
-            <div class="ml">{{ mls.name }}<div>12/03/2011 (<span>1/2</span>)</div></div>
-            <a href="" class="edit"><img width="21" src="{{ STATIC_URL }}imgs/cog.png" /></a>
+            <div class="ml"><span class="name">{{ mls.name }}</span>
+                <div><span class="estimated_finish">{% if mls.estimated_finish %}{{ mls.estimated_finish }}{% endif %}</span> 
+                (<span class="issue">1/2</span>)</div>
+            </div>
+            <a href="" class="edit"></a>
         </li>
         {% endfor %}
-
-        <li class="milestone" milestone="0" milestoneurl="{{ project.get_unasigned_tasks_api_url }}">
-            <div class="ml">{% trans "Unassigned" %}<div>(<span>4/20</span>)</div></div>
+        <li class="milestone" milestone="0" url="{{ project.get_unasigned_tasks_api_url }}">
+            <div class="ml"><span class="name">{% trans "Unassigned" %}</span><div>(<span class="issue">4/20</span>)</div></div>
         </li>
     </ul>
+
     <div id="tasks-filters">
         <p>
             {{ filtersform.to.label }}
