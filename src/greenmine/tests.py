@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from greenmine import models
-
+import datetime
 
 class LoginApiTest(TestCase):
     def test_api_login_ajax(self):
@@ -60,6 +60,21 @@ class MilestoneApiTest(TestCase):
         
     def tearDown(self):
         self.project.delete()
+
+    def test_edit_milestone(self):
+        res = self.client.login(username='andrei', password='123123')
+        params = {'name': 'fofofo', 'finish_date':'28/01/2015'}
+        res = self.client.post(self.milestone.get_edit_api_url(), params,
+             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+
+        milestone = models.Milestone.objects.get(pk=self.milestone.id)
+        self.assertEqual(milestone.name, 'fofofo')
+        self.assertEqual(milestone.estimated_finish, datetime.date(2015,01,28))
+
 
     def test_create_new_milestone_anonymous(self):
         res = self.client.post(self.project.get_milestone_create_api_url())

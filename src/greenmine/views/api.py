@@ -105,12 +105,12 @@ class MilestoneCreateApiView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.MilestoneCreateForm(request.POST)
+        form = forms.MilestoneForm(request.POST)
         if form.is_valid():
-            milestone = models.Milestone.objects.create(
-                name = form.cleaned_data['name'],
-                project = project,
-            )
+            milestone = form.save(commit=False)
+            milestone.project = project
+            milestone.save()
+
             context = {
                 'name':form.cleaned_data['name'],
                 'id': milestone.id,
@@ -120,6 +120,21 @@ class MilestoneCreateApiView(GenericView):
             return self.render_to_ok(context)
         
         return self.render_to_error(form.jquery_errors)
+
+
+class MilestoneEditApiView(GenericView):
+    @login_required
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        form = forms.MilestoneForm(request.POST, instance=milestone)
+        if form.is_valid():
+            milestone = form.save(commit=True)
+            return self.render_to_ok({'id':milestone.id})
+
+        return self.render_to_error()
+    
 
 
 class IssueCreateApiView(GenericView):

@@ -176,7 +176,12 @@ class Milestone(models.Model):
     @models.permalink
     def get_tasks_for_milestone_api_url(self):
         return ('api:tasks-for-milestone', (), 
-            {'pslug':self.project.slug, 'mid':self.id})
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
+    def get_edit_api_url(self):
+        return ('api:project-milestone-edit', (),
+            {'pslug': self.project.slug, 'mid': self.id})
 
     class Meta(object):
         unique_together = ('name', 'project')

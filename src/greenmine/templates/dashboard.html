@@ -12,7 +12,8 @@
     <ul id="milestones">
         {% for mls in project.milestones.all %}
         <li class="milestone {% if forloop.first %}selected{% endif %}" 
-            milestone="{{ mls.id }}" url="{{ mls.get_tasks_for_milestone_api_url }}">
+            milestone="{{ mls.id }}" url="{{ mls.get_tasks_for_milestone_api_url }}"
+            editurl="{{ mls.get_edit_api_url }}">
             <div class="ml"><span class="name">{{ mls.name }}</span>
                 <div><span class="estimated_finish">{% if mls.estimated_finish %}{{ mls.estimated_finish }}{% endif %}</span> 
                 (<span class="issue">1/2</span>)</div>
