@@ -55,6 +55,7 @@ class ProjectsView(GenericView):
 
 
 class ProjectView(GenericView):
+    @login_required
     def get(self, request, slug):
         project = get_object_or_404(models.Project, slug=slug)
         context = {
@@ -62,12 +63,6 @@ class ProjectView(GenericView):
             'project': project
         }
         return self.render('dashboard.html', context)
-
-    @login_required
-    def dispatch(self, *args, **kwargs):
-        return super(ProjectView, self).dispatch(*args, **kwargs)
-
-
 
 
 class ProjectCreateView(GenericView):
@@ -113,7 +108,7 @@ class ProjectCreateView(GenericView):
                 emsg = _(u'Debe especificar al menos una persona al proyecto')
                 messages.error(request, emsg)
                 return self.render(self.template_name, context)
-
+            
             project = form.save()
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(

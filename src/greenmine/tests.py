@@ -141,6 +141,23 @@ class ProjectApiTest(TestCase):
     def tearDown(self):
         self.project.delete()
 
+    def test_create_project(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        params = {
+            'projectname':'testProject',
+            'description': 'testDescription',
+            'user_1': 'developer',
+            'user_2': 'client',
+        }
+        res = self.client.post(reverse('web:project-create'), params)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(models.ProjectUserRole.objects.filter(
+            project__name="testProject").count(), 2)
+
+
     def test_delete_project_api_anonymous(self):
         res = self.client.post(self.project.get_delete_api_url())
         self.assertEqual(res.status_code, 302)
