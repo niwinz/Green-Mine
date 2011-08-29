@@ -43,6 +43,7 @@ class ApiLogin(GenericView):
 
 
 class UserListApiView(GenericView):
+    @login_required
     def get(self, request):
         if "term" not in request.GET:
             return self.render_to_ok({'list':[]})
@@ -57,6 +58,7 @@ class UserListApiView(GenericView):
 
 
 class TasksForMilestoneApiView(GenericView):
+    @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
         
@@ -92,6 +94,7 @@ class TasksForMilestoneApiView(GenericView):
 
 class ProjectDeleteApiView(GenericView):
     """ API Method for delete projects. """
+    @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         project.delete()

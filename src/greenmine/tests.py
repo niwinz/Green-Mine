@@ -22,6 +22,7 @@ class LoginApiTest(TestCase):
 
 class UserListApiTest(TestCase):
     def test_user_list(self):
+        self.client.login(username='andrei', password='123123')
         res = self.client.get(reverse('api:user-list'))
         self.assertEqual(res.status_code, 200)
 
@@ -30,12 +31,17 @@ class UserListApiTest(TestCase):
         self.assertEqual(len(data['list']), 0)
 
     def test_user_list_with_term(self):
+        self.client.login(username='andrei', password='123123')
         res = self.client.get(reverse('api:user-list') + '?term=andrei')
         self.assertEqual(res.status_code, 200)
         data = json.loads(res.content)
         self.assertTrue(data['valid'])
         self.assertEqual(len(data['list']), 1)
         self.assertEqual(data['list'][0]['id'], 1)
+
+    def test_user_list_with_term_anonymous(self):
+        res = self.client.get(reverse('api:user-list') + '?term=andrei')
+        self.assertEqual(res.status_code, 302)
 
 
 class MilestoneApiTest(TestCase):
@@ -55,7 +61,12 @@ class MilestoneApiTest(TestCase):
     def tearDown(self):
         self.project.delete()
 
+    def test_tasks_for_milestone_anonymous(self):
+        res = self.client.get(self.milestone.get_tasks_for_milestone_api_url())
+        self.assertEqual(res.status_code, 302)
+
     def test_tasks_for_milestone(self):
+        self.client.login(username='andrei', password='123123')
         res = self.client.get(self.milestone.get_tasks_for_milestone_api_url())
         self.assertEqual(res.status_code, 200)
 
@@ -64,6 +75,7 @@ class MilestoneApiTest(TestCase):
         self.assertEqual(len(data['tasks']), 0)
 
     def test_tasks_for_milestone_with_tasks(self):
+        self.client.login(username='andrei', password='123123')
         issue1 = models.Issue.objects.create(
             project = self.project,
             status = 'new',
@@ -93,9 +105,44 @@ class MilestoneApiTest(TestCase):
         data = json.loads(res.content)
         self.assertTrue(data['valid'])
         self.assertEqual(len(data['tasks']), 1)
-
-
         issue1.delete()
         issue2.delete()
 
 
+class ProjectApiTest(TestCase):
+    def setUp(self):
+        self.user1 = models.User.objects.get(username='andrei')
+        self.user2 = models.User.objects.exclude(username='andrei')[0]
+        self.project = models.Project.objects.create(
+            owner = self.user1,
+            name = 'test',
+            description = 'test-description',
+        )
+
+    def tearDown(self):
+        self.project.delete()
+
+    def test_delete_project_api_anonymous(self):
+        res = self.client.post(self.project.get_delete_api_url())
+        self.assertEqual(res.status_code, 302)
+
+    def test_delete_project_api_ajax_anonymous(self):
+        res = self.client.post(self.project.get_delete_api_url(),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.content)
+        self.assertFalse(data['valid'])
+
+    def test_delete_project_api_authenticated(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        res = self.client.post(self.project.get_delete_api_url(),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+
+        self.assertEqual(models.Project.objects.count(), 0)
