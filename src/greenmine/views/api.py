@@ -102,6 +102,7 @@ class ProjectDeleteApiView(GenericView):
 
 
 class MilestoneCreateApiView(GenericView):
+    @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.MilestoneCreateForm(request.POST)
@@ -122,21 +123,26 @@ class MilestoneCreateApiView(GenericView):
 
 
 class IssueCreateApiView(GenericView):
+    @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         milestones = project.milestones.all()
-        form = forms.IssueForm(milestone_queryset=milestones)
+        form = forms.IssueForm(request.POST, milestone_queryset=milestones)
         if form.is_valid():
-            issue = form.save()
+            issue = form.save(commit=False)
+            issue.project = project
+            issue.save()
             return self.render_to_ok()
 
         return self.render_to_error(form.jquery_errors)
 
 
 class IssueEditApiView(GenericView):
+    @login_required
     def post(self, request, pslug, issueid):
         issue = get_object_or_404(models.Issue, pk=issueid, project__slug=pslug)
-        form = forms.IssueForm(request.POST, instance=issue)
+        milestones = issue.project.milestones.all()
+        form = forms.IssueForm(request.POST, instance=issue, milestone_queryset=milestones)
         if form.is_valid():
             issue = form.save()
             return self.render_to_ok()

@@ -204,10 +204,10 @@ class IssueForm(Form):
                 'milestone': self._instance.milestone,
             }
 
-        super(IssueCreateForm, self).__init__(*args, **kwargs)
+        super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['milestone'].queryset = milestone_queryset
 
-    def save(self):
+    def save(self, commit=True):
         if not self._instance:
             self._instance = Issue()
 
@@ -216,7 +216,8 @@ class IssueForm(Form):
         self._instance.status = self.cleaned_data['status']
         self._instance.description = self.cleaned_data['description']
         self._instance.milestone = self.cleaned_data['milestone']
-        self._instance.save()
+        if commit:
+            self._instance.save()
         return self._instance
 
 

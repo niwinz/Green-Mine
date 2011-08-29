@@ -61,6 +61,25 @@ class MilestoneApiTest(TestCase):
     def tearDown(self):
         self.project.delete()
 
+    def test_create_new_milestone_anonymous(self):
+        res = self.client.post(self.project.get_milestone_create_api_url())
+        self.assertEqual(res.status_code, 302)
+
+    def test_create_new_milestone(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        params = {'name':'test2milestone'}
+        res = self.client.post(self.project.get_milestone_create_api_url(),
+            params, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+
+        self.assertTrue(self.project.milestones.filter(pk=data['id']).exists())
+        
+
     def test_tasks_for_milestone_anonymous(self):
         res = self.client.get(self.milestone.get_tasks_for_milestone_api_url())
         self.assertEqual(res.status_code, 302)
@@ -146,3 +165,91 @@ class ProjectApiTest(TestCase):
         self.assertTrue(data['valid'])
 
         self.assertEqual(models.Project.objects.count(), 0)
+
+
+class IssueApiTest(TestCase):
+    def setUp(self):
+        self.user1 = models.User.objects.get(username='andrei')
+        self.user2 = models.User.objects.exclude(username='andrei')[0]
+        self.project = models.Project.objects.create(
+            owner = self.user1,
+            name = 'test',
+            description = 'test-description',
+        )
+        self.milestone = models.Milestone.objects.create(
+            name = 'test',
+            project = self.project,
+        )
+        
+    def tearDown(self):
+        self.project.delete()
+
+    def test_create_issue_anonymous(self):
+        res = self.client.post(self.project.get_issue_create_api_url())
+        self.assertEqual(res.status_code, 302)
+
+    def test_create_unasigned_issue(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        params = {'name': 'issue-test','type':'task','status':'new',
+            'description': 'issue-description'}
+        res = self.client.post(self.project.get_issue_create_api_url(),
+            params, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 200)
+        
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+
+    def test_create_assigned_issue(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        params = {'name': 'issue-test','type':'task','status':'new',
+            'description': 'issue-description', 'milestone': 1}
+        res = self.client.post(self.project.get_issue_create_api_url(),
+            params, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+        self.assertEqual(self.milestone.issues.count(), 1)
+
+    def test_bad_issue_create_request(self):
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+        params = {'name': 'issue-test','type':'fooo','status':'new',
+            'description': 'issue-description', 'milestone': 1}
+
+        res = self.client.post(self.project.get_issue_create_api_url(),
+            params, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.content)
+        self.assertFalse(data['valid'])
+
+    def test_issue_modify(self):
+        issue = models.Issue.objects.create(
+            project = self.project,
+            subject='test-issue-2',
+            type='task',
+            status='new',
+            description='desc',
+            milestone = self.milestone
+        )
+
+        res = self.client.login(username='andrei', password='123123')
+        self.assertTrue(res)
+
+        params = {'name': 'issue-test','type':'task','status':'new',
+            'description': 'issue-description', 'milestone': 1}
+
+        res = self.client.post(issue.get_edit_api_url(), params,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.content)
+        self.assertTrue(data['valid'])
+
+        self.assertEqual(models.Issue.objects.get(pk=issue.id).subject, 'issue-test')
+
