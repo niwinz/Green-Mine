@@ -70,11 +70,12 @@ def ref_uniquely(model, field='ref'):
     """
 
     import time, baseconv
-    potential = baseconv.base62.encode(int(time.time()))
     while True:
+        potential = baseconv.base62.encode(int(time.time()))
         if not model.objects.filter(**{field: potential}).exists():
             return potential
-        time.sleep(0.6)
+
+        time.sleep(0.8)
 
 
 class Profile(models.Model):
