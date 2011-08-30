@@ -13,9 +13,12 @@ TEMPLATE_CONTEXT_PROCESSORS += [
 #INSTALLED_APPS += [
 #    'django_dbstorage',
 #]
-
-MEDIA_ROOT = None
+#MEDIA_ROOT = None
 #MEDIA_URL  = None
 
 #DEFAULT_FILE_STORAGE = 'greenmine.storage.RandomFilenameDBStorage'
 #DEFAULT_FILE_STORAGE = 'django_dbstorage.storage.DatabaseStorage'
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
