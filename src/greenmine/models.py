@@ -139,16 +139,27 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
 
+class Team(models.Model):
+    name = models.CharField(max_length=200)
+    project = models.ForeignKey('Project', related_name='teams')
+    users = models.ManyToManyField('auth.User', related_name='teams', null=True, default=None)
+
+    class Meta:
+        unique_together = ('name', 'project')
+
+
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project")
     user = models.ForeignKey("auth.User")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
-    tags = models.CharField(max_length=500, blank=True)
     
     # email notification settings
     send_email_on_group_message = models.BooleanField(default=True)
     send_email_on_issue_asignement = models.BooleanField(default=True)
     send_email_on_new_issue = models.BooleanField(default=False)
+    send_email_on_new_issue_as_watcher = models.BooleanField(default=True)
+    send_email_on_incoming_question = models.BooleanField(default=False)
+    send_email_on_incoming_question_assigned = models.BooleanField(default=False)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)
@@ -255,18 +266,35 @@ class IssueFile(models.Model):
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
+    attached_file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
 
 
-class Blacklist(models.Model):
-    """ Sirve para poner una lista negra de ips que directamente no pueden
-    acceder al sitio. """
-    remote_host = models.CharField(max_length=200, unique=True)
+class Question(models.Model):
+    subject = models.CharField(max_length=150)
+    slug = models.SlugField(unique=True, max_length=200)
+    content = models.TextField()
+    closed = models.BooleanField(default=False)
+    attached_file = models.FileField(upload_to="messages/%Y/%m/%d", max_length=500, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey('auth.User', related_name='questions')
+
+
+class QuestionResponse(models.Model):
+    content = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    attached_file = models.FileField(upload_to="messages/%Y/%m/%d", max_length=500, null=True, blank=True)
+
+    question = models.ForeignKey('Question', related_name='responses')
+    owner = models.ForeignKey('auth.User', related_name='questions_responses')
 
 
 class GSettings(models.Model):
     key = models.CharField(max_length=200, unique=True)
     value = models.TextField(blank=True, default='')
+
 
 # load signals
 from . import sigdispatch
