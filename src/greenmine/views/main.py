@@ -183,6 +183,19 @@ class IssueView(GenericView):
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
         issue = get_object_or_404(project.issues, ref=iref)
+        form = forms.IssueResponseForm()
         
-        context = {'issue':issue}
+        context = {'issue':issue, 'form': form}
+        return self.render(self.template_name, context)
+
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        issue = get_object_or_404(project.issues, ref=iref)
+        form = forms.IssueResponseForm(request.POST, request.FILES, issue=issue, request=request)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(issue.get_view_url())
+
+        context = {'form':form, 'issue':issue}
         return self.render(self.template_name, context)

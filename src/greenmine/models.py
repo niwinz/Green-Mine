@@ -276,7 +276,7 @@ class IssueResponse(models.Model):
 
 
 class IssueFile(models.Model):
-    response = models.ForeignKey('IssueFile', related_name='attached_files', null=True, blank=True)
+    response = models.ForeignKey('IssueResponse', related_name='attached_files', null=True, blank=True)
     issue = models.ForeignKey('Issue', related_name='attached_files', null=True, blank=True)
 
     owner = models.ForeignKey("auth.User", related_name="files")

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load greenmine_utils %}
 {% load i18n %}
 
 {% block wrapper %}
@@ -49,25 +50,35 @@
             {{ issue.description|linebreaks }}
         </div>
         {% endif %}
+
+        {% with subtasks=issue.subtasks.all %}
         <div class="form-field width100">
-            <span class="label">Subtareas</span>
+            <span class="label">{% trans "Subtasks" %}</span>
             <div class="subissue">
                 <ul>
-                    <li><a href="">Subtarea 1 (Estado: completada)</a></li>
-                    <li><a href="">Subtarea 2 (Estado: completada)</a></li>
-                    <li><a href="">Subtarea 3 (Estado: completada)</a></li>                            
+                    {% for st in subtasks %}
+                    <li><a href="">{{ st.subject }}</a></li>
+                    {% empty %}
+                    {% trans "No subtasks" %}
+                    {% endfor %}
                 </ul>
             </div>
         </div>
+        {% endwith %}
+
+        {% with files=issue.attached_files.all %}
+            {% if files|length > 0 %}
+            <div class="form-field width100">
+                <span class="label">Ficheros</span>
+                <ul>
+                    <li><a href="">Fichero 1 (1 mb)</a></li>
+                    <li><a href="">Fichero 2 (2 mb)</a></li>
+                    <li><a href="">Fichero 3 (2 mb)</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
         
-        <div class="form-field width100">
-            <span class="label">Ficheros</span>
-            <ul>
-                <li><a href="">Fichero 1 (1 mb)</a></li>
-                <li><a href="">Fichero 2 (2 mb)</a></li>
-                <li><a href="">Fichero 3 (2 mb)</a></li>
-            </ul>
-        </div>
         <div class="width100 float-left">
             <a href="" class="btn01 float-right">Editar</a>
             <a href="" class="btn01 float-right">Añadir subtarea</a>
@@ -75,30 +86,39 @@
         <hr/>
     </div>
     <div id="responses">
+        {% for response in issue.responses.all %}
         <div class="response">
-            <p class="name"><img width="30" src="./auxiliar/imgs/gravatar.jpg" /> Andrei</p>
-            <div class="txt">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
-                <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
-            </div>
-            <p class="files"><a href="">Fichero 1 (2 mb)</a>, <a href="">Fichero 2 (1 mb)</a></p>
+            <p class="name">
+                {% if response.owner.get_profile.photo %}
+                <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
+                {% else %}
+                <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                {% endif %}
+                {{ response.owner.first_name }} {{ response.owner.last_name }}
+            </p>
+            <div class="txt">{{ response.content|linebreaks }}</div>
+            {% with responsefiles=response.attached_files.all %}
+                {% if responsefiles|length > 0 %}
+                <p>
+                    {% for file in responsefiles %}
+                    <a href="">{{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )</a>
+                    {% endfor %}
+                </p>
+                {% endif %}
+            {% endwith %}
         </div>
-        <div class="response">
-            <p class="name"><img width="30" src="./auxiliar/imgs/gravatar.jpg" /> Andrei</p>
-            <div class="txt">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
-                <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
-            </div>
-        </div> 
-        
+        {% endfor %}
+
         <form class="validate" enctype="multipart/form-data" method="post" action="">
+            {% csrf_token %}
             <fieldset>
                 <p class="form-field width100">
-                    <textarea class="required" name="description"></textarea>
+                    {{ form.description }}
+                    {{ form.description.errors }}
                 </p>      
                 <p class="form-field width100">
-                    <label>Ficheros</label>
-                    <input class="file" type="file" />
+                    {{ form.attached_file.label }}
+                    {{ form.attached_file }}
                 </p>                        
                 <p class="width100 float-left">
                     <input class="btn01" type="submit" value="Enviar" />

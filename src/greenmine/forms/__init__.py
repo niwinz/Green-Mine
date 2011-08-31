@@ -11,6 +11,7 @@ from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
 from greenmine.models import *
+from greenmine import models
 from greenmine.utils import encrypt_password
 
 class Form(forms.Form):
@@ -238,6 +239,29 @@ class IssueForm(Form):
         if commit:
             self._instance.save()
         return self._instance
+
+
+class IssueResponseForm(Form):
+    description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
+    attached_file = forms.FileField(required=False)
+    
+    def __init__(self, *args, **kwargs):
+        self._issue = kwargs.pop('issue', None)
+        self._request = kwargs.pop('request', None)
+        super(IssueResponseForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        self._instance = models.IssueResponse.objects.create(
+            owner = self._request.user,
+            issue = self._issue,
+            content = self.cleaned_data['description'],
+        )
+        if self.cleaned_data['attached_file']:
+            instance_file = models.IssueFile.objects.create(
+                response = self._instance,
+                owner = self._request.user,
+                attached_file = self.cleaned_data['attached_file']
+            )
 
 
 class DumpUploadForm(forms.Form):
