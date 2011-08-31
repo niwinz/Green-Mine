@@ -71,11 +71,11 @@ def ref_uniquely(model, field='ref'):
 
     import time, baseconv
     while True:
-        potential = baseconv.base62.encode(int(time.time()))
+        potential = baseconv.base62.encode(int("".join(str(time.time()).split("."))))
         if not model.objects.filter(**{field: potential}).exists():
             return potential
 
-        time.sleep(0.8)
+        time.sleep(0.002)
 
 
 class Profile(models.Model):
@@ -112,7 +112,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project', (), {'slug':self.slug})
+        return ('web:project', (), {'pslug':self.slug})
 
     @models.permalink
     def get_unasigned_tasks_api_url(self):

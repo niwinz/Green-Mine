@@ -75,6 +75,7 @@ class TasksForMilestoneApiView(GenericView):
         response_list = []
         for issue in issues:
             response_dict = {
+                'ref': issue.ref,
                 'id': issue.id,
                 'name': issue.subject,
                 'to': issue.assigned_to and issue.assigned_to.first_name or None,

@@ -56,8 +56,8 @@ class ProjectsView(GenericView):
 
 class ProjectView(GenericView):
     @login_required
-    def get(self, request, slug):
-        project = get_object_or_404(models.Project, slug=slug)
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
         context = {
             'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project
@@ -175,3 +175,14 @@ class ProjectEditView(ProjectCreateView):
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return HttpResponseRedirect(reverse('web:projects'))
+
+
+class IssueView(GenericView):
+    template_name = "issue.html"
+    @login_required
+    def get(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        issue = get_object_or_404(project.issues, ref=iref)
+        
+        context = {'issue':issue}
+        return self.render(self.template_name, context)

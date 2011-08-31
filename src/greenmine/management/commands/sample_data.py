@@ -8,6 +8,21 @@ import random, sys
 
 from greenmine.models import *
 
+subjects = [
+    "Fixing templates for Django 1.2.",
+    "get_actions() does not check for 'delete_selected' in actions",
+    "Experimental: modular file types",
+    "Add setting to allow regular users to create folders at the root level.",
+    "add tests for bulk operations",
+    "create testsuite with matrix builds",
+    "Lighttpd support",
+    "Lighttpd x-sendfile support", 
+    "Added file copying and processing of images (resizing)",
+    "Exception is thrown if trying to add a folder with existing name",
+    "Feature/improved image admin",
+    "Support for bulk actions",
+]
+
 class Command(BaseCommand):
     @transaction.commit_on_success
     def handle(self, *args, **options):
@@ -27,10 +42,9 @@ class Command(BaseCommand):
             project = Project.objects.create(
                 name = 'FooProject%s' % (x),
                 description = 'Foo project description %s' % (x),
-                owner = create_user(users_counter),
+                owner = random.choice(list(User.objects.all())),
                 public = True,
             )
-            users_counter += 1
 
             # add owner to participants list
             ProjectUserRole.objects.create(
@@ -61,6 +75,7 @@ class Command(BaseCommand):
                 # create issues asociated to milestones
                 for z in xrange(random.randint(15, 50)):
                     issue = Issue.objects.create(
+                        subject = random.choice(subjects),
                         priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
                         status = random.choice(dict(ISSUE_STATUS_CHOICES).keys()),
                         project = project,
@@ -73,6 +88,7 @@ class Command(BaseCommand):
             # created unassociated issues.
             for y in xrange(20):
                 issue = Issue.objects.create(
+                    subject = random.choice(subjects),
                     priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
                     status = random.choice(dict(ISSUE_STATUS_CHOICES).keys()),
                     project = project,
