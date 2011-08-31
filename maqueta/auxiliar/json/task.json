@@ -1,13 +1,20 @@
 {"valid":true,
- "id":29, 
- "name": "Arreglar bla bla bla", 
- "state": "new",    
- "state_view": "New",
- "priority": "0", 
- "priority_view": "Normal",
- "type": "task",
- "type_view": "Task",
- "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
+ "task":
+ {
+    "id":223, 
+    "url": "http://www.google.es",
+    "edit_url": "auxiliar/json/task.json",
+    "subject": "Arreglar bla bla bla", 
+    "to_id": "1", 
+    "to": "Juanfran", 
+    "status": "new",    
+    "status_view": "New",
+    "priority": "0", 
+    "priority_view": "Lower",
+    "type": "task",
+    "description": " holaaa hoooo \n dsfsdfs sdfsd \n",
+    "type_view": "Task"
+ },   
  "errors": [{
     "nombre-issue": "Prueba validación nombre"
  }]

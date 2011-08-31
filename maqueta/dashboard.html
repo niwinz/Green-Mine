@@ -18,63 +18,55 @@
         </ul>
     </div>
     <div id="wrapper">
-            <div id="dashboard">
+            <div id="dashboard" rel="2">
                 <div id="dashboard-actions">
+                    <div id="bin"></div>
                     <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
                     <a id="new-issue" class="btn01" href="">Nueva tarea</a>
                 </div>
                 <ul id="milestones">
-                    <li class="selected milestone" milestone="1" url="auxiliar/json/dashboard.json">
-                        <div class="ml"><span class="name">Fase 1</span><div><span class="estimated_finish">12/03/2011</span> (<span class="issue">1/2</span>)</div></div>
-                        <a href="" class="edit"></a>
-                    </li>
-                    <li class="milestone" milestone="2" url="auxiliar/json/dashboard.json">
-                        <div class="ml"><span class="name">Fase 2</span><div><span class="estimated_finish">06/11/2011</span> (<span class="issue">2/6</span>)</div></div>
-                        <a href="" class="edit"></a>
-                    </li>
-                    <li class="milestone" milestone="0" url="auxiliar/json/dashboard.json">
-                        <div class="ml"><span class="name">Sin asignar</span><div>(<span class="issue">4/20</span>)</div></div>
-                    </li>
                 </ul>
                 <div id="tasks-filters">
                     <p>
                         <label>Asignado a</label>
-                        <select name="to">
-                            <option value="0">Todos</option>
-                            <option value="1">Andrei</option>
-                            <option value="2">Juanfran</option>
+                        <select name="to_id">
+                            <option value="-1">Todos</option>
+                            <option value="2">Andrei</option>
+                            <option value="1">Juanfran</option>
                         </select>
                     </p>
                     <p>
                         <label>Estado</label>
-                        <select name="state">
-                            <option value="0">Todos</option>
-                            <option value="Abierta">Abierta</option>
-                            <option value="Cerrada">Cerrada</option>
+                        <select name="status">
+                            <option value="-1">Todos</option>
+                            <option value="new">New</option>
+                            <option value="fixed">Fixed</option>
+                            <option value="accepted">En progreso</option>
                         </select>
                     </p>
                     <p>
                         <label>Prioridad</label>
                         <select name="priority">
-                            <option value="0">Todos</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Baja">Baja</option>
+                            <option value="-1">Todos</option>
+                            <option value="0">Lower</option>
+                            <option value="6">Urgent</option>
+                            <option value="4">Hight</option>
                         </select>
                     </p>
                     <p>
                         <label>Tipo</label>
                         <select name="type">
-                            <option value="0">Todos</option>
-                            <option value="Tarea">Tarea</option>
-                            <option value="Bug">Bug</option>
+                            <option value="-1">Todos</option>
+                            <option value="task">Tarea</option>
+                            <option value="bug">Bug</option>
                         </select>
                     </p>                    
                 </div>
                 <ul id="tasks">
                 </ul>
                 
-                <div id="milestone-lb">
-                    <form method="post" action="" editaction="auxiliar/json/milestone.json" newaction="auxiliar/json/milestone.json">
+                <div id="milestone-lb" class="lightbox">
+                    <form method="post" action="" newaction="auxiliar/json/milestone.json">
                         <fieldset>
                             <p class="form-field">
                                 <label for="">Nombre</label>
@@ -94,8 +86,8 @@
                     </form>                    
                 </div>
                 
-                <div id="issue-lb">
-                    <form method="post" action="" editaction="auxiliar/json/task.json" newaction="auxiliar/json/task.json">
+                <div id="issue-lb" class="lightbox">
+                    <form method="post" action="" newaction="auxiliar/json/task.json">
                         <fieldset>
                             <p class="form-field">
                                 <label for="">Nombre</label>
