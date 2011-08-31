@@ -236,8 +236,6 @@ $(document).ready(function(){
             function dragAndDrop(){
                 $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
                 drop: function(ev, ui){
-                    var issue_drop_url = $(ui.draggable).data('drop_url');
-                    
                     /* Drop ¿Que? Milestone? */
                     if($(ui.draggable).hasClass('milestone')){
                         var data = {};
@@ -246,6 +244,7 @@ $(document).ready(function(){
 
                     /* Drop task */
                     else if($(ui.draggable).hasClass('task')){
+                        var issue_drop_url = $(ui.draggable).data('drop_url');
                         $.post(issue_drop_url, function(data) {
                             if (data.valid) {
                                 var old_milestone = $("#milestones .selected");
@@ -261,6 +260,7 @@ $(document).ready(function(){
                     }
                     $(ui.draggable).remove();
                 }});
+
                 $('#tasks').delegate('li', 'mouseenter', function() {
                     if(!$(this).is(':data(draggable)')) {
                         $(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});        
@@ -273,26 +273,26 @@ $(document).ready(function(){
                             drop: function(ev, ui){
                                 ui.draggable.draggable('option','revert',false);
                                 if(!$(this).hasClass('selected')){
-                                    var data = {};
-                                    data.milestone = $(this).data('id');
-                                    data.task = $(ui.draggable).data('id');
-                                    $.ajax({url : '', type : 'POST', data: data});
+                                    var issue_asociate_url = $(ui.draggable).data('asociate_url');
+                                    var milestone_id = $(this).data('id');
+                                    var self = $(this);
 
-                                    var old_milestone = $("#milestones .selected");
-                                    
-                                    if($(ui.draggable).data('status')=='fixed'){
-                                        $(this).data('completed_tasks', parseInt($(this).data('completed_tasks'))+1);
-                                        $(old_milestone).data('completed_tasks', parseInt($(old_milestone).data('completed_tasks'))-1);
-                                    }
-                                    
-                                    $(this).data('total_tasks', parseInt($(this).data('total_tasks'))+1);
-                                    $(old_milestone).data('total_tasks', parseInt($(old_milestone).data('total_tasks'))-1);
-
-                                    $(this).updateHtml(); 
-                                    $(old_milestone).updateHtml(); 
-                                    
-                                    $(ui.draggable).remove();
-                                }else{
+                                    var params = {milestone:milestone_id};
+                                    $.get(issue_asociate_url, params, function(data){
+                                        if (data.valid) {
+                                            var old_milestone = $("#milestones .selected");
+                                            if($(ui.draggable).data('status')=='fixed'){
+                                                self.data('completed_tasks', parseInt(self.data('completed_tasks'))+1);
+                                                $(old_milestone).data('completed_tasks', parseInt($(old_milestone).data('completed_tasks'))-1);
+                                            }
+                                            self.data('total_tasks', parseInt(self.data('total_tasks'))+1);
+                                            $(old_milestone).data('total_tasks', parseInt($(old_milestone).data('total_tasks'))-1);
+                                            self.updateHtml(); 
+                                            $(old_milestone).updateHtml(); 
+                                            $(ui.draggable).remove();
+                                        }
+                                    }, 'json');
+                                } else {
                                     ui.draggable.draggable('option','revert',true);
                                 }
                             }

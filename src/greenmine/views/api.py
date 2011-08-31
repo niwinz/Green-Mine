@@ -126,7 +126,9 @@ class TasksForMilestoneApiView(GenericView):
                 'type_view': issue.get_type_display(),
                 'edit_url': issue.get_edit_api_url(),
                 'drop_url': issue.get_drop_api_url(),
+                'asociate_url': issue.get_asoiciate_api_url(),
                 'url': issue.get_view_url(),
+                'milestone_id': issue.milestone and issue.milestone.id or None,
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})
@@ -211,6 +213,26 @@ class IssueDropApiView(GenericView):
         issue.delete()
         return self.render_to_ok()
 
+class IssueAsociateApiView(GenericView):
+    @login_required
+    def get(self, request, pslug, iref):
+        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
+        try:
+            mid = int(request.GET.get('milestone', ''))
+        except (ValueError, TypeError):
+            return self.render_to_error('invalid paremeters')
+        
+        if mid == 0:
+            issue.milestone = None
+            issue.save()
+        else:
+            issue.milestone = get_object_or_404(models.Milestone, \
+                project__slug=pslug, pk=mid)
+            issue.save()
+        
+        return self.render_to_ok()
+
+        
 
 class I18NLangChangeApiView(GenericView):
     """ View for set language."""

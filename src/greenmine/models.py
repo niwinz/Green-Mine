@@ -254,6 +254,10 @@ class Issue(models.Model):
         return ('api:issue-edit', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
+    def get_asoiciate_api_url(self):
+        return ('api:issue-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
+
+    @models.permalink
     def get_drop_api_url(self):
         return ('api:issue-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
