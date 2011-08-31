@@ -125,6 +125,7 @@ class TasksForMilestoneApiView(GenericView):
                 'type': issue.type,
                 'type_view': issue.get_type_display(),
                 'edit_url': issue.get_edit_api_url(),
+                'drop_url': issue.get_drop_api_url(),
                 'url': issue.get_view_url(),
             }
             response_list.append(response_dict)
@@ -193,8 +194,8 @@ class IssueCreateApiView(GenericView):
 
 class IssueEditApiView(GenericView):
     @login_required
-    def post(self, request, pslug, issueid):
-        issue = get_object_or_404(models.Issue, pk=issueid, project__slug=pslug)
+    def post(self, request, pslug, iref):
+        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
         milestones = issue.project.milestones.all()
         form = forms.IssueForm(request.POST, instance=issue, milestone_queryset=milestones)
         if form.is_valid():
@@ -202,6 +203,13 @@ class IssueEditApiView(GenericView):
             return self.render_to_ok()
 
         return self.render_to_error(form.jquery_errors)
+
+class IssueDropApiView(GenericView):
+    @login_required
+    def post(self, request, pslug, iref):
+        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
+        issue.delete()
+        return self.render_to_ok()
 
 
 class I18NLangChangeApiView(GenericView):

@@ -251,7 +251,11 @@ class Issue(models.Model):
 
     @models.permalink
     def get_edit_api_url(self):
-        return ('api:issue-edit', (), {'pslug': self.project.slug, 'issueid': self.id})
+        return ('api:issue-edit', (), {'pslug': self.project.slug, 'iref': self.ref})
+
+    @models.permalink
+    def get_drop_api_url(self):
+        return ('api:issue-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_view_url(self):

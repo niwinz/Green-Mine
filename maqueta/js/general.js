@@ -236,22 +236,28 @@ $(document).ready(function(){
             function dragAndDrop(){
                 $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
                 drop: function(ev, ui){
-                    var data = {};
-                    data.id = $(ui.draggable).data('id');
+                    var issue_drop_url = $(ui.draggable).data('drop_url');
+                    
+                    /* Drop ¿Que? Milestone? */
                     if($(ui.draggable).hasClass('milestone')){
+                        var data = {};
                         $.ajax({url : '', type : 'POST', data: data});
-                    }else{
-                        if($(ui.draggable).hasClass('task')){
-                            $.ajax({url : '', type : 'POST', data: data});
-                            var old_milestone = $("#milestones .selected");
+                    }
 
-                            if($(ui.draggable).data('status')=='fixed'){
-                                $(old_milestone).data('completed_tasks', parseInt($(old_milestone).data('completed_tasks'))-1);
+                    /* Drop task */
+                    else if($(ui.draggable).hasClass('task')){
+                        $.post(issue_drop_url, function(data) {
+                            if (data.valid) {
+                                var old_milestone = $("#milestones .selected");
+
+                                if($(ui.draggable).data('status')=='fixed'){
+                                    $(old_milestone).data('completed_tasks', parseInt($(old_milestone).data('completed_tasks'))-1);
+                                }
+
+                                $(old_milestone).data('total_tasks', parseInt($(old_milestone).data('total_tasks'))-1);
+                                $(old_milestone).updateHtml();
                             }
-
-                            $(old_milestone).data('total_tasks', parseInt($(old_milestone).data('total_tasks'))-1);
-                            $(old_milestone).updateHtml();                             
-                        }
+                        }, 'json');
                     }
                     $(ui.draggable).remove();
                 }});
