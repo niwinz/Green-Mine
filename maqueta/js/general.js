@@ -193,11 +193,7 @@ $(document).ready(function(){
                             .data(tks[i])
                             .html(taskHtml(tks[i]))
                             .appendTo(tkul); 
-                        console.log(item);
-                        
                     }
-
-
                     $(tkul).show();
                 }, 'json');
             }
