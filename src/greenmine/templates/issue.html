@@ -101,7 +101,7 @@
                 {% if responsefiles|length > 0 %}
                 <p>
                     {% for file in responsefiles %}
-                    <a href="">{{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )</a>
+                    <a href="{{ file.attached_file.url }}">{{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )</a>
                     {% endfor %}
                 </p>
                 {% endif %}
