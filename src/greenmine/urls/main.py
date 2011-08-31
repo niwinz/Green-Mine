@@ -2,6 +2,7 @@
 
 from django.conf.urls.defaults import patterns, include, url
 from greenmine.views import main, config
+from django.conf import settings
 
 
 js_info_dict = {
@@ -24,3 +25,12 @@ urlpatterns = patterns('',
 urlpatterns += patterns('',
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jsi18n'),
 )
+
+if settings.DEBUG:
+    from django.views.static import serve
+    _media_url = settings.MEDIA_URL
+    if _media_url.startswith('/'):
+        _media_url = _media_url[1:]
+        urlpatterns += patterns('', 
+            (r'^%s(?P<path>.*)$' % _media_url, serve, {'document_root': settings.MEDIA_ROOT})
+        )
