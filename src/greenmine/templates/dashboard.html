@@ -3,29 +3,14 @@
 {% load i18n %}
 
 {% block wrapper %}
-<div id="dashboard">
+<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
     <div id="dashboard-actions">
+        <div id="bin"></div>
         <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
         <a id="new-issue" class="btn01" href="">Nueva tarea</a>
     </div>
-
     <ul id="milestones">
-        {% for mls in project.milestones.all %}
-        <li class="milestone {% if forloop.first %}selected{% endif %}" 
-            milestone="{{ mls.id }}" url="{{ mls.get_tasks_for_milestone_api_url }}"
-            editurl="{{ mls.get_edit_api_url }}">
-            <div class="ml"><span class="name">{{ mls.name }}</span>
-                <div><span class="estimated_finish">{% if mls.estimated_finish %}{{ mls.estimated_finish }}{% endif %}</span> 
-                (<span class="issue">1/2</span>)</div>
-            </div>
-            <a href="" class="edit"></a>
-        </li>
-        {% endfor %}
-        <li class="milestone" milestone="0" url="{{ project.get_unasigned_tasks_api_url }}">
-            <div class="ml"><span class="name">{% trans "Unassigned" %}</span><div>(<span class="issue">4/20</span>)</div></div>
-        </li>
     </ul>
-
     <div id="tasks-filters">
         <p>
             {{ filtersform.to.label }}
@@ -44,11 +29,12 @@
             {{ filtersform.type }}
         </p>                    
     </div>
+
     <ul id="tasks">
     </ul>
-
-    <div id="milestone-lb">
-        <form method="post" action="" editaction="auxiliar/json/milestone.json" newaction="{{ project.get_milestone_create_api_url }}">
+    
+    <div id="milestone-lb" class="lightbox">
+        <form method="post" action="" newaction="auxiliar/json/milestone.json">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>
@@ -67,8 +53,9 @@
             <input type="hidden" name="id" />
         </form>                    
     </div>
-    <div id="issue-lb">
-        <form method="post" action="" editaction="auxiliar/json/task.json" newaction="{{ project.get_issue_create_api_url }}">
+    
+    <div id="issue-lb" class="lightbox">
+        <form method="post" action="" newaction="auxiliar/json/task.json">
             <fieldset>
                 <p class="form-field">
                     <label for="">Nombre</label>

@@ -6,6 +6,9 @@ from greenmine.views import api
 urlpatterns = patterns('',
     url(r'^login$', api.ApiLogin.as_view(), name='login'),
     url(r'^user/list/$', api.UserListApiView.as_view(), name='user-list'),
+    
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestones/$',
+        api.MilestonesForProjectApiView.as_view(), name='milestones-for-project'),
 
     url(r'^project/(?P<pslug>[\w\d\-]+)/m/(?P<mid>\d+)/tasks/$', 
         api.TasksForMilestoneApiView.as_view(), name="tasks-for-milestone"),

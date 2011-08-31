@@ -57,6 +57,44 @@ class UserListApiView(GenericView):
         return self.render_to_ok(context)
 
 
+class MilestonesForProjectApiView(GenericView):
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        
+        milestones = []
+        for ml in project.milestones.all():
+            total_tasks = ml.issues.count()
+            total_tasks_completed = ml.issues.filter(status__in=['fixed','invalid']).count()
+            milestones.append({
+                'id': ml.id,
+                'url': ml.get_tasks_for_milestone_api_url(),
+                'edit_url': ml.get_edit_api_url(),
+                'name': ml.name,
+                'estimated_finish': ml.estimated_finish and \
+                    ml.estimated_finish.strftime('%d/%m/%Y') or '',
+                'completed_tasks': total_tasks_completed,
+                'total_tasks': total_tasks,
+            })
+
+        total_unassigned_tasks = project.issues.filter(milestone__isnull=True).count()
+        total_unassigned_completed_tasks = project.issues.filter(
+            milestone__isnull=True, 
+            status__in=['fixed','invalid']
+        ).count()
+
+        milestones.append({
+            'id': 0,
+            'url': ml.project.get_unasigned_tasks_api_url(),
+            'edit_url': '',
+            'name': _('Unasigned'),
+            'estimated_finish': '',
+            'completed_tasks': total_unassigned_completed_tasks,
+            'total_tasks': total_unassigned_tasks,
+        })
+        return self.render_to_ok({'milestones': milestones})
+
+
 class TasksForMilestoneApiView(GenericView):
     @login_required
     def get(self, request, pslug, mid=None):
@@ -77,17 +115,17 @@ class TasksForMilestoneApiView(GenericView):
             response_dict = {
                 'ref': issue.ref,
                 'id': issue.id,
-                'name': issue.subject,
+                'subject': issue.subject,
                 'to': issue.assigned_to and issue.assigned_to.first_name or None,
                 'to_id': issue.assigned_to and issue.assigned_to.id or None,
-                'state': issue.status,
-                'state_view': issue.get_status_display(),
+                'status': issue.status,
+                'status_view': issue.get_status_display(),
                 'priority': issue.priority,
                 'priority_view': issue.get_priority_display(),
                 'type': issue.type,
                 'type_view': issue.get_type_display(),
-                'project_slug': issue.project.slug,
                 'edit_url': issue.get_edit_api_url(),
+                'url': issue.get_view_url(),
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})

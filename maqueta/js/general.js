@@ -180,22 +180,26 @@ $(document).ready(function(){
             
             function loadTasks(url){
                 $("#tasks").hide();
-                $.ajax({url : url, type : 'GET',
-                success: function(data){
+
+                $.get(url, function(data) {
                     var tkul = $("#tasks");
                     $(tkul).html("");
                     ln = data.tasks.length; 
                     var tks = data.tasks;
                     
                     for(var i=0; i<ln; i++){
-                        $("<li/>")
-                        .addClass('task')
-                        .data(tks[i])
-                        .html(taskHtml(tks[i]))
-                        .appendTo(tkul); 
+                        var item = $("<li/>")
+                            .addClass('task')
+                            .data(tks[i])
+                            .html(taskHtml(tks[i]))
+                            .appendTo(tkul); 
+                        console.log(item);
+                        
                     }
+
+
                     $(tkul).show();
-                }})
+                }, 'json');
             }
             function loadMilestones(){
                 $("#milestones").delegate(".ml", "click", function(e){
@@ -206,34 +210,31 @@ $(document).ready(function(){
                     loadTasks($(li).data("url"))
                 });
                 
-                var data = {};
-                data.projectid = $("#dashboard").attr("rel");
-                $.ajax({url : 'auxiliar/json/milestones.json', type : 'GET', data: data, 
-                    success: function(data){
-                        var ln = data.milestones.length;
-                        var ml = data.milestones;
-                        var li = new Array();
+                var milestones_req_url = $("#dashboard").attr("rel");
+                $.get(milestones_req_url, function(data) {
+                    var ln = data.milestones.length;
+                    var ml = data.milestones;
+                    var li = new Array();
 
-                        for(var i=0; i<ln; i++){
-                            li.push(
-                                $("<li>")
-                                .addClass('milestone')
-                                .html(
-                                    milestoneHtml(ml[i])
-                                )
-                                .data(ml[i])
-                            );    
-                        }
-                       
-                        loadTasks($(li[0]).data().url);
-                        
-                        $(li[0]).addClass('selected');
-                        var mlul = $("#milestones");
-                        $(li).each(function(){
-                            $(mlul).append(this);
-                        })
+                    for(var i=0; i<ln; i++){
+                        li.push(
+                            $("<li>")
+                            .addClass('milestone')
+                            .html(
+                                milestoneHtml(ml[i])
+                            )
+                            .data(ml[i])
+                        );    
                     }
-                });
+                   
+                    loadTasks($(li[0]).data().url);
+                    
+                    $(li[0]).addClass('selected');
+                    var mlul = $("#milestones");
+                    $(li).each(function(){
+                        $(mlul).append(this);
+                    })
+                }, 'json');
             }
             
             function dragAndDrop(){

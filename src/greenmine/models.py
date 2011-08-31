@@ -130,6 +130,10 @@ class Project(models.Model):
     def get_issue_create_api_url(self):
         return ('api:project-issue-create', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_milestones_list_api_url(self):
+        return ('api:milestones-for-project', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
@@ -248,6 +252,10 @@ class Issue(models.Model):
     @models.permalink
     def get_edit_api_url(self):
         return ('api:issue-edit', (), {'pslug': self.project.slug, 'issueid': self.id})
+
+    @models.permalink
+    def get_view_url(self):
+        return ('web:issue', (), {'pslug': self.project.slug, 'iref': self.ref})
 
 
 class IssueResponse(models.Model):
