@@ -1,0 +1,9 @@
+select {
+    border: 1px solid #458745;
+    outline: 1px solid #ccc;
+    background: #eee;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px;
+}
+

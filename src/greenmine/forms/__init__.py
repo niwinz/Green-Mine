@@ -167,10 +167,10 @@ class ProjectForm(Form):
 
 
 class FiltersForm(Form):
-    to = forms.ModelChoiceField(queryset=User.objects.none(), empty_label=_(u"All"))
-    state = forms.ChoiceField(choices=(('', _(u'All'),),) + ISSUE_STATUS_CHOICES)
-    priority = forms.ChoiceField(choices=(('', _(u'All'),),) + ISSUE_PRIORITY_CHOICES)
-    type = forms.ChoiceField(choices=(('', _(u'All'),),) + ISSUE_TYPE_CHOICES)
+    to = forms.ModelChoiceField(queryset=User.objects.none(), empty_label=_(u"Assigned to..."))
+    state = forms.ChoiceField(choices=(('', _(u'Issue status...'),),) + ISSUE_STATUS_CHOICES)
+    priority = forms.ChoiceField(choices=(('', _(u'Issue priority...'),),) + ISSUE_PRIORITY_CHOICES)
+    type = forms.ChoiceField(choices=(('', _(u'Issue type...'),),) + ISSUE_TYPE_CHOICES)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
