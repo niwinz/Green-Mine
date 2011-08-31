@@ -3,46 +3,52 @@
 {% load i18n %}
 
 {% block wrapper %}
-{{ issue }}
 <div id="issue-detail">
     <div class="inline">
         <div class="form-field">
-            <span class="label">Asunto</span>
+            <span class="label">{% trans "Subject" %}</span>
             <span>{{ issue.subject }}</span>
         </div>
         <div class="form-field">
-            <span class="label">Estado</span>
-            <span>Fixed</span>
+            <span class="label">{% trans "Status" %}</span>
+            <span>{{ issue.get_status_display }}</span>
         </div>  
         <div class="form-field">
-            <span class="label">Tipo</span>
-            <span>Enhancement</span>
+            <span class="label">{% trans "Type" %}</span>
+            <span>{{ issue.get_type_display }}</span>
         </div>                      
         <div class="form-field">
-            <span class="label">Prioridad</span>
-            <span>Urgent</span>
+            <span class="label">{% trans "Priority" %}</span>
+            <span>{{ issue.get_priority_display }}</span>
         </div> 
         <div class="form-field">
-            <span class="label">Probado</span>
-            <span>Sí</span>
+            <span class="label">{% trans "Tested" %}</span>
+            <span>{{ issue.tested|yesno }}</span>
         </div>
         <div class="form-field">
-            <span class="label">Fecha fin</span>
-            <span>12/12/2012</span>
+            <span class="label">{% trans "Finish date" %}</span>
+            <span>{{ issue.finish_date|date:"DATE_FORMAT" }}</span>
         </div>
         <div class="form-field">
-            <span class="label">Watchers</span>
-            <span>juan, andrei</span>
+            <span class="label">{% trans "Watchers" %}</span>
+            <span>
+                {% for w in issue.watchers.all %}
+                    {{ w.first_name }} {{ w.last_name }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    {% trans "No watchers" %}
+                {% endfor %}
+            </span>
         </div>                  
         <div class="form-field">
-            <span class="label">Asignado a</span>
-            <span>Andrei</span>
-        </div>                    
+            <span class="label">{% trans "Assigned to" %}</span>
+            <span>{{ issue.assigned_to.first_name }} {{ issue.assigned_to.last_name }}</span>
+        </div>
+        {% if issue.description %}
         <div class="form-field width100">
-            <span class="label">Descripción</span>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec diam est, ultricies quis cursus a, pulvinar eget enim.</p>
-            <p>Nullam auctor sodales dictum. Mauris id arcu nisi. Nulla sed ipsum id eros fermentum lacinia. Vestibulum molestie porttitor lectus, at volutpat nunc sodales non.</p>
-        </div>  
+            <span class="label">{% trans "Description" %}</span>
+            {{ issue.description|linebreaks }}
+        </div>
+        {% endif %}
         <div class="form-field width100">
             <span class="label">Subtareas</span>
             <div class="subissue">
@@ -53,7 +59,7 @@
                 </ul>
             </div>
         </div>
-
+        
         <div class="form-field width100">
             <span class="label">Ficheros</span>
             <ul>
