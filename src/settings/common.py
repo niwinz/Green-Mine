@@ -148,6 +148,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'greenmine',
+    'greenmine_mobile',
 ]
 
 LOGGING = {
