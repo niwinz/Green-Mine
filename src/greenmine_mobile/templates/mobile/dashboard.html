@@ -1,0 +1,37 @@
+{% extends "mobile/base.html" %}
+{% load url from future %}
+
+{% block title %} 
+<a href="{{ project.get_dashboard_url }}">/ {{ project.name }}</a>
+{% endblock %}
+
+{% block middle %}
+<table class="top-menu">
+    <tbody>
+        <tr>
+            <td class="selected"><a href="">Dashboard</a></td>
+            <td><a href="">Questions</a></td>
+            <td><a href="">Admin</a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
+
+{% block wrapper %}
+<div class="project-panel">
+    <div class="milestones subpanel">
+        <label>Select your milestone:</label><br />
+        <select name="milestones">
+            {% for ml in project.milestones.all %}
+            <option value="{{ ml.id }}" 
+                url="{% url 'web:project-issues-view' project.slug ml.id %}" 
+                {% if forloop.first %}selected="selected"{% endif %}>{{ ml.name }}</option>
+            {% endfor %}
+            <option value="0" url="{{ project.get_unasigned_tasks_api_url }}">Unassigned</option>
+        </select>
+    </div>
+
+    <div class="issues-panel subpanel">
+    </div>
+</div>
+{% endblock %}

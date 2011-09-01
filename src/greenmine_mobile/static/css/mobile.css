@@ -1,6 +1,7 @@
 body { margin: 0px; padding: 0px; }
 body .header { background-color: #458745; padding: 5px; color: white; font-weight: bold; overflow: hidden;}
 body .header .title { float: left; }
+body .header .title a { color: white; text-decoration: none; }
 body .header .right { float: right; font-size: 11px; }
 
 body .wrapper { margin-top: 10px; padding-left: 7px; padding-right: 7px; }
@@ -12,6 +13,7 @@ input[type="button"],
 input[type="submit"] { width: 90px; background-color: #eee; border: 1px solid #999; outline: 1px solid #ccc; }
 
 form div.field { margin-bottom: 8px; }
+.hidden { display: none; }
 
 .login-panel input[type="text"], 
 .login-panel input[type="password"] { width: 95%; }
@@ -41,12 +43,48 @@ table.top-menu td.selected a { color: white; }
     padding-right: 5px;
     font-size: 12px;
 }
-.issues-panel .issues-list .issue-item.urgent{
+.issues-panel .issues-list .issue-item.priority4 .title,
+.issues-panel .issues-list .issue-item.priority6 .title,
+.issues-panel .issues-list .issue-item.priority8 .title {
     border-left: 5px solid red;
 }
-.issues-panel .issues-list .issue-item.normal{
+.issues-panel .issues-list .issue-item.priority1 .title,
+.issues-panel .issues-list .issue-item.priority2 .title {
     border-left: 5px solid blue;
 }
-.issues-panel .issues-list .issue-item  .title {
+
+.issues-panel .issues-list .issue-item .title {
     overflow: hidden;
+    padding-left: 5px;
+}
+.issues-panel .issues-list .issue-item .issue-options {
+    padding: 10px;
+}
+
+ul.errorlist {
+    margin:0px;
+    padding:0px;
+    list-style: none;
+    color: red;
+    font-size: 12px;
+}
+
+.issue-module fieldset.panel {
+    border: 1px solid #ddd;
+    background: #eee;
+    border-radius: 5px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+.issue-module fieldset.panel legend {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 18px;
+}
+.issue-module fieldset.panel div.field {
+    margin-bottom: 10px;
+}
+.issue-module fieldset.panel div.field label{
+    display: block;
+    border-bottom: 1px solid #ddd;
 }

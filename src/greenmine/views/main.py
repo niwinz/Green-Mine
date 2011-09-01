@@ -23,15 +23,20 @@ from .. import models, forms
 
 import re
 
-
 class LoginView(GenericView):
+    template_name = 'login.html'
+
     def get(self, request, *args, **kwargs):
-        login_form, forgotten_password_form = forms.LoginForm(request=request), forms.ForgottenPasswordForm()
-        return self.render('login.html', 
+        login_form, forgotten_password_form = \
+            forms.LoginForm(request=request), forms.ForgottenPasswordForm()
+
+        return self.render(self.template_name, 
             {'form': login_form, 'form2': forgotten_password_form})
 
 
 class ProjectsView(GenericView):
+    template_name = 'projects.html'
+
     def get(self, request, *args, **kwargs):
         try:
             page = int(request.GET.get('page', '1'))
@@ -45,9 +50,10 @@ class ProjectsView(GenericView):
         context = {
             'is_paginated': True if paginator.count else False,
             'page': page,
+            'projects': projects,
         }
         
-        return self.render('projects.html', context)
+        return self.render(self.template_name, context)
     
     @login_required
     def dispatch(self, *args, **kwargs):
@@ -55,6 +61,7 @@ class ProjectsView(GenericView):
 
 
 class ProjectView(GenericView):
+    template_name = 'dashboard.html'
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -62,7 +69,7 @@ class ProjectView(GenericView):
             'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project
         }
-        return self.render('dashboard.html', context)
+        return self.render(self.template_name, context)
 
 
 class ProjectCreateView(GenericView):

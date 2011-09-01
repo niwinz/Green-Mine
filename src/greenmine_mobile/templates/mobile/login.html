@@ -1,19 +1,41 @@
 {% extends "mobile/base.html" %}
+{% load url from future %}
 
 {% block wrapper %}
 <div class="login-panel">
-    <form action="" method="post">
+    <form action="{{ current_url }}" method="post">
+        {% csrf_token %}
         <div class="field">
-            <label>Username: </label><br />
-            <input type="text" name="username" />
+            {{ form.username.label }}<br />
+            {{ form.username.errors }}
+            {{ form.username }}
         </div>
         <div class="field">
-            <label>Password: </label><br />
-            <input type="password" name="password" />
+            {{ form.password.label }}<br />
+            {{ form.password.errors }}
+            {{ form.password }}
         </div>
         <div class="field submit-field">
             <input type="submit" value="Login" />
         </div>
+        {% comment %}
+        <p><a href="" class="forgoten-password">¿Olvidaste la contraseña?</a></p>
+        {% endcomment %}
     </form>
 </div>
+{% comment %}
+<div class="forgoten-password-panel hidden">
+    <form action="{% url 'api:password-forgotten' %}" method="post">
+        {% csrf_token %}
+        <div class="field">
+            {{ form2.email.label }}<br />
+            {{ form2.email }}
+        </div>
+        <div class="field submit-field">
+            <input type="submit" value="Send password" style="width:150px" /><br />
+            <input type="button" class="cancel" value="Cancel" />
+        </div>
+    </form>
+</div>
+{% endcomment %}
 {% endblock %}

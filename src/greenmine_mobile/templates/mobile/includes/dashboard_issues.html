@@ -1,0 +1,16 @@
+<label>Issues in this milestone:</label>
+<div class="issues-list">
+    {% for issue in issues %}
+    <div class="issue-item priority{{ issue.priority }}">
+        <div class="title">
+            <a href="">{{ issue.subject|truncatewords:5 }}</a>
+        </div>
+        <div class="issue-options hidden">
+            <label>Opciones:</label>
+            <div class="buttons">
+                <a href="{{ issue.get_view_url }}">Ver</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

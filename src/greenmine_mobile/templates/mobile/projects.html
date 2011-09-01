@@ -1,0 +1,18 @@
+{% extends "mobile/base.html" %}
+{% load url from future %}
+
+{% block wrapper %}
+<div class="projects-panel">
+    {% for project in projects %}
+    <div class="project-item">
+        <div class="title">
+            <a href="{{ project.get_dashboard_url }}">{{ project.name }}</a>
+        </div>
+        <div class="extra">
+            <b>Owner: </b>{{ project.owner }}<br />
+            <b>Tasks: </b>{{ priject.issues.count }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

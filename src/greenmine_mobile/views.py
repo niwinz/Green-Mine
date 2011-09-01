@@ -18,5 +18,43 @@ from django.utils import simplejson
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
+from greenmine.views import main as views
 
+class LoginView(views.LoginView):
+    template_name = 'mobile/login.html'
+
+    def post(self, request):
+        form = forms.LoginForm(request.POST, request = request)
+        if not form.is_valid():
+            return self.render(self.template_name, {'form':form})
+
+        user_profile = form._user.get_profile()
+        if user_profile.default_language:
+            request.session['django_language'] = user_profile.default_language
+
+        return HttpResponseRedirect('/')
+
+class ProjectsView(views.ProjectsView):
+    template_name = 'mobile/projects.html'
+
+
+class ProjectView(views.ProjectView):
+    template_name = 'mobile/dashboard.html'
+
+class ProjectIssuesView(GenericView):
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        mid = int(mid)       
+
+        if mid == 0:
+            issues = project.issues.filter(milestone__isnull=True)
+        else:
+            milestone = get_object_or_404(project.milestones, pk=mid)
+            issues = milestone.issues.all()
+
+        context = {'issues': issues}
+        return self.render('mobile/includes/dashboard_issues.html', context)
+
+class IssueView(views.IssueView):
+    template_name = 'mobile/issue.html'
 

@@ -1,0 +1,58 @@
+{% extends "mobile/base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block wrapper %}
+<div class="issue-module">
+    <fieldset class="panel details-panel">
+        <legend>Issue details</legend>
+        <div class="field">
+            <label>Subject</label>
+            {{ issue.subject }}
+        </div>
+        <div class="field">
+            <label>Status</label>
+            {{ issue.get_status_display }}
+        </div>
+        <div class="field">
+            <label>Type</label>
+            {{ issue.get_type_display }}
+        </div>
+        <div class="field">
+            <label>Priority</label>
+            {{ issue.get_priority_display }}
+        </div>
+        <div class="field">
+            <label>Tested</label>
+            {{ issue.tested|yesno }}
+        </div>
+        {% if issue.finish_date %}
+        <div class="field">
+            <label>Finish date</label>
+            {{ issue.finish_date|date:"DATE_FORMAT" }}
+        </div>
+        {% endif %}
+        <div class="field">
+            <label>Watchers</label>
+            {% for w in issue.watchers.all %}
+                {{ w.first_name }} {{ w.last_name }}{% if not forloop.last %},{% endif %}
+            {% empty %}
+                {% trans "No watchers" %}
+            {% endfor %}
+        </div>
+        {% if issue.assigned_to %}
+        <div class="field">
+            <label>Assigned to</label>
+            {{ issue.assigned_to.first_name }} {{ issue.assigned_to.last_name }}
+        </div>
+        {% endif %}
+    </fieldset>
+    
+    {% if issue.description %}
+    <fieldset class="panel description-panel">
+        <legend>Description</legend>
+        {{ issue.description }}
+    </fieldset>
+    {% endif %}
+</div>
+{% endblock %}

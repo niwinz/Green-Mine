@@ -5,8 +5,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 
 urlpatterns = patterns('',
+    url(r'^api/', include('greenmine.urls.api', namespace='api')),
     url(r'^', include('greenmine_mobile.urls.main', namespace='web')),
-    url(r'^jsi18n/(?P<packages>\S+?)/$', 'django.views.i18n.javascript_catalog'),
 )
 
 urlpatterns += staticfiles_urlpatterns()
