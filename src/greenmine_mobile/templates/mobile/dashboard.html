@@ -27,11 +27,10 @@
                 url="{% url 'web:project-issues-view' project.slug ml.id %}" 
                 {% if forloop.first %}selected="selected"{% endif %}>{{ ml.name }}</option>
             {% endfor %}
-            <option value="0" url="{{ project.get_unasigned_tasks_api_url }}">Unassigned</option>
+            <option value="0" url="{% url 'web:project-issues-view' project.slug 0 %}">Unassigned</option>
         </select>
     </div>
-
-    <div class="issues-panel subpanel">
+    <div class="issues-module">
     </div>
 </div>
 {% endblock %}

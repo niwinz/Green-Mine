@@ -1,16 +1,36 @@
-<label>Issues in this milestone:</label>
-<div class="issues-list">
-    {% for issue in issues %}
-    <div class="issue-item priority{{ issue.priority }}">
-        <div class="title">
-            <a href="">{{ issue.subject|truncatewords:5 }}</a>
-        </div>
-        <div class="issue-options hidden">
-            <label>Opciones:</label>
-            <div class="buttons">
-                <a href="{{ issue.get_view_url }}">Ver</a>
+{% if mon_issues %}
+<fieldset class="panel issues-panel">
+    <legend>My user stories:</legend>
+    <div class="issues-list">
+        {% for issue in mon_issues %}
+        <div class="issue-item priority{{ issue.priority }} self-assigned">
+            <div class="title">
+                <a href="{{ issue.get_view_url }}">{{ issue.subject|truncatewords:5 }}</a>
+            </div>
+            <div class="options">
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
+</fieldset>
+
+{% endif %}
+
+<fieldset class="panel issues-panel">
+    <legend>Other user stories:</legend>
+    <div class="issues-list">
+        {% for issue in issues %}
+        <div class="issue-item priority{{ issue.priority }} notself">
+            <div class="title">
+                <a href="{{ issue.get_view_url }}">{{ issue.subject|truncatewords:5 }}</a>
+            </div>
+            <div class="options">
+                {% if issue.assigned_to %}
+                <span class="assingedto"><b>Assigned to: </b>{{ issue.assigned_to }}</span>
+                {% endif %}
+                <span class="subtasks"><b>Tasks: </b>{{ issue.childs.all|length|default:"0" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</fieldset>

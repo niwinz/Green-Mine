@@ -48,11 +48,13 @@ class ProjectIssuesView(GenericView):
 
         if mid == 0:
             issues = project.issues.filter(milestone__isnull=True)
+            mon_issues = []
         else:
             milestone = get_object_or_404(project.milestones, pk=mid)
-            issues = milestone.issues.all()
+            mon_issues = milestone.issues.filter(assigned_to=request.user)
+            issues = milestone.issues.exclude(assigned_to=request.user)
 
-        context = {'issues': issues}
+        context = {'issues': issues, 'mon_issues': mon_issues}
         return self.render('mobile/includes/dashboard_issues.html', context)
 
 class IssueView(views.IssueView):

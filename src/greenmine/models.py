@@ -207,7 +207,7 @@ class Milestone(models.Model):
     natural_key.dependencies = ['greenmine.Project']
     
     def __repr__(self):
-        return u"<Milestone %s>" % (self.slug)
+        return u"<Milestone %s>" % (self.id)
 
     def save(self, *args, **kwargs):
         if self.id:

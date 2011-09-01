@@ -35,30 +35,36 @@ table.top-menu td.selected a { color: white; }
     border: 1px solid #ddd;
 }
 
-.issues-panel .issues-list { padding-left: 2px; padding-top: 2px; padding-bottom: 2px; }
-.issues-panel .issues-list .issue-item {
-    background-color: white;
-    margin-bottom: 4px;
+.issues-module .issues-list { padding-left: 2px; padding-top: 2px; padding-bottom: 2px; }
+
+.issues-module .issues-list .issue-item {
+    margin-bottom: 2px;
     padding: 2px;
-    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 2px;
     font-size: 12px;
 }
-.issues-panel .issues-list .issue-item.priority4 .title,
-.issues-panel .issues-list .issue-item.priority6 .title,
-.issues-panel .issues-list .issue-item.priority8 .title {
-    border-left: 5px solid red;
+
+.issues-module .issues-list .issue-item .title {
+    overflow: hidden;
+    padding: 4px;
+    border-radius: 4px;
 }
-.issues-panel .issues-list .issue-item.priority1 .title,
-.issues-panel .issues-list .issue-item.priority2 .title {
-    border-left: 5px solid blue;
+.issues-module .issues-list .issue-item.notself .title {
+    background-color: #666;
+}
+.issues-module .issues-list .issue-item.self-assigned .title {
+    background-color: #458745;
+}
+    
+.issues-module .issues-list .issue-item .title a { 
+    color: white; 
+    text-decoration: none; 
+    font-size: 16px;
 }
 
-.issues-panel .issues-list .issue-item .title {
-    overflow: hidden;
-    padding-left: 5px;
-}
-.issues-panel .issues-list .issue-item .issue-options {
-    padding: 10px;
+.issues-module .issues-list .issue-item .options {
+    text-align: right;
 }
 
 ul.errorlist {
@@ -68,6 +74,14 @@ ul.errorlist {
     color: red;
     font-size: 12px;
 }
+.issues-module fieldset.panel {
+    border: 1px solid #ddd;
+    padding: 2px;
+    background: #eee;
+    border-radius: 5px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
 
 .issue-module fieldset.panel {
     border: 1px solid #ddd;
@@ -76,6 +90,13 @@ ul.errorlist {
     padding-top: 10px;
     margin-bottom: 10px;
 }
+
+.issues-module fieldset.panel legend {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 18px;
+}
+
 .issue-module fieldset.panel legend {
     font-weight: bold;
     text-decoration: underline;
