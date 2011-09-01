@@ -1,6 +1,7 @@
 .*.sw*
 *.log
 src/settings/local.py
+src/settings/mobile.py
 src/database.sqlite
 src/logs
 src/media
