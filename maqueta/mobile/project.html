@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
+        <link rel="stylesheet" media="screen" href="css/mobile.css" />
+        <title>Test Mobile Page</title>
+    </head>
+    <body>
+        <div class="header">
+            <div class="title">Green-Mine</div>
+            <div class="right">Andrei Antukh</div>
+        </div>
+        <table class="top-menu">
+            <tbody>
+                <tr>
+                    <td class="selected"><a href="">Dashboard</a></td>
+                    <td><a href="">Questions</a></td>
+                    <td><a href="">Admin</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="wrapper">
+            <div class="project-panel">
+                <div class="milestones subpanel">
+                    <label>Select your milestone:</label><br />
+                    <select name="milestones">
+                        <option value="1" url="includes/dashboard_issues.html" selected="selected">Sprint 200801</option>
+                        <option value="2" url="includes/dashboard_issues.html">Sprint 200803</option>
+                        <option value="0" url="includes/dashboard_issues.html">Unassigned</option>
+                    </select>
+                </div>
+
+                <div class="issues-panel subpanel">
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script type="text/javascript" src="js/mobile.js"></script>
+    </body>
+</html>
