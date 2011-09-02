@@ -87,6 +87,7 @@ class MilestonesForProjectApiView(GenericView):
             'completed_tasks': 0,
             'total_tasks': total_unassigned_tasks,
         })
+
         return self.render_to_ok({'milestones': milestones})
 
 
@@ -126,6 +127,8 @@ class TasksForMilestoneApiView(GenericView):
                 'url': us.get_view_url(),
                 'milestone_id': us.milestone and us.milestone.id or None,
                 'tasks': us.tasks.count(),
+                'status': us.status,
+                'status_view': us.get_status_display(),
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})

@@ -201,6 +201,7 @@ class MilestoneForm(Form):
 
 
 class UsForm(Form):
+    #: TODO: refactor whis
     name = CharField(max_length=200, required=True)
     type = forms.ChoiceField(choices=US_TYPE_CHOICES)
     status = forms.ChoiceField(choices=US_STATUS_CHOICES)

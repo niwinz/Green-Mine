@@ -47,6 +47,13 @@ US_TYPE_CHOICES = (
     ('bug', _(u'Bug')),
 )
 
+US_STATUS_CHOICES = (
+    ('open', _(u'Open/New')),
+    ('progess', _(u'In progress')),
+    ('completed', _(u'Completed')),
+    ('closed', _(u'Closed')),
+)
+
 POINTS_CHOICES = (
     (None, u'?'),
     (0.5, u'1/2'),
@@ -234,6 +241,7 @@ class Us(models.Model):
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     points = models.IntegerField(choices=POINTS_CHOICES, null=True, default=None)
+    status = models.CharField(max_length=50, choices=US_STATUS_CHOICES, db_index=True, default="open")
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)

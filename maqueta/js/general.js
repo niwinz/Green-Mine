@@ -172,10 +172,9 @@ $(document).ready(function(){
             }
             
             function taskHtml(tk){
-                return  '<div class="dg">'+
-                    tk.subject + '<span>[Asignado a: ' + tk.to + ' | Estado: ' +
-                    tk.status_view + ' | Prioridad: ' + tk.priority_view + ' | Tipo: ' +
-                    tk.type_view + ']</span></div><a class="edit" href=""></a><a href="'+ tk.url +'" class="detail"></a>';              
+                var html = '<div class="dg">%s<span>[ Estado: %s | Prioridad: %s ]</span></div>'
+                    + '<a class="edit" href=""></a><a href="%s" class="detail"></a>';
+                return interpolate(html, [tk.subject,tk.status_view,tk.priority_view,tk.url]);
             }            
             
             function loadTasks(url){
