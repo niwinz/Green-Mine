@@ -16,7 +16,9 @@
                 <a href="/">Green-Mine</a> {% block title %}{% endblock %}
             </div>
             {% if user.is_authenticated %}
-            <div class="right">{{ user.first_name }} {{ user.last_name }}</div>
+            <div class="right">
+                <a href="{% url 'web:profile' %}">{{ user.first_name }} {{ user.last_name }}</a>
+            </div>
             {% endif %}
             {% block header %}{% endblock %}
         </div>

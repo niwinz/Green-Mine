@@ -1,0 +1,26 @@
+{% extends "mobile/base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block wrapper %}
+<div class="profile-module">
+    {% if userobj.get_profile.photo %}
+    <img src="{{ userobj.get_profile.photo.url }}" style="width:100%;"></img>
+    {% else %}
+    <img src="{{ STATIC_URL }}imgs/nofoto.jpg"></img>
+    {% endif %}
+
+    <h3>Detalles:</h3>
+    <div class="details">
+        <b>Nombre completo: </b> {{ userobj.first_name }} {{ userobj.last_name }}<br />
+        <b>Email: </b> {{ userobj.email }}
+    </div>
+
+    <h4>Opciones:</h4>
+    <div class="options">
+        <ul>
+            <li><a href="">Editar</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

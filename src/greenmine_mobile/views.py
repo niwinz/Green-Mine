@@ -66,3 +66,16 @@ class ProjectUssView(GenericView):
 
 class UsView(views.UsView):
     template_name = 'mobile/us.html'
+
+class ProfileView(GenericView):
+    template_name = 'mobile/profile.html'
+
+    @login_required
+    def get(self, request, username=None):
+        if username:
+            user = get_object_or_404(models.User,username=username)
+        else:
+            user = request.user
+
+        context = {'userobj': user}
+        return self.render(self.template_name, context)
