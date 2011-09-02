@@ -109,6 +109,9 @@ class TasksForMilestoneApiView(GenericView):
                 return self.render_to_error("milestone does not exists")
         else:
             issues = project.issues.filter(milestone__isnull=True)
+        
+        #: TODO: future set from user-project-settings relation table.
+        issues = issues.order_by('-type', '-priority')
 
         response_list = []
         for issue in issues:
@@ -206,12 +209,15 @@ class IssueEditApiView(GenericView):
 
         return self.render_to_error(form.jquery_errors)
 
+
 class IssueDropApiView(GenericView):
     @login_required
     def post(self, request, pslug, iref):
         issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
+        issue.childs.all().delete()
         issue.delete()
         return self.render_to_ok()
+
 
 class IssueAsociateApiView(GenericView):
     @login_required
@@ -233,7 +239,6 @@ class IssueAsociateApiView(GenericView):
         return self.render_to_ok()
 
         
-
 class I18NLangChangeApiView(GenericView):
     """ View for set language."""
     def get(self, request):

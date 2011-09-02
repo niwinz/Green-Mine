@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.utils import IntegrityError
 from django.core import management  
+from django.contrib.webdesign import lorem_ipsum
 import random, sys
 
 from greenmine.models import *
@@ -42,7 +43,7 @@ class Command(BaseCommand):
             project = Project.objects.create(
                 name = 'FooProject%s' % (x),
                 description = 'Foo project description %s' % (x),
-                owner = random.choice(list(User.objects.all())),
+                owner = random.choice(list(User.objects.all()[:1])),
                 public = True,
             )
 
@@ -55,7 +56,7 @@ class Command(BaseCommand):
             
             # add random participants to project
             participants = []
-            for t in xrange(random.randint(3, 12)):
+            for t in xrange(random.randint(2, 5)):
                 participant = create_user(users_counter)
                 participants.append(participant)
                 ProjectUserRole.objects.create(
@@ -66,14 +67,14 @@ class Command(BaseCommand):
                 users_counter += 1
             
             # create random milestones
-            for y in xrange(3):
+            for y in xrange(2):
                 milestone = Milestone.objects.create(
                     project = project,
-                    name = 'Sprint%s' % (y),
+                    name = 'Sprint 20110%s' % (y),
                 )
                 
                 # create issues asociated to milestones
-                for z in xrange(random.randint(15, 50)):
+                for z in xrange(random.randint(2, 6)):
                     issue = Issue.objects.create(
                         subject = random.choice(subjects),
                         priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
@@ -82,11 +83,12 @@ class Command(BaseCommand):
                         type = random.choice(dict(ISSUE_TYPE_CHOICES).keys()),
                         author = random.choice(participants),
                         assigned_to = random.choice(participants),
+                        description = lorem_ipsum.words(30, common=False),
                         milestone = milestone,
                         parent = None,
                     )
             # created unassociated issues.
-            for y in xrange(20):
+            for y in xrange(100):
                 issue = Issue.objects.create(
                     subject = random.choice(subjects),
                     priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
@@ -95,4 +97,5 @@ class Command(BaseCommand):
                     type = random.choice(dict(ISSUE_TYPE_CHOICES).keys()),
                     author = random.choice(participants),
                     assigned_to = random.choice(participants),
+                    description = lorem_ipsum.words(30, common=False),
                 )
