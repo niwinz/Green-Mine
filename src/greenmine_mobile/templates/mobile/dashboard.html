@@ -19,8 +19,9 @@
 
 {% block wrapper %}
 <div class="project-panel">
+    
+    <h3>Select your milestone:</h3>
     <div class="milestones subpanel">
-        <label>Select your milestone:</label><br />
         <select name="milestones">
             {% for ml in project.milestones.all %}
             <option value="{{ ml.id }}" 
@@ -29,6 +30,7 @@
             {% endfor %}
             <option value="0" url="{% url 'web:project-uss-view' project.slug 0 %}">Unassigned</option>
         </select>
+        <a class="button" href="">New user story</a>
     </div>
     <div class="issues-module">
     </div>

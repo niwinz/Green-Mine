@@ -91,7 +91,7 @@ class MilestonesForProjectApiView(GenericView):
         return self.render_to_ok({'milestones': milestones})
 
 
-class TasksForMilestoneApiView(GenericView):
+class UsForMilestoneApiView(GenericView):
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)

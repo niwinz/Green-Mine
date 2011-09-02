@@ -133,7 +133,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_unasigned_tasks_api_url(self):
-        return ('api:unasigned-tasks-for-poject', (), {'pslug':self.slug})
+        return ('api:us-for-poject', (), {'pslug':self.slug})
 
     @models.permalink
     def get_delete_api_url(self):
@@ -207,7 +207,7 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_tasks_for_milestone_api_url(self):
-        return ('api:tasks-for-milestone', (), 
+        return ('api:us-for-milestone', (), 
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink

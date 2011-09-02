@@ -23,17 +23,16 @@ form div.field { margin-bottom: 8px; }
 .projects-panel .project-item .title { float: left; width: 100px; }
 .projects-panel .project-item .extra { float: right; width: 150px;  font-size: 11px; }
 
-table.top-menu { margin: 0px; padding: 0px; background-color: #eee; width: 100%;  }
+table.top-menu { margin: 0px; padding: 0px; width: 100%;  }
 table.top-menu td { text-align: center; width: 33%; padding: 4px;}
-table.top-menu td.selected { background-color: #999; }
-table.top-menu td.selected a { color: white; }
+table.top-menu td a { text-decoration: none; color: #458745; font-weight: bold; }
+table.top-menu td.selected a { text-decoration: underline; }
 
 .project-panel .subpanel {
     padding: 3px;
     margin-top: 5px;
     margin-bottom: 5px;
     background-color: #eee;
-    border: 1px solid #ddd;
 }
 
 
@@ -48,7 +47,9 @@ table.top-menu td.selected a { color: white; }
     height: 42px;
     overflow: hidden;
     padding: 3px;
-    background-color: #C6D2C6;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
 }
 .issues-module .us-list .us-item .us-title.selected {
     background-color: #458745;
@@ -80,7 +81,6 @@ ul.errorlist {
     border: 0px;
     margin: 0px;
     padding: 0px;
-    background: #eee;
     padding-top: 10px;
     margin-bottom: 10px;
 }
@@ -110,4 +110,32 @@ ul.errorlist {
 .issue-module fieldset.panel div.field label{
     display: block;
     border-bottom: 1px solid #ddd;
+}
+a.button {
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 13px;
+    width: 120px; 
+    background-color: white; 
+    border: 1px solid #999; 
+    text-decoration: none;
+    padding:1px;
+    height: 20px;
+    line-height: 20px;
+    display: block;
+}
+
+select {
+    font-weight: normal; 
+    font-size: 13px;
+    width: 90px; 
+    background-color: white; 
+    border: 1px solid #999; 
+    text-decoration: none;
+    padding:1px;
+    height: 20px;
+    width: 98%;
+    display: block;
+    margin-bottom: 10px;
 }
