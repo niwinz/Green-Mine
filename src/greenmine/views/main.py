@@ -17,9 +17,9 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils import simplejson
 
-from .generic import GenericView, ProjectGenericView
-from .decorators import login_required
-from .. import models, forms
+from greenmine.views.generic import GenericView, ProjectGenericView
+from greenmine.views.decorators import login_required
+from greenmine import models, forms
 
 import re
 
@@ -189,6 +189,7 @@ class UsView(GenericView):
     @login_required
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
+        
         us = get_object_or_404(project.uss, ref=iref)
         form = forms.UsResponseForm()
         

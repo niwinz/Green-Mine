@@ -54,13 +54,11 @@ class ProjectUssView(GenericView):
 
         if mid == 0:
             uss = project.uss.filter(milestone__isnull=True)
-            mon_uss = []
         else:
             milestone = get_object_or_404(project.milestones, pk=mid)
-            mon_uss = milestone.uss.filter(assigned_to=request.user)
-            uss = milestone.uss.exclude(assigned_to=request.user)
+            uss = milestone.uss.all()
 
-        context = {'uss': uss, 'mon_uss': mon_uss}
+        context = {'uss': uss}
         return self.render('mobile/includes/dashboard_uss.html', context)
 
 class UsView(views.UsView):

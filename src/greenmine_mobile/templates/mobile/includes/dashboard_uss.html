@@ -1,0 +1,19 @@
+<fieldset class="panel us-panel">
+    <legend>Other user stories:</legend>
+    <div class="us-list">
+        {% for us in uss %}
+        <div class="us-item priority{{ us.priority }} {{ issue.type }}">
+            <div class="us-title">
+                <a href="">{{ us.ref }}# - {{ us.subject|truncatewords:6 }}</a>
+            </div>
+            <div class="issues hidden">
+                {% for task in us.tasks.all %}
+                <div class="issue">
+                    <div class="issue-title">{{ task.subject }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</fieldset>

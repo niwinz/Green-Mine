@@ -200,7 +200,7 @@ class MilestoneForm(Form):
         return self._instance
 
 
-class IssueForm(Form):
+class UsForm(Form):
     name = CharField(max_length=200, required=True)
     type = forms.ChoiceField(choices=US_TYPE_CHOICES)
     status = forms.ChoiceField(choices=US_STATUS_CHOICES)
@@ -219,12 +219,12 @@ class IssueForm(Form):
                 'milestone': self._instance.milestone,
             }
 
-        super(IssueForm, self).__init__(*args, **kwargs)
+        super(UsForm, self).__init__(*args, **kwargs)
         self.fields['milestone'].queryset = milestone_queryset
 
     def save(self, commit=True):
         if not self._instance:
-            self._instance = Issue()
+            self._instance = Us()
 
         self._instance.subject = self.cleaned_data['name']
         self._instance.type = self.cleaned_data['type']
@@ -236,23 +236,23 @@ class IssueForm(Form):
         return self._instance
 
 
-class IssueResponseForm(Form):
+class UsResponseForm(Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
     
     def __init__(self, *args, **kwargs):
-        self._issue = kwargs.pop('issue', None)
+        self._us = kwargs.pop('us', None)
         self._request = kwargs.pop('request', None)
-        super(IssueResponseForm, self).__init__(*args, **kwargs)
+        super(UsResponseForm, self).__init__(*args, **kwargs)
 
     def save(self):
-        self._instance = models.IssueResponse.objects.create(
+        self._instance = models.UsResponse.objects.create(
             owner = self._request.user,
-            issue = self._issue,
+            us = self._us,
             content = self.cleaned_data['description'],
         )
         if self.cleaned_data['attached_file']:
-            instance_file = models.IssueFile.objects.create(
+            instance_file = models.UsFile.objects.create(
                 response = self._instance,
                 owner = self._request.user,
                 attached_file = self.cleaned_data['attached_file']

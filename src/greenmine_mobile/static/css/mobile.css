@@ -4,7 +4,7 @@ body .header .title { float: left; }
 body .header .title a { color: white; text-decoration: none; }
 body .header .right { float: right; font-size: 11px; }
 
-body .wrapper { margin-top: 10px; padding-left: 7px; padding-right: 7px; }
+/*body .wrapper { margin-top: 10px; padding-left: 7px; padding-right: 7px; } */
 body a { font-weight: bold; color: black; }
 
 label { font-weight: bold; }
@@ -30,36 +30,43 @@ table.top-menu td.selected a { color: white; }
 
 .project-panel .subpanel {
     padding: 3px;
+    margin-top: 5px;
     margin-bottom: 5px;
     background-color: #eee;
     border: 1px solid #ddd;
 }
 
-.issues-module .us-list { padding-left: 2px; padding-top: 2px; padding-bottom: 2px; }
 
 .issues-module .us-list .us-item {
-    margin-bottom: 2px;
-    padding: 2px;
-    padding-top: 5px;
+    margin: 0px;
+    margin-bottom: 4px;
     padding-bottom: 2px;
     font-size: 12px;
 }
 
 .issues-module .us-list .us-item .us-title {
+    height: 42px;
     overflow: hidden;
-    padding: 4px;
-    border-radius: 4px;
+    padding: 3px;
+    background-color: #C6D2C6;
+}
+.issues-module .us-list .us-item .us-title.selected {
     background-color: #458745;
 }
     
 .issues-module .us-list .us-item .us-title a { 
-    color: white; 
+    color: #111;
     text-decoration: none; 
-    font-size: 16px;
+    font-size: 14px;
 }
-
+.issues-module .us-list .us-item .us-title.selected a {
+    color: white; 
+}
 .issues-module .us-list .us-item .issues {
-    text-align: right;
+    padding: 2px; margin-bottom:2px;
+    margin-left: 5px; margin-right: 5px;
+    background-color: #eee;
+    border-bottom:1px dotted #aaa;
 }
 
 ul.errorlist {
@@ -70,10 +77,10 @@ ul.errorlist {
     font-size: 12px;
 }
 .issues-module fieldset.panel {
-    border: 1px solid #ddd;
-    padding: 2px;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
     background: #eee;
-    border-radius: 5px;
     padding-top: 10px;
     margin-bottom: 10px;
 }

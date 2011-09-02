@@ -4,57 +4,41 @@
 {% load i18n %}
 
 {% block wrapper %}
-<div id="issue-detail">
+<div id="us-detail">
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "Subject" %}</span>
-            <span>{{ issue.subject }}</span>
+            <span>{{ us.subject }}</span>
         </div>
         <div class="form-field">
-            <span class="label">{% trans "Status" %}</span>
-            <span>{{ issue.get_status_display }}</span>
-        </div>  
-        <div class="form-field">
             <span class="label">{% trans "Type" %}</span>
-            <span>{{ issue.get_type_display }}</span>
+            <span>{{ us.get_type_display }}</span>
         </div>                      
         <div class="form-field">
             <span class="label">{% trans "Priority" %}</span>
-            <span>{{ issue.get_priority_display }}</span>
+            <span>{{ us.get_priority_display }}</span>
         </div> 
         <div class="form-field">
             <span class="label">{% trans "Tested" %}</span>
-            <span>{{ issue.tested|yesno }}</span>
+            <span>{{ us.tested|yesno }}</span>
         </div>
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
-            <span>{{ issue.finish_date|date:"DATE_FORMAT" }}</span>
+            <span>{{ us.finish_date|date:"DATE_FORMAT" }}</span>
         </div>
-        <div class="form-field">
-            <span class="label">{% trans "Watchers" %}</span>
-            <span>
-                {% for w in issue.watchers.all %}
-                    {{ w.first_name }} {{ w.last_name }}{% if not forloop.last %},{% endif %}
-                {% empty %}
-                    {% trans "No watchers" %}
-                {% endfor %}
-            </span>
-        </div>                  
-        <div class="form-field">
-            <span class="label">{% trans "Assigned to" %}</span>
-            <span>{{ issue.assigned_to.first_name }} {{ issue.assigned_to.last_name }}</span>
-        </div>
-        {% if issue.description %}
+        {% if us.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
-            {{ issue.description|linebreaks }}
+            {{ us.description|linebreaks }}
         </div>
         {% endif %}
 
-        {% with subtasks=issue.subtasks.all %}
+        {% with subtasks=us.tasks.all %}
         <div class="form-field width100">
+
+            <h2>TODO: acabar de montar las tasks tal como ya esta hablado.</h2>
             <span class="label">{% trans "Subtasks" %}</span>
-            <div class="subissue">
+            <div class="subus">
                 <ul>
                     {% for st in subtasks %}
                     <li><a href="">{{ st.subject }}</a></li>
@@ -66,7 +50,7 @@
         </div>
         {% endwith %}
 
-        {% with files=issue.attached_files.all %}
+        {% with files=us.attached_files.all %}
             {% if files|length > 0 %}
             <div class="form-field width100">
                 <span class="label">Ficheros</span>
@@ -86,7 +70,7 @@
         <hr/>
     </div>
     <div id="responses">
-        {% for response in issue.responses.all %}
+        {% for response in us.responses.all %}
         <div class="response">
             <p class="name">
                 {% if response.owner.get_profile.photo %}
