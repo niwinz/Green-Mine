@@ -63,7 +63,7 @@ table.top-menu td.selected a { text-decoration: underline; }
 .issues-module .us-list .us-item .us-title.selected a {
     color: white; 
 }
-.issues-module .us-list .us-item .issues {
+.issues-module .us-list .us-item .tasks {
     padding: 2px; margin-bottom:2px;
     margin-left: 5px; margin-right: 5px;
     background-color: #eee;
@@ -77,37 +77,10 @@ ul.errorlist {
     color: red;
     font-size: 12px;
 }
-.issues-module fieldset.panel {
-    border: 0px;
-    margin: 0px;
-    padding: 0px;
-    padding-top: 10px;
+div.field {
     margin-bottom: 10px;
 }
-
-.issue-module fieldset.panel {
-    border: 1px solid #ddd;
-    background: #eee;
-    border-radius: 5px;
-    padding-top: 10px;
-    margin-bottom: 10px;
-}
-
-.issues-module fieldset.panel legend {
-    font-weight: bold;
-    text-decoration: underline;
-    font-size: 18px;
-}
-
-.issue-module fieldset.panel legend {
-    font-weight: bold;
-    text-decoration: underline;
-    font-size: 18px;
-}
-.issue-module fieldset.panel div.field {
-    margin-bottom: 10px;
-}
-.issue-module fieldset.panel div.field label{
+div.field label{
     display: block;
     border-bottom: 1px solid #ddd;
 }
@@ -138,4 +111,8 @@ select {
     width: 98%;
     display: block;
     margin-bottom: 10px;
+}
+
+.us-item .tasks .list {
+    padding-left: 10px;
 }

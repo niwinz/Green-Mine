@@ -1,16 +1,30 @@
 <h3>User stories:</h3>
 <div class="us-list">
     {% for us in uss %}
-    <div class="us-item priority{{ us.priority }} {{ issue.type }}">
+    <div class="us-item priority{{ us.priority }} {{ issue.type }}" rel="{{ us.milestone.id }}">
         <div class="us-title">
             <a href="">{{ us.ref }}# - {{ us.subject|truncatewords:6 }}</a>
         </div>
-        <div class="issues hidden">
-            {% for task in us.tasks.all %}
-            <div class="issue">
-                <div class="issue-title">{{ task.subject }}</div>
+        <div class="tasks hidden">
+            <div class="meta">
+                <div class="">
+                    <b>Estimacion: </b>{{ us.get_points_display }}<br />
+                    <b>Prioridad: </b>{{ us.get_priority_display }}
+                </div>
+                <div class="links-loc">
+                    <b>Opciones: </b>
+                    <a href="{{ us.get_view_url }}">Ver</a> /
+                    <a href="">Editar</a> /
+                    <a href="">Eliminar</a>
+                </div>
             </div>
-            {% endfor %}
+
+            <b>Tareas: </b>
+            <div class="list">
+                {% for task in us.tasks.all %}
+                <li class="item">{{ task.subject }}</li>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endfor %}

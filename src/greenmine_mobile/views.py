@@ -40,12 +40,14 @@ class LoginView(GenericView):
 
         return HttpResponseRedirect('/')
 
+
 class ProjectsView(views.ProjectsView):
     template_name = 'mobile/projects.html'
 
 
 class ProjectView(views.ProjectView):
     template_name = 'mobile/dashboard.html'
+
 
 class ProjectUssView(GenericView):
     def get(self, request, pslug, mid):
@@ -61,6 +63,6 @@ class ProjectUssView(GenericView):
         context = {'uss': uss}
         return self.render('mobile/includes/dashboard_uss.html', context)
 
+
 class UsView(views.UsView):
     template_name = 'mobile/us.html'
-

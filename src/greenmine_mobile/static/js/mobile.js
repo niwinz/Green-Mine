@@ -14,6 +14,20 @@ var dashboard_loadTasks = function(option_dom){
             var option_dom = $(this).find('option:selected');
             dashboard_loadTasks(option_dom);
         });
+        $('.us-item .us-title a').live('click', function(e) {
+            var block = $(this).parent().parent().find('div.tasks');
+            if (block.hasClass('hidden')) { 
+                block.hide();
+                block.removeClass('hidden');
+                block.slideDown('slow');
+            }
+            else {
+                block.slideUp('slow', function() {
+                    block.addClass('hidden'); 
+                });
+            }
+            e.preventDefault();
+        });
         dashboard_loadTasks($(".milestones select option:selected"));
     }
 })(jQuery);
