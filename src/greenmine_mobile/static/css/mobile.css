@@ -35,9 +35,9 @@ table.top-menu td.selected a { color: white; }
     border: 1px solid #ddd;
 }
 
-.issues-module .issues-list { padding-left: 2px; padding-top: 2px; padding-bottom: 2px; }
+.issues-module .us-list { padding-left: 2px; padding-top: 2px; padding-bottom: 2px; }
 
-.issues-module .issues-list .issue-item {
+.issues-module .us-list .us-item {
     margin-bottom: 2px;
     padding: 2px;
     padding-top: 5px;
@@ -45,25 +45,20 @@ table.top-menu td.selected a { color: white; }
     font-size: 12px;
 }
 
-.issues-module .issues-list .issue-item .title {
+.issues-module .us-list .us-item .us-title {
     overflow: hidden;
     padding: 4px;
     border-radius: 4px;
-}
-.issues-module .issues-list .issue-item.notself .title {
-    background-color: #666;
-}
-.issues-module .issues-list .issue-item.self-assigned .title {
     background-color: #458745;
 }
     
-.issues-module .issues-list .issue-item .title a { 
+.issues-module .us-list .us-item .us-title a { 
     color: white; 
     text-decoration: none; 
     font-size: 16px;
 }
 
-.issues-module .issues-list .issue-item .options {
+.issues-module .us-list .us-item .issues {
     text-align: right;
 }
 

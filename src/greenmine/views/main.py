@@ -184,25 +184,25 @@ class ProjectEditView(ProjectCreateView):
         return HttpResponseRedirect(reverse('web:projects'))
 
 
-class IssueView(GenericView):
-    template_name = "issue.html"
+class UsView(GenericView):
+    template_name = "us.html"
     @login_required
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
-        issue = get_object_or_404(project.issues, ref=iref)
-        form = forms.IssueResponseForm()
+        us = get_object_or_404(project.uss, ref=iref)
+        form = forms.UsResponseForm()
         
-        context = {'issue':issue, 'form': form}
+        context = {'us':us, 'form': form}
         return self.render(self.template_name, context)
 
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
-        issue = get_object_or_404(project.issues, ref=iref)
-        form = forms.IssueResponseForm(request.POST, request.FILES, issue=issue, request=request)
+        us = get_object_or_404(project.uss, ref=iref)
+        form = forms.UsResponseForm(request.POST, request.FILES, us=us, request=request)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(issue.get_view_url())
+            return HttpResponseRedirect(us.get_view_url())
 
-        context = {'form':form, 'issue':issue}
+        context = {'form':form, 'us':us}
         return self.render(self.template_name, context)

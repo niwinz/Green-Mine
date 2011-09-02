@@ -1,35 +1,20 @@
-{% if mon_issues %}
-<fieldset class="panel issues-panel">
-    <legend>My user stories:</legend>
-    <div class="issues-list">
-        {% for issue in mon_issues %}
-        <div class="issue-item priority{{ issue.priority }} self-assigned">
-            <div class="title">
-                <a href="{{ issue.get_view_url }}">{{ issue.subject|truncatewords:5 }}</a>
-            </div>
-            <div class="options">
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</fieldset>
-
-{% endif %}
-
 <fieldset class="panel issues-panel">
     <legend>Other user stories:</legend>
-    <div class="issues-list">
+    <div class="us-list">
         {% for issue in issues %}
-        <div class="issue-item priority{{ issue.priority }} notself">
-            <div class="title">
-                <a href="{{ issue.get_view_url }}">{{ issue.subject|truncatewords:5 }}</a>
+        <div class="us-item priority{{ issue.priority }} {{ issue.type }}">
+            <div class="us-title">
+                <a href="">{{ issue.subject|truncatewords:5 }}</a>
             </div>
-            <div class="options">
-                {% if issue.assigned_to %}
-                <span class="assingedto"><b>Assigned to: </b>{{ issue.assigned_to }}</span>
-                {% endif %}
-                <span class="subtasks"><b>Tasks: </b>{{ issue.childs.all|length|default:"0" }}</span>
+            {% comment %}
+            <div class="issues">
+                {% for child in issue.childs.all %}
+                <div class="issue">
+                    <div class="issue-title">{{ issue.subject }}</div>
+                </div>
+                {% endfor %}
             </div>
+            {% endcomment %}
         </div>
         {% endfor %}
     </div>

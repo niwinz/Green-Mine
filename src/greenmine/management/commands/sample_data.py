@@ -73,29 +73,24 @@ class Command(BaseCommand):
                     name = 'Sprint 20110%s' % (y),
                 )
                 
-                # create issues asociated to milestones
+                # create uss asociated to milestones
                 for z in xrange(random.randint(2, 6)):
-                    issue = Issue.objects.create(
-                        subject = random.choice(subjects),
-                        priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
-                        status = random.choice(dict(ISSUE_STATUS_CHOICES).keys()),
+                    us = Us.objects.create(
+                        subject = lorem_ipsum.words(random.randint(4,9), common=False),
+                        priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                         project = project,
-                        type = random.choice(dict(ISSUE_TYPE_CHOICES).keys()),
-                        author = random.choice(participants),
-                        assigned_to = random.choice(participants),
+                        type = random.choice(dict(US_TYPE_CHOICES).keys()),
+                        owner = random.choice(participants),
                         description = lorem_ipsum.words(30, common=False),
                         milestone = milestone,
-                        parent = None,
                     )
-            # created unassociated issues.
+            # created unassociated uss.
             for y in xrange(100):
-                issue = Issue.objects.create(
-                    subject = random.choice(subjects),
-                    priority = random.choice(dict(ISSUE_PRIORITY_CHOICES).keys()),
-                    status = random.choice(dict(ISSUE_STATUS_CHOICES).keys()),
+                us = Us.objects.create(
+                    subject = lorem_ipsum.words(random.randint(4,9), common=False),
+                    priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                     project = project,
-                    type = random.choice(dict(ISSUE_TYPE_CHOICES).keys()),
-                    author = random.choice(participants),
-                    assigned_to = random.choice(participants),
+                    type = random.choice(dict(US_TYPE_CHOICES).keys()),
+                    owner = random.choice(participants),
                     description = lorem_ipsum.words(30, common=False),
                 )

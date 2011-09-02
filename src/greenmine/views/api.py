@@ -64,8 +64,7 @@ class MilestonesForProjectApiView(GenericView):
         
         milestones = []
         for ml in project.milestones.all():
-            total_tasks = ml.issues.count()
-            total_tasks_completed = ml.issues.filter(status__in=['fixed','invalid']).count()
+            total_tasks = ml.uss.count()
             milestones.append({
                 'id': ml.id,
                 'url': ml.get_tasks_for_milestone_api_url(),
@@ -73,15 +72,11 @@ class MilestonesForProjectApiView(GenericView):
                 'name': ml.name,
                 'estimated_finish': ml.estimated_finish and \
                     ml.estimated_finish.strftime('%d/%m/%Y') or '',
-                'completed_tasks': total_tasks_completed,
+                'completed_tasks': 0,
                 'total_tasks': total_tasks,
             })
 
-        total_unassigned_tasks = project.issues.filter(milestone__isnull=True).count()
-        total_unassigned_completed_tasks = project.issues.filter(
-            milestone__isnull=True, 
-            status__in=['fixed','invalid']
-        ).count()
+        total_unassigned_tasks = project.uss.filter(milestone__isnull=True).count()
 
         milestones.append({
             'id': 0,
@@ -89,7 +84,7 @@ class MilestonesForProjectApiView(GenericView):
             'edit_url': '',
             'name': _('Unasigned'),
             'estimated_finish': '',
-            'completed_tasks': total_unassigned_completed_tasks,
+            'completed_tasks': 0,
             'total_tasks': total_unassigned_tasks,
         })
         return self.render_to_ok({'milestones': milestones})
@@ -100,38 +95,37 @@ class TasksForMilestoneApiView(GenericView):
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
         
-        issues = models.Issue.objects.none()
+        uss = models.Us.objects.none()
         if mid:
             try:
                 milestone = project.milestones.get(pk=mid)
-                issues = milestone.issues.all()
+                uss = milestone.uss.all()
             except models.Milestone.DoesNotExist:
                 return self.render_to_error("milestone does not exists")
         else:
-            issues = project.issues.filter(milestone__isnull=True)
+            uss = project.uss.filter(milestone__isnull=True)
         
         #: TODO: future set from user-project-settings relation table.
-        issues = issues.order_by('-type', '-priority')
+        uss = uss.order_by('-type', '-priority')
 
         response_list = []
-        for issue in issues:
+        for us in uss:
             response_dict = {
-                'ref': issue.ref,
-                'id': issue.id,
-                'subject': issue.subject,
-                'to': issue.assigned_to and issue.assigned_to.first_name or None,
-                'to_id': issue.assigned_to and issue.assigned_to.id or None,
-                'status': issue.status,
-                'status_view': issue.get_status_display(),
-                'priority': issue.priority,
-                'priority_view': issue.get_priority_display(),
-                'type': issue.type,
-                'type_view': issue.get_type_display(),
-                'edit_url': issue.get_edit_api_url(),
-                'drop_url': issue.get_drop_api_url(),
-                'asociate_url': issue.get_asoiciate_api_url(),
-                'url': issue.get_view_url(),
-                'milestone_id': issue.milestone and issue.milestone.id or None,
+                'ref': us.ref,
+                'id': us.id,
+                'subject': us.subject,
+                'to': 'No use mas este campo',
+                'to_id': None,
+                'priority': us.priority,
+                'priority_view': us.get_priority_display(),
+                'type': us.type,
+                'type_view': us.get_type_display(),
+                'edit_url': us.get_edit_api_url(),
+                'drop_url': us.get_drop_api_url(),
+                'asociate_url': us.get_asoiciate_api_url(),
+                'url': us.get_view_url(),
+                'milestone_id': us.milestone and us.milestone.id or None,
+                'tasks': us.tasks.count(),
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})
@@ -182,59 +176,59 @@ class MilestoneEditApiView(GenericView):
     
 
 
-class IssueCreateApiView(GenericView):
+class UsCreateApiView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         milestones = project.milestones.all()
-        form = forms.IssueForm(request.POST, milestone_queryset=milestones)
+        form = forms.UsForm(request.POST, milestone_queryset=milestones)
         if form.is_valid():
-            issue = form.save(commit=False)
-            issue.project = project
-            issue.save()
+            us = form.save(commit=False)
+            us.project = project
+            us.save()
             return self.render_to_ok()
 
         return self.render_to_error(form.jquery_errors)
 
 
-class IssueEditApiView(GenericView):
+class UsEditApiView(GenericView):
     @login_required
     def post(self, request, pslug, iref):
-        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
-        milestones = issue.project.milestones.all()
-        form = forms.IssueForm(request.POST, instance=issue, milestone_queryset=milestones)
+        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
+        milestones = us.project.milestones.all()
+        form = forms.UsForm(request.POST, instance=us, milestone_queryset=milestones)
         if form.is_valid():
-            issue = form.save()
+            us = form.save()
             return self.render_to_ok()
 
         return self.render_to_error(form.jquery_errors)
 
 
-class IssueDropApiView(GenericView):
+class UsDropApiView(GenericView):
     @login_required
     def post(self, request, pslug, iref):
-        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
-        issue.childs.all().delete()
-        issue.delete()
+        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
+        us.childs.all().delete()
+        us.delete()
         return self.render_to_ok()
 
 
-class IssueAsociateApiView(GenericView):
+class UsAsociateApiView(GenericView):
     @login_required
     def get(self, request, pslug, iref):
-        issue = get_object_or_404(models.Issue, ref=iref, project__slug=pslug)
+        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
         try:
             mid = int(request.GET.get('milestone', ''))
         except (ValueError, TypeError):
             return self.render_to_error('invalid paremeters')
         
         if mid == 0:
-            issue.milestone = None
-            issue.save()
+            us.milestone = None
+            us.save()
         else:
-            issue.milestone = get_object_or_404(models.Milestone, \
+            us.milestone = get_object_or_404(models.Milestone, \
                 project__slug=pslug, pk=mid)
-            issue.save()
+            us.save()
         
         return self.render_to_ok()
 

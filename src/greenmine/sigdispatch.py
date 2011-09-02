@@ -3,8 +3,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from greenmine.models import Profile, Issue
-from copy import deepcopy
+from greenmine.models import Profile, Us, Task
 import datetime
 
 @receiver(post_save, sender=User)
@@ -14,14 +13,13 @@ def user_post_save(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-@receiver(post_save, sender=Issue)
-def issue_post_save(sender, instance, created, **kwargs):
-    if not instance.parent and created:
-        new_instance = deepcopy(instance)
-        new_instance.id = None
-        new_instance.ref = None
-        new_instance.parent = instance
-        new_instance.save()
+@receiver(post_save, sender=Us)
+def us_post_save(sender, instance, created, **kwargs):
+    if created:
+        task = Task.objects.create(
+            subject = instance.subject,
+            description = instance.description,
+            owner = instance.owner,
+            us = instance,
+        )
 
-        instance.modified_date = datetime.datetime.now()
-        instance.save()

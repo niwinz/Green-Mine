@@ -19,12 +19,18 @@ from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
 from greenmine.views import main as views
+from greenmine_mobile import forms as mforms
 
-class LoginView(views.LoginView):
+class LoginView(GenericView):
     template_name = 'mobile/login.html'
 
+    def get(self, request, *args, **kwargs):
+        form = mforms.LoginForm(request=request)
+        return self.render(self.template_name,
+            {'form': form})
+
     def post(self, request):
-        form = forms.LoginForm(request.POST, request = request)
+        form = mforms.LoginForm(request.POST, request = request)
         if not form.is_valid():
             return self.render(self.template_name, {'form':form})
 
@@ -41,22 +47,22 @@ class ProjectsView(views.ProjectsView):
 class ProjectView(views.ProjectView):
     template_name = 'mobile/dashboard.html'
 
-class ProjectIssuesView(GenericView):
+class ProjectUssView(GenericView):
     def get(self, request, pslug, mid):
         project = get_object_or_404(models.Project, slug=pslug)
         mid = int(mid)       
 
         if mid == 0:
-            issues = project.issues.filter(milestone__isnull=True)
-            mon_issues = []
+            uss = project.uss.filter(milestone__isnull=True)
+            mon_uss = []
         else:
             milestone = get_object_or_404(project.milestones, pk=mid)
-            mon_issues = milestone.issues.filter(assigned_to=request.user)
-            issues = milestone.issues.exclude(assigned_to=request.user)
+            mon_uss = milestone.uss.filter(assigned_to=request.user)
+            uss = milestone.uss.exclude(assigned_to=request.user)
 
-        context = {'issues': issues, 'mon_issues': mon_issues}
-        return self.render('mobile/includes/dashboard_issues.html', context)
+        context = {'uss': uss, 'mon_uss': mon_uss}
+        return self.render('mobile/includes/dashboard_uss.html', context)
 
-class IssueView(views.IssueView):
-    template_name = 'mobile/issue.html'
+class UsView(views.UsView):
+    template_name = 'mobile/us.html'
 

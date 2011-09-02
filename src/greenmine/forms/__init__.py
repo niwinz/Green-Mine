@@ -168,17 +168,12 @@ class ProjectForm(Form):
 
 
 class FiltersForm(Form):
-    to = forms.ModelChoiceField(queryset=User.objects.none(), empty_label=_(u"Assigned to..."))
-    state = forms.ChoiceField(choices=(('', _(u'Issue status...'),),) + ISSUE_STATUS_CHOICES)
-    priority = forms.ChoiceField(choices=(('', _(u'Issue priority...'),),) + ISSUE_PRIORITY_CHOICES)
-    type = forms.ChoiceField(choices=(('', _(u'Issue type...'),),) + ISSUE_TYPE_CHOICES)
+    priority = forms.ChoiceField(choices=(('', _(u'US priority...'),),) + US_PRIORITY_CHOICES)
+    type = forms.ChoiceField(choices=(('', _(u'US type...'),),) + US_TYPE_CHOICES)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(FiltersForm, self).__init__(*args, **kwargs)
-
-        if queryset:
-            self.fields['to'].queryset = queryset
 
 
 class MilestoneForm(Form):
@@ -207,8 +202,8 @@ class MilestoneForm(Form):
 
 class IssueForm(Form):
     name = CharField(max_length=200, required=True)
-    type = forms.ChoiceField(choices=ISSUE_TYPE_CHOICES)
-    status = forms.ChoiceField(choices=ISSUE_STATUS_CHOICES)
+    type = forms.ChoiceField(choices=US_TYPE_CHOICES)
+    status = forms.ChoiceField(choices=US_STATUS_CHOICES)
     description = CharField(max_length=1000, required=False)
     milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
 

@@ -18,9 +18,9 @@ urlpatterns = patterns('',
     #    config.AdminProjectExport.as_view(), name="admin-project-export"),
     #url(r'^project/create/$', main.ProjectCreateView.as_view(), name='project-create'),
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$', views.ProjectView.as_view(), name='project'),
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/issues/$',
-        views.ProjectIssuesView.as_view(), name='project-issues-view'),
-    url(r'^(?P<pslug>[\w\d\-]+)/issue/(?P<iref>[\w\d]+)/$', views.IssueView.as_view(), name='issue'),
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/uss/$',
+        views.ProjectUssView.as_view(), name='project-uss-view'),
+    url(r'^(?P<pslug>[\w\d\-]+)/us/(?P<iref>[\w\d]+)/$', views.UsView.as_view(), name='us'),
 )
 
 urlpatterns += patterns('',

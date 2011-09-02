@@ -24,7 +24,7 @@ MARKUP_TYPE = (
     ('rest', _('Restructured Text')),
 )
 
-ISSUE_STATUS_CHOICES = (
+US_STATUS_CHOICES = (
     ('new', _(u'New')),
     ('accepted', _(u'In progress')),
     ('fixed', _(u'Fixed')),
@@ -34,7 +34,7 @@ ISSUE_STATUS_CHOICES = (
     ('duplicate', _(u'Duplicated')),
 )
 
-ISSUE_PRIORITY_CHOICES = (
+US_PRIORITY_CHOICES = (
     (1, _(u'Lower')),
     (2, _(u'Normal')),
     (4, _(u'High')),
@@ -42,10 +42,20 @@ ISSUE_PRIORITY_CHOICES = (
     (8, _(u'Critical')),
 )
 
-ISSUE_TYPE_CHOICES = (
-    ('task', _(u'Task')),
+US_TYPE_CHOICES = (
+    ('us', _(u'User story')),
     ('bug', _(u'Bug')),
 )
+
+POINTS_CHOICES = (
+    (None, u'?'),
+    (0.5, u'1/2'),
+    (1.0, u'1'),
+    (2.0, u'2'),
+    (3.0, u'3'),
+    (5.0, u'5')
+)
+
 
 def slugify_uniquely(value, model, slugfield="slug"):
     """
@@ -127,8 +137,8 @@ class Project(models.Model):
         return ('api:project-milestone-create', (), {'pslug': self.slug})
 
     @models.permalink
-    def get_issue_create_api_url(self):
-        return ('api:project-issue-create', (), {'pslug': self.slug})
+    def get_us_create_api_url(self):
+        return ('api:project-us-create', (), {'pslug': self.slug})
 
     @models.permalink
     def get_milestones_list_api_url(self):
@@ -159,9 +169,9 @@ class ProjectUserRole(models.Model):
     
     # email notification settings
     send_email_on_group_message = models.BooleanField(default=True)
-    send_email_on_issue_asignement = models.BooleanField(default=True)
-    send_email_on_new_issue = models.BooleanField(default=False)
-    send_email_on_new_issue_as_watcher = models.BooleanField(default=True)
+    send_email_on_us_asignement = models.BooleanField(default=True)
+    send_email_on_new_us = models.BooleanField(default=False)
+    send_email_on_new_us_as_watcher = models.BooleanField(default=True)
     send_email_on_incoming_question = models.BooleanField(default=False)
     send_email_on_incoming_question_assigned = models.BooleanField(default=False)
 
@@ -216,18 +226,15 @@ class Milestone(models.Model):
         super(Milestone, self).save(*args, **kwargs)
 
 
-class Issue(models.Model):
+class Us(models.Model):
     ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
-    status = models.CharField(max_length=50, choices=ISSUE_STATUS_CHOICES)
-    milestone = models.ForeignKey("Milestone", related_name="issues", null=True, default=None)
-    project = models.ForeignKey("Project", related_name="issues")
-    type = models.CharField(max_length="50", default="task", choices=ISSUE_TYPE_CHOICES)
-    author = models.ForeignKey("auth.User", null=True, default=None, related_name="issues")
+    milestone = models.ForeignKey("Milestone", related_name="uss", null=True, default=None)
+    project = models.ForeignKey("Project", related_name="uss")
+    type = models.CharField(max_length="50", default="us", choices=US_TYPE_CHOICES)
+    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
+    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    points = models.IntegerField(choices=POINTS_CHOICES, null=True, default=None)
 
-    priority = models.IntegerField(choices=ISSUE_PRIORITY_CHOICES, default=2)
-    watchers = models.ManyToManyField("auth.User", related_name="issues_watchin", 
-        blank=True, null=True, default=None)
-    
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     tested = models.BooleanField(default=False)
@@ -235,11 +242,9 @@ class Issue(models.Model):
     subject = models.CharField(max_length=500)
     description = models.TextField()
     finish_date = models.DateTimeField(null=True, blank=True)
-    assigned_to = models.ForeignKey('auth.User', related_name='issues_assigned_to_me', null=True, default=None)
-    parent = models.ForeignKey('self', related_name='subtasks', null=True, default=None)
 
     def __repr__(self):
-        return u"<Issue %s>" % (self.id)
+        return u"<Us %s>" % (self.id)
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -247,27 +252,42 @@ class Issue(models.Model):
         if not self.ref:
             self.ref = ref_uniquely(self.__class__)
 
-        super(Issue,self).save(*args, **kwargs)
+        super(Us,self).save(*args, **kwargs)
 
     @models.permalink
     def get_edit_api_url(self):
-        return ('api:issue-edit', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:us-edit', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_asoiciate_api_url(self):
-        return ('api:issue-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:us-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_drop_api_url(self):
-        return ('api:issue-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:us-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_view_url(self):
-        return ('web:issue', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('web:us', (), {'pslug': self.project.slug, 'iref': self.ref})
 
 
-class IssueResponse(models.Model):
-    issue = models.ForeignKey('Issue', related_name='responses')
+class Task(models.Model):
+    us = models.ForeignKey('Us', related_name='tasks')
+    ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
+    status = models.CharField(max_length=50, choices=US_STATUS_CHOICES)
+    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
+    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    
+    subject = models.CharField(max_length=500)
+    description = models.TextField()
+    assigned_to = models.ForeignKey('auth.User', related_name='uss_assigned_to_me', null=True, default=None)
+
+
+class UsResponse(models.Model):
+    us = models.ForeignKey('Us', related_name='responses')
     owner = models.ForeignKey('auth.User', related_name='responses')
 
     created_date = models.DateTimeField(auto_now_add=True)
@@ -275,9 +295,9 @@ class IssueResponse(models.Model):
     content = models.TextField()
 
 
-class IssueFile(models.Model):
-    response = models.ForeignKey('IssueResponse', related_name='attached_files', null=True, blank=True)
-    issue = models.ForeignKey('Issue', related_name='attached_files', null=True, blank=True)
+class UsFile(models.Model):
+    response = models.ForeignKey('UsResponse', related_name='attached_files', null=True, blank=True)
+    us = models.ForeignKey('Us', related_name='attached_files', null=True, blank=True)
 
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)

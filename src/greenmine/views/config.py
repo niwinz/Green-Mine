@@ -108,14 +108,14 @@ class AdminProjectExport(GenericView):
         zfile = zipfile.ZipFile(tmpfile, 'a')
         project_data = self.serialize([project])
         milestones_data = self.serialize(project.milestones.all())
-        issues = self.serialize(project.issues.filter(parent__isnull=True))
-        issues_childs = self.serialize(project.issues.filter(parent__isnull=False))
+        uss = self.serialize(project.uss.filter(parent__isnull=True))
+        uss_childs = self.serialize(project.uss.filter(parent__isnull=False))
 
         
         zfile.writestr('project.json', project_data)
         zfile.writestr('milestones.json', milestones_data)
-        zfile.writestr('issues.json', issues)
-        zfile.writestr('issues_childs.json', issues_childs)
+        zfile.writestr('uss.json', uss)
+        zfile.writestr('uss_childs.json', uss_childs)
         zfile.close()
 
         response = HttpResponse(tmpfile.getvalue(), mimetype='application/zip')
