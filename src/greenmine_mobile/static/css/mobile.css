@@ -51,10 +51,9 @@ table.top-menu td.selected a { text-decoration: underline; }
     border-bottom: 1px solid #ddd;
     border-top: 1px solid #ddd;
 }
-.issues-module .us-list .us-item .us-title.selected {
-    background-color: #458745;
+.issues-module .us-list .us-item.selected .us-title {
+    background-color: #ddd;
 }
-    
 .issues-module .us-list .us-item .us-title a { 
     color: #111;
     text-decoration: none; 

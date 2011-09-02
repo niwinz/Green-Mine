@@ -16,14 +16,19 @@ var dashboard_loadTasks = function(option_dom){
         });
         $('.us-item .us-title a').live('click', function(e) {
             var block = $(this).parent().parent().find('div.tasks');
+            var self = $(this);
+
             if (block.hasClass('hidden')) { 
                 block.hide();
                 block.removeClass('hidden');
-                block.slideDown('slow');
+                block.slideDown('normal', function() {
+                    self.parent().parent().addClass('selected');        
+                });
             }
             else {
-                block.slideUp('slow', function() {
+                block.slideUp('normal', function() {
                     block.addClass('hidden'); 
+                    self.parent().parent().removeClass('selected');
                 });
             }
             e.preventDefault();
