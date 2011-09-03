@@ -9,21 +9,8 @@
 
 
 var milestone_dashboard_drag_and_drop = function() {
-    /*$('.user-story .user-story-status').droppable({
-        activeClass:'bin2', 
-        tolerance: 'pointer',
-        drop: function(event, ui) {
-            if ($(ui.draggable).hasClass('user-story-task')) {
-                // ajax request
-                console.log(2, ui, $(ui.draggable))
-                ui.draggable.draggable('option','revert',false);
-            }
-        }
-    });*/
     $('.user-story').delegate('.user-story-task', 'mouseenter', function(e) {
         if(!$(this).is(':data(draggable)')) {
-            //$(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});
-            //$(this).draggable({revert: 'invalid'});
             $(this).draggable({ handle: '..user-story-task', revert: 'invalid', helper:'clone' });
             $(this).draggable();
         }
@@ -33,8 +20,8 @@ var milestone_dashboard_drag_and_drop = function() {
         $(element).droppable({
             activeClass: 'add',
             tolerance: 'pointer',
+            hoverClass: "ui-state-active",
             drop: function(event, ui) {
-                console.log(1);
                 var params = {
                     modify_flag: self.attr('rel'),
                     task: $(ui.draggable).attr('rel'),
@@ -235,7 +222,7 @@ $(document).ready(function(){
                 }
                 html += '</div></div>';
                 if (ml.id) {
-                    html += '<a href="" class="edit"></a>';
+                    html += '<a href="" class="edit"></a><a href="' + ml.detail_url + '" class="detail-ml"></a>';
                 }
                 return html;
             }

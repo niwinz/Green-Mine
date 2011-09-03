@@ -2,7 +2,7 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / {{ project.name }}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
 {% block middle %}
 <div id="dashboard-actions">
@@ -10,7 +10,7 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
+        <a id="new-us" class="btn01" href="">Nueva US</a>
         <a id="new-issue" class="btn01" href="">Nueva tarea</a>
     </div>
 </div>
@@ -70,7 +70,6 @@
     <div id="milestone-dashboard-title">
         <h2>{{ milestone.name }}</h2>
     </div>
-
     <div id="user-stories-module" rel="{{ milestone.get_task_modify_api_url }}">
         <div class="user-story-legend">
             <div class="user-story-header hfield">

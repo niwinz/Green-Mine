@@ -35,7 +35,7 @@ class LoginView(GenericView):
             {'form': login_form, 'form2': forgotten_password_form})
 
 
-class ProjectsView(GenericView):
+class HomeView(GenericView):
     """ General user projects view """
     template_name = 'projects.html'
 
@@ -61,22 +61,23 @@ class ProjectsView(GenericView):
         return super(ProjectsView, self).dispatch(*args, **kwargs)
 
 
-class DashboardView(GenericView):
+class MainDashboardView(GenericView):
     """ General dasboard view,  with all milestones and all tasks. """
     template_name = 'dashboard.html'
 
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.UsForm(milestone_queryset=project.milestones.all())
-        form2 = forms.MilestoneForm()
+        usform = forms.UsForm(milestone_queryset=project.milestones.all())
+        mlform = forms.MilestoneForm()
         context = {
             'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project,
-            'form': form,
-            'form2': form2,
+            'form': usform,
+            'form2': mlform,
         }
         return self.render(self.template_name, context)
+
 
 class MilestoneDashboardView(GenericView):
     template_name = 'dashboard_milestone.html'
@@ -88,7 +89,8 @@ class MilestoneDashboardView(GenericView):
 
         context = {
             'uss':milestone.uss.all(), 
-            'milestone':milestone
+            'milestone':milestone,
+            'project': project,
         }
         return self.render(self.template_name, context)
 
@@ -209,6 +211,7 @@ class UsView(GenericView):
     template_name = "us.html"
     @login_required
     def get(self, request, pslug, iref):
+        """ View US Detail """
         project = get_object_or_404(models.Project, slug=pslug)
         
         us = get_object_or_404(project.uss, ref=iref)
@@ -219,6 +222,7 @@ class UsView(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
+        """ Add comments method """
         project = get_object_or_404(models.Project, slug=pslug)
         us = get_object_or_404(project.uss, ref=iref)
         form = forms.UsResponseForm(request.POST, request.FILES, us=us, request=request)

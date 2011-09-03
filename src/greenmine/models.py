@@ -222,6 +222,11 @@ class Milestone(models.Model):
         return ('api:milestone-task-modify', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
+    @models.permalink
+    def get_ml_detail_url(self):
+        return ('web:milestone-dashboard', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
     class Meta(object):
         unique_together = ('name', 'project')
 

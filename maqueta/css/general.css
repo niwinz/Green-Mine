@@ -134,6 +134,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #issue textarea{width: 500px; height: 200px;}
 #dashboard .edit{background: url("../imgs/cog21.png") top left; width: 21px; height: 21px; display: block;}
 #dashboard .detail{background: url("../imgs/arrow-double-right.png") top left; width: 21px; height: 17px; display: block; position: absolute; right: 4px; top: 28px;}
+#dashboard .detail-ml{background: url("../imgs/arrow-double-right.png") top left; width: 21px; height: 17px; display: block; position: absolute; right: 26px; top: 4px;}
 .delete-user-ac{margin-right: 10px; float: left;}
 .delete-user-ac a{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; float: right; margin-bottom: 8px;}
 #responses{width: 100%; float: left;}
@@ -263,16 +264,22 @@ div.fieldset div.field-inline {
     padding: 10px;
 }
 .user-story .user-story-status {
-    background-color: #efefef;
+    background-color: white;
     width: 238px;
     padding: 4px;
 }
 .user-story .user-story-task {
     min-height: 60px;
-    background-color: white;
+    background-color: #eee;
     border: 1px solid #ddd;
     border-radius: 2px;
     padding: 5px;
+    margin-bottom: 3px;
+}
+
+.user-story .user-story-status.status-closed .user-story-task {
+    background-color: #B4F3A8;
+    border: 1px solid green;
 }
 
 .user-story-legend {

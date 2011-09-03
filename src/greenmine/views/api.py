@@ -74,6 +74,7 @@ class MilestonesForProjectApiView(GenericView):
                     ml.estimated_finish.strftime('%d/%m/%Y') or '',
                 'completed_tasks': 0,
                 'total_tasks': total_tasks,
+                'detail_url': ml.get_ml_detail_url(),
             })
 
         total_unassigned_tasks = project.uss.filter(milestone__isnull=True).count()
@@ -230,10 +231,13 @@ class UsAsociateApiView(GenericView):
         if mid == 0:
             us.milestone = None
             us.save()
+            us.tasks.update(milestone=None)
+
         else:
             us.milestone = get_object_or_404(models.Milestone, \
                 project__slug=pslug, pk=mid)
             us.save()
+            us.tasks.update(milestone=us.milestone)
         
         return self.render_to_ok()
 
