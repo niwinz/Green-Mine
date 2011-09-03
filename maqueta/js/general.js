@@ -7,8 +7,49 @@
     });
 })(jQuery);
 
+
+var milestone_dashboard_drag_and_drop = function() {
+    /*$('.user-story .user-story-status').droppable({
+        activeClass:'bin2', 
+        tolerance: 'pointer',
+        drop: function(event, ui) {
+            if ($(ui.draggable).hasClass('user-story-task')) {
+                // ajax request
+                console.log(2, ui, $(ui.draggable))
+                ui.draggable.draggable('option','revert',false);
+            }
+        }
+    });*/
+    $('.user-story').delegate('.user-story-task', 'mouseenter', function(e) {
+        if(!$(this).is(':data(draggable)')) {
+            //$(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});
+            $(this).draggable({handle:'.user-story-task', helper: 'clone', revert: 'invalid'});
+            //$(this).draggable();
+        }
+        $(this).parents('.user-story').find('.user-story-status').each(function(idx, element) {
+            if (!$(element).is(':data(droppable)')){
+                var self = $(this);
+                $(element).droppable({
+                    activeClass: 'add',
+                    tolerance: 'pointer',
+                    drop: function(event, ui) {
+                        self.append($(ui.draggable).clone());
+                        $(ui.draggable).remove();
+
+                        ui.draggable.draggable('option','revert',true);
+                    }
+                });
+            }
+        });
+    });
+}
+
 $(document).ready(function(){
     $(".validate").validate();
+    
+    if ($('#milestone-dashboard').length) {
+        milestone_dashboard_drag_and_drop();
+    }
     
     if($("#login-form").length){
         formUtils.ajax("#login-form, #forgotten-password-form", function(data){

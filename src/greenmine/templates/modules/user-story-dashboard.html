@@ -1,0 +1,16 @@
+<div class="user-story">
+    <div class="user-story-header hfield">
+        <b>{{ us.subject }}</b>
+    </div>
+    <div class="user-story-status hfield status-new" rel="new">
+        {% for task in us.tasks_new %}
+
+        <div class="user-story-task">
+            {{ task.subject }}
+        </div>
+        {% endfor %}
+    
+    </div>
+    <div class="user-story-status hfield status-progess" rel="progress"></div>
+    <div class="user-story-status hfield status-closed" rel="closed"></div>
+</div>

@@ -243,3 +243,54 @@ div.fieldset div.field-inline {
 }
 
 .hidden { display: none; }
+
+/* milestone-dashboard-module */
+.user-story { 
+    overflow: hidden; 
+    margin-bottom: 4px;
+}
+.user-story .hfield {
+    float: left;
+    min-height: 100px;
+    margin-right: 4px;
+}
+
+.user-story .user-story-header {
+    width: 200px;
+    background-color: #eee;
+    color: black;
+    font-weight: bold;
+    padding: 10px;
+}
+.user-story .user-story-status {
+    background-color: #efefef;
+    width: 238px;
+    padding: 4px;
+}
+.user-story .user-story-task {
+    min-height: 60px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.user-story-legend {
+    overflow: hidden; 
+    margin-bottom: 4px;
+}
+.user-story-legend .hfield {
+    float: left;
+    margin-right: 4px;
+    font-weight: bold;
+    height: 20px;
+}
+.user-story-legend .user-story-header {
+    width: 200px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.user-story-legend .user-story-status { 
+    width: 238px;
+    padding-left: 4px;
+}

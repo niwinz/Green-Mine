@@ -24,6 +24,7 @@ from greenmine import models, forms
 import re
 
 class LoginView(GenericView):
+    """ Login view """
     template_name = 'login.html'
 
     def get(self, request, *args, **kwargs):
@@ -35,6 +36,7 @@ class LoginView(GenericView):
 
 
 class ProjectsView(GenericView):
+    """ General user projects view """
     template_name = 'projects.html'
 
     def get(self, request, *args, **kwargs):
@@ -52,7 +54,6 @@ class ProjectsView(GenericView):
             'page': page,
             'projects': projects,
         }
-        
         return self.render(self.template_name, context)
     
     @login_required
@@ -60,8 +61,10 @@ class ProjectsView(GenericView):
         return super(ProjectsView, self).dispatch(*args, **kwargs)
 
 
-class ProjectView(GenericView):
+class DashboardView(GenericView):
+    """ General dasboard view,  with all milestones and all tasks. """
     template_name = 'dashboard.html'
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -73,6 +76,17 @@ class ProjectView(GenericView):
             'form': form,
             'form2': form2,
         }
+        return self.render(self.template_name, context)
+
+class MilestoneDashboardView(GenericView):
+    template_name = 'dashboard_milestone.html'
+
+    @login_required
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        context = {'uss':milestone.uss.all(), 'milestone':milestone}
         return self.render(self.template_name, context)
 
 

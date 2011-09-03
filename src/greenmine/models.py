@@ -49,10 +49,12 @@ US_TYPE_CHOICES = (
 
 US_STATUS_CHOICES = (
     ('open', _(u'Open/New')),
-    ('progess', _(u'In progress')),
+    ('progress', _(u'In progress')),
     ('completed', _(u'Completed')),
     ('closed', _(u'Closed')),
 )
+
+TASK_STATUS_CHOICES = US_STATUS_CHOICES
 
 POINTS_CHOICES = (
     ('', u'?'),
@@ -281,11 +283,15 @@ class Us(models.Model):
     def get_view_url(self):
         return ('web:us', (), {'pslug': self.project.slug, 'iref': self.ref})
 
+    @property
+    def tasks_new(self):
+        return self.tasks.filter(status='open')
+
 
 class Task(models.Model):
     us = models.ForeignKey('Us', related_name='tasks')
     ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
-    status = models.CharField(max_length=50, choices=US_STATUS_CHOICES)
+    status = models.CharField(max_length=50, choices=TASK_STATUS_CHOICES, default='open')
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     
