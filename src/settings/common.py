@@ -29,6 +29,15 @@ DATABASES = {
     }
 }
 
+# CACHE CONFIG
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}
+
+
 SEND_BROKEN_LINK_EMAILS = True
 IGNORABLE_404_ENDS = ('.php', '.cgi')
 IGNORABLE_404_STARTS = ('/phpmyadmin/',)

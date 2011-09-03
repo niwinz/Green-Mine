@@ -246,6 +246,9 @@ div.fieldset div.field-inline {
 .hidden { display: none; }
 
 /* milestone-dashboard-module */
+#milestone-dashboard #progress-bar {
+    margin-bottom: 20px;
+}
 .user-story { 
     overflow: hidden; 
     margin-bottom: 4px;
@@ -262,6 +265,12 @@ div.fieldset div.field-inline {
     color: black;
     font-weight: bold;
     padding: 10px;
+    position: relative;
+}
+.user-story .user-story-header a.add-task {
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
 }
 .user-story .user-story-status {
     background-color: white;

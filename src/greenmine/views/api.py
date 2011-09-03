@@ -27,6 +27,7 @@ from greenmine import models, forms
 from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
+import datetime
 
 
 class ApiLogin(GenericView):
@@ -234,15 +235,12 @@ class UsAsociateApiView(GenericView):
         
         if mid == 0:
             us.milestone = None
-            us.save()
-            us.tasks.update(milestone=None)
-
         else:
             us.milestone = get_object_or_404(models.Milestone, \
                 project__slug=pslug, pk=mid)
-            us.save()
-            us.tasks.update(milestone=us.milestone)
-        
+
+        us.tasks.update(milestone=us.milestone)
+        us.save()
         return self.render_to_ok()
 
         
@@ -274,22 +272,84 @@ class TaskDashboardModApiView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
         task = get_object_or_404(milestone.tasks, pk=request.POST.get('task', None))
-        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
 
         mf = request.POST.get('modify_flag', '')
         if mf not in ['close', 'progress', 'new']:
             return self.render_to_error()
+
+        # mark new us modified
+        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
+        us.modified_date = datetime.datetime.now()
+        us.save()
+
+        # mark old us modified
+        if task.us and task.us != us:
+            task.us.modified_date = datetime.datetime.now()
+
+        task.us = us
         
         if mf == 'close':
             task.status = 'completed'
-
         elif mf == 'progress':
             task.status = 'progress'
         else:
             task.status = 'open'
 
-        task.us = us
         task.save()
-        return self.render_to_ok()
         
+        # automatic control of user story status.
+        if us.tasks.filter(status__in=['closed','completed']).count() == us.tasks.all().count():
+            us.status = 'completed'
+        elif us.tasks.all().count() == us.tasks.filter(status='open').count():
+            us.status = 'open'
+        else:
+            us.status = 'progress'
 
+        us.save()
+        return self.render_to_ok()
+ 
+
+class TaskCreateApiView(GenericView):
+    @login_required
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        
+        form = forms.TaskForm(request.POST,
+            us_qs=milestone.uss.all(),
+            assignedto_qs=project.participants.all()
+        )
+
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.owner = request.user
+            task.project = project
+            task.milestone = milestone
+            task.save()
+            
+            # mark us modified
+            task.us.modified_date = datetime.datetime.now()
+            task.us.save()
+
+            html = loader.render_to_string('modules/task-user-story.html',
+                {'task': task}, context_instance=RequestContext(request))
+            return self.render_to_ok({'html':html, 'us': task.us.id})
+
+        return self.render_to_error(form.errors)
+
+
+""" Statistics Views """
+
+class MilestoneStatsApiView(GenericView):
+    def get(self, request, pslug, mid):
+        print 1
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        
+        total_tasks = milestone.tasks.all().count()
+        total_sum = sum([2 if x.status in ['completed', 'closed'] else 1 \
+            for x in milestone.tasks.exclude(status='open')])
+
+        value = (total_sum * 100)/(total_tasks*2)
+        
+        return self.render_to_ok({'ts': total_sum, 't': total_tasks, 'v':value})

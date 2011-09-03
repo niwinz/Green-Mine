@@ -39,6 +39,7 @@ class HomeView(GenericView):
     """ General user projects view """
     template_name = 'projects.html'
 
+    @login_required
     def get(self, request, *args, **kwargs):
         try:
             page = int(request.GET.get('page', '1'))
@@ -56,10 +57,6 @@ class HomeView(GenericView):
         }
         return self.render(self.template_name, context)
     
-    @login_required
-    def dispatch(self, *args, **kwargs):
-        return super(ProjectsView, self).dispatch(*args, **kwargs)
-
 
 class MainDashboardView(GenericView):
     """ General dasboard view,  with all milestones and all tasks. """
@@ -91,12 +88,17 @@ class MilestoneDashboardView(GenericView):
             milestone_queryset=project.milestones.all(),
             initial = {'milestone': milestone}
         )
+        taskform = forms.TaskForm(
+            us_qs=milestone.uss.all(),
+            assignedto_qs=project.participants.all()
+        )
 
         context = {
             'uss':milestone.uss.all(), 
             'milestone':milestone,
             'project': project,
             'usform': usform,
+            'taskform': taskform,
         }
         return self.render(self.template_name, context)
 

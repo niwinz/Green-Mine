@@ -8,7 +8,7 @@
 })(jQuery);
 
 
-var milestone_dashboard_drag_and_drop = function() {
+var milestone_dashboard_bindings = function() {
     $('.user-story .user-story-status .user-story-task').live('mouseenter', function(e) {
         console.log(1);
         if(!$(this).is(':data(draggable)')) {
@@ -17,6 +17,15 @@ var milestone_dashboard_drag_and_drop = function() {
             apply_dropable_bindings();
         }
     });
+
+    var update_progress = function() {
+        var stats_url = $("#progress-bar").attr('rel');
+        $.get(stats_url, function(data){
+            if (data.valid) { $("#progress-bar").progressbar('option', 'value', data.v); }
+        }, 'json');
+    };
+    update_progress();
+
     var apply_dropable_bindings = function() {
         $('.user-story .user-story-status').each(function(idx, element) {
             var self = $(this);
@@ -42,6 +51,7 @@ var milestone_dashboard_drag_and_drop = function() {
                                 self.append($(ui.draggable).clone());
                                 $(ui.draggable).remove();
                                 ui.draggable.draggable('option','revert', false);
+                                update_progress();
                             }
                         },
                         error: function() {
@@ -66,92 +76,52 @@ var milestone_dashboard_drag_and_drop = function() {
         e.preventDefault();
     });
 
+
+    $("#new-task").click(function(e) {
+        $('#form-inserts #task-lb, #form-inserts').removeClass('hidden');
+        var form = $("#form-inserts #task-lb form");
+        $(form).each (function() {this.reset();});
+        if ($(form).data('us_id')) {
+            $(form).find('#id_us').val($(form).data('us_id'));
+        }
+        e.preventDefault();
+    });
+    $('#form-inserts #task-lb .cancel').click(function(e) {
+        $('#form-inserts #task-lb, #form-inserts').addClass('hidden');
+        e.preventDefault();
+    });
+
     formUtils.ajax("#us-lb form", function(data, form){
         if(data.valid){
             $('#user-stories-module').append($(data.html));
         }
-        $('#form-inserts #ul-lb, #form-inserts').addClass('hidden');
+        $('#form-inserts #us-lb, #form-inserts').addClass('hidden');
     });
 
-    /*$('#new-milestone').click(function(e) {
-        $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
-        var form = $("#form-inserts #milestone-lb form");
-
-        $(form).each (function() {this.reset();});
-        $(form).attr('action', $(form).attr('newaction'));
-        $(form).attr('rel', 'new');
-        e.preventDefault();
-    });
-    $('#form-inserts #milestone-lb .cancel').click(function(e) {
-        $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
-        e.preventDefault();
-    });
-
-    $("#milestones").delegate(".edit", "click", function(e){
-        edit = $(this).parent();
-        var form = $("#milestone-lb form");
-        
-        $(form).each (function() {this.reset();});
-        $(form).attr('action', $(edit).data('edit_url'));
-        $(form).attr('rel', 'edit');
-        //milestoneform.reset();
-
-        $.each($(edit).data(), function(key, value) { 
-            $(form).find("[name='"+key+"']").val(value);
-        });
-
-        $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
-        e.preventDefault();
-    });
-    */
-    /* 
-     * TODO: en este caso pensar si mejor hacer un inline con un formulario
-     * cargado directo por ajax. ya que en una lista larga al clickar, el formulario
-     * se desplegara en la parte superior, y no seria comodo a la hora de editar.
-    */
-    /*
-    $("#tasks").delegate(".edit", "click", function(e){
-        edit = $(this).parent();
-        console.log(edit.data());
-        var form = $("#issue-lb form");
-        $(form).each (function() {this.reset();});
-        $(form).attr('action', $(edit).data('edit_url'));
-        $(form).attr('rel', 'edit');
-        
-        issueform.resetForm(); 
-
-        $.each($(edit).data(), function(key, value) { 
-            console.log(key, value);
-           $(form).find("[name='"+key+"']").val(value);
-        }); 
-        $(edit).updateHtml();
-        
-        $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
-        e.preventDefault();
-    });
-
-    var milestoneform = formUtils.ajax("#milestone-lb form", function(data, form){
-        if ($(form).attr('rel')=='new'){
-            $("<li>").addClass('milestone').html(milestoneHtml(data.milestone))
-                .data(data.milestone).prependTo("#milestones");
-
-        } else {
-            $(edit).data(data.milestone);
-            $(edit).updateHtml();
+    formUtils.ajax("#task-lb form", function(data, form){
+        if(data.valid){
+            var html = $(data.html);
+            $("#us" + data.us + " .status-new").append(html);
+            $('#form-inserts #task-lb, #form-inserts').addClass('hidden');
         }
-        load_milestones();
-        $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
     });
 
+    $(".user-story .user-story-header a.add-task").live('click', function(e) {
+        var usid = $(this).parents('.user-story').attr('us');
+        $("#form-inserts #task-lb form").data('us_id', usid);
+        $(document).scrollTop(50);
+        $("#new-task").trigger('click');
 
-    */
+        e.preventDefault();
+    });
+    $('#progress-bar').progressbar({value: 78});
 }
 
 $(document).ready(function(){
     $(".validate").validate();
     
     if ($('#milestone-dashboard').length) {
-        milestone_dashboard_drag_and_drop();
+        milestone_dashboard_bindings();
     }
     
     if($("#login-form").length){

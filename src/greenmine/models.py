@@ -149,6 +149,7 @@ class Project(models.Model):
     def get_us_create_api_url(self):
         return ('api:project-us-create', (), {'pslug': self.slug})
 
+
     @models.permalink
     def get_milestones_list_api_url(self):
         return ('api:milestones-for-project', (), {'pslug': self.slug})
@@ -227,6 +228,16 @@ class Milestone(models.Model):
         return ('web:milestone-dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
+    @models.permalink
+    def get_create_task_url(self):
+        return ('api:milestone-task-create', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
+    def get_stats_api_url(self):
+        return ('api:stats-milestone', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
     class Meta(object):
         unique_together = ('name', 'project')
 
@@ -269,6 +280,9 @@ class Us(models.Model):
     def __repr__(self):
         return u"<Us %s>" % (self.id)
 
+    def __unicode__(self):
+        return self.subject
+
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
@@ -289,9 +303,12 @@ class Us(models.Model):
     def get_drop_api_url(self):
         return ('api:us-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
+
     @models.permalink
     def get_view_url(self):
         return ('web:us', (), {'pslug': self.project.slug, 'iref': self.ref})
+    
+    """ Propertys """
 
     @property
     def tasks_new(self):
@@ -318,8 +335,9 @@ class Task(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     
     subject = models.CharField(max_length=500)
-    description = models.TextField()
-    assigned_to = models.ForeignKey('auth.User', related_name='uss_assigned_to_me', null=True, default=None)
+    description = models.TextField(blank=True)
+    assigned_to = models.ForeignKey('auth.User', related_name='uss_assigned_to_me', 
+        blank=True, null=True, default=None)
 
 
 class UsResponse(models.Model):

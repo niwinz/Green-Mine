@@ -28,6 +28,9 @@ urlpatterns = patterns('',
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/modify/$',
         api.TaskDashboardModApiView.as_view(), name="milestone-task-modify"),
 
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
+        api.TaskCreateApiView.as_view(), name="milestone-task-create"),
+
     url(r'^project/(?P<pslug>[\w\d\-]+)/us/create/$',
         api.UsCreateApiView.as_view(), name="project-us-create"),
 
@@ -45,5 +48,10 @@ urlpatterns = patterns('',
 
     url(r'^password/forgotten/$', 
         api.ForgottenPasswordApiView.as_view(), name='password-forgotten'),
+
+
+    # Stats
+    url(r'^stats/project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/$',
+        api.MilestoneStatsApiView.as_view(), name='stats-milestone'),
 )
 

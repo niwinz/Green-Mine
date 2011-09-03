@@ -274,6 +274,27 @@ class UsResponseForm(Form):
             )
 
 
+class TaskForm(forms.ModelForm):
+    subject = CharField(max_length=200, required=True)
+    class Meta:
+        model = models.Task
+        exclude = (
+            'ref', 'status',
+            'owner', 
+            'milestone',
+            'created_date',
+            'modified_date'
+        )
+
+    def __init__(self, *args, **kwargs):
+        us_qs = kwargs.pop('us_qs', models.Us.objects.none())
+        assignedto_qs = kwargs.pop('assignedto_qs', models.User.objects.none())
+
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['us'].queryset = us_qs
+        self.fields['assigned_to'].queryset = assignedto_qs
+
+
 class DumpUploadForm(forms.Form):
     dumpfile = forms.FileField(required=True)
     overwrite = forms.BooleanField(initial=True, required=False)
