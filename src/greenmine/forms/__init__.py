@@ -178,14 +178,14 @@ class FiltersForm(Form):
 
 class MilestoneForm(Form):
     name = CharField(max_length=200, required=True)
-    finish_date = forms.DateField(required=False, localize=True)
+    estimated_finish = forms.DateField(required=False, localize=True)
 
     def __init__(self, *args, **kwargs):
         self._instance = kwargs.pop('instance', None)
         if self._instance:
             kwargs['initial'] = {
                 'name': self._instance.name,
-                'finish_date': self._instance.estimated_finish,
+                'estimated_finish': self._instance.estimated_finish,
             }
         super(MilestoneForm,self).__init__(*args, **kwargs)
 
@@ -194,7 +194,7 @@ class MilestoneForm(Form):
             self._instance = Milestone()
 
         self._instance.name = self.cleaned_data['name']
-        self._instance.estimated_finish = self.cleaned_data['finish_date']
+        self._instance.estimated_finish = self.cleaned_data['estimated_finish']
         if commit:
             self._instance.save()
         return self._instance

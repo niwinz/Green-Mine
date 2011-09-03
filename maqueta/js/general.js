@@ -154,39 +154,37 @@ $(document).ready(function(){
         })     
     }
     
-    if($("#dashboard").length){        
-        function Dashboard(){  
-            $.fn.updateHtml = function(){
-                if($(this).hasClass('milestone')){
+    if ($("#dashboard").length) {        
+        function Dashboard() {  
+            $.fn.updateHtml = function() {
+                if ($(this).hasClass('milestone')) {
                     $(this).html(milestoneHtml($(this).data()));
-                }else{
-                    if($(this).hasClass('task')){
+                } else {
+                    if ($(this).hasClass('task')) {
                         $(this).html(taskHtml($(this).data()));
                     }
                 }
             };                
             
-            function milestoneHtml(ml){
-                var html =  '<div class="ml"><span class="name">'+ml.name+'</span><div>';
-                if(ml.id){
-                     html+= '<span class="estimated_finish">'+ml.estimated_finish+'</span>';
+            function milestoneHtml(ml) {
+                var html =  '<div class="ml"><span class="name">' + ml.name + '</span><div>';
+                if (ml.id) {
+                     html += '<span class="estimated_finish">' + ml.estimated_finish + '</span>';
                 }
-                    
-                html+=' (<span class="issue">'+ml.completed_tasks+'/'+ml.total_tasks+'</span>)</div></div>';
-
-                if(ml.id){
-                    html+='<a href="" class="edit"></a>';
+                html += '</div></div>';
+                if (ml.id) {
+                    html += '<a href="" class="edit"></a>';
                 }
                 return html;
             }
             
-            function taskHtml(tk){
+            function taskHtml(tk) {
                 var html = '<div class="dg">%s<span>[ Estado: %s | Prioridad: %s ]</span></div>'
                     + '<a class="edit" href=""></a><a href="%s" class="detail"></a>';
                 return interpolate(html, [tk.subject,tk.status_view,tk.priority_view,tk.url]);
             }            
             
-            function loadTasks(url){
+            function loadTasks(url) {
                 $("#tasks").hide();
 
                 $.get(url, function(data) {
@@ -309,6 +307,9 @@ $(document).ready(function(){
                 });                     
             }
             
+            /*
+             * TODO: areglar esta funcion, ya que no hace su trabajo
+             */
             var filters = function(){
                 $("#tasks-filters select").val(-1);
                 $("#tasks-filters").delegate("select", "change", function(){
@@ -371,10 +372,11 @@ $(document).ready(function(){
                     $(form).each (function() {this.reset();});
                     $(form).attr('action', $(edit).data('edit_url'));
                     $(form).attr('rel', 'edit');
-                    milestoneform.reset();
+                    //milestoneform.reset();
 
                     $.each($(edit).data(), function(key, value) { 
-                       $(form).find("[name='"+key+"']").val(value);
+                        console.log(key, value);
+                        $(form).find("[name='"+key+"']").val(value);
                     });
 
                     $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
