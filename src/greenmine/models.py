@@ -57,10 +57,10 @@ US_STATUS_CHOICES = (
 POINTS_CHOICES = (
     (None, u'?'),
     (0.5, u'1/2'),
-    (1.0, u'1'),
-    (2.0, u'2'),
-    (3.0, u'3'),
-    (5.0, u'5')
+    (1, u'1'),
+    (2, u'2'),
+    (3, u'3'),
+    (5, u'5')
 )
 
 
@@ -243,7 +243,7 @@ class Us(models.Model):
     type = models.CharField(max_length="50", default="us", choices=US_TYPE_CHOICES)
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
-    points = models.IntegerField(choices=POINTS_CHOICES, null=True, default=None)
+    points = models.FloatField(choices=POINTS_CHOICES, null=True, default=None)
     status = models.CharField(max_length=50, choices=US_STATUS_CHOICES, db_index=True, default="open")
 
     created_date = models.DateTimeField(auto_now_add=True)

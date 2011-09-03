@@ -21,8 +21,12 @@
         <form method="post" action="" newaction="auxiliar/json/task.json">
             <div class="fieldset">
                 <div class="field-inline">
-                    <label>{{ form.name.label }}</label>
-                    {{ form.name }}
+                    <label>{{ form.subject.label }}</label>
+                    {{ form.subject }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ form.estimation.label }}</label>
+                    {{ form.estimation }}
                 </div>
                 <div class="field-inline">
                     <label>{{ form.type.label }}</label>

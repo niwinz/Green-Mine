@@ -202,11 +202,12 @@ class MilestoneForm(Form):
 
 class UsForm(Form):
     #: TODO: refactor whis
-    name = CharField(max_length=200, required=True)
+    subject = CharField(max_length=200, required=True)
     type = forms.ChoiceField(choices=US_TYPE_CHOICES)
     status = forms.ChoiceField(choices=US_STATUS_CHOICES)
     priority = forms.ChoiceField(choices=US_PRIORITY_CHOICES)
     description = CharField(max_length=1000, required=False, widget=forms.Textarea)
+    estimation = forms.TypedChoiceField(required=False, choices=POINTS_CHOICES, coerce=float)
     milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -214,11 +215,12 @@ class UsForm(Form):
         self._instance = kwargs.pop('instance', None)
         if self._instance:
             kwargs['initial'] = {
-                'name': self._instance.subject,
+                'subject': self._instance.subject,
                 'type': self._instance.type,
                 'status': self._instance.status,
                 'description': self._instance.description,
                 'milestone': self._instance.milestone,
+                'estimation': self._instance.points,
             }
 
         super(UsForm, self).__init__(*args, **kwargs)
@@ -228,11 +230,12 @@ class UsForm(Form):
         if not self._instance:
             self._instance = Us()
 
-        self._instance.subject = self.cleaned_data['name']
+        self._instance.subject = self.cleaned_data['subject']
         self._instance.type = self.cleaned_data['type']
         self._instance.status = self.cleaned_data['status']
         self._instance.description = self.cleaned_data['description']
         self._instance.milestone = self.cleaned_data['milestone']
+        self._instance.points = self.cleaned_data['estimation']
         if commit:
             self._instance.save()
         return self._instance

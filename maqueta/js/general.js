@@ -161,6 +161,7 @@ $(document).ready(function(){
                     $(this).html(milestoneHtml($(this).data()));
                 } else {
                     if ($(this).hasClass('task')) {
+                        console.log(11111, $(this));
                         $(this).html(taskHtml($(this).data()));
                     }
                 }
@@ -375,7 +376,6 @@ $(document).ready(function(){
                     //milestoneform.reset();
 
                     $.each($(edit).data(), function(key, value) { 
-                        console.log(key, value);
                         $(form).find("[name='"+key+"']").val(value);
                     });
 
@@ -390,15 +390,19 @@ $(document).ready(function(){
                 */
                 $("#tasks").delegate(".edit", "click", function(e){
                     edit = $(this).parent();
+                    console.log(edit.data());
                     var form = $("#issue-lb form");
                     $(form).each (function() {this.reset();});
                     $(form).attr('action', $(edit).data('edit_url'));
                     $(form).attr('rel', 'edit');
                     
                     issueform.resetForm(); 
+
                     $.each($(edit).data(), function(key, value) { 
+                        console.log(key, value);
                        $(form).find("[name='"+key+"']").val(value);
                     }); 
+                    $(edit).updateHtml();
                     
                     $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
                     e.preventDefault();

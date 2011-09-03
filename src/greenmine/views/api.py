@@ -125,10 +125,11 @@ class UsForMilestoneApiView(GenericView):
                 'drop_url': us.get_drop_api_url(),
                 'asociate_url': us.get_asoiciate_api_url(),
                 'url': us.get_view_url(),
-                'milestone_id': us.milestone and us.milestone.id or None,
+                'milestone': us.milestone and us.milestone.id or None,
                 'tasks': us.tasks.count(),
                 'status': us.status,
                 'status_view': us.get_status_display(),
+                'estimation': us.points,
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})
