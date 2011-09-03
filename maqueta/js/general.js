@@ -1,6 +1,6 @@
 (function($){
     $(".btn01, input[type='submit'], input[type='button']").button();
-    $( ".datepicker" ).datepicker({
+    $( ".datepicker, #id_finish_date" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat: "dd/mm/yy"
@@ -205,15 +205,8 @@ $(document).ready(function(){
                     $(tkul).show();
                 }, 'json');
             }
-            function loadMilestones(){
-                $("#milestones").delegate(".ml", "click", function(e){
-                    $("#tasks-filters select").val(-1);
-                    $("#milestones").find(".selected").removeClass("selected");
-                    var li = $(this).parent()
-                    $(li).addClass("selected");
-                    loadTasks($(li).data("url"))
-                });
-                
+
+            var load_milestones = function() {
                 var milestones_req_url = $("#dashboard").attr("rel");
                 $.get(milestones_req_url, function(data) {
                     var ln = data.milestones.length;
@@ -221,25 +214,31 @@ $(document).ready(function(){
                     var li = new Array();
 
                     for(var i=0; i<ln; i++){
-                        li.push(
-                            $("<li>")
-                            .addClass('milestone')
-                            .html(
-                                milestoneHtml(ml[i])
-                            )
-                            .data(ml[i])
-                        );    
+                        li.push($("<li>").addClass('milestone').html(milestoneHtml(ml[i])).data(ml[i]));    
                     }
                    
                     loadTasks($(li[0]).data().url);
-                    
                     $(li[0]).addClass('selected');
+                    
                     var mlul = $("#milestones");
+                    mlul.html('');
+
                     $(li).each(function(){
                         $(mlul).append(this);
                     })
                 }, 'json');
-            }
+            };
+
+            var milestones_bindings = function() {
+                $("#milestones").delegate(".ml", "click", function(e){
+                    $("#tasks-filters select").val(-1);
+                    $("#milestones").find(".selected").removeClass("selected");
+                    var li = $(this).parent()
+                    $(li).addClass("selected");
+                    loadTasks($(li).data("url"))
+                });
+                load_milestones();
+            };
             
             function dragAndDrop(){
                 $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
@@ -334,6 +333,8 @@ $(document).ready(function(){
             };
 
             var formsBindings = function() {
+                var edit = null;
+
                 $("#new-milestone").click(function(e) {
                     e.preventDefault();
                 });
@@ -364,90 +365,76 @@ $(document).ready(function(){
                 });
 
                 $("#milestones").delegate(".edit", "click", function(e){
-                    //edit = $(this).parent();
-                    //var form = $("#milestone-lb form");
-                    //$(form).each (function() {this.reset();});
-                    //$(form).attr('action', $(edit).data('edit_url'));
-                    //$(form).attr('rel', 'edit');
-                    //milestoneform.resetForm(); 
-
-                    //$.each($(edit).data(), function(key, value) { 
-                    //   $(form).find("[name='"+key+"']").val(value);
-                    //});                        
-                    //
-                    //openLightBoxMilestone();
-
-                    e.preventDefault();
-                });
-            };
-            
-            /*
-            function forms(){
-                var edit = 0;
-
-                $("#new-issue").click(function(e){
-                    e.preventDefault();
-                    var form = $("#issue-lb form");
+                    edit = $(this).parent();
+                    var form = $("#milestone-lb form");
+                    
                     $(form).each (function() {this.reset();});
-                    $(form).attr('action', $(form).attr('newaction'));
-                    $(form).attr('rel', 'new');
-                    issueform.resetForm(); 
-                    openLightBoxIssue();
+                    $(form).attr('action', $(edit).data('edit_url'));
+                    $(form).attr('rel', 'edit');
+                    milestoneform.reset();
+
+                    $.each($(edit).data(), function(key, value) { 
+                       $(form).find("[name='"+key+"']").val(value);
+                    });
+
+                    $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
+                    e.preventDefault();
                 });
                 
-                $("#tasks").delegate(".edit", "click",
-                    function(e){
-                        edit = $(this).parent();
-                        e.preventDefault();
-                        var form = $("#issue-lb form");
-                        $(form).each (function() {this.reset();});
-                        $(form).attr('action', $(edit).data('edit_url'));
-                        $(form).attr('rel', 'edit');
-                        issueform.resetForm(); 
+                /* 
+                 * TODO: en este caso pensar si mejor hacer un inline con un formulario
+                 * cargado directo por ajax. ya que en una lista larga al clickar, el formulario
+                 * se desplegara en la parte superior, y no seria comodo a la hora de editar.
+                */
+                $("#tasks").delegate(".edit", "click", function(e){
+                    edit = $(this).parent();
+                    var form = $("#issue-lb form");
+                    $(form).each (function() {this.reset();});
+                    $(form).attr('action', $(edit).data('edit_url'));
+                    $(form).attr('rel', 'edit');
+                    
+                    issueform.resetForm(); 
+                    $.each($(edit).data(), function(key, value) { 
+                       $(form).find("[name='"+key+"']").val(value);
+                    }); 
+                    
+                    $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
+                    e.preventDefault();
+                });
 
-                        $.each($(edit).data(), function(key, value) { 
-                           $(form).find("[name='"+key+"']").val(value);
-                        });                        
-                        
-                        openLightBoxIssue();
-                }
-                );
                 var milestoneform = formUtils.ajax("#milestone-lb form", function(data, form){
-                    if($(form).attr('rel')=='new'){
-                        $("<li>")
-                        .addClass('milestone')
-                        .html(
-                            milestoneHtml(data.milestone)
-                        )
-                        .data(data.milestone)
-                        .prependTo("#milestones")
-                    }else{
+                    if ($(form).attr('rel')=='new'){
+                        $("<li>").addClass('milestone').html(milestoneHtml(data.milestone))
+                            .data(data.milestone).prependTo("#milestones");
+
+                    } else {
                         $(edit).data(data.milestone);
                         $(edit).updateHtml();
                     }
-                    $("#milestone-lb").fadeOut('fast');
+                    load_milestones();
+                    $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
                 });
 
+
                 var issueform = formUtils.ajax("#issue-lb form", function(data, form){
-                    if(data.redirect_to) location.href = data.redirect_to;
-                    else{
-                        if($(form).attr('rel')=='new'){
-                            $("<li/>")
-                            .addClass('task')
-                            .data(data.task)
-                            .html(taskHtml(data.task))
-                            .prependTo("#tasks"); 
-                        }else{
+                    if(data.redirect_to) {
+                        location.href = data.redirect_to;
+                    } else {
+                        if ($(form).attr('rel')=='new'){
+                            $("<li/>").addClass('task').data(data.task)
+                                .html(taskHtml(data.task)).prependTo("#tasks"); 
+
+                        } else {
                             $(edit).data(data.task);
                             $(edit).updateHtml();
                         }
-                        $("#issue-lb").fadeOut('fast');
                     }
+                    $('#form-inserts #issue-lb, #form-inserts').addClass('hidden');
                 });
-            }*/
+            };
             
             //init dashboard
-            loadMilestones();
+            milestones_bindings();
             dragAndDrop();
             filters();   
             formsBindings();

@@ -208,7 +208,8 @@ form input[type="text"], form input[type="password"], form textarea, form input[
     background-color: white;
     position: relative;
 }
-#form-inserts #issue-lb #id_name {  width: 600px; }
+#form-inserts #issue-lb #id_name,
+#form-inserts #milestone-lb #id_name {  width: 600px; }
 #form-inserts #issue-lb #id_description { width: 900px;}
 #form-inserts .submit-fieldset input { padding: 10px; }
 
@@ -220,14 +221,6 @@ div.fieldset div.field-inline {
     float: left;
     margin-right: 10px;
 }
-/*
-#form-inserts .close {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: transparent url("../imgs/close-icon.png") no-repeat ;
-}*/
-
 
 /* base */
 
