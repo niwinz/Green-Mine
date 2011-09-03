@@ -2,6 +2,8 @@
 {% load url from future %}
 {% load i18n %}
 
+{% block title %}{{ block.super }} / Projects administration.{% endblock %}
+
 {% block wrapper %}
 <div id="projects">
     {% include "config/menu.html" %}

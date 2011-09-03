@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load url from future %}
 
-nclude "config/menu.html" %}{% block wrapper %}
+{% block title %}{{ block.super }} / Profile edit{% endblock %}
+
+{% include "config/menu.html" %}{% block wrapper %}
 <div id="my-profile">
     {% include "config/menu.html" %}
     <form id="edit-profile-form" method="post" enctype="multipart/form-data"
