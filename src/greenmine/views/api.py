@@ -192,7 +192,11 @@ class UsCreateApiView(GenericView):
             us = form.save(commit=False)
             us.project = project
             us.save()
-            return self.render_to_ok()
+
+            html = loader.render_to_string('modules/user-story-dashboard.html', 
+                {'us':us}, context_instance=RequestContext(request))
+
+            return self.render_to_ok({'html':html})
 
         return self.render_to_error(form.jquery_errors)
 

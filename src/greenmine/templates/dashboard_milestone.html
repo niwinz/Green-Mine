@@ -16,45 +16,34 @@
 </div>
 <div id="form-inserts" class="hidden">
     <div class="close"></div>
-    <div id="issue-lb" class="hidden lb">
-        <h2>Nueva tarea / user story: </h2>
-        <form method="post" action="" newaction="auxiliar/json/task.json">
+    <div id="us-lb" class="hidden lb">
+        <h2>Nueva user story: </h2>
+        <form method="post" action="{{ project.get_us_create_api_url }}">
             <div class="fieldset">
                 <div class="field-inline">
-                    <label>{{ form.subject.label }}</label>
-                    {{ form.subject }}
+                    <label>{{ usform.subject.label }}</label>
+                    {{ usform.subject }}
                 </div>
                 <div class="field-inline">
-                    <label>{{ form.estimation.label }}</label>
-                    {{ form.estimation }}
+                    <label>{{ usform.estimation.label }}</label>
+                    {{ usform.estimation }}
                 </div>
                 <div class="field-inline">
-                    <label>{{ form.type.label }}</label>
-                    {{ form.type }}
+                    <label>{{ usform.priority.label }} </label>
+                    {{ usform.priority }}
                 </div>
                 <div class="field-inline">
-                    <label>{{ form.status.label }}</label>
-                    {{ form.status }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form.priority.label }} </label>
-                    {{ form.priority }}
+                    <label>{{ usform.milestone.label }}</label>
+                    {{ usform.milestone }}
                 </div>
             </div>
             <div class="fieldset">
-                <label>{{ form.milestone.label }}</label>
-                {{ form.milestone }}
-            </div>
-            <div class="fieldset">
-                <label>{{ form.description.label }}</label>
-                {{ form.description }}
+                <label>{{ usform.description.label }}</label>
+                {{ usform.description }}
             </div>
             <div class="fieldset submit-fieldset">
                 <div class="field-inline">
                     <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input type="submit" value="Guardar y editar" />
                 </div>
                 <div class="field-inline">
                     <input class="cancel" type="button" value="Cancelar" />

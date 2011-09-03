@@ -87,10 +87,16 @@ class MilestoneDashboardView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
+        usform = forms.UsForm(
+            milestone_queryset=project.milestones.all(),
+            initial = {'milestone': milestone}
+        )
+
         context = {
             'uss':milestone.uss.all(), 
             'milestone':milestone,
             'project': project,
+            'usform': usform,
         }
         return self.render(self.template_name, context)
 
