@@ -217,6 +217,11 @@ class Milestone(models.Model):
         return ('api:project-milestone-edit', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
+    @models.permalink
+    def get_task_modify_api_url(self):
+        return ('api:milestone-task-modify', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
     class Meta(object):
         unique_together = ('name', 'project')
 
@@ -287,6 +292,14 @@ class Us(models.Model):
     def tasks_new(self):
         return self.tasks.filter(status='open')
 
+    @property
+    def tasks_progress(self):
+        return self.tasks.filter(status='progress')
+
+    @property
+    def tasks_closed(self):
+        return self.tasks.filter(status__in=['closed', 'completed'])
+
 
 class Task(models.Model):
     us = models.ForeignKey('Us', related_name='tasks')
@@ -294,6 +307,7 @@ class Task(models.Model):
     status = models.CharField(max_length=50, choices=TASK_STATUS_CHOICES, default='open')
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    milestone = models.ForeignKey('Milestone', related_name='tasks', null=True, default=None)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)

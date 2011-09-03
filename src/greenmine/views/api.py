@@ -259,3 +259,29 @@ class ForgottenPasswordApiView(GenericView):
             return self.render_to_ok({'redirect_to':'/'})
 
         return self.render_to_error(form.jquery_errors)
+
+
+class TaskDashboardModApiView(GenericView):
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        task = get_object_or_404(milestone.tasks, pk=request.POST.get('task', None))
+        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
+
+        mf = request.POST.get('modify_flag', '')
+        if mf not in ['close', 'progress', 'new']:
+            return self.render_to_error()
+        
+        if mf == 'close':
+            task.status = 'completed'
+
+        elif mf == 'progress':
+            task.status = 'progress'
+        else:
+            task.status = 'open'
+
+        task.us = us
+        task.save()
+        return self.render_to_ok()
+        
+

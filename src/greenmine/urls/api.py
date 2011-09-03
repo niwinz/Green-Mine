@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/edit/$',
         api.MilestoneEditApiView.as_view(), name="project-milestone-edit"),
 
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/modify/$',
+        api.TaskDashboardModApiView.as_view(), name="milestone-task-modify"),
+
     url(r'^project/(?P<pslug>[\w\d\-]+)/us/create/$',
         api.UsCreateApiView.as_view(), name="project-us-create"),
 

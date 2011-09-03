@@ -23,20 +23,40 @@ var milestone_dashboard_drag_and_drop = function() {
     $('.user-story').delegate('.user-story-task', 'mouseenter', function(e) {
         if(!$(this).is(':data(draggable)')) {
             //$(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});
-            $(this).draggable({handle:'.user-story-task', helper: 'clone', revert: 'invalid'});
-            //$(this).draggable();
+            //$(this).draggable({revert: 'invalid'});
+            $(this).draggable({ handle: '..user-story-task', revert: 'invalid', helper:'clone' });
+            $(this).draggable();
         }
-        $(this).parents('.user-story').find('.user-story-status').each(function(idx, element) {
-            if (!$(element).is(':data(droppable)')){
-                var self = $(this);
-                $(element).droppable({
-                    activeClass: 'add',
-                    tolerance: 'pointer',
-                    drop: function(event, ui) {
-                        self.append($(ui.draggable).clone());
-                        $(ui.draggable).remove();
-
-                        ui.draggable.draggable('option','revert',true);
+    });
+    $('.user-story .user-story-status').each(function(idx, element) {
+        var self = $(this);
+        $(element).droppable({
+            activeClass: 'add',
+            tolerance: 'pointer',
+            drop: function(event, ui) {
+                console.log(1);
+                var params = {
+                    modify_flag: self.attr('rel'),
+                    task: $(ui.draggable).attr('rel'),
+                    us : self.parents('.user-story').attr('us'),
+                    milestone: $(ui.draggable).attr('ml')
+                }
+                var mod_url = $('#user-stories-module').attr('rel');
+                $.ajax({
+                    url:mod_url, 
+                    data:params,
+                    type: 'POST',
+                    dataType:'json',
+                    success: function(data){
+                        if (data.valid) {
+                            self.append($(ui.draggable).clone());
+                            $(ui.draggable).remove();
+                            ui.draggable.draggable('option','revert', false);
+                        }
+                    },
+                    error: function() {
+                        console.log('error');
+                        ui.draggable.draggable('option','revert', true);
                     }
                 });
             }

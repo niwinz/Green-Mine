@@ -71,22 +71,21 @@
         <h2>{{ milestone.name }}</h2>
     </div>
 
-    <div id="user-stories-module">
-
-    <div class="user-story-legend">
-        <div class="user-story-header hfield">
-            <b>User story: </b>
+    <div id="user-stories-module" rel="{{ milestone.get_task_modify_api_url }}">
+        <div class="user-story-legend">
+            <div class="user-story-header hfield">
+                <b>User story: </b>
+            </div>
+            <div class="user-story-status hfield status-new">
+                <b>New tasks...</b>
+            </div>
+            <div class="user-story-status hfield status-progess">
+                <b>Tasks in progress...</b>
+            </div>
+            <div class="user-story-status hfield status-closed">
+                <b>Tasks finished...</b>
+            </div>
         </div>
-        <div class="user-story-status hfield status-new">
-            <b>New tasks...</b>
-        </div>
-        <div class="user-story-status hfield status-progess">
-            <b>Tasks in progress...</b>
-        </div>
-        <div class="user-story-status hfield status-closed">
-            <b>Tasks finished...</b>
-        </div>
-    </div>
         {% for us in uss %}
         {% include "modules/user-story-dashboard.html" %}
         {% endfor %}

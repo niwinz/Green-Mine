@@ -1,16 +1,26 @@
-<div class="user-story">
+<div class="user-story" us="{{ us.id }}">
     <div class="user-story-header hfield">
         <b>{{ us.subject }}</b>
     </div>
     <div class="user-story-status hfield status-new" rel="new">
         {% for task in us.tasks_new %}
-
-        <div class="user-story-task">
+        <div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}">
             {{ task.subject }}
         </div>
         {% endfor %}
-    
     </div>
-    <div class="user-story-status hfield status-progess" rel="progress"></div>
-    <div class="user-story-status hfield status-closed" rel="closed"></div>
+    <div class="user-story-status hfield status-progess" rel="progress">
+        {% for task in us.tasks_progress %}
+        <div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}">
+            {{ task.subject }} {{ task.status }}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="user-story-status hfield status-closed" rel="close">
+        {% for task in us.tasks_closed %}
+        <div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}">
+            {{ task.subject }} {{ task.status }}
+        </div>
+        {% endfor %}
+    </div>
 </div>

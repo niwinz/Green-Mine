@@ -20,6 +20,7 @@ def us_post_save(sender, instance, created, **kwargs):
             subject = instance.subject,
             description = instance.description,
             owner = instance.owner,
+            milestone = instance.milestone,
             us = instance,
         )
 

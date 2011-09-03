@@ -86,7 +86,10 @@ class MilestoneDashboardView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
-        context = {'uss':milestone.uss.all(), 'milestone':milestone}
+        context = {
+            'uss':milestone.uss.all(), 
+            'milestone':milestone
+        }
         return self.render(self.template_name, context)
 
 
