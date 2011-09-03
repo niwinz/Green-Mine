@@ -55,7 +55,7 @@ US_STATUS_CHOICES = (
 )
 
 POINTS_CHOICES = (
-    (None, u'?'),
+    ('', u'?'),
     (0.5, u'1/2'),
     (1, u'1'),
     (2, u'2'),

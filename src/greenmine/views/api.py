@@ -130,6 +130,7 @@ class UsForMilestoneApiView(GenericView):
                 'status': us.status,
                 'status_view': us.get_status_display(),
                 'estimation': us.points,
+                'description': us.description,
             }
             response_list.append(response_dict)
         return self.render_to_ok({"tasks": response_list})

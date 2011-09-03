@@ -207,7 +207,7 @@ class UsForm(Form):
     status = forms.ChoiceField(choices=US_STATUS_CHOICES)
     priority = forms.ChoiceField(choices=US_PRIORITY_CHOICES)
     description = CharField(max_length=1000, required=False, widget=forms.Textarea)
-    estimation = forms.TypedChoiceField(required=False, choices=POINTS_CHOICES, coerce=float)
+    estimation = forms.ChoiceField(required=False, choices=POINTS_CHOICES)
     milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -235,7 +235,11 @@ class UsForm(Form):
         self._instance.status = self.cleaned_data['status']
         self._instance.description = self.cleaned_data['description']
         self._instance.milestone = self.cleaned_data['milestone']
-        self._instance.points = self.cleaned_data['estimation']
+        if self.cleaned_data['estimation'].strip():
+            self._instance.points = float(self.cleaned_data['estimation'])
+        else:
+            self._instance.points = None
+
         if commit:
             self._instance.save()
         return self._instance
