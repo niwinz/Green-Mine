@@ -109,7 +109,7 @@ class UsForMilestoneApiView(GenericView):
             uss = project.uss.filter(milestone__isnull=True)
         
         #: TODO: future set from user-project-settings relation table.
-        uss = uss.order_by('-type', '-priority')
+        uss = uss.order_by('-priority')
 
         response_list = []
         for us in uss:
@@ -121,8 +121,6 @@ class UsForMilestoneApiView(GenericView):
                 'to_id': None,
                 'priority': us.priority,
                 'priority_view': us.get_priority_display(),
-                'type': us.type,
-                'type_view': us.get_type_display(),
                 'edit_url': us.get_edit_api_url(),
                 'drop_url': us.get_drop_api_url(),
                 'asociate_url': us.get_asoiciate_api_url(),

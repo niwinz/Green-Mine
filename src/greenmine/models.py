@@ -263,7 +263,6 @@ class Us(models.Model):
     ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
     milestone = models.ForeignKey("Milestone", related_name="uss", null=True, default=None)
     project = models.ForeignKey("Project", related_name="uss")
-    type = models.CharField(max_length="50", default="us", choices=US_TYPE_CHOICES)
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     points = models.FloatField(choices=POINTS_CHOICES, null=True, default=None)

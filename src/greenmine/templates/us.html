@@ -11,10 +11,6 @@
             <span>{{ us.subject }}</span>
         </div>
         <div class="form-field">
-            <span class="label">{% trans "Type" %}</span>
-            <span>{{ us.get_type_display }}</span>
-        </div>                      
-        <div class="form-field">
             <span class="label">{% trans "Priority" %}</span>
             <span>{{ us.get_priority_display }}</span>
         </div> 
@@ -22,10 +18,12 @@
             <span class="label">{% trans "Tested" %}</span>
             <span>{{ us.tested|yesno }}</span>
         </div>
+        {% if us.finish_date %}
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
             <span>{{ us.finish_date|date:"DATE_FORMAT" }}</span>
         </div>
+        {% endif %}
         {% if us.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
@@ -35,7 +33,6 @@
 
         {% with subtasks=us.tasks.all %}
         <div class="form-field width100">
-
             <h2>TODO: acabar de montar las tasks tal como ya esta hablado.</h2>
             <span class="label">{% trans "Subtasks" %}</span>
             <div class="subus">

@@ -79,7 +79,6 @@ class Command(BaseCommand):
                         subject = lorem_ipsum.words(random.randint(4,9), common=False),
                         priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                         project = project,
-                        type = random.choice(dict(US_TYPE_CHOICES).keys()),
                         owner = random.choice(participants),
                         description = lorem_ipsum.words(30, common=False),
                         milestone = milestone,
@@ -90,7 +89,6 @@ class Command(BaseCommand):
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
                     priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                     project = project,
-                    type = random.choice(dict(US_TYPE_CHOICES).keys()),
                     owner = random.choice(participants),
                     description = lorem_ipsum.words(30, common=False),
                 )

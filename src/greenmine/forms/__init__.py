@@ -203,7 +203,6 @@ class MilestoneForm(Form):
 class UsForm(Form):
     #: TODO: refactor whis
     subject = CharField(max_length=200, required=True)
-    type = forms.ChoiceField(choices=US_TYPE_CHOICES, required=False)
     status = forms.ChoiceField(choices=US_STATUS_CHOICES, required=False)
     priority = forms.ChoiceField(choices=US_PRIORITY_CHOICES, required=False)
     description = CharField(max_length=1000, required=False, widget=forms.Textarea)
@@ -216,7 +215,6 @@ class UsForm(Form):
         if self._instance:
             kwargs['initial'] = {
                 'subject': self._instance.subject,
-                'type': self._instance.type,
                 'status': self._instance.status,
                 'description': self._instance.description,
                 'milestone': self._instance.milestone,
@@ -235,8 +233,6 @@ class UsForm(Form):
         self._instance.description = self.cleaned_data['description']
         self._instance.milestone = self.cleaned_data['milestone']
 
-        if self.cleaned_data['type']:
-            self._instance.type = self.cleaned_data['type']
         if self.cleaned_data['status']:
             self._instance.status = self.cleaned_data['status']
         if self.cleaned_data['priority']:

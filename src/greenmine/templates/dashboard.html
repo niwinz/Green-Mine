@@ -11,13 +11,13 @@
     </div>
     <div class="right">
         <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
-        <a id="new-issue" class="btn01" href="">Nueva tarea</a>
+        <a id="new-issue" class="btn01" href="">Nueva US</a>
     </div>
 </div>
 <div id="form-inserts" class="hidden">
     <div class="close"></div>
     <div id="issue-lb" class="hidden lb">
-        <h2>Nueva tarea / user story: </h2>
+        <h2>Nueva user story: </h2>
         <form method="post" action="" newaction="auxiliar/json/task.json">
             <div class="fieldset">
                 <div class="field-inline">
@@ -27,10 +27,6 @@
                 <div class="field-inline">
                     <label>{{ form.estimation.label }}</label>
                     {{ form.estimation }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form.type.label }}</label>
-                    {{ form.type }}
                 </div>
                 <div class="field-inline">
                     <label>{{ form.status.label }}</label>
