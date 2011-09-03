@@ -1,3 +1,10 @@
-<div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}">
-    {{ task.subject|truncatewords:5 }}
+{% load i18n %}
+<div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}" url="{{ task.get_alter_api_url }}">
+    <span class="subject">{{ task.subject|truncatewords:5 }}</span>
+    <select class="participants" name="assigned_to" url="{{ task.get_reassing_apu_url }}">
+        <option value="">{% trans "Sin asignar" %}</option>
+        {% for u in project.participants.all %}
+        <option value="{{ u.id }}" {% if u == task.assigned_to %}selected="selected"{% endif %}>{{ u }}</option>
+        {% endfor %}
+    </select>
 </div>

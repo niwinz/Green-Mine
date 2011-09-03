@@ -217,6 +217,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #form-inserts #milestone-lb #id_name {  width: 600px; }
 #form-inserts #issue-lb #id_description { width: 900px;}
 #form-inserts .submit-fieldset input { padding: 10px; }
+#form-inserts #task-lb #id_us { width: 200px; }
 
 div.fieldset {
     margin-bottom: 20px;
@@ -272,6 +273,10 @@ div.fieldset div.field-inline {
     bottom: 7px;
     right: 7px;
 }
+.user-story .user-story-header a.remove-us {
+    position: absolute;
+    bottom: 7px; right: 30px;
+}
 .user-story .user-story-status {
     background-color: white;
     width: 238px;
@@ -284,6 +289,13 @@ div.fieldset div.field-inline {
     border-radius: 2px;
     padding: 5px;
     margin-bottom: 3px;
+    position: relative;
+}
+
+.user-story .user-story-task .participants {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
 }
 
 .user-story .user-story-status.status-closed .user-story-task {

@@ -24,3 +24,8 @@ def us_post_save(sender, instance, created, **kwargs):
             us = instance,
         )
 
+@receiver(post_save, sender=Task)
+def task_post_save(sender, instance, created, **kwargs):
+    instance.us.modified_date = datetime.datetime.now()
+    instance.us.save()
+

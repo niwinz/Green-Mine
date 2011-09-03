@@ -223,6 +223,7 @@ class UsDropApiView(GenericView):
 
 
 class UsAsociateApiView(GenericView):
+    """ Asociate user story with one milestone. """
     @login_required
     def get(self, request, pslug, iref):
         us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
@@ -265,20 +266,19 @@ class ForgottenPasswordApiView(GenericView):
         return self.render_to_error(form.jquery_errors)
 
 
-class TaskDashboardModApiView(GenericView):
-    def post(self, request, pslug, mid):
+class TaskAlterApiView(GenericView):
+    """ Api view for alter task status, priority and other 
+    minor modifications. """
+
+    def post(self, request, pslug, mid, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
-        task = get_object_or_404(milestone.tasks, pk=request.POST.get('task', None))
+        task = get_object_or_404(milestone.tasks, ref=taskref)
+        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
 
         mf = request.POST.get('modify_flag', '')
         if mf not in ['close', 'progress', 'new']:
             return self.render_to_error()
-
-        # mark new us modified
-        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
-        us.modified_date = datetime.datetime.now()
-        us.save()
 
         # mark old us modified
         if task.us and task.us != us:
@@ -325,15 +325,28 @@ class TaskCreateApiView(GenericView):
             task.milestone = milestone
             task.save()
             
-            # mark us modified
-            task.us.modified_date = datetime.datetime.now()
-            task.us.save()
-
             html = loader.render_to_string('modules/task-user-story.html',
                 {'task': task}, context_instance=RequestContext(request))
+
             return self.render_to_ok({'html':html, 'us': task.us.id})
 
         return self.render_to_error(form.errors)
+
+
+class TaskReasignationsApiView(GenericView):
+    def get(self, request, pslug, mid, taskref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        task = get_object_or_404(milestone.tasks, ref=taskref)
+        
+        userid = request.GET.get('userid', '')
+        if not userid:
+            task.assigned_to = None
+        else:
+            task.assigned_to = get_object_or_404(project.participants, pk=userid)
+
+        task.save()
+        return self.render_to_ok()
 
 
 """ Statistics Views """

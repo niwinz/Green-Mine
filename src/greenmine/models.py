@@ -218,10 +218,10 @@ class Milestone(models.Model):
         return ('api:project-milestone-edit', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
-    @models.permalink
-    def get_task_modify_api_url(self):
-        return ('api:milestone-task-modify', (),
-            {'pslug': self.project.slug, 'mid': self.id})
+    #@models.permalink
+    #def get_task_alter_api_url(self):
+    #    return ('api:milestone-task-alter', (),
+    #        {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_ml_detail_url(self):
@@ -337,6 +337,26 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     assigned_to = models.ForeignKey('auth.User', related_name='uss_assigned_to_me', 
         blank=True, null=True, default=None)
+
+    @models.permalink
+    def get_alter_api_url(self):
+        return ('api:task-alter', (), {'pslug': self.milestone.project.slug,
+            'mid': self.milestone.id, 'taskref': self.ref })
+
+    @models.permalink
+    def get_reassing_apu_url(self):
+        return ('api:task-reassing', (), {'pslug': self.milestone.project.slug,
+            'mid': self.milestone.id, 'taskref': self.ref })
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            self.modified_date = datetime.datetime.now()
+        if not self.ref:
+            self.ref = ref_uniquely(self.__class__)
+
+        super(Task, self).save(*args, **kwargs)
+
+        
 
 
 class UsResponse(models.Model):

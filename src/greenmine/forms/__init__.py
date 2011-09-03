@@ -288,6 +288,8 @@ class TaskForm(forms.ModelForm):
 
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['us'].queryset = us_qs
+        self.fields['us'].empty_label = None
+
         self.fields['assigned_to'].queryset = assignedto_qs
 
 

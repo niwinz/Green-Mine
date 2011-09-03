@@ -25,11 +25,14 @@ urlpatterns = patterns('',
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/edit/$',
         api.MilestoneEditApiView.as_view(), name="project-milestone-edit"),
 
-    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/modify/$',
-        api.TaskDashboardModApiView.as_view(), name="milestone-task-modify"),
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/(?P<taskref>[\w\d]+)/alter/$',
+        api.TaskAlterApiView.as_view(), name="task-alter"),
 
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
         api.TaskCreateApiView.as_view(), name="milestone-task-create"),
+
+    url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/(?P<taskref>[\w\d]+)/reassingn/$',
+        api.TaskReasignationsApiView.as_view(), name='task-reassing'),
 
     url(r'^project/(?P<pslug>[\w\d\-]+)/us/create/$',
         api.UsCreateApiView.as_view(), name="project-us-create"),

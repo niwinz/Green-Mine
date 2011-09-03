@@ -36,11 +36,10 @@ var milestone_dashboard_bindings = function() {
                 drop: function(event, ui) {
                     var params = {
                         modify_flag: self.attr('rel'),
-                        task: $(ui.draggable).attr('rel'),
                         us : self.parents('.user-story').attr('us'),
                         milestone: $(ui.draggable).attr('ml')
                     }
-                    var mod_url = $('#user-stories-module').attr('rel');
+                    var mod_url = $(ui.draggable).attr('url');
                     $.ajax({
                         url:mod_url, 
                         data:params,
@@ -71,6 +70,7 @@ var milestone_dashboard_bindings = function() {
         $(form).attr('rel', 'new');
         e.preventDefault();
     });
+    
     $('#form-inserts #us-lb .cancel').click(function(e) {
         $('#form-inserts #us-lb, #form-inserts').addClass('hidden');
         e.preventDefault();
@@ -86,6 +86,7 @@ var milestone_dashboard_bindings = function() {
         }
         e.preventDefault();
     });
+
     $('#form-inserts #task-lb .cancel').click(function(e) {
         $('#form-inserts #task-lb, #form-inserts').addClass('hidden');
         e.preventDefault();
@@ -114,7 +115,22 @@ var milestone_dashboard_bindings = function() {
 
         e.preventDefault();
     });
-    $('#progress-bar').progressbar({value: 78});
+
+    $(".user-story .user-story-header a.remove-us").live('click', function(e) {
+        // TODO
+        e.preventDefault();
+    });
+
+    $(".user-story .user-story-task .participants").live('change', function(e) {
+        console.log(e);
+        var self = $(this);
+        $.get(self.attr('url'), {userid: self.find('option:selected').val()}, function(data) {
+        }, 'json');
+        e.preventDefault();
+    });
+
+    /* Set progress bar */
+    $('#progress-bar').progressbar();
 }
 
 $(document).ready(function(){

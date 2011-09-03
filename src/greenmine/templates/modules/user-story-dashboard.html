@@ -1,10 +1,8 @@
-{% load cache %}
-
-{% cache 20 us.id us.modified_date %}
 <div class="user-story" id="us{{ us.id }}" us="{{ us.id }}">
     <div class="user-story-header hfield">
         <b>{{ us.subject }}</b>
         <a href="" class="add-task"><img src="{{ STATIC_URL }}imgs/plus-icon.png" width="14" height="14"></img></a>
+        <a href="" class="remove-us"><img src="{{ STATIC_URL }}imgs/trash.png" width="14" height="14"></img></a>
     </div>
     <div class="user-story-status hfield status-new" rel="new">
         {% for task in us.tasks_new %}
@@ -22,4 +20,3 @@
         {% endfor %}
     </div>
 </div>
-{% endcache %}
