@@ -14,9 +14,14 @@ urlpatterns = patterns('',
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^profile/$', views.ProfileView.as_view(), name='profile'),
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$', views.ProjectView.as_view(), name='project'),
+    url(r'^(?P<pslug>[\w\d\-]+)/us/(?P<iref>[\w\d]+)/$', views.UsView.as_view(), name='us'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/us/create/$', views.UsCreate.as_view(), name='us-create'),
+    url(r'^(?P<pslug>[\w\d\-]+)/us/create/mid/(?P<mid>\d+)/$', views.UsCreate.as_view(), name='us-create'),
+
+    # Api html calls
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/uss/$',
         views.ProjectUssView.as_view(), name='project-uss-view'),
-    url(r'^(?P<pslug>[\w\d\-]+)/us/(?P<iref>[\w\d]+)/$', views.UsView.as_view(), name='us'),
 )
 
 urlpatterns += patterns('',

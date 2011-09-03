@@ -4,6 +4,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from greenmine.forms import Form, CharField
+from greenmine import models
 
 
 class LoginForm(Form):
@@ -50,3 +51,11 @@ class LoginForm(Form):
                 login(self._request, self._user)
 
         return cleaned_data
+
+class UsCreateForm(Form):
+    subject = forms.CharField(max_length=200)
+    description = forms.CharField(max_length=1000, widget=forms.Textarea)
+    type = forms.ChoiceField(choices=models.US_TYPE_CHOICES, initial='us')
+    priority = forms.TypedChoiceField(choices=models.US_PRIORITY_CHOICES, request=False, initial=2, coerce=int)
+    estimation = forms.TypedChoiceField(choices=models.POINTS_CHOICES, required=False, coerce=float)
+    status = fors.ChoiceField(choices=models.US_STATUS_CHOICES, required=False initial='open')

@@ -2,13 +2,88 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block wrapper %}
-<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
-    <div id="dashboard-actions">
+{% block title %}{{ block.super }} / {{ project.name }}{% endblock %}
+
+{% block middle %}
+<div id="dashboard-actions">
+    <div class="left">
         <div id="bin"></div>
+    </div>
+    <div class="right">
         <a id="new-milestone" class="btn01" href="">Nuevo milestone</a>
         <a id="new-issue" class="btn01" href="">Nueva tarea</a>
     </div>
+</div>
+<div id="form-inserts" class="hidden">
+    <div class="close"></div>
+    <div id="issue-lb" class="hidden lb">
+        <form method="post" action="" newaction="auxiliar/json/task.json">
+            <div class="fieldset">
+                <div class="field-inline">
+                    <label>{{ form.name.label }}</label>
+                    {{ form.name }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ form.type.label }}</label>
+                    {{ form.type }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ form.status.label }}</label>
+                    {{ form.status }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ form.priority.label }} </label>
+                    {{ form.priority }}
+                </div>
+            </div>
+            <div class="fieldset">
+                <label>{{ form.milestone.label }}</label>
+                {{ form.milestone }}
+            </div>
+            <div class="fieldset">
+                <label>{{ form.description.label }}</label>
+                {{ form.description }}
+            </div>
+            <div class="fieldset submit-fieldset">
+                <div class="field-inline">
+                    <input type="submit" value="Guardar" />
+                </div>
+                <div class="field-inline">
+                    <input type="submit" value="Guardar y editar" />
+                </div>
+                <div class="field-inline">
+                    <input class="cancel" type="button" value="Cancelar" />
+                </div>
+            </div>
+        </form>                    
+    </div>
+    <div id="milestone-lb" class="hidden lb">
+        <form method="post" action="" newaction="auxiliar/json/milestone.json">
+            <div class="fieldset">
+                <div class="field-inline">
+                    <label>{{ form2.name.label }}</label>
+                    {{ form2.name }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ form2.finish_date.label }}</label>
+                    {{ form2.finish_date }}
+                </div>
+            </div>
+            <div class="fieldset submit-fieldset">
+                <div class="field-inline">
+                    <input type="submit" value="Guardar" />
+                </div>
+                <div class="field-inline">
+                    <input class="cancel" type="button" value="Cancelar" />
+                </div>
+            </div>
+        </form>                    
+    </div>
+</div>
+{% endblock %}
+
+{% block wrapper %}
+<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
     <ul id="milestones">
     </ul>
     <div id="tasks-filters">
@@ -29,63 +104,6 @@
     <ul id="tasks">
     </ul>
     
-    <div id="milestone-lb" class="lightbox">
-        <form method="post" action="" newaction="auxiliar/json/milestone.json">
-            <fieldset>
-                <p class="form-field">
-                    <label for="">Nombre</label>
-                    <input type="text" id="nombre-milestone" name="name" class="required" />
-                </p>
-                <p class="form-field">
-                    <label for="">Fecha fin</label>
-                    <input type="text" readonly id="fecha-milestone" name="estimated_finish" class="datepicker" />
-                </p>
-                <p class="width100 float-left">
-                    <a id="close-milestone-lb" class="btn01" href="">Cancelar</a>    
-                    <input class="btn01" type="submit" value="Guardar" />
-                    <span class="ajax-loader"></span>
-                </p>
-            </fieldset>
-            <input type="hidden" name="id" />
-        </form>                    
-    </div>
     
-    <div id="issue-lb" class="lightbox">
-        <form method="post" action="" newaction="auxiliar/json/task.json">
-            <fieldset>
-                <p class="form-field">
-                    <label for="">Nombre</label>
-                    <input type="text" id="nombre-issue" name="subject" class="required" />
-                </p>
-                <p class="form-field">
-                    <label>Tipo</label>
-                    <select class="required" name="type">
-                        <option value="task">Tarea</option>
-                        <option value="bug">Bug</option>
-                    </select>                                
-                </p>                              
-                <p class="form-field">
-                    <label>Estado</label>
-                    <select class="required" name="type">
-                        <option value="Abierta">Abierta</option>
-                        <option value="Cerrada">Cerrada</option>
-                    </select>                                
-                </p>                                  
-                <p class="form-field width100">
-                    <label for="">Descripción</label>
-                    <textarea name="description"></textarea>
-                </p>                          
-                <p class="width100 float-left">
-                    <a id="close-issue-lb" class="btn01" href="">Cancelar</a>    
-                    <input class="btn01" type="submit" value="Guardar" />
-                    <span class="ajax-loader"></span>
-                </p>
-                <p class="width100 float-left mt10">
-                    <input class="btn01" type="submit" value="Guardar e ir al detalle" />
-                </p>
-            </fieldset>
-            <input type="hidden" name="id" />
-        </form>                    
-    </div>                
 </div>
 {% endblock %}

@@ -11,7 +11,7 @@
 </head>
 <body>
     <div id="head">
-        <h1><a href="/">{{ MAIN_TITLE }}</a></h1>
+        <h1>{% block title %}<a href="/">{{ MAIN_TITLE }}</a>{% endblock %}</h1>
     </div>
     {% block middle-box %}{% endblock %}
     <div id="footer">

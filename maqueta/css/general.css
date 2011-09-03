@@ -1,4 +1,43 @@
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {margin:0; padding:0; font-family: Arial, Helvetica; font-size: 14px;}
+select, input, textarea {
+    display: inline-block;
+    position: relative;
+    padding: 0;
+    margin-right: .1em;
+    text-decoration: none !important;
+    cursor: pointer;
+    text-align: center;
+    zoom: 1;
+    overflow: visible;
+    -moz-border-radius-bottomright: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    -khtml-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    -khtml-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    -webkit-border-top-right-radius: 4px;
+    -khtml-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    border: 1px solid lightGrey;
+    background: #E6E6E6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x;
+    font-weight: normal;
+    color: #555;
+    display: block;
+    font-weight: bold; padding: 3px;
+}
+input, textarea{ text-align: left; color: black; cursor: text; }
+input[type="text"], 
+input[type="password"] {
+    padding: 2px 10px 0 6px; 
+    font-size: 17px; 
+    vertical-align: top;
+    height: 26px;
+}
+
+
 table {border-collapse:collapse; border-spacing:0;}
 fieldset,img {border:0;}
 address,caption,cite,code,dfn,em,strong,th,var {font-style:normal; font-weight:normal;}
@@ -13,12 +52,31 @@ hr{border: 2px solid #458745; width: 100%; height: 2px; clear: left; float: left
 body{background-color: #EFEFEF; padding-bottom: 36px;}
 h1, h1 a{color: #FFF; font-size: 28px; font-weight: bold; text-decoration: none;}
 h2{color: #000; font-size: 20px; font-weight: bold; text-decoration: underline; margin-bottom: 15px;}
-input[type="text"], input[type="password"]{height: 26px; padding: 2px 10px 0 6px; font-size: 17px; vertical-align: top;}
 a{color: #458745;}
-.btn01[type="submit"], .btn01[type="button"]{background-color:#EFEFEF; border: 0; padding: 5px 20px; font-size: 17px;  color: #000; font-weight:bold; cursor: pointer; margin-right: 5px;}
-a.btn01{background-color:#EFEFEF; border: 0; padding: 5px 20px; font-size: 17px; color: #000; line-height: 22px; color: #000; text-decoration: none; font-weight:bold; margin-right: 5px;}
+
+.btn01[type="submit"], .btn01[type="button"]{background-color:#EFEFEF;
+    border: 0;
+    padding: 5px 20px;
+    font-size: 17px;
+    color: #000;
+    font-weight:bold;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+a.btn01{
+    background-color:#EFEFEF; 
+    border: 0; 
+    padding: 5px 20px; 
+    font-size: 14px; 
+    color: #000;
+    line-height: 17px;
+    color: #000;
+    text-decoration: none;
+    font-weight:bold;
+    margin-right: 5px;
+}
 label.error{color: red;}
-#head{line-height: 55px; background-color: #458745; float: left; padding: 0 25px; position: absolute; top: 0; left: 0;}
 #login{width: 300px; margin: 0 auto; background-color: #FFF; padding: 30px 100px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
 .form-field{margin-bottom: 20px;}
@@ -35,7 +93,15 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #menu{position:absolute; right:20px; top:0;}
 #menu li{float: left; margin-left: 15px;}
 #menu a{font-weight:bold; color:#000; line-height: 55px;}
-#wrapper{width:980px; background-color:#FFF; padding: 20px; margin: 80px auto 0 auto; overflow: hidden;}
+#wrapper{
+    width:980px; 
+    background-color:#FFF; 
+    padding: 10px; 
+    margin: 10px auto 0 auto; 
+    overflow: hidden;
+    border: 1px solid #ddd;
+    border-radius:2px;
+}
 #sub-menu{width: 100%; overflow: auto; margin-bottom: 20px;}
 #sub-menu li{float:left; margin-right:10px;}
 #sub-menu a{color:#000;}
@@ -58,33 +124,13 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #user-project .users-roles{padding-left: 20px; width: 430px; float: left;}
 #user-project fieldset{border: 1px solid #EFEFEF; padding: 20px; margin-bottom: 15px;}
 #user-project legend{font-weight:bold;}
-#milestones{float: left;}
-#milestones li{line-height: 25px; position: relative; border: 1px solid #000; color: #FFF; font-weight: bold; background: #458745; margin-bottom: 2px; width: 298px}
-#milestones li.add{background: #458745 url("../imgs/addt.png") no-repeat 2px center;}
-#milestones .ml{padding-left: 15px;}
-#milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
-#milestones li div div{float: right; font-size: 12px; margin-right: 28px;}
-#milestones a{position: absolute; right: 2px; top: 2px;}
-#tasks{float: right; width: 650px;}
-#tasks li{border: 1px solid #458745; line-height: 25px; margin-bottom: 2px; position: relative; width: 647px; background-color: #FFF; height: 50px;}
-#tasks .dg{padding: 0px 15px; height: 50px;}
-#tasks li:hover{cursor: move; background-color: #EFEFEF;}
-#tasks .edit{position: absolute; right: 4px; top: 2px;}
-#tasks span{font-size: 12px; position: absolute; top: 27px; right: 35px; line-height: 25px;}
 .messages-container ul.messages {padding: 10px 0; margin: 10px 0; background-color: #EFEFEF;}
 .messages-container ul.messages li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
 .messages-container ul.messages li.info{color: #458745;}
 .messages-container ul.messages li.error{color: red;}
-#tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
-#tasks-filters p{float: left; margin-right: 10px;}
-#dashboard-actions{margin-bottom: 20px; width: 100%; position: relative; height: 31px;}
-#dashboard-actions .btn01{float: right; margin-left: 10px;}
 .datepicker{width: 85px !important;}
 .ui-draggable-dragging{z-index: 999;}
 #issue textarea{width: 500px; height: 200px;}
-#milestone-lb{position: absolute; display: none; background-color: #FFF; border: 2px solid #000; padding: 20px; width: 310px;}
-#issue-lb{position: absolute; display: none; background-color: #FFF; border: 2px solid #000; padding: 20px; width: 530px;}
-#issue-lb textarea {height: 200px; width: 500px;}
 #dashboard .edit{background: url("../imgs/cog21.png") top left; width: 21px; height: 21px; display: block;}
 #dashboard .detail{background: url("../imgs/arrow-double-right.png") top left; width: 21px; height: 17px; display: block; position: absolute; right: 4px; top: 28px;}
 .delete-user-ac{margin-right: 10px; float: left;}
@@ -98,8 +144,105 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #issue .list-files a{float: left;}
 #issue .list-files li{margin-right: 15px; float: left;}
 #issue .delete-file{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; margin-bottom: 8px;}
-#bin{background: url("../imgs/bin.png") top left; width: 56px; height: 56px; position: absolute; top: -10px; left: 0; visibility: hidden;}
+#bin{background: url("../imgs/bin.png") top left; width: 56px; height: 56px; position: absolute; top: 0px; left: 0; visibility: hidden;}
 .bin2{visibility: visible !important;}
 #bin:hover{background-position: bottom left !important; cursor: pointer;}
 #admin-project-options { margin-top: 30px; display: block; border: 1px solid #999; }
 #admin-project-options div.field { padding:3px; }
+
+/* dashboard */
+#tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
+#tasks-filters p{float: left; margin-right: 10px;}
+
+#tasks{float: right; width: 650px;}
+#tasks li{
+    border: 1px solid #ddd; 
+    background-color: #eee;
+    line-height: 25px;
+    margin-bottom: 2px; 
+    position: relative;
+    width: 647px; 
+    background-color: #FFF;
+    height: 50px;
+}
+#tasks .dg{padding: 0px 15px; height: 50px;}
+#tasks li:hover {cursor: move; background-color: #eee;}
+#tasks .edit{position: absolute; right: 4px; top: 2px;}
+#tasks span{font-size: 12px; position: absolute; top: 27px; right: 35px; line-height: 25px;}
+
+#milestones{float: left;}
+#milestones li{
+    line-height: 25px;
+    position: relative;
+    border: 1px solid #ddd;
+    color: #FFF; font-weight: bold;
+    background: #458745; margin-bottom: 2px;
+    width: 298px;
+}
+#milestones li.add{background: #458745 url("../imgs/addt.png") no-repeat 2px center;}
+#milestones .ml{padding-left: 15px;}
+#milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
+#milestones li div div{float: right; font-size: 12px; margin-right: 28px;}
+#milestones a{position: absolute; right: 2px; top: 2px;}
+
+#dashboard-actions{margin-bottom: 20px; width: 100%; position: relative; height: 33px;}
+#dashboard-actions .left{ float: left;}
+#dashboard-actions .right { float: right; }
+#dashboard-actions .btn01{
+    float: right; margin-right: 10px;
+    border: 2px solid white;
+}
+#dashboard-actions {
+    width: 980px;
+    padding: 10px;
+    margin: 80px auto 0 auto;
+    overflow: hidden;
+}
+
+#form-inserts {
+    width: 980px;
+    margin: 10px auto 0 auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background-color: white;
+    position: relative;
+}
+#form-inserts #issue-lb #id_name {  width: 600px; }
+#form-inserts #issue-lb #id_description { width: 900px;}
+#form-inserts .submit-fieldset input { padding: 10px; }
+
+div.fieldset {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+div.fieldset div.field-inline {
+    float: left;
+    margin-right: 10px;
+}
+/*
+#form-inserts .close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: transparent url("../imgs/close-icon.png") no-repeat ;
+}*/
+
+
+/* base */
+
+#head{
+    line-height: 35px; 
+    background-color: #458745; 
+    float: left; 
+    padding: 0 25px; 
+    position: absolute; 
+    top: 0; 
+    left: 0;
+}
+#head h1 {
+    font-size: 20px;
+    padding: 0px;
+}
+
+.hidden { display: none; }

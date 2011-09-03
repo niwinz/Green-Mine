@@ -1,5 +1,8 @@
 var dashboard_loadTasks = function(option_dom){
     var url = option_dom.attr('url');
+    var create_url = option_dom.attr('createurl');
+
+    $('.new-us-button').attr('href', create_url);
     $.get(url, function(data) {
         var tasks_dom = $('.issues-module');
         tasks_dom.hide();

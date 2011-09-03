@@ -222,6 +222,9 @@ class Milestone(models.Model):
         return (self.name,) + self.project.natural_key()
 
     natural_key.dependencies = ['greenmine.Project']
+
+    def __unicode__(self):
+        return self.name
     
     def __repr__(self):
         return u"<Milestone %s>" % (self.id)

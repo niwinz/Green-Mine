@@ -205,7 +205,8 @@ class UsForm(Form):
     name = CharField(max_length=200, required=True)
     type = forms.ChoiceField(choices=US_TYPE_CHOICES)
     status = forms.ChoiceField(choices=US_STATUS_CHOICES)
-    description = CharField(max_length=1000, required=False)
+    priority = forms.ChoiceField(choices=US_PRIORITY_CHOICES)
+    description = CharField(max_length=1000, required=False, widget=forms.Textarea)
     milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
 
     def __init__(self, *args, **kwargs):

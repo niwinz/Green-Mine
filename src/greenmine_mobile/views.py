@@ -60,12 +60,26 @@ class ProjectUssView(GenericView):
             milestone = get_object_or_404(project.milestones, pk=mid)
             uss = milestone.uss.all()
 
+        uss = uss.order_by('-priority')
+
         context = {'uss': uss}
         return self.render('mobile/includes/dashboard_uss.html', context)
 
 
 class UsView(views.UsView):
     template_name = 'mobile/us.html'
+
+
+class UsCreate(GenericView):
+    template_name = 'mobile/us-create.html'
+
+    @login_required
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = mforms.UsCreateForm()
+        context = {'form':form}
+        return self.render(self.template_name, context)
+
 
 class ProfileView(GenericView):
     template_name = 'mobile/profile.html'

@@ -65,9 +65,13 @@ class ProjectView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.UsForm(milestone_queryset=project.milestones.all())
+        form2 = forms.MilestoneForm()
         context = {
             'filtersform': forms.FiltersForm(queryset=project.participants.all()),
-            'project': project
+            'project': project,
+            'form': form,
+            'form2': form2,
         }
         return self.render(self.template_name, context)
 

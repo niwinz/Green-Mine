@@ -8,6 +8,7 @@
 
 {% block top-headers %}{% endblock %}
 {% block bottom-headers %}{% endblock %}
+{% block title %}{{ block.super }}{% endblock %}
 
 {% block middle-box %}
 <div id="menu">
@@ -17,6 +18,7 @@
         <li><a href="">{% trans "Logout" %}</a></li>
     </ul>
 </div>
+{% block middle %}{% endblock %}
 <div id="wrapper">
     {% block wrapper %}{% endblock %}
 </div>

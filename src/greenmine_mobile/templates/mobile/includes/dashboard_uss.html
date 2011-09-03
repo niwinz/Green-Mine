@@ -3,13 +3,15 @@
     {% for us in uss %}
     <div class="us-item priority{{ us.priority }} {{ issue.type }}" rel="{{ us.milestone.id }}">
         <div class="us-title">
-            <a href="">{{ us.ref }}# - {{ us.subject|truncatewords:6 }}</a>
+            <a href="">{{ us.ref }}# - {{ us.subject|truncatewords:4 }}</a>
+            <div class="meta">
+                <div><b>Estimacion: </b>{{ us.get_points_display }}</div>
+                <div><b>Prioridad: </b>{{ us.get_priority_display }}</div>
+            </div>
         </div>
         <div class="tasks hidden">
             <div class="meta">
                 <div class="">
-                    <b>Estimacion: </b>{{ us.get_points_display }}<br />
-                    <b>Prioridad: </b>{{ us.get_priority_display }}
                 </div>
                 <div class="links-loc">
                     <b>Opciones: </b>

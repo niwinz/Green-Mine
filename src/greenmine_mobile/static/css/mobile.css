@@ -13,8 +13,6 @@ input[type="submit"] { width: 90px; background-color: #eee; border: 1px solid #9
 form div.field { margin-bottom: 8px; }
 .hidden { display: none; }
 
-.login-panel input[type="text"], 
-.login-panel input[type="password"] { width: 95%; }
 
 .projects-panel .project-item { overflow: hidden; border: 1px solid #ccc; background-color: #eee;
     padding: 5px; margin-bottom: 4px;}
@@ -23,8 +21,8 @@ form div.field { margin-bottom: 8px; }
 
 table.top-menu { margin: 0px; padding: 0px; width: 100%;  }
 table.top-menu td { text-align: center; width: 33%; padding: 4px;}
-table.top-menu td a { text-decoration: none; color: #458745; font-weight: bold; }
-table.top-menu td.selected a { text-decoration: underline; }
+table.top-menu td a { text-decoration: none; color: #AAA; font-weight: bold; }
+table.top-menu td.selected a { text-decoration: underline;  color:#458745; }
 
 .project-panel .subpanel {
     padding: 3px;
@@ -32,7 +30,6 @@ table.top-menu td.selected a { text-decoration: underline; }
     margin-bottom: 5px;
     background-color: #eee;
 }
-
 
 .issues-module .us-list .us-item {
     margin: 0px;
@@ -59,6 +56,13 @@ table.top-menu td.selected a { text-decoration: underline; }
 }
 .issues-module .us-list .us-item .us-title.selected a {
     color: white; 
+}
+.issues-module .us-list .us-item .us-title .meta {
+    text-align: right;
+}
+.issues-module .us-list .us-item .us-title .meta div {
+    display: inline;
+    padding-right: 10px;
 }
 .issues-module .us-list .us-item .tasks {
     padding: 2px; margin-bottom:2px;
@@ -96,16 +100,19 @@ a.button {
     display: block;
 }
 
+
+input[type="text"], 
+input[type="password"],
+select { width: 95%; height:20px; padding: 1px; display: block; }
+
 select {
     font-weight: normal; 
     font-size: 13px;
-    width: 90px; 
     background-color: white; 
     border: 1px solid #999; 
     text-decoration: none;
     padding:1px;
     height: 20px;
-    width: 98%;
     display: block;
     margin-bottom: 10px;
 }

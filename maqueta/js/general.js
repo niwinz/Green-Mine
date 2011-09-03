@@ -1,3 +1,12 @@
+(function($){
+    $(".btn01, input[type='submit'], input[type='button']").button();
+    $( ".datepicker" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy"
+    });
+})(jQuery);
+
 $(document).ready(function(){
     $(".validate").validate();
     
@@ -301,7 +310,7 @@ $(document).ready(function(){
                 });                     
             }
             
-            function filters(){
+            var filters = function(){
                 $("#tasks-filters select").val(-1);
                 $("#tasks-filters").delegate("select", "change", function(){
                     var selects = $("#tasks-filters select");
@@ -322,64 +331,59 @@ $(document).ready(function(){
                         return show
                     }).show();
                 });            
-            }
-            
-            function forms(){
-                var edit = 0;
-                function openLightBoxIssue(){
-                    $(".lightbox").hide();
-                    var left = ($(document).width()/2)-265; 
-                    var top = $(window).scrollTop()+20;
-                    if($(document).height()>=700){
-                        top = top+50;
-                    }
-                    $("#issue-lb").css({'top': top, 'left': left}).fadeIn('fast');  
-                }
-                
-                function openLightBoxMilestone(){
-                    $(".lightbox").hide();
-                    var left = ($(document).width()/2)-155; 
-                    var top = $(window).scrollTop()+100;
-                    $("#milestone-lb").css({'top': top, 'left': left}).fadeIn('fast');   
-                }
-                
-                $("#close-issue-lb").click(function(e){
-                    e.preventDefault();
-                    $("#issue-lb").fadeOut('fast');
-                });        
+            };
 
-                $("#close-milestone-lb").click(function(e){
+            var formsBindings = function() {
+                $("#new-milestone").click(function(e) {
                     e.preventDefault();
-                    $("#milestone-lb").fadeOut('fast');
-                });                
-                
-                $("#new-milestone").click(function(e){
-                    e.preventDefault();
-                    var form = $("#milestone-lb form");
+                });
+                $("#new-issue").click(function(e) {
+                    $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
+                    var form = $("#form-inserts #issue-lb form");
                     $(form).each (function() {this.reset();});
                     $(form).attr('action', $(form).attr('newaction'));
                     $(form).attr('rel', 'new');
-                    milestoneform.resetForm(); 
-                    openLightBoxMilestone();
+                    e.preventDefault();
                 });
-                
-                $("#milestones").delegate(".edit", "click",
-                    function(e){
-                        edit = $(this).parent();
-                        e.preventDefault();
-                        var form = $("#milestone-lb form");
-                        $(form).each (function() {this.reset();});
-                        $(form).attr('action', $(edit).data('edit_url'));
-                        $(form).attr('rel', 'edit');
-                        milestoneform.resetForm(); 
+                $('#new-milestone').click(function(e) {
+                    $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
+                    var form = $("#form-inserts #milestone-lb form");
 
-                        $.each($(edit).data(), function(key, value) { 
-                           $(form).find("[name='"+key+"']").val(value);
-                        });                        
-                        
-                        openLightBoxMilestone();
-                    }
-                );
+                    $(form).each (function() {this.reset();});
+                    $(form).attr('action', $(form).attr('newaction'));
+                    $(form).attr('rel', 'new');
+                    e.preventDefault();
+                });
+                $('#form-inserts #milestone-lb .cancel').click(function(e) {
+                    $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
+                    e.preventDefault();
+                });
+                $('#form-inserts #issue-lb .cancel').click(function(e) {
+                    $('#form-inserts #issue-lb, #form-inserts').addClass('hidden');
+                    e.preventDefault();
+                });
+
+                $("#milestones").delegate(".edit", "click", function(e){
+                    //edit = $(this).parent();
+                    //var form = $("#milestone-lb form");
+                    //$(form).each (function() {this.reset();});
+                    //$(form).attr('action', $(edit).data('edit_url'));
+                    //$(form).attr('rel', 'edit');
+                    //milestoneform.resetForm(); 
+
+                    //$.each($(edit).data(), function(key, value) { 
+                    //   $(form).find("[name='"+key+"']").val(value);
+                    //});                        
+                    //
+                    //openLightBoxMilestone();
+
+                    e.preventDefault();
+                });
+            };
+            
+            /*
+            function forms(){
+                var edit = 0;
 
                 $("#new-issue").click(function(e){
                     e.preventDefault();
@@ -406,9 +410,8 @@ $(document).ready(function(){
                         });                        
                         
                         openLightBoxIssue();
-                    }
-                );                
-
+                }
+                );
                 var milestoneform = formUtils.ajax("#milestone-lb form", function(data, form){
                     if($(form).attr('rel')=='new'){
                         $("<li>")
@@ -441,23 +444,18 @@ $(document).ready(function(){
                         $("#issue-lb").fadeOut('fast');
                     }
                 });
-            }
+            }*/
             
             //init dashboard
             loadMilestones();
             dragAndDrop();
             filters();   
-            forms();
+            formsBindings();
         }
         
         Dashboard();
     }    
     
-    $( ".datepicker" ).datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "dd/mm/yy"
-    });
     
     $(".file").live("change", function(e){
         if(!$(this).attr('rel')){
@@ -465,7 +463,7 @@ $(document).ready(function(){
             $(this).attr('rel', 1);
         }
     })    
-})
+});
 
 function subClass() {
   this.inheritFrom = superClass;

@@ -25,12 +25,15 @@
         <select name="milestones">
             {% for ml in project.milestones.all %}
             <option value="{{ ml.id }}" 
-                url="{% url 'web:project-uss-view' project.slug ml.id %}" 
+                url="{% url 'web:project-uss-view' project.slug ml.id %}"
+                createurl="{% url 'web:us-create' project.slug ml.id %}"
                 {% if forloop.first %}selected="selected"{% endif %}>{{ ml.name }}</option>
             {% endfor %}
-            <option value="0" url="{% url 'web:project-uss-view' project.slug 0 %}">Unassigned</option>
+            <option value="0" 
+                url="{% url 'web:project-uss-view' project.slug 0 %}"
+                createurl="{% url 'web:us-create' project.slug %}">Unassigned</option>
         </select>
-        <a class="button" href="">New user story</a>
+        <a class="button new-us-button" href="">New user story</a>
     </div>
     <div class="issues-module">
     </div>
