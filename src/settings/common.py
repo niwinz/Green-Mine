@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'greenmine',
     'greenmine_mobile',
+    'html5forms',
 ]
 
 LOGGING = {
