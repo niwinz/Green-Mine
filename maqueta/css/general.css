@@ -264,8 +264,8 @@ div.fieldset div.field-inline {
     width: 200px;
     background-color: #eee;
     color: black;
-    font-weight: bold;
-    padding: 10px;
+    padding: 6px;
+    font-size: 11px;
     position: relative;
 }
 .user-story .user-story-header a.add-task {
@@ -276,6 +276,10 @@ div.fieldset div.field-inline {
 .user-story .user-story-header a.remove-us {
     position: absolute;
     bottom: 7px; right: 30px;
+}
+.user-story .user-story-header span.estimation {
+    position: absolute;
+    bottom: 7px; left: 7px;
 }
 .user-story .user-story-status {
     background-color: white;

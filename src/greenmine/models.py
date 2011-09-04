@@ -57,12 +57,15 @@ US_STATUS_CHOICES = (
 TASK_STATUS_CHOICES = US_STATUS_CHOICES
 
 POINTS_CHOICES = (
-    ('', u'?'),
+    (-1, u'?'),
+    (0, u'0'),
     (0.5, u'1/2'),
     (1, u'1'),
     (2, u'2'),
     (3, u'3'),
-    (5, u'5')
+    (5, u'5'),
+    (8, u'8'),
+    (10, u'10'),
 )
 
 
@@ -265,7 +268,7 @@ class Us(models.Model):
     project = models.ForeignKey("Project", related_name="uss")
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
-    points = models.FloatField(choices=POINTS_CHOICES, null=True, default=None)
+    points = models.FloatField(choices=POINTS_CHOICES, default=-1)
     status = models.CharField(max_length=50, choices=US_STATUS_CHOICES, db_index=True, default="open")
 
     created_date = models.DateTimeField(auto_now_add=True)
@@ -344,7 +347,7 @@ class Task(models.Model):
             'mid': self.milestone.id, 'taskref': self.ref })
 
     @models.permalink
-    def get_reassing_apu_url(self):
+    def get_reassign_api_url(self):
         return ('api:task-reassing', (), {'pslug': self.milestone.project.slug,
             'mid': self.milestone.id, 'taskref': self.ref })
 

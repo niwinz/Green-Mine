@@ -122,11 +122,9 @@ var milestone_dashboard_bindings = function() {
     });
 
     $(".user-story .user-story-task .participants").live('change', function(e) {
-        console.log(e);
         var self = $(this);
-        $.get(self.attr('url'), {userid: self.find('option:selected').val()}, function(data) {
+        $.get(self.attr('url'), {userid: self.val()}, function(data) {
         }, 'json');
-        e.preventDefault();
     });
 
     /* Set progress bar */

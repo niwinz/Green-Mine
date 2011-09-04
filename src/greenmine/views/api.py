@@ -341,8 +341,10 @@ class TaskReasignationsApiView(GenericView):
         
         userid = request.GET.get('userid', '')
         if not userid:
+            print userid
             task.assigned_to = None
         else:
+            print userid
             task.assigned_to = get_object_or_404(project.participants, pk=userid)
 
         task.save()
@@ -353,7 +355,6 @@ class TaskReasignationsApiView(GenericView):
 
 class MilestoneStatsApiView(GenericView):
     def get(self, request, pslug, mid):
-        print 1
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
         
