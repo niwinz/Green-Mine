@@ -8,9 +8,9 @@
 })(jQuery);
 
 
+
 var milestone_dashboard_bindings = function() {
     $('.user-story .user-story-status .user-story-task').live('mouseenter', function(e) {
-        console.log(1);
         if(!$(this).is(':data(draggable)')) {
             $(this).draggable({ handle: '.user-story-task', revert: 'invalid', helper:'clone' });
             $(this).draggable();
@@ -135,6 +135,10 @@ $(document).ready(function(){
     $(".validate").validate();
     
     if ($('#milestone-dashboard').length) {
+        milestone_dashboard_bindings();
+    }
+
+    if ($('#us-module').length){
         milestone_dashboard_bindings();
     }
     

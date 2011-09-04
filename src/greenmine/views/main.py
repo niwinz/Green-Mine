@@ -225,7 +225,12 @@ class UsView(GenericView):
         us = get_object_or_404(project.uss, ref=iref)
         form = forms.UsResponseForm()
         
-        context = {'us':us, 'form': form}
+        context = {
+            'us':us, 
+            'form': form, 
+            'milestone':us.milestone,
+            'project': project,
+        }
         return self.render(self.template_name, context)
 
     @login_required

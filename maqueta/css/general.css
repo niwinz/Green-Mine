@@ -330,6 +330,11 @@ div.fieldset div.field-inline {
 /* user-story-module */
 
 
+#us-module .user-story .hfield {
+    float: left;
+    min-height: 100px;
+    margin-right: 4px;
+}
 
 
 #us-module .user-story .user-story-status {

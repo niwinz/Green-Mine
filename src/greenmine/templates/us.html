@@ -95,7 +95,7 @@
                     <b>Tasks finished...</b>
                 </div>
             </div>
-            <div class="user-story">
+            <div class="user-story" us="{{ us.id }}">
                 <div class="user-story-status hfield status-new" rel="new">
                     {% for task in us.tasks_new %}
                         {% include "modules/task-user-story.html" %}
