@@ -137,12 +137,12 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #dashboard .detail-ml{background: url("../imgs/arrow-double-right.png") top left; width: 21px; height: 17px; display: block; position: absolute; right: 26px; top: 4px;}
 .delete-user-ac{margin-right: 10px; float: left;}
 .delete-user-ac a{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; float: right; margin-bottom: 8px;}
-#responses{width: 100%; float: left;}
-#responses .response{width: 100%; float: left; border-bottom: 1px solid #000; padding: 10px 0;}
+#responses{width: 100%; float: left; border-top: 1px solid #eee;}
+#responses .response{width: 100%; float: left; border-bottom: 1px dotted #ddd; padding: 10px 0;}
 #responses .name{margin-bottom: 10px;}
 #responses .files{margin-top: 15px;}
 #responses form{width: 100%; float: left; margin-top: 15px;}
-#responses textarea{height: 200px; width: 700px;}
+#responses textarea{height: 100px; width: 800px;}
 #issue .list-files a{float: left;}
 #issue .list-files li{margin-right: 15px; float: left;}
 #issue .delete-file{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; margin-bottom: 8px;}
@@ -250,17 +250,17 @@ div.fieldset div.field-inline {
 #milestone-dashboard #progress-bar {
     margin-bottom: 20px;
 }
-.user-story { 
+#milestone-dashboard .user-story { 
     overflow: hidden; 
     margin-bottom: 4px;
 }
-.user-story .hfield {
+#milestone-dashboard .user-story .hfield {
     float: left;
     min-height: 100px;
     margin-right: 4px;
 }
 
-.user-story .user-story-header {
+#milestone-dashboard .user-story .user-story-header {
     width: 200px;
     background-color: #eee;
     color: black;
@@ -268,25 +268,25 @@ div.fieldset div.field-inline {
     font-size: 11px;
     position: relative;
 }
-.user-story .user-story-header a.add-task {
+#milestone-dashboard .user-story .user-story-header a.add-task {
     position: absolute;
     bottom: 7px;
     right: 7px;
 }
-.user-story .user-story-header a.remove-us {
+#milestone-dashboard .user-story .user-story-header a.remove-us {
     position: absolute;
     bottom: 7px; right: 30px;
 }
-.user-story .user-story-header span.estimation {
+#milestone-dashboard .user-story .user-story-header span.estimation {
     position: absolute;
     bottom: 7px; left: 7px;
 }
-.user-story .user-story-status {
+#milestone-dashboard .user-story .user-story-status {
     background-color: white;
     width: 238px;
     padding: 4px;
 }
-.user-story .user-story-task {
+#milestone-dashboard .user-story .user-story-task {
     min-height: 60px;
     background-color: #eee;
     border: 1px solid #ddd;
@@ -296,33 +296,79 @@ div.fieldset div.field-inline {
     position: relative;
 }
 
-.user-story .user-story-task .participants {
+#milestone-dashboard .user-story .user-story-task .participants {
     position: absolute;
     left: 3px;
     bottom: 3px;
 }
 
-.user-story .user-story-status.status-closed .user-story-task {
+#milestone-dashboard .user-story .user-story-status.status-closed .user-story-task {
     background-color: #B4F3A8;
     border: 1px solid green;
 }
 
-.user-story-legend {
+#milestone-dashboard .user-story-legend {
     overflow: hidden; 
     margin-bottom: 4px;
 }
-.user-story-legend .hfield {
+#milestone-dashboard .user-story-legend .hfield {
     float: left;
     margin-right: 4px;
     font-weight: bold;
     height: 20px;
 }
-.user-story-legend .user-story-header {
+#milestone-dashboard .user-story-legend .user-story-header {
     width: 200px;
     padding-left: 10px;
     padding-right: 10px;
 }
-.user-story-legend .user-story-status { 
+#milestone-dashboard .user-story-legend .user-story-status { 
     width: 238px;
+    padding-left: 4px;
+}
+
+/* user-story-module */
+
+
+
+
+#us-module .user-story .user-story-status {
+    background-color: white;
+    width: 308px;
+    padding: 4px;
+}
+#us-module .user-story .user-story-task {
+    min-height: 60px;
+    background-color: #eee;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 5px;
+    margin-bottom: 3px;
+    position: relative;
+}
+
+#us-module .user-story .user-story-task .participants {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+}
+
+#us-module .user-story .user-story-status.status-closed .user-story-task {
+    background-color: #B4F3A8;
+    border: 1px solid green;
+}
+
+#us-module .user-story-legend {
+    overflow: hidden; 
+    margin-bottom: 4px;
+}
+#us-module .user-story-legend .hfield {
+    float: left;
+    margin-right: 4px;
+    font-weight: bold;
+    height: 20px;
+}
+#us-module .user-story-legend .user-story-status { 
+    width: 308px;
     padding-left: 4px;
 }

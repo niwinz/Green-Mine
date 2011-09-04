@@ -3,8 +3,59 @@
 {% load greenmine_utils %}
 {% load i18n %}
 
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block middle %}
+<div id="dashboard-actions">
+    <div class="left">
+        <div id="bin"></div>
+    </div>
+    <div class="right">
+        <a id="us-edit" class="btn01" href="">Editar</a>
+        <a id="new-task" class="btn01" href="">Nueva tarea</a>
+    </div>
+</div>
+<div id="form-inserts" class="hidden">
+    <div id="task-lb" class="hidden lb">
+        <h2>Nueva tarea: </h2>
+        <form method="post" action="{{ milestone.get_create_task_url }}">
+            <div class="fieldset">
+                <div class="field-inline">
+                    <label>{{ taskform.subject.label }}</label>
+                    {{ taskform.subject }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ taskform.us.label }}</label>
+                    {{ taskform.us }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ taskform.priority.label }} </label>
+                    {{ taskform.priority }}
+                </div>
+                <div class="field-inline">
+                    <label>{{ taskform.assigned_to.label }} </label>
+                    {{ taskform.assigned_to }}
+                </div>
+            </div>
+            <div class="fieldset">
+                <label>{{ taskform.description.label }}</label>
+                {{ taskform.description }}
+            </div>
+            <div class="fieldset submit-fieldset">
+                <div class="field-inline">
+                    <input type="submit" value="Guardar" />
+                </div>
+                <div class="field-inline">
+                    <input class="cancel" type="button" value="Cancelar" />
+                </div>
+            </div>
+        </form>                    
+    </div>
+</div>
+{% endblock %}
+
 {% block wrapper %}
-<div id="us-detail">
+<div id="us-module">
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "Subject" %}</span>
@@ -32,21 +83,39 @@
         {% endif %}
 
         {% with subtasks=us.tasks.all %}
-        <div class="form-field width100">
-            <h2>TODO: acabar de montar las tasks tal como ya esta hablado.</h2>
-            <span class="label">{% trans "Subtasks" %}</span>
-            <div class="subus">
-                <ul>
-                    {% for st in subtasks %}
-                    <li><a href="">{{ st.subject }}</a></li>
-                    {% empty %}
-                    {% trans "No subtasks" %}
+        <div class="form-field width100 tasks">
+            <div class="user-story-legend">
+                <div class="user-story-status hfield status-new">
+                    <b>New tasks...</b>
+                </div>
+                <div class="user-story-status hfield status-progess">
+                    <b>Tasks in progress...</b>
+                </div>
+                <div class="user-story-status hfield status-closed">
+                    <b>Tasks finished...</b>
+                </div>
+            </div>
+            <div class="user-story">
+                <div class="user-story-status hfield status-new" rel="new">
+                    {% for task in us.tasks_new %}
+                        {% include "modules/task-user-story.html" %}
                     {% endfor %}
-                </ul>
+                </div>
+                <div class="user-story-status hfield status-progess" rel="progress">
+                    {% for task in us.tasks_progress %}
+                        {% include "modules/task-user-story.html" %}
+                    {% endfor %}
+                </div>
+                <div class="user-story-status hfield status-closed" rel="close">
+                    {% for task in us.tasks_closed %}
+                        {% include "modules/task-user-story.html" %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endwith %}
-
+        
+        {% comment %}
         {% with files=us.attached_files.all %}
             {% if files|length > 0 %}
             <div class="form-field width100">
@@ -59,12 +128,7 @@
             </div>
             {% endif %}
         {% endwith %}
-        
-        <div class="width100 float-left">
-            <a href="" class="btn01 float-right">Editar</a>
-            <a href="" class="btn01 float-right">Añadir subtarea</a>
-        </div>                
-        <hr/>
+        {% endcomment %}
     </div>
     <div id="responses">
         {% for response in us.responses.all %}
@@ -94,6 +158,7 @@
             {% csrf_token %}
             <fieldset>
                 <p class="form-field width100">
+                    <label>Escriba su comentario:</label>
                     {{ form.description }}
                     {{ form.description.errors }}
                 </p>      
