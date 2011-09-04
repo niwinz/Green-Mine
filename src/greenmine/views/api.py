@@ -341,10 +341,8 @@ class TaskReasignationsApiView(GenericView):
         
         userid = request.GET.get('userid', '')
         if not userid:
-            print userid
             task.assigned_to = None
         else:
-            print userid
             task.assigned_to = get_object_or_404(project.participants, pk=userid)
 
         task.save()
