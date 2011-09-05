@@ -54,7 +54,6 @@ var milestone_dashboard_bindings = function() {
                             }
                         },
                         error: function() {
-                            console.log('error');
                             ui.draggable.draggable('option','revert', true);
                         }
                     });
@@ -64,31 +63,31 @@ var milestone_dashboard_bindings = function() {
     };
 
     $("#new-us").click(function(e) {
-        $('#form-inserts #us-lb, #form-inserts').removeClass('hidden');
-        var form = $("#form-inserts #us-lb form");
-        $(form).each (function() {this.reset();});
-        $(form).attr('rel', 'new');
-        e.preventDefault();
-    });
-    
-    $('#form-inserts #us-lb .cancel').click(function(e) {
-        $('#form-inserts #us-lb, #form-inserts').addClass('hidden');
-        e.preventDefault();
-    });
-
-
-    $("#new-task").click(function(e) {
-        $('#form-inserts #task-lb, #form-inserts').removeClass('hidden');
-        var form = $("#form-inserts #task-lb form");
-        $(form).each (function() {this.reset();});
-        if ($(form).data('us_id')) {
-            $(form).find('#id_us').val($(form).data('us_id'));
+        if (!$('#form-inserts').data('edit')) {
+            $('#form-inserts').data('edit', true);
+            $('#form-inserts #us-lb, #form-inserts').removeClass('hidden');
+            
+            var form = $("#form-inserts #us-lb form");
+            $(form).each (function() {this.reset();});
         }
         e.preventDefault();
     });
 
-    $('#form-inserts #task-lb .cancel').click(function(e) {
-        $('#form-inserts #task-lb, #form-inserts').addClass('hidden');
+    $("#new-task").click(function(e) {
+        if (!$('#form-inserts').data('edit')) {
+            $('#form-inserts').data('edit', true);
+            $('#form-inserts #task-lb, #form-inserts').removeClass('hidden');
+
+            var form = $("#form-inserts #task-lb form");
+            $(form).each (function() {this.reset();});
+            if ($(form).data('us_id')) { $(form).find('#id_us').val($(form).data('us_id')); }
+        }
+        e.preventDefault();
+    });
+
+    $('#form-inserts .lb .cancel').click(function(e) {
+        $('#form-inserts .lb, #form-inserts').addClass('hidden');
+        $('#form-inserts').data('edit', false);
         e.preventDefault();
     });
 
@@ -293,7 +292,6 @@ $(document).ready(function(){
                     $(this).html(milestoneHtml($(this).data()));
                 } else {
                     if ($(this).hasClass('task')) {
-                        console.log(11111, $(this));
                         $(this).html(taskHtml($(this).data()));
                     }
                 }
@@ -466,6 +464,11 @@ $(document).ready(function(){
                 });            
             };
 
+            var hide_forms = function() {
+                $('#form-inserts .lb, #form-inserts').addClass('hidden');
+                $('#form-inserts').data('edit', false);
+            };
+
             var formsBindings = function() {
                 var edit = null;
 
@@ -473,28 +476,34 @@ $(document).ready(function(){
                     e.preventDefault();
                 });
                 $("#new-issue").click(function(e) {
-                    $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
-                    var form = $("#form-inserts #issue-lb form");
-                    $(form).each (function() {this.reset();});
-                    $(form).attr('action', $(form).attr('newaction'));
-                    $(form).attr('rel', 'new');
+                    if (!$('#form-inserts').data('edit')) {
+                        $('#form-inserts').data('edit', true);
+                        $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
+                        
+                        var form = $("#form-inserts #issue-lb form");
+                        $(form).each (function() {this.reset();});
+                        $(form).attr('action', $(form).attr('newaction'));
+                        $(form).attr('rel', 'new');
+                    }
                     e.preventDefault();
                 });
-                $('#new-milestone').click(function(e) {
-                    $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
-                    var form = $("#form-inserts #milestone-lb form");
 
-                    $(form).each (function() {this.reset();});
-                    $(form).attr('action', $(form).attr('newaction'));
-                    $(form).attr('rel', 'new');
+                $('#new-milestone').click(function(e) {
+                    if (!$('#form-inserts').data('edit')) {
+                        $('#form-inserts').data('edit', true);
+                        $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
+                        
+                        var form = $("#form-inserts #milestone-lb form");
+                        $(form).each (function() {this.reset();});
+                        $(form).attr('action', $(form).attr('newaction'));
+                        $(form).attr('rel', 'new');
+                    }
                     e.preventDefault();
                 });
-                $('#form-inserts #milestone-lb .cancel').click(function(e) {
-                    $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
-                    e.preventDefault();
-                });
-                $('#form-inserts #issue-lb .cancel').click(function(e) {
-                    $('#form-inserts #issue-lb, #form-inserts').addClass('hidden');
+
+                /* Cancel button bindings */
+                $('#form-inserts .lb .cancel').click(function(e) {
+                    hide_forms();
                     e.preventDefault();
                 });
 
@@ -515,31 +524,27 @@ $(document).ready(function(){
                     e.preventDefault();
                 });
                 
-                /* 
-                 * TODO: en este caso pensar si mejor hacer un inline con un formulario
-                 * cargado directo por ajax. ya que en una lista larga al clickar, el formulario
-                 * se desplegara en la parte superior, y no seria comodo a la hora de editar.
-                */
                 $("#tasks").delegate(".edit", "click", function(e){
                     edit = $(this).parent();
-                    console.log(edit.data());
+                    
                     var form = $("#issue-lb form");
                     $(form).each (function() {this.reset();});
                     $(form).attr('action', $(edit).data('edit_url'));
                     $(form).attr('rel', 'edit');
                     
                     issueform.resetForm(); 
-
                     $.each($(edit).data(), function(key, value) { 
-                        console.log(key, value);
                        $(form).find("[name='"+key+"']").val(value);
                     }); 
                     $(edit).updateHtml();
                     
                     $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
+                    $('#form-inserts').data('edit', true);
+                    (document).scrollUp(0);
                     e.preventDefault();
                 });
-
+                
+                /* Forms submit bindings */
                 var milestoneform = formUtils.ajax("#milestone-lb form", function(data, form){
                     if ($(form).attr('rel')=='new'){
                         $("<li>").addClass('milestone').html(milestoneHtml(data.milestone))
@@ -550,9 +555,8 @@ $(document).ready(function(){
                         $(edit).updateHtml();
                     }
                     load_milestones();
-                    $('#form-inserts #milestone-lb, #form-inserts').addClass('hidden');
+                    hide_forms();
                 });
-
 
                 var issueform = formUtils.ajax("#issue-lb form", function(data, form){
                     if(data.redirect_to) {
@@ -567,7 +571,7 @@ $(document).ready(function(){
                             $(edit).updateHtml();
                         }
                     }
-                    $('#form-inserts #issue-lb, #form-inserts').addClass('hidden');
+                    hide_forms();
                 });
             };
             

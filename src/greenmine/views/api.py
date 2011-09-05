@@ -156,10 +156,12 @@ class MilestoneCreateApiView(GenericView):
             milestone.save()
 
             context = {
-                'name':form.cleaned_data['name'],
-                'id': milestone.id,
-                'url': milestone.get_tasks_for_milestone_api_url(),
-                'date': milestone.estimated_finish or '',
+                'milestone': {
+                    'name':form.cleaned_data['name'],
+                    'id': milestone.id,
+                    'url': milestone.get_tasks_for_milestone_api_url(),
+                    'date': milestone.estimated_finish or '',
+                }
             }
             return self.render_to_ok(context)
         
