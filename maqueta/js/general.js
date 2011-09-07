@@ -181,7 +181,7 @@ $(document).ready(function(){
                 currentuser_dom.attr('gravatar', ui.item.gravatar);
             },
             source: function(request, response) {
-                var url = $("input.user-autocomplete").attr('url');
+                var url = $("input.user-autocomplete").attr('link');
                 url = url + "?term=" + request.term;
                 $.get(url,  function(data) {
                     if (data.valid){response(data.list);}
