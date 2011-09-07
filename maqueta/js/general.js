@@ -142,9 +142,14 @@ $(document).ready(function(){
     }
     
     if($("#login-form").length){
-        formUtils.ajax("#login-form, #forgotten-password-form", function(data){
+        formUtils.ajax("#login-form", function(data){
             if(data.redirect_to) location.href = data.redirect_to;
         });
+        
+        
+        formUtils.ajax("#forgotten-password-form", function(data){
+            
+        });        
         
         $("#open-forgotten-password-form").click(function(e){
             $("#login-form").fadeOut("fast", function() {
