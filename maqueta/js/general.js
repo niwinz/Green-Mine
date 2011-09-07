@@ -169,6 +169,11 @@ $(document).ready(function(){
             });
             e.preventDefault();
         });
+        
+        $("#open-import-project").click(function(e){
+            e.preventDefault();
+            $("#import-project").slideToggle("slow");
+        })
     }
 
     if($("#project").length){

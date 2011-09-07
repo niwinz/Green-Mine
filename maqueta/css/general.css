@@ -54,6 +54,8 @@ body{background-color: #EFEFEF; padding-bottom: 36px;}
 h1, h1 a{color: #FFF; font-size: 28px; font-weight: bold; text-decoration: none;}
 h2{color: #000; font-size: 20px; font-weight: bold; text-decoration: underline; margin-bottom: 15px;}
 a{color: #458745;}
+legend{font-weight:bold;}
+fieldset{border: 1px solid #EFEFEF; padding: 20px;}
 
 .btn01[type="submit"], .btn01[type="button"]{background-color:#EFEFEF;
     border: 0;
@@ -123,8 +125,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #user-project .table01{max-height: 600px; overflow: auto; display:block;}
 #user-project .users-added{width: 515px; float: left;}
 #user-project .users-roles{padding-left: 20px; width: 430px; float: left;}
-#user-project fieldset{border: 1px solid #EFEFEF; padding: 20px; margin-bottom: 15px;}
-#user-project legend{font-weight:bold;}
+#user-project fieldset{padding: 20px; margin-bottom: 15px;}
 .messages-container ul.messages {padding: 10px 0; margin: 10px 0; background-color: #EFEFEF;}
 .messages-container ul.messages li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
 .messages-container ul.messages li.info{color: #458745;}
@@ -149,8 +150,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #bin{background: url("../imgs/bin.png") top left; width: 56px; height: 56px; position: absolute; top: 0px; left: 0; visibility: hidden;}
 .bin2{visibility: visible !important;}
 #bin:hover{background-position: bottom left !important; cursor: pointer;}
-#admin-project-options { margin-top: 30px; display: block; border: 1px solid #999; }
-#admin-project-options div.field { padding:3px; }
+#import-project{display: none; width: 100%; margin-top: 20px; float: left;}
 
 /* dashboard */
 #tasks-filters{width: 650px; float: right; margin-bottom: 20px;}

@@ -28,17 +28,19 @@
     {% endif %}
     {% include "paginator.html" %}
     <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
-
-
-    <fieldset id="admin-project-options">
-        <legend>{% trans "Importar un proyecto nuevo:" %}</legend>
-        <form method="post" action="{{ current_url }}" enctype="multipart/form-data">
+    <a id="open-import-project" href="" class="btn01 float-right">Importar</a>
+    
+    <div id="import-project">
+        <form class="validate" method="post" action="{{ current_url }}" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="field">{{ dumpform.dumpfile.label }}: {{ dumpform.dumpfile }}</div>
-            <div class="field">{{ dumpform.overwrite.label }}: {{ dumpform.overwrite }}</div>
-            <input type="submit" value="{% trans "Subir" %}"></input>
-        </form>
-    </fieldset>
+            <fieldset>
+                <legend>{% trans "Importar un proyecto nuevo:" %}</legend>         
+                <div class="form-field">{{ dumpform.dumpfile.label }}: {{ dumpform.dumpfile }}</div>
+                <div class="form-field">{{ dumpform.overwrite.label }}: {{ dumpform.overwrite }}</div>
+                <input type="submit" value="{% trans 'Subir' %}" />
+            </fieldset>
+       </form>
+   </div>
 
 </div>
 {% endblock %}
