@@ -9,24 +9,24 @@
         {% csrf_token %}
         {% include "messages.html" %}
         <fieldset>
-            <p class="form-field">
+            <div class="form-field">
                 {{ form.projectname.label }}
                 {{ form.projectname }}
                 {{ form.projectname.errors }}
-            </p>
-            <p class="form-field">
+            </div>
+            <div class="form-field width100">
                 {{ form.description.label }}
                 {{ form.description }}
                 {{ form.description.errors }}
-            </p>
+            </div>
             <div id="user-project">
                 <div class="users-added">
                     <table class="table01">
                         <tbody>
                             <tr>
-                                <th>Propietario</th>
-                                <th>Rol</th>
-                                <th>Opciones</th>
+                                <th class="th1">Propietario</th>
+                                <th class="th2">Rol</th>
+                                <th class="th3">Opciones</th>
                             </tr>
                         </tbody>
                     </table>
