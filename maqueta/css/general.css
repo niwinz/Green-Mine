@@ -33,7 +33,7 @@ padding: 7px 15px; font-size: 15px; color: #FFF; font-weight:bold; text-decorati
 cursor: pointer; margin-right: 5px; border-radius: 8px; border: 0; line-height: 20px;}
 .btn01:hover{border: 0; box-shadow: 1px 1px 2px #888;}
 label.error{color: red;}
-#login{width: 300px; margin: 0 auto; background-color: #FFF; padding: 30px 100px;}
+#login{margin: 0 auto; background-color: #FFF; padding: 30px 90px; width: 335px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
 .form-field{margin-bottom: 20px;}
 form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{width: 284px; clear: left; display: block;}
