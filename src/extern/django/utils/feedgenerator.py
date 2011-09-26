@@ -42,7 +42,7 @@ def rfc2822_date(date):
     time_str = date.strftime('%s, %%d %s %%Y %%H:%%M:%%S ' % (dow, month))
     if date.tzinfo:
         offset = date.tzinfo.utcoffset(date)
-        timezone = (offset.days * 24 * 60) + (offset.seconds / 60)
+        timezone = (offset.days * 24 * 60) + (offset.seconds // 60)
         hour, minute = divmod(timezone, 60)
         return time_str + "%+03d%02d" % (hour, minute)
     else:
@@ -54,7 +54,7 @@ def rfc3339_date(date):
     if date.tzinfo:
         time_str = date.strftime('%Y-%m-%dT%H:%M:%S')
         offset = date.tzinfo.utcoffset(date)
-        timezone = (offset.days * 24 * 60) + (offset.seconds / 60)
+        timezone = (offset.days * 24 * 60) + (offset.seconds // 60)
         hour, minute = divmod(timezone, 60)
         return time_str + "%+03d:%02d" % (hour, minute)
     else:
@@ -285,7 +285,7 @@ class Rss201rev2Feed(RssFeed):
 
 class Atom1Feed(SyndicationFeed):
     # Spec: http://atompub.org/2005/07/11/draft-ietf-atompub-format-10.html
-    mime_type = 'application/atom+xml; charset=utf8'
+    mime_type = 'application/atom+xml; charset=utf-8'
     ns = u"http://www.w3.org/2005/Atom"
 
     def write(self, outfile, encoding):

@@ -124,6 +124,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     allows_group_by_pk = True
     related_fields_match_type = True
     allow_sliced_subqueries = False
+    has_bulk_insert = True
     has_select_for_update = True
     has_select_for_update_nowait = False
     supports_forward_references = False
@@ -263,6 +264,10 @@ class DatabaseOperations(BaseDatabaseOperations):
     def max_name_length(self):
         return 64
 
+    def bulk_insert_sql(self, fields, num_values):
+        items_sql = "(%s)" % ", ".join(["%s"] * len(fields))
+        return "VALUES " + ", ".join([items_sql] * num_values)
+
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'mysql'
     operators = {
@@ -304,7 +309,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return False
 
     def _cursor(self):
+        new_connection = False
         if not self._valid_connection():
+            new_connection = True
             kwargs = {
                 'conv': django_conversions,
                 'charset': 'utf8',
@@ -331,8 +338,14 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
             self.connection.encoders[SafeString] = self.connection.encoders[str]
             connection_created.send(sender=self.__class__, connection=self)
-        cursor = CursorWrapper(self.connection.cursor())
-        return cursor
+        cursor = self.connection.cursor()
+        if new_connection:
+            # SQL_AUTO_IS_NULL in MySQL controls whether an AUTO_INCREMENT column
+            # on a recently-inserted row will return when the field is tested for
+            # NULL.  Disabling this value brings this aspect of MySQL in line with
+            # SQL standards.
+            cursor.execute('SET SQL_AUTO_IS_NULL = 0')
+        return CursorWrapper(cursor)
 
     def _rollback(self):
         try:

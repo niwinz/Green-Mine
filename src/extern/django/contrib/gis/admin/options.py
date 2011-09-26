@@ -31,7 +31,7 @@ class GeoModelAdmin(ModelAdmin):
     map_height = 400
     map_srid = 4326
     map_template = 'gis/admin/openlayers.html'
-    openlayers_url = 'http://openlayers.org/api/2.10/OpenLayers.js'
+    openlayers_url = 'http://openlayers.org/api/2.11/OpenLayers.js'
     point_zoom = num_zoom - 6
     wms_url = 'http://labs.metacarta.com/wms/vmap0'
     wms_layer = 'basic'
@@ -39,13 +39,13 @@ class GeoModelAdmin(ModelAdmin):
     debug = False
     widget = OpenLayersWidget
 
-    def _media(self):
+    @property
+    def media(self):
         "Injects OpenLayers JavaScript into the admin."
-        media = super(GeoModelAdmin, self)._media()
+        media = super(GeoModelAdmin, self).media
         media.add_js([self.openlayers_url])
         media.add_js(self.extra_js)
         return media
-    media = property(_media)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
@@ -121,7 +121,6 @@ if gdal.HAS_GDAL:
 
     class OSMGeoAdmin(GeoModelAdmin):
         map_template = 'gis/admin/osm.html'
-        extra_js = ['http://www.openstreetmap.org/openlayers/OpenStreetMap.js']
         num_zoom = 20
         map_srid = spherical_mercator_srid
         max_extent = '-20037508,-20037508,20037508,20037508'

@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 from django.db import models, transaction, router
 from django.db.models.related import RelatedObject
 from django.db.models.fields import BLANK_CHOICE_DASH, FieldDoesNotExist
@@ -278,6 +279,7 @@ class ModelAdmin(BaseModelAdmin):
     list_filter = ()
     list_select_related = False
     list_per_page = 100
+    list_max_show_all = 200
     list_editable = ()
     search_fields = ()
     date_hierarchy = None
@@ -319,7 +321,7 @@ class ModelAdmin(BaseModelAdmin):
         super(ModelAdmin, self).__init__()
 
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url
+        from django.conf.urls import patterns, url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -775,9 +777,12 @@ class ModelAdmin(BaseModelAdmin):
             # redirect to the change-list page for this object. Otherwise,
             # redirect to the admin index.
             if self.has_change_permission(request, None):
-                post_url = '../'
+                post_url = reverse('admin:%s_%s_changelist' %
+                                   (opts.app_label, opts.module_name),
+                                   current_app=self.admin_site.name)
             else:
-                post_url = '../../../'
+                post_url = reverse('admin:index',
+                                   current_app=self.admin_site.name)
             return HttpResponseRedirect(post_url)
 
     def response_change(self, request, obj):
@@ -786,11 +791,14 @@ class ModelAdmin(BaseModelAdmin):
         """
         opts = obj._meta
 
-        # Handle proxy models automatically created by .only() or .defer()
+        # Handle proxy models automatically created by .only() or .defer().
+        # Refs #14529
         verbose_name = opts.verbose_name
+        module_name = opts.module_name
         if obj._deferred:
             opts_ = opts.proxy_for_model._meta
             verbose_name = opts_.verbose_name
+            module_name = opts_.module_name
 
         pk_value = obj._get_pk_val()
 
@@ -804,19 +812,28 @@ class ModelAdmin(BaseModelAdmin):
         elif "_saveasnew" in request.POST:
             msg = _('The %(name)s "%(obj)s" was added successfully. You may edit it again below.') % {'name': force_unicode(verbose_name), 'obj': obj}
             self.message_user(request, msg)
-            return HttpResponseRedirect("../%s/" % pk_value)
+            return HttpResponseRedirect(reverse('admin:%s_%s_change' %
+                                        (opts.app_label, module_name),
+                                        args=(pk_value,),
+                                        current_app=self.admin_site.name))
         elif "_addanother" in request.POST:
             self.message_user(request, msg + ' ' + (_("You may add another %s below.") % force_unicode(verbose_name)))
-            return HttpResponseRedirect("../add/")
+            return HttpResponseRedirect(reverse('admin:%s_%s_add' %
+                                        (opts.app_label, module_name),
+                                        current_app=self.admin_site.name))
         else:
             self.message_user(request, msg)
             # Figure out where to redirect. If the user has change permission,
             # redirect to the change-list page for this object. Otherwise,
             # redirect to the admin index.
             if self.has_change_permission(request, None):
-                return HttpResponseRedirect('../')
+                post_url = reverse('admin:%s_%s_changelist' %
+                                   (opts.app_label, module_name),
+                                   current_app=self.admin_site.name)
             else:
-                return HttpResponseRedirect('../../../')
+                post_url = reverse('admin:index',
+                                   current_app=self.admin_site.name)
+            return HttpResponseRedirect(post_url)
 
     def response_action(self, request, queryset):
         """
@@ -909,7 +926,7 @@ class ModelAdmin(BaseModelAdmin):
             for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
+                if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(data=request.POST, files=request.FILES,
                                   instance=new_object,
@@ -938,7 +955,7 @@ class ModelAdmin(BaseModelAdmin):
                                        self.inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
+                if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(instance=self.model(), prefix=prefix,
                                   queryset=inline.queryset(request))
@@ -989,7 +1006,9 @@ class ModelAdmin(BaseModelAdmin):
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
 
         if request.method == 'POST' and "_saveasnew" in request.POST:
-            return self.add_view(request, form_url='../add/')
+            return self.add_view(request, form_url=reverse('admin:%s_%s_add' %
+                                    (opts.app_label, opts.module_name),
+                                    current_app=self.admin_site.name))
 
         ModelForm = self.get_form(request, obj)
         formsets = []
@@ -1006,7 +1025,7 @@ class ModelAdmin(BaseModelAdmin):
                                        self.inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
+                if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(request.POST, request.FILES,
                                   instance=new_object, prefix=prefix,
@@ -1027,7 +1046,7 @@ class ModelAdmin(BaseModelAdmin):
             for FormSet, inline in zip(self.get_formsets(request, obj), self.inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
+                if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(instance=obj, prefix=prefix,
                                   queryset=inline.queryset(request))
@@ -1087,7 +1106,7 @@ class ModelAdmin(BaseModelAdmin):
         try:
             cl = ChangeList(request, self.model, list_display, self.list_display_links,
                 self.list_filter, self.date_hierarchy, self.search_fields,
-                self.list_select_related, self.list_per_page, self.list_editable, self)
+                self.list_select_related, self.list_per_page, self.list_max_show_all, self.list_editable, self)
         except IncorrectLookupParameters:
             # Wacky lookup parameters were given, so redirect to the main
             # changelist page, without parameters, and pass an 'invalid=1'
@@ -1245,8 +1264,11 @@ class ModelAdmin(BaseModelAdmin):
             self.message_user(request, _('The %(name)s "%(obj)s" was deleted successfully.') % {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj_display)})
 
             if not self.has_change_permission(request, None):
-                return HttpResponseRedirect("../../../../")
-            return HttpResponseRedirect("../../")
+                return HttpResponseRedirect(reverse('admin:index',
+                                                    current_app=self.admin_site.name))
+            return HttpResponseRedirect(reverse('admin:%s_%s_changelist' %
+                                        (opts.app_label, opts.module_name),
+                                        current_app=self.admin_site.name))
 
         object_name = force_unicode(opts.verbose_name)
 
@@ -1291,6 +1313,7 @@ class ModelAdmin(BaseModelAdmin):
             'module_name': capfirst(force_unicode(opts.verbose_name_plural)),
             'object': obj,
             'app_label': app_label,
+            'opts': opts,
         }
         context.update(extra_context or {})
         return TemplateResponse(request, self.object_history_template or [

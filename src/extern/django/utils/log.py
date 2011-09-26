@@ -30,16 +30,18 @@ logger = getLogger('django')
 if not logger.handlers:
     logger.addHandler(NullHandler())
 
-class AdminEmailHandler(logging.Handler):
-    def __init__(self, include_html=False):
-        logging.Handler.__init__(self)
-        self.include_html = include_html
 
+class AdminEmailHandler(logging.Handler):
     """An exception log handler that emails log entries to site admins.
 
     If the request is passed as the first argument to the log record,
     request data will be provided in the email report.
     """
+
+    def __init__(self, include_html=False):
+        logging.Handler.__init__(self)
+        self.include_html = include_html
+
     def emit(self, record):
         try:
             request = record.request
@@ -53,7 +55,7 @@ class AdminEmailHandler(logging.Handler):
         except:
             subject = '%s: %s' % (
                 record.levelname,
-                record.msg
+                record.getMessage()
             )
             request = None
             request_repr = "Request repr() unavailable."
@@ -62,7 +64,7 @@ class AdminEmailHandler(logging.Handler):
             exc_info = record.exc_info
             stack_trace = '\n'.join(traceback.format_exception(*record.exc_info))
         else:
-            exc_info = (None, record.msg, None)
+            exc_info = (None, record.getMessage(), None)
             stack_trace = 'No stack trace available'
 
         message = "%s\n\n%s" % (stack_trace, request_repr)
@@ -81,8 +83,12 @@ class CallbackFilter(logging.Filter):
     def __init__(self, callback):
         self.callback = callback
 
-
     def filter(self, record):
         if self.callback(record):
             return 1
         return 0
+
+
+class RequireDebugFalse(logging.Filter):
+    def filter(self, record):
+        return not settings.DEBUG

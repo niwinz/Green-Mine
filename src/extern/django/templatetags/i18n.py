@@ -70,8 +70,9 @@ class GetCurrentLanguageBidiNode(Node):
 
 
 class TranslateNode(Node):
-    def __init__(self, filter_expression, noop):
+    def __init__(self, filter_expression, noop, asvar=None):
         self.noop = noop
+        self.asvar = asvar
         self.filter_expression = filter_expression
         if isinstance(self.filter_expression.var, basestring):
             self.filter_expression.var = Variable(u"'%s'" % self.filter_expression.var)
@@ -79,7 +80,12 @@ class TranslateNode(Node):
     def render(self, context):
         self.filter_expression.var.translate = not self.noop
         output = self.filter_expression.resolve(context)
-        return _render_value_in_context(output, context)
+        value = _render_value_in_context(output, context)
+        if self.asvar:
+            context[self.asvar] = value
+            return ''
+        else:
+            return value
 
 
 class BlockTranslateNode(Node):
@@ -110,19 +116,25 @@ class BlockTranslateNode(Node):
         # the end of function
         context.update(tmp_context)
         singular, vars = self.render_token_list(self.singular)
+        # Escape all isolated '%'
+        singular = re.sub(u'%(?!\()', u'%%', singular)
         if self.plural and self.countervar and self.counter:
             count = self.counter.resolve(context)
             context[self.countervar] = count
             plural, plural_vars = self.render_token_list(self.plural)
+            plural = re.sub(u'%(?!\()', u'%%', plural)
             result = translation.ungettext(singular, plural, count)
             vars.extend(plural_vars)
         else:
             result = translation.ugettext(singular)
-        # Escape all isolated '%' before substituting in the context.
-        result = re.sub(u'%(?!\()', u'%%', result)
         data = dict([(v, _render_value_in_context(context.get(v, ''), context)) for v in vars])
         context.pop()
-        return result % data
+        try:
+            result = result % data
+        except KeyError:
+            with translation.override(None):
+                result = self.render(context)
+        return result
 
 
 class LanguageNode(Node):
@@ -296,16 +308,21 @@ def do_translate(parser, token):
                 elif value[-1] == "'":
                     value = '"%s"' % value[1:-1].replace('"','\\"')
 
-            if self.more():
-                if self.tag() == 'noop':
+            noop = False
+            asvar = None
+
+            while self.more():
+                tag = self.tag()
+                if tag == 'noop':
                     noop = True
+                elif tag == 'as':
+                    asvar = self.tag()
                 else:
-                    raise TemplateSyntaxError("only option for 'trans' is 'noop'")
-            else:
-                noop = False
-            return (value, noop)
-    value, noop = TranslateParser(token.contents).top()
-    return TranslateNode(parser.compile_filter(value), noop)
+                    raise TemplateSyntaxError(
+                        "only options for 'trans' are 'noop' and 'as VAR.")
+            return (value, noop, asvar)
+    value, noop, asvar = TranslateParser(token.contents).top()
+    return TranslateNode(parser.compile_filter(value), noop, asvar)
 
 @register.tag("blocktrans")
 def do_block_translate(parser, token):

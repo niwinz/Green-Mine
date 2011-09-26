@@ -12,7 +12,8 @@ from django.utils.encoding import force_unicode, filepath_to_uri
 from django.utils.functional import LazyObject
 from django.utils.importlib import import_module
 from django.utils.text import get_valid_filename
-from django.utils._os import safe_join
+from django.utils._os import safe_join, abspathu
+
 
 __all__ = ('Storage', 'FileSystemStorage', 'DefaultStorage', 'default_storage')
 
@@ -25,16 +26,11 @@ class Storage(object):
     # The following methods represent a public interface to private methods.
     # These shouldn't be overridden by subclasses unless absolutely necessary.
 
-    def open(self, name, mode='rb', mixin=None):
+    def open(self, name, mode='rb'):
         """
-        Retrieves the specified file from storage, using the optional mixin
-        class to customize what features are available on the File returned.
+        Retrieves the specified file from storage.
         """
-        file = self._open(name, mode)
-        if mixin:
-            # Add the mixin as a parent class of the File returned from storage.
-            file.__class__ = type(mixin.__name__, (mixin, file.__class__), {})
-        return file
+        return self._open(name, mode)
 
     def save(self, name, content):
         """
@@ -150,9 +146,10 @@ class FileSystemStorage(Storage):
     def __init__(self, location=None, base_url=None):
         if location is None:
             location = settings.MEDIA_ROOT
+        self.base_location = location
+        self.location = abspathu(self.base_location)
         if base_url is None:
             base_url = settings.MEDIA_URL
-        self.location = os.path.abspath(location)
         self.base_url = base_url
 
     def _open(self, name, mode='rb'):

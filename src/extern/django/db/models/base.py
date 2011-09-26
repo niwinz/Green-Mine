@@ -474,7 +474,6 @@ class Model(object):
         ('raw', 'cls', and 'origin').
         """
         using = using or router.db_for_write(self.__class__, instance=self)
-        connection = connections[using]
         assert not (force_insert and force_update)
         if cls is None:
             cls = self.__class__
@@ -540,24 +539,16 @@ class Model(object):
                     order_value = manager.using(using).filter(**{field.name: getattr(self, field.attname)}).count()
                     self._order = order_value
 
+                fields = meta.local_fields
                 if not pk_set:
                     if force_update:
                         raise ValueError("Cannot force an update in save() with no primary key.")
-                    values = [(f, f.get_db_prep_save(raw and getattr(self, f.attname) or f.pre_save(self, True), connection=connection))
-                        for f in meta.local_fields if not isinstance(f, AutoField)]
-                else:
-                    values = [(f, f.get_db_prep_save(raw and getattr(self, f.attname) or f.pre_save(self, True), connection=connection))
-                        for f in meta.local_fields]
+                    fields = [f for f in fields if not isinstance(f, AutoField)]
 
                 record_exists = False
 
                 update_pk = bool(meta.has_auto_field and not pk_set)
-                if values:
-                    # Create a new record.
-                    result = manager._insert(values, return_id=update_pk, using=using)
-                else:
-                    # Create a new record with defaults for everything.
-                    result = manager._insert([(meta.pk, connection.ops.pk_default_value())], return_id=update_pk, raw_values=True, using=using)
+                result = manager._insert([self], fields=fields, return_id=update_pk, using=using, raw=raw)
 
                 if update_pk:
                     setattr(self, meta.pk.attname, result)
