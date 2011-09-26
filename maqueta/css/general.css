@@ -299,6 +299,7 @@ div.fieldset div.field-inline {
     font-size: 11px;
     font-weight: bold;
     padding: 4px;
+    margin-right: 1px;
 }
 .radio-choices div.active {
     background-color:#458745;

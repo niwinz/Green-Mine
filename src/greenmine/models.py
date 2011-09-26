@@ -35,16 +35,9 @@ US_STATUS_CHOICES = (
 )
 
 US_PRIORITY_CHOICES = (
-    (1, _(u'Lower')),
-    (2, _(u'Normal')),
-    (4, _(u'High')),
-    (6, _(u'Urgent')),
-    (8, _(u'Critical')),
-)
-
-US_TYPE_CHOICES = (
-    ('us', _(u'User story')),
-    ('bug', _(u'Bug')),
+    (1, _(u'Low')),
+    (3, _(u'Normal')),
+    (5, _(u'High')),
 )
 
 US_STATUS_CHOICES = (
@@ -305,11 +298,11 @@ class Us(models.Model):
     def get_drop_api_url(self):
         return ('api:us-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
-
     @models.permalink
     def get_view_url(self):
         return ('web:us', (), {'pslug': self.project.slug, 'iref': self.ref})
     
+
     """ Propertys """
 
     @property
