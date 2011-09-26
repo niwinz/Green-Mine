@@ -15,43 +15,6 @@
         <a id="return" class="btn01" href="{{ project.get_dashboard_url }}">{% trans "Volver" %}</a>
     </div>
 </div>
-<div id="form-inserts" class="hidden">
-    <div id="task-lb" class="hidden lb">
-        <h2>Nueva tarea: </h2>
-        <form method="post" action="{{ milestone.get_create_task_url }}">
-            <div class="fieldset">
-                <div class="field-inline">
-                    <label>{{ taskform.subject.label }}</label>
-                    {{ taskform.subject }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.us.label }}</label>
-                    {{ taskform.us }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.priority.label }} </label>
-                    {{ taskform.priority }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.assigned_to.label }} </label>
-                    {{ taskform.assigned_to }}
-                </div>
-            </div>
-            <div class="fieldset">
-                <label>{{ taskform.description.label }}</label>
-                {{ taskform.description }}
-            </div>
-            <div class="fieldset submit-fieldset">
-                <div class="field-inline">
-                    <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input class="cancel" type="button" value="Cancelar" />
-                </div>
-            </div>
-        </form>                    
-    </div>
-</div>
 {% endblock %}
 
 {% block wrapper %}

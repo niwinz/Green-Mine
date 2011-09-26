@@ -15,74 +15,6 @@
         <a id="new-issue" class="btn01" href="">Nueva US</a>
     </div>
 </div>
-<div id="form-inserts" class="hidden">
-    <div class="close"></div>
-    <div id="issue-lb" class="hidden lb">
-        <h2>Nueva user story: </h2>
-        <form method="post" action="" newaction="auxiliar/json/task.json">
-            <div class="fieldset">
-                <div class="field-inline">
-                    <label>{{ form.subject.label }}</label>
-                    {{ form.subject }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form.estimation.label }}</label>
-                    {{ form.estimation }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form.status.label }}</label>
-                    {{ form.status }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form.priority.label }} </label>
-                    {{ form.priority }}
-                </div>
-            </div>
-            <div class="fieldset">
-                <label>{{ form.milestone.label }}</label>
-                {{ form.milestone }}
-            </div>
-            <div class="fieldset">
-                <label>{{ form.description.label }}</label>
-                {{ form.description }}
-            </div>
-            <div class="fieldset submit-fieldset">
-                <div class="field-inline">
-                    <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input type="submit" value="Guardar y editar" />
-                </div>
-                <div class="field-inline">
-                    <input class="cancel" type="button" value="Cancelar" />
-                </div>
-            </div>
-        </form>                    
-    </div>
-    <div id="milestone-lb" class="hidden lb">
-        <h2>Nueva version / sprint:</h2>
-        <form method="post" action="" newaction="{{ project.get_milestone_create_api_url }}">
-            <div class="fieldset">
-                <div class="field-inline">
-                    <label>{{ form2.name.label }}</label>
-                    {{ form2.name }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ form2.estimated_finish.label }}</label>
-                    {{ form2.estimated_finish }}
-                </div>
-            </div>
-            <div class="fieldset submit-fieldset">
-                <div class="field-inline">
-                    <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input class="cancel" type="button" value="Cancelar" />
-                </div>
-            </div>
-        </form>                    
-    </div>
-</div>
 {% endblock %}
 
 {% block wrapper %}
@@ -101,7 +33,7 @@
         </p>
     </div>
 
-    <ul id="tasks">
-    </ul>
+    <!-- TODO: make this page for milestone -->
+    <ul id="tasks"></ul>
 </div>
 {% endblock %}

@@ -294,7 +294,7 @@ $(document).ready(function(){
     }
     
     if ($("#dashboard").length) {        
-        function Dashboard() {  
+        (function($) {
             $.fn.updateHtml = function() {
                 if ($(this).hasClass('milestone')) {
                     $(this).html(milestoneHtml($(this).data()));
@@ -472,124 +472,12 @@ $(document).ready(function(){
                 });
             };
 
-            var hide_forms = function() {
-                $('#form-inserts .lb, #form-inserts').addClass('hidden');
-                $('#form-inserts').data('edit', false);
-            };
-
-            var formsBindings = function() {
-                var edit = null;
-
-                $("#new-milestone").click(function(e) {
-                    e.preventDefault();
-                });
-                $("#new-issue").click(function(e) {
-                    if (!$('#form-inserts').data('edit')) {
-                        $('#form-inserts').data('edit', true);
-                        $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
-                        
-                        var form = $("#form-inserts #issue-lb form");
-                        $(form).each (function() {this.reset();});
-                        $(form).attr('action', $(form).attr('newaction'));
-                        $(form).attr('rel', 'new');
-                    }
-                    e.preventDefault();
-                });
-
-                $('#new-milestone').click(function(e) {
-                    if (!$('#form-inserts').data('edit')) {
-                        $('#form-inserts').data('edit', true);
-                        $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
-                        
-                        var form = $("#form-inserts #milestone-lb form");
-                        $(form).each (function() {this.reset();});
-                        $(form).attr('action', $(form).attr('newaction'));
-                        $(form).attr('rel', 'new');
-                    }
-                    e.preventDefault();
-                });
-
-                /* Cancel button bindings */
-                $('#form-inserts .lb .cancel').click(function(e) {
-                    hide_forms();
-                    e.preventDefault();
-                });
-
-                $("#milestones").delegate(".edit", "click", function(e){
-                    edit = $(this).parent();
-                    var form = $("#milestone-lb form");
-                    
-                    $(form).each (function() {this.reset();});
-                    $(form).attr('action', $(edit).data('edit_url'));
-                    $(form).attr('rel', 'edit');
-                    //milestoneform.reset();
-
-                    $.each($(edit).data(), function(key, value) { 
-                        $(form).find("[name='"+key+"']").val(value);
-                    });
-
-                    $('#form-inserts #milestone-lb, #form-inserts').removeClass('hidden');
-                    e.preventDefault();
-                });
-                
-                $("#tasks").delegate(".edit", "click", function(e){
-                    edit = $(this).parent();
-                    var form = $("#issue-lb form");
-                    $(form).each (function() {this.reset();});
-                    $(form).attr('action', $(edit).data('edit_url'));
-                    $(form).attr('rel', 'edit');
-                    
-                    issueform.resetForm(); 
-                    $.each($(edit).data(), function(key, value) { 
-                       $(form).find("[name='"+key+"']").val(value);
-                    }); 
-                    $(edit).updateHtml();
-                    
-                    $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
-                    $('#form-inserts').data('edit', true);
-                    e.preventDefault();
-                });
-                
-                /* Forms submit bindings */
-                var milestoneform = formUtils.ajax("#milestone-lb form", function(data, form){
-                    if ($(form).attr('rel')=='new'){
-                        $("<li>").addClass('milestone').html(milestoneHtml(data.milestone))
-                            .data(data.milestone).prependTo("#milestones");
-
-                    } else {
-                        $(edit).data(data.milestone);
-                        $(edit).updateHtml();
-                    }
-                    load_milestones();
-                    hide_forms();
-                });
-
-                var issueform = formUtils.ajax("#issue-lb form", function(data, form){
-                    if(data.redirect_to) {
-                        location.href = data.redirect_to;
-                    } else {
-                        if ($(form).attr('rel')=='new'){
-                            $("<li/>").addClass('task').data(data.task)
-                                .html(taskHtml(data.task)).prependTo("#tasks"); 
-
-                        } else {
-                            $(edit).data(data.task);
-                            $(edit).updateHtml();
-                        }
-                    }
-                    hide_forms();
-                });
-            };
-            
             //init dashboard
             milestones_bindings();
             dragAndDrop();
             filters();   
-            formsBindings();
-        }
-        
-        Dashboard();
-    }    
+        })(jQuery);
+    }
     
     
     $(".file").live("change", function(e){
@@ -597,13 +485,13 @@ $(document).ready(function(){
             $(this).parent().append('<input type="file" class="file ">');
             $(this).attr('rel', 1);
         }
-    })    
+    });
 });
 
 function subClass() {
-  this.inheritFrom = superClass;
-  this.inheritFrom();
-  this.subtest = subTest; //attach method subTest
+    this.inheritFrom = superClass;
+    this.inheritFrom();
+    this.subtest = subTest; //attach method subTest
 }
 
 var formUtils = {
