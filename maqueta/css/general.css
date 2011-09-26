@@ -317,7 +317,7 @@ div.fieldset div.field-inline {
 /** User Story Module **/
 
 .us-task-item {
-    margin-bottom: 1px;
+    margin-bottom: 2px;
     background-color: #eee;
     overflow: hidden;
     padding: 6px;

@@ -66,6 +66,7 @@ SESSION_SAVE_EVERY_REQUEST = False
 #EMAIL_HOST_PASSWORD = 'password'
 #EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = "niwi@niwi.be"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Message System
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
