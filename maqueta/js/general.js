@@ -1,12 +1,10 @@
 (function($){
-    $(".btn01, input[type='submit'], input[type='button']").button();
     $( ".datepicker, #id_finish_date" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat: "dd/mm/yy"
     });
 })(jQuery);
-
 
 
 var milestone_dashboard_bindings = function() {
@@ -142,10 +140,10 @@ $(document).ready(function(){
     }
     
     if($("#login-form").length){
+		$("#id_username").focus();
         formUtils.ajax("#login-form", function(data){
             if(data.redirect_to) location.href = data.redirect_to;
         });
-        
         
         formUtils.ajax("#forgotten-password-form", function(data){
             

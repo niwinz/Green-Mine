@@ -5,32 +5,32 @@
 <div id="login">
     <form id="login-form" method="post" action="{% url 'api:login' %}"  >
         <fieldset>
-            <p class="form-field">
-                {{ form.username.label }}
+            <div class="form-field">
+                <label>{{ form.username.label }}</label>
                 {{ form.username }}
-            </p>
-            <p class="form-field">
-                {{ form.password.label }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.password.label }}</label>
                 {{ form.password }}
-            </p>
+            </div>
             <p class="forgot-pass"><a id="open-forgotten-password-form" href="">¿Olvidaste la contraseña?</a></p>
-            <p class="form-field">
+            <div class="form-field">
                 <input class="btn01" type="submit" value="Entrar" />
                 <span class="ajax-loader"></span>        
-            </p>
+            </div>
         </fieldset>
     </form>
     <form id="forgotten-password-form" method="post" action="{% url 'api:password-forgotten' %}">
         <fieldset>
-            <p class="form-field">
-                {{ form2.email.label }}
+            <div class="form-field">
+                <label>{{ form2.email.label }}</label>
                 {{ form2.email }}
-            </p>
-            <p class="form-field">
+            </div>
+            <div class="form-field">
                 <span class="ajax-loader"></span>
                 <input class="btn01" type="submit" value="Recordar" />
                 <a id="close-forgotten-password-form" class="btn01" href="">Cancelar</a>
-            </p>
+            </div>
         </fieldset>
     </form>
 </div>

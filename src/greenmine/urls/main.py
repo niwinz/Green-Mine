@@ -12,6 +12,7 @@ js_info_dict = {
 urlpatterns = patterns('',
     url(r'^$', main.HomeView.as_view(), name='projects'),
     url(r'^login/$', main.LoginView.as_view(), name='login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
     url(r'^config/profile/$', config.ProfileView.as_view(), name='profile'),
     url(r'^config/projects/$', config.AdminProjectsView.as_view(), name='admin-projects'),
     url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
