@@ -17,6 +17,8 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils import simplejson
 
+from django.views.decorators.csrf import ensure_csrf_cookie
+
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
@@ -26,7 +28,8 @@ import re
 class LoginView(GenericView):
     """ Login view """
     template_name = 'login.html'
-
+    
+    @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         login_form, forgotten_password_form = \
             forms.LoginForm(request=request), forms.ForgottenPasswordForm()
