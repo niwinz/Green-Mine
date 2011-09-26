@@ -1,44 +1,11 @@
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {margin:0; padding:0; font-family: Arial, Helvetica; font-size: 14px;}
 body { padding-top: 50px; }
-select, input, textarea {
-    display: inline-block;
-    position: relative;
-    padding: 0;
-    margin-right: .1em;
-    text-decoration: none !important;
-    cursor: pointer;
-    text-align: center;
-    zoom: 1;
-    overflow: visible;
-    -moz-border-radius-bottomright: 4px;
-    -webkit-border-bottom-right-radius: 4px;
-    -khtml-border-bottom-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    -moz-border-radius-bottomleft: 4px;
-    -webkit-border-bottom-left-radius: 4px;
-    -khtml-border-bottom-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    -moz-border-radius-topright: 4px;
-    -webkit-border-top-right-radius: 4px;
-    -khtml-border-top-right-radius: 4px;
-    border-top-right-radius: 4px;
-    border: 1px solid lightGrey;
-    background: #E6E6E6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x;
-    font-weight: normal;
-    color: #555;
-    display: block;
-    font-weight: bold; padding: 3px;
-}
+select, input, textarea {border: 1px solid #D9D9D9;}
+select:hover, input:hover, textarea:hover{border: 1px solid #B9B9B9;}
+select:focus, input:focus, textarea:focus{border: 1px solid #458745;}
 input, textarea{ text-align: left; color: black; cursor: text; }
-input[type="text"], 
-input[type="password"] {
-    padding: 2px 10px 0 6px; 
-    font-size: 17px; 
-    vertical-align: top;
-    height: 26px;
-}
-
-
+.form-field input[type="text"], .form-field input[type="password"], .form-field textarea{box-shadow: 2px 2px 2px #888;}
+input[type="text"], input[type="password"] {padding: 2px 10px 0 6px;  font-size: 17px;  vertical-align: top; height: 26px;}
 table {border-collapse:collapse; border-spacing:0;}
 fieldset,img {border:0;}
 address,caption,cite,code,dfn,em,strong,th,var {font-style:normal; font-weight:normal;}
@@ -56,29 +23,15 @@ h2{color: #000; font-size: 20px; font-weight: bold; text-decoration: underline; 
 a{color: #458745;}
 legend{font-weight:bold;}
 fieldset{border: 1px solid #EFEFEF; padding: 20px;}
-
-.btn01[type="submit"], .btn01[type="button"]{background-color:#EFEFEF;
-    border: 0;
-    padding: 5px 20px;
-    font-size: 17px;
-    color: #000;
-    font-weight:bold;
-    cursor: pointer;
-    margin-right: 5px;
-}
-
-a.btn01{
-    background-color:#EFEFEF; 
-    border: 0; 
-    padding: 5px 20px; 
-    font-size: 14px; 
-    color: #000;
-    line-height: 17px;
-    color: #000;
-    text-decoration: none;
-    font-weight:bold;
-    margin-right: 5px;
-}
+/*.btn01{background-color:#EFEFEF; 
+padding: 5px 20px; font-size: 15px; color: #9c9c9c; font-weight:bold; text-decoration: none;
+cursor: pointer; margin-right: 5px; border-radius: 2px; border: 1px solid #D9D9D9;}
+.btn01:hover{border: 1px solid #B9B9B9; color: #000;}
+* */
+.btn01{background-color:#458745; 
+padding: 7px 15px; font-size: 15px; color: #FFF; font-weight:bold; text-decoration: none;
+cursor: pointer; margin-right: 5px; border-radius: 8px; border: 0; line-height: 20px;}
+.btn01:hover{border: 0; box-shadow: 1px 1px 2px #888;}
 label.error{color: red;}
 #login{width: 300px; margin: 0 auto; background-color: #FFF; padding: 30px 100px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
