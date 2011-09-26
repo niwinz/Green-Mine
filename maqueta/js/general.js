@@ -377,7 +377,7 @@ $(document).ready(function(){
                 load_milestones();
             };
             
-            function dragAndDrop(){
+            var dragAndDrop = function() {
                 $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
                 drop: function(ev, ui){
                     /* Drop ¿Que? Milestone? */
@@ -450,7 +450,7 @@ $(document).ready(function(){
              * TODO: areglar esta funcion, ya que no hace su trabajo
              */
             var filters = function(){
-                $("#tasks-filters select").val(-1);
+                //$("#tasks-filters select").val(-1);
                 $("#tasks-filters").delegate("select", "change", function(){
                     var selects = $("#tasks-filters select");
                     var lis = $("#tasks li");
@@ -460,16 +460,16 @@ $(document).ready(function(){
                         var ln = selects.length;
 
                         for(var i=0; i<ln; i++){
-                            if($(selects[i]).val()!=-1){
+                            if($(selects[i]).val()!=""){
                                 if($(this).data($(selects[i]).attr("name"))!=$(selects[i]).val()){
                                     show = false;
                                     break;
                                 }
                             }
                         }
-                        return show
+                        return show;
                     }).show();
-                });            
+                });
             };
 
             var hide_forms = function() {
@@ -534,7 +534,6 @@ $(document).ready(function(){
                 
                 $("#tasks").delegate(".edit", "click", function(e){
                     edit = $(this).parent();
-                    
                     var form = $("#issue-lb form");
                     $(form).each (function() {this.reset();});
                     $(form).attr('action', $(edit).data('edit_url'));
@@ -548,7 +547,6 @@ $(document).ready(function(){
                     
                     $('#form-inserts #issue-lb, #form-inserts').removeClass('hidden');
                     $('#form-inserts').data('edit', true);
-                    (document).scrollUp(0);
                     e.preventDefault();
                 });
                 
