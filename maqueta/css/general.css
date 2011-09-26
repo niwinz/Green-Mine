@@ -205,6 +205,8 @@ div.fieldset div.field-inline {
 
 .hidden { display: none; }
 
+
+
 /* milestone-dashboard-module */
 #milestone-dashboard #progress-bar {
     margin-bottom: 20px;
@@ -286,53 +288,47 @@ div.fieldset div.field-inline {
     padding-left: 4px;
 }
 
-/* user-story-module */
 
-
-#us-module .user-story .hfield {
-    float: left;
-    min-height: 100px;
-    margin-right: 4px;
-}
-
-
-#us-module .user-story .user-story-status {
-    background-color: white;
-    width: 308px;
+.radio-choices div {
+    float:left;
+    width: 80px;
+    border: 1px;
+    background-color: #ddd;
+    text-align: center;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
     padding: 4px;
 }
-#us-module .user-story .user-story-task {
-    min-height: 60px;
+.radio-choices div.active {
+    background-color:#458745;
+    font-size: bold;
+}
+.radio-choices div.first {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.radio-choices div.last {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+/** User Story Module **/
+
+.us-task-item {
+    margin-bottom: 1px;
     background-color: #eee;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    padding: 5px;
-    margin-bottom: 3px;
-    position: relative;
+    overflow: hidden;
+    padding: 6px;
 }
 
-#us-module .user-story .user-story-task .participants {
-    position: absolute;
-    left: 3px;
-    bottom: 3px;
-}
-
-#us-module .user-story .user-story-status.status-closed .user-story-task {
-    background-color: #B4F3A8;
-    border: 1px solid green;
-}
-
-#us-module .user-story-legend {
-    overflow: hidden; 
-    margin-bottom: 4px;
-}
-#us-module .user-story-legend .hfield {
+.us-task-item .box-row { 
     float: left;
-    margin-right: 4px;
-    font-weight: bold;
-    height: 20px;
+    min-width: 300px;
 }
-#us-module .user-story-legend .user-story-status { 
-    width: 308px;
-    padding-left: 4px;
+.us-task-item .row-subject .assigned-to {
+    font-size: 11px;
+    padding: 3px;
+    padding-left: 10px;
 }

@@ -47,33 +47,33 @@
 
         {% with subtasks=us.tasks.all %}
         <div class="form-field width100 tasks">
-            <div class="user-story-legend">
-                <div class="user-story-status hfield status-new">
-                    <b>New tasks...</b>
+            <h3>{% trans "Tareas en esta user story: " %}</h3>
+            <div class="us-tasks">
+                {% for st in subtasks %}
+                <div class="us-task-item">
+                    <div class="box-row row-subject">
+                        <div class="subject">{{ st.subject|truncatewords_html:4 }}</div>
+                        {% if st.assigned_to %}
+                        <div class="assigned-to"><b>{% trans "Assigned to:" %}</b><span>{{ st.assigned_to }}</span></div>
+                        {% else %}
+                        <div class="assigned-to not-assigned"><b>{% trans "Assigned to:" %}</b><span>{% trans "No body" %}</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="box-row row-priority radio-choices" rel="change-priority-api-url">
+                        <div rel="low" class="row-priority-choice active first">{% trans "Low" %}</div>
+                        <div rel="normal" class="row-priority-choice">{% trans "Normal" %}</div>
+                        <div rel="higt" class="row-priority-choice last">{% trans "High" %}</div>
+                    </div>
+                    <div class="box-row row-status radio-choices" rel="change-status-api-url">
+                        <div rel="new" class="row-priority-choice active first">{% trans "New" %}</div>
+                        <div rel="progress" class="row-priority-choice">{% trans "In progress" %}</div>
+                        <div rel="finished" class="row-priority-choice">{% trans "Finished" %}</div>
+                        <div rel="closed" class="row-priority-choice last">{% trans "Closed" %}</div>
+                    </div>
                 </div>
-                <div class="user-story-status hfield status-progess">
-                    <b>Tasks in progress...</b>
-                </div>
-                <div class="user-story-status hfield status-closed">
-                    <b>Tasks finished...</b>
-                </div>
-            </div>
-            <div class="user-story" us="{{ us.id }}">
-                <div class="user-story-status hfield status-new" rel="new">
-                    {% for task in us.tasks_new %}
-                        {% include "modules/task-user-story.html" %}
-                    {% endfor %}
-                </div>
-                <div class="user-story-status hfield status-progess" rel="progress">
-                    {% for task in us.tasks_progress %}
-                        {% include "modules/task-user-story.html" %}
-                    {% endfor %}
-                </div>
-                <div class="user-story-status hfield status-closed" rel="close">
-                    {% for task in us.tasks_closed %}
-                        {% include "modules/task-user-story.html" %}
-                    {% endfor %}
-                </div>
+                {% empty %}
+                <p>{% trans "No hay tareas, añade una!" %}</p>
+                {% endfor %}
             </div>
         </div>
         {% endwith %}
