@@ -263,9 +263,17 @@ class UserStoryCreateView(GenericView):
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.UserStoryForm()
+        milestone = None
 
-        context = {'form':form, 'project':project}
+        if mid:
+            milestone = get_object_or_404(project.milestones, pk=mid)
+
+        form = forms.UserStoryForm()
+        context = {
+            'form':form, 
+            'project':project,
+            'milestone': milestone
+        }
         return self.render(self.template_name, context)
 
     @login_required
@@ -288,5 +296,9 @@ class UserStoryCreateView(GenericView):
             else:
                 return HttpResponseRedirect(project.get_unassigned_dashboard_url())
     
-        context = {'form':form, 'project':project}
+        context = {
+            'form':form, 
+            'project':project,
+            'milestone': milestone
+        }
         return self.render(self.template_name, context)

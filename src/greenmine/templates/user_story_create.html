@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load greenmine_utils %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block middle %}
+<div id="dashboard-actions">
+    <div class="left">
+        <div id="bin"></div>
+    </div>
+    <div class="right">
+        <a id="user_story-edit" class="btn01" href="">{% trans "Editar esta user_storyer story" %}</a>
+        <a id="task-new" class="btn01" href="">{% trans "Nueva tarea" %}</a>
+        {% if milestone %}
+        <a id="return" class="btn01" href="{{ milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        {% else %}
+        <a id="return" class="btn01" href="{{ project.get_unassigned_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block wrapper %}
+<div id="user-story-module">
+    <div class="user-story-create">
+        <form action="{{ current_url }}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn01" value="{% trans "Guardar" %}" />
+        </form>
+    </div>
+</div>
+{% endblock %}
