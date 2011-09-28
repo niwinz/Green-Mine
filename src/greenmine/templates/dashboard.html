@@ -11,8 +11,12 @@
     </div>
     <div class="right">
         <a id="project-admin" class="btn01" href="">{% trans "Project administration" %}</a>
-        <a id="new-issue" class="btn01" href="">{% trans "New user story" %}</a>
-        <!-- New milestone add in project admin section -->
+
+        {% if milestone %}
+        <a id="new-us" class="btn01" href="{{ milestone.get_new_us_url }}">{% trans "Nueva user story" %}</a>
+        {% else %}
+        <a id="new-us" class="btn01" href="{{ project.get_new_us_url }}">{% trans "Nueva user story" %}</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -20,7 +24,27 @@
 {% block wrapper %}
 <div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
     <ul id="milestones">
+        {# TODO: order_by filter #}
+        {% for ml in project.milestones.all %}
+        <li class="milestone {% if ml == milestone %}selected{% endif %}">
+            <div class="ml">
+                <a href="{{ ml.get_dashboard_url }}" class="name">{{ ml.name }}</a>
+                {% if ml.estimated_finish %}
+                <div><span class="estimated_finish">{{ ml.estimated_finish }}</span></div>
+                {% endif %}
+            </div>
+            <a href="" class="icon0 edit"></a>
+            <a class="detail-ml" href="{{ ml.get_ml_detail_url }}"></a>
+        </li>
+        {% endfor %}
+
+        <li class="milestone {% if not milestone %}selected{% endif %}">
+            <div class="ml">
+                <a href="{{ project.get_unassigned_dashboard_url }}" class="name">{% trans "Unassigned" %}</a>
+            </div>
+        </li>
     </ul>
+
     <div id="tasks-filters">
         <p>
             {{ filtersform.to }}
@@ -33,7 +57,32 @@
         </p>
     </div>
 
-    <!-- TODO: make this page for milestone -->
-    <ul id="tasks"></ul>
+    <ul id="tasks">
+        {% if not milestone %}
+            {% for us in project.unasociated_user_stories %}
+            <li class="task">
+                <div class="dg">{{ us.subject }}
+                    <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
+                </div>
+                <a class="edit" href=""></a>
+                <a class="detail" href="{{ us.get_view_url }}"></a>
+            </li>
+            {% empty %}
+            <h3>No hay user stories</h3>
+            {% endfor %}
+        {% else %}
+            {% for us in milestone.user_stories.all %}
+            <li class="task">
+                <div class="dg">{{ us.subject }}
+                    <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
+                </div>
+                <a class="edit" href=""></a>
+                <a class="detail" href="{{ us.get_view_url }}"></a>
+            </li>
+            {% empty %}
+            <h3>No hay user stories</h3>
+            {% endfor %}
+        {% endif %}
+    </ul>
 </div>
 {% endblock %}

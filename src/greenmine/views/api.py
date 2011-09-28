@@ -58,83 +58,6 @@ class UserListApiView(GenericView):
         return self.render_to_ok(context)
 
 
-class MilestonesForProjectApiView(GenericView):
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        
-        milestones = []
-        for ml in project.milestones.all():
-            total_tasks = ml.uss.count()
-            milestones.append({
-                'id': ml.id,
-                'url': ml.get_tasks_for_milestone_api_url(),
-                'edit_url': ml.get_edit_api_url(),
-                'name': ml.name,
-                'estimated_finish': ml.estimated_finish and \
-                    ml.estimated_finish.strftime('%d/%m/%Y') or '',
-                'completed_tasks': 0,
-                'total_tasks': total_tasks,
-                'detail_url': ml.get_ml_detail_url(),
-            })
-
-        total_unassigned_tasks = project.uss.filter(milestone__isnull=True).count()
-
-        milestones.append({
-            'id': 0,
-            'url': ml.project.get_unasigned_tasks_api_url(),
-            'edit_url': '',
-            'name': _('Unasigned'),
-            'estimated_finish': '',
-            'completed_tasks': 0,
-            'total_tasks': total_unassigned_tasks,
-        })
-
-        return self.render_to_ok({'milestones': milestones})
-
-
-class UsForMilestoneApiView(GenericView):
-    @login_required
-    def get(self, request, pslug, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
-        
-        uss = models.Us.objects.none()
-        if mid:
-            try:
-                milestone = project.milestones.get(pk=mid)
-                uss = milestone.uss.all()
-            except models.Milestone.DoesNotExist:
-                return self.render_to_error("milestone does not exists")
-        else:
-            uss = project.uss.filter(milestone__isnull=True)
-        
-        #: TODO: future set from user-project-settings relation table.
-        uss = uss.order_by('-priority')
-
-        response_list = []
-        for us in uss:
-            response_dict = {
-                'ref': us.ref,
-                'id': us.id,
-                'subject': us.subject,
-                'to': 'No use mas este campo',
-                'to_id': None,
-                'priority': us.priority,
-                'priority_view': us.get_priority_display(),
-                'edit_url': us.get_edit_api_url(),
-                'drop_url': us.get_drop_api_url(),
-                'asociate_url': us.get_asoiciate_api_url(),
-                'url': us.get_view_url(),
-                'milestone': us.milestone and us.milestone.id or None,
-                'tasks': us.tasks.count(),
-                'status': us.status,
-                'status_view': us.get_status_display(),
-                'estimation': us.points,
-                'description': us.description,
-            }
-            response_list.append(response_dict)
-        return self.render_to_ok({"tasks": response_list})
-
 
 class ProjectDeleteApiView(GenericView):
     """ API Method for delete projects. """
@@ -145,90 +68,20 @@ class ProjectDeleteApiView(GenericView):
         return self.render_to_ok()
 
 
-class MilestoneCreateApiView(GenericView):
-    @login_required
-    def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.MilestoneForm(request.POST)
-        if form.is_valid():
-            milestone = form.save(commit=False)
-            milestone.project = project
-            milestone.save()
-
-            context = {
-                'milestone': {
-                    'name':form.cleaned_data['name'],
-                    'id': milestone.id,
-                    'url': milestone.get_tasks_for_milestone_api_url(),
-                    'date': milestone.estimated_finish or '',
-                }
-            }
-            return self.render_to_ok(context)
-        
-        return self.render_to_error(form.jquery_errors)
-
-
-class MilestoneEditApiView(GenericView):
-    @login_required
-    def post(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-
-        form = forms.MilestoneForm(request.POST, instance=milestone)
-        if form.is_valid():
-            milestone = form.save(commit=True)
-            return self.render_to_ok({'id':milestone.id})
-
-        return self.render_to_error()
-    
-
-
-class UsCreateApiView(GenericView):
-    @login_required
-    def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        milestones = project.milestones.all()
-        form = forms.UsForm(request.POST, milestone_queryset=milestones)
-        if form.is_valid():
-            us = form.save(commit=False)
-            us.project = project
-            us.save()
-
-            html = loader.render_to_string('modules/user-story-dashboard.html', 
-                {'us':us}, context_instance=RequestContext(request))
-
-            return self.render_to_ok({'html':html})
-
-        return self.render_to_error(form.jquery_errors)
-
-
-class UsEditApiView(GenericView):
+class UserStoryDropApiView(GenericView):
     @login_required
     def post(self, request, pslug, iref):
-        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
-        milestones = us.project.milestones.all()
-        form = forms.UsForm(request.POST, instance=us, milestone_queryset=milestones)
-        if form.is_valid():
-            us = form.save()
-            return self.render_to_ok()
-
-        return self.render_to_error(form.jquery_errors)
-
-
-class UsDropApiView(GenericView):
-    @login_required
-    def post(self, request, pslug, iref):
-        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
+        us = get_object_or_404(models.UserStory, ref=iref, project__slug=pslug)
         us.childs.all().delete()
         us.delete()
         return self.render_to_ok()
 
 
-class UsAsociateApiView(GenericView):
+class UserStoryAsociateApiView(GenericView):
     """ Asociate user story with one milestone. """
     @login_required
     def get(self, request, pslug, iref):
-        us = get_object_or_404(models.Us, ref=iref, project__slug=pslug)
+        us = get_object_or_404(models.UserStory, ref=iref, project__slug=pslug)
         try:
             mid = int(request.GET.get('milestone', ''))
         except (ValueError, TypeError):
@@ -308,32 +161,6 @@ class TaskAlterApiView(GenericView):
         us.save()
         return self.render_to_ok()
  
-
-class TaskCreateApiView(GenericView):
-    @login_required
-    def post(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-        
-        form = forms.TaskForm(request.POST,
-            us_qs=milestone.uss.all(),
-            assignedto_qs=project.participants.all()
-        )
-
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.owner = request.user
-            task.project = project
-            task.milestone = milestone
-            task.save()
-            
-            html = loader.render_to_string('modules/task-user-story.html',
-                {'task': task}, context_instance=RequestContext(request))
-
-            return self.render_to_ok({'html':html, 'us': task.us.id})
-
-        return self.render_to_error(form.errors)
-
 
 class TaskReasignationsApiView(GenericView):
     def get(self, request, pslug, mid, taskref):

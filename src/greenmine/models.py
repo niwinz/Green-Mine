@@ -61,7 +61,6 @@ POINTS_CHOICES = (
     (10, u'10'),
 )
 
-
 def slugify_uniquely(value, model, slugfield="slug"):
     """
     Returns a slug on a name which is unique within a model's table
@@ -122,33 +121,26 @@ class Project(models.Model):
     def natural_key(self):
         return (self.slug,)
 
+    @property
+    def unasociated_user_stories(self):
+        return self.user_stories.filter(milestone__isnull=True)
+
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project', (), {'pslug':self.slug})
+        return ('web:project-dashboard', (), {'pslug':self.slug})
 
     @models.permalink
-    def get_unasigned_tasks_api_url(self):
-        return ('api:us-for-poject', (), {'pslug':self.slug})
+    def get_unassigned_dashboard_url(self):
+        return ('web:project-dashboard', (), 
+            {'pslug':self.slug, 'mid':'unassigned'})
 
     @models.permalink
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
 
-    @models.permalink
-    def get_milestone_create_api_url(self):
-        return ('api:project-milestone-create', (), {'pslug': self.slug})
-
-    @models.permalink
-    def get_us_create_api_url(self):
-        return ('api:project-us-create', (), {'pslug': self.slug})
-
-
-    @models.permalink
-    def get_milestones_list_api_url(self):
-        return ('api:milestones-for-project', (), {'pslug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -204,20 +196,13 @@ class Milestone(models.Model):
 
     objects = MilestoneManager()
 
-    @models.permalink
-    def get_tasks_for_milestone_api_url(self):
-        return ('api:us-for-milestone', (), 
-            {'pslug': self.project.slug, 'mid': self.id})
+    class Meta:
+        ordering = ['-created_date']
 
     @models.permalink
-    def get_edit_api_url(self):
-        return ('api:project-milestone-edit', (),
-            {'pslug': self.project.slug, 'mid': self.id})
-
-    #@models.permalink
-    #def get_task_alter_api_url(self):
-    #    return ('api:milestone-task-alter', (),
-    #        {'pslug': self.project.slug, 'mid': self.id})
+    def get_dashboard_url(self):
+        return ('web:project-dashboard', (), 
+            {'pslug':self.project.slug, "mid":self.id})
 
     @models.permalink
     def get_ml_detail_url(self):
@@ -255,15 +240,15 @@ class Milestone(models.Model):
         super(Milestone, self).save(*args, **kwargs)
 
 
-class Us(models.Model):
+class UserStory(models.Model):
     ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
-    milestone = models.ForeignKey("Milestone", related_name="uss", null=True, default=None)
-    project = models.ForeignKey("Project", related_name="uss")
-    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="uss")
+    milestone = models.ForeignKey("Milestone", related_name="user_stories", null=True, default=None)
+    project = models.ForeignKey("Project", related_name="user_stories")
+    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="user_stories")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     points = models.FloatField(choices=POINTS_CHOICES, default=-1)
     status = models.CharField(max_length=50, choices=US_STATUS_CHOICES, db_index=True, default="open")
-
+ 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     tested = models.BooleanField(default=False)
@@ -273,7 +258,7 @@ class Us(models.Model):
     finish_date = models.DateTimeField(null=True, blank=True)
 
     def __repr__(self):
-        return u"<Us %s>" % (self.id)
+        return u"<UserStory %s>" % (self.id)
 
     def __unicode__(self):
         return self.subject
@@ -284,23 +269,19 @@ class Us(models.Model):
         if not self.ref:
             self.ref = ref_uniquely(self.__class__)
 
-        super(Us,self).save(*args, **kwargs)
-
-    @models.permalink
-    def get_edit_api_url(self):
-        return ('api:us-edit', (), {'pslug': self.project.slug, 'iref': self.ref})
+        super(UserStory,self).save(*args, **kwargs)
 
     @models.permalink
     def get_asoiciate_api_url(self):
-        return ('api:us-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:user-story-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_drop_api_url(self):
-        return ('api:us-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:user-story-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_view_url(self):
-        return ('web:us', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('web:user-story', (), {'pslug': self.project.slug, 'iref': self.ref})
     
 
     """ Propertys """
@@ -319,7 +300,7 @@ class Us(models.Model):
 
 
 class Task(models.Model):
-    us = models.ForeignKey('Us', related_name='tasks')
+    user_story = models.ForeignKey('UserStory', related_name='tasks')
     ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
     status = models.CharField(max_length=50, choices=TASK_STATUS_CHOICES, default='open')
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
@@ -331,7 +312,7 @@ class Task(models.Model):
     
     subject = models.CharField(max_length=500)
     description = models.TextField(blank=True)
-    assigned_to = models.ForeignKey('auth.User', related_name='uss_assigned_to_me', 
+    assigned_to = models.ForeignKey('auth.User', related_name='user_storys_assigned_to_me', 
         blank=True, null=True, default=None)
 
     @models.permalink
@@ -352,11 +333,9 @@ class Task(models.Model):
 
         super(Task, self).save(*args, **kwargs)
 
-        
 
-
-class UsResponse(models.Model):
-    us = models.ForeignKey('Us', related_name='responses')
+class UserStoryResponse(models.Model):
+    user_story = models.ForeignKey('UserStory', related_name='responses')
     owner = models.ForeignKey('auth.User', related_name='responses')
 
     created_date = models.DateTimeField(auto_now_add=True)
@@ -364,9 +343,9 @@ class UsResponse(models.Model):
     content = models.TextField()
 
 
-class UsFile(models.Model):
-    response = models.ForeignKey('UsResponse', related_name='attached_files', null=True, blank=True)
-    us = models.ForeignKey('Us', related_name='attached_files', null=True, blank=True)
+class UserStoryFile(models.Model):
+    response = models.ForeignKey('UserStoryResponse', related_name='attached_files', null=True, blank=True)
+    user_story = models.ForeignKey('UserStory', related_name='attached_files', null=True, blank=True)
 
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)

@@ -11,46 +11,51 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="us-edit" class="btn01" href="">{% trans "Editar esta user story" %}</a>
-        <a id="return" class="btn01" href="{{ project.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="user_story-edit" class="btn01" href="">{% trans "Editar esta user_storyer story" %}</a>
+        <a id="task-new" class="btn01" href="">{% trans "Nueva tarea" %}</a>
+        {% if user_story.milestone %}
+        <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        {% else %}
+        <a id="return" class="btn01" href="{{ user_story.project.get_unassigned_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
 
 {% block wrapper %}
-<div id="us-module">
+<div id="user-story-module">
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "Subject" %}</span>
-            <span>{{ us.subject }}</span>
+            <span>{{ user_story.subject }}</span>
         </div>
         <div class="form-field">
             <span class="label">{% trans "Priority" %}</span>
-            <span>{{ us.get_priority_display }}</span>
+            <span>{{ user_story.get_priority_display }}</span>
         </div> 
         <div class="form-field">
             <span class="label">{% trans "Tested" %}</span>
-            <span>{{ us.tested|yesno }}</span>
+            <span>{{ user_story.tested|yesno }}</span>
         </div>
-        {% if us.finish_date %}
+        {% if user_story.finish_date %}
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
-            <span>{{ us.finish_date|date:"DATE_FORMAT" }}</span>
+            <span>{{ user_story.finish_date|date:"DATE_FORMAT" }}</span>
         </div>
         {% endif %}
-        {% if us.description %}
+        {% if user_story.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
-            {{ us.description|linebreaks }}
+            {{ user_story.description|linebreaks }}
         </div>
         {% endif %}
 
-        {% with subtasks=us.tasks.all %}
+        {% with subtasks=user_story.tasks.all %}
         <div class="form-field width100 tasks">
-            <h3>{% trans "Tareas en esta user story: " %}</h3>
-            <div class="us-tasks">
+            <h3>{% trans "Tareas en esta user_storyer story: " %}</h3>
+            <div class="user-story-tasks">
                 {% for st in subtasks %}
-                <div class="us-task-item">
+                <div class="user-story-task-item">
                     <div class="box-row row-subject">
                         <div class="subject">{{ st.subject|truncatewords_html:4 }}</div>
                         {% if st.assigned_to %}
@@ -64,7 +69,7 @@
                         <div rel="normal" class="row-priority-choice">{% trans "Normal" %}</div>
                         <div rel="higt" class="row-priority-choice last">{% trans "High" %}</div>
                     </div>
-                    <div class="box-row row-status radio-choices" rel="change-status-api-url">
+                    <div class="box-row row-statuser_story radio-choices" rel="change-statuser_story-api-url">
                         <div rel="new" class="row-priority-choice active first">{% trans "New" %}</div>
                         <div rel="progress" class="row-priority-choice">{% trans "In progress" %}</div>
                         <div rel="finished" class="row-priority-choice">{% trans "Finished" %}</div>
@@ -79,7 +84,7 @@
         {% endwith %}
         
         {% comment %}
-        {% with files=us.attached_files.all %}
+        {% with files=user_story.attached_files.all %}
             {% if files|length > 0 %}
             <div class="form-field width100">
                 <span class="label">Ficheros</span>
@@ -94,7 +99,7 @@
         {% endcomment %}
     </div>
     <div id="responses">
-        {% for response in us.responses.all %}
+        {% for response in user_story.responses.all %}
         <div class="response">
             <p class="name">
                 {% if response.owner.get_profile.photo %}

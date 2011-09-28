@@ -75,7 +75,7 @@ class Command(BaseCommand):
                 
                 # create uss asociated to milestones
                 for z in xrange(random.randint(2, 6)):
-                    us = Us.objects.create(
+                    us = UserStory.objects.create(
                         subject = lorem_ipsum.words(random.randint(4,9), common=False),
                         priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                         project = project,
@@ -85,7 +85,7 @@ class Command(BaseCommand):
                     )
             # created unassociated uss.
             for y in xrange(100):
-                us = Us.objects.create(
+                us = UserStory.objects.create(
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
                     priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
                     project = project,

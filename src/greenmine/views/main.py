@@ -61,21 +61,28 @@ class HomeView(GenericView):
         return self.render(self.template_name, context)
     
 
-class MainDashboardView(GenericView):
+class DashboardView(GenericView):
     """ General dasboard view,  with all milestones and all tasks. """
     template_name = 'dashboard.html'
 
     @login_required
-    def get(self, request, pslug):
+    def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        usform = forms.UsForm(milestone_queryset=project.milestones.all())
-        mlform = forms.MilestoneForm()
+        if mid:
+            if mid != 'unassigned':
+                milestone = get_object_or_404(project.milestones, pk=mid)
+            else:
+                milestone = None
+        else:
+            mqueryset = project.milestones.order_by('-created_date')
+            milestone = len(mqueryset) and mqueryset[0] or None
+        
         context = {
             'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project,
-            'form': usform,
-            'form2': mlform,
+            'milestone': milestone,
         }
+
         return self.render(self.template_name, context)
 
 
@@ -218,20 +225,19 @@ class ProjectEditView(ProjectCreateView):
         return HttpResponseRedirect(reverse('web:projects'))
 
 
-class UsView(GenericView):
-    template_name = "us.html"
+class UserStoryView(GenericView):
+    template_name = "user_story.html"
     @login_required
     def get(self, request, pslug, iref):
         """ View US Detail """
         project = get_object_or_404(models.Project, slug=pslug)
-        
-        us = get_object_or_404(project.uss, ref=iref)
-        form = forms.UsResponseForm()
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        form = forms.UserStoryCommentForm()
         
         context = {
-            'us':us, 
+            'user_story':user_story,
             'form': form, 
-            'milestone':us.milestone,
+            'milestone':user_story.milestone,
             'project': project,
         }
         return self.render(self.template_name, context)
@@ -240,11 +246,21 @@ class UsView(GenericView):
     def post(self, request, pslug, iref):
         """ Add comments method """
         project = get_object_or_404(models.Project, slug=pslug)
-        us = get_object_or_404(project.uss, ref=iref)
-        form = forms.UsResponseForm(request.POST, request.FILES, us=us, request=request)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        form = forms.UserStoryCommentForm(request.POST, \
+                    request.FILES, user_story=user_story, request=request)
+
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(us.get_view_url())
+            return HttpResponseRedirect(user_story.get_view_url())
 
-        context = {'form':form, 'us':us}
+        context = {'form':form, 'user_story':user_story}
         return self.render(self.template_name, context)
+
+class UserStoryCreateView(GenericView):
+    template_name = "user_story_create.html"
+
+    @login_required
+    def get(self, request, pslug, mid=None):
+        project = get_object_or_404(models.Project, slug=pslug)
+        

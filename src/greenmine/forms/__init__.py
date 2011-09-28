@@ -200,62 +200,31 @@ class MilestoneForm(Form):
         return self._instance
 
 
-class UsForm(Form):
-    #: TODO: refactor whis
-    subject = CharField(max_length=200, required=True)
-    description = CharField(max_length=1000, required=False, widget=forms.Textarea)
-    estimation = forms.ChoiceField(required=False, choices=POINTS_CHOICES)
-    milestone = forms.ModelChoiceField(queryset=Milestone.objects.none(), required=False)
 
-    def __init__(self, *args, **kwargs):
-        milestone_queryset = kwargs.pop('milestone_queryset', Milestone.objects.none())
-        self._instance = kwargs.pop('instance', None)
-        if self._instance:
-            kwargs['initial'] = {
-                'subject': self._instance.subject,
-                'description': self._instance.description,
-                'milestone': self._instance.milestone,
-                'estimation': self._instance.points,
-            }
-
-        super(UsForm, self).__init__(*args, **kwargs)
-        self.fields['milestone'].queryset = milestone_queryset
-
-    def save(self, commit=True):
-        if not self._instance:
-            self._instance = Us()
-
-        self._instance.subject = self.cleaned_data['subject']
-        self._instance.description = self.cleaned_data['description']
-        self._instance.milestone = self.cleaned_data['milestone']
-        if self.cleaned_data['estimation'].strip():
-            self._instance.points = float(self.cleaned_data['estimation'])
-        else:
-            self._instance.points = None
-
-        if commit:
-            self._instance.save()
-        return self._instance
+class UserStoryForm(forms.ModelForm):
+    class Meta:
+        model = models.UserStory
+        fields = ('priority', 'points', 'status',
+            'tested', 'subject', 'description', 'finish_date')
 
 
-class UsResponseForm(Form):
-    # TODO: rename to UserStoryCommentForm
+class UserStoryCommentForm(Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
     
     def __init__(self, *args, **kwargs):
-        self._us = kwargs.pop('us', None)
+        self._user_story = kwargs.pop('user_story', None)
         self._request = kwargs.pop('request', None)
-        super(UsResponseForm, self).__init__(*args, **kwargs)
+        super(UserStoryCommentForm, self).__init__(*args, **kwargs)
 
     def save(self):
-        self._instance = models.UsResponse.objects.create(
+        self._instance = models.UserStoryResponse.objects.create(
             owner = self._request.user,
-            us = self._us,
+            user_story = self._user_story,
             content = self.cleaned_data['description'],
         )
         if self.cleaned_data['attached_file']:
-            instance_file = models.UsFile.objects.create(
+            instance_file = models.UserStoryFile.objects.create(
                 response = self._instance,
                 owner = self._request.user,
                 attached_file = self.cleaned_data['attached_file']
@@ -264,24 +233,19 @@ class UsResponseForm(Form):
 
 class TaskForm(forms.ModelForm):
     subject = CharField(max_length=200, required=True)
+
     class Meta:
         model = models.Task
-        exclude = (
-            'ref', 'status',
-            'owner', 
-            'milestone',
-            'created_date',
-            'modified_date'
-        )
+        exclude = ('ref', 'status', 'owner', 'milestone',
+            'created_date', 'modified_date')
 
     def __init__(self, *args, **kwargs):
-        us_qs = kwargs.pop('us_qs', models.Us.objects.none())
+        us_qs = kwargs.pop('user_story_qs', models.UserStory.objects.none())
         assignedto_qs = kwargs.pop('assignedto_qs', models.User.objects.none())
 
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['us'].queryset = us_qs
-        self.fields['us'].empty_label = None
-
+        self.fields['user_story'].queryset = us_qs
+        self.fields['user_story'].empty_label = None
         self.fields['assigned_to'].queryset = assignedto_qs
 
 

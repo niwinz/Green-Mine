@@ -144,7 +144,8 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #milestones .ml{padding-left: 15px;}
 #milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
 #milestones li div div{float: right; font-size: 12px; margin-right: 28px;}
-#milestones a{position: absolute; right: 2px; top: 2px;}
+#milestones a.icon0 {position: absolute; right: 2px; top: 2px;}
+#milestones .ml a { color: white; text-decoration: none;}
 
 #dashboard-actions .left{ float: left;}
 #dashboard-actions .right { float: right; }
@@ -234,7 +235,7 @@ div.fieldset div.field-inline {
     bottom: 7px;
     right: 7px;
 }
-#milestone-dashboard .user-story .user-story-header a.remove-us {
+#milestone-dashboard .user-story .user-story-header a.remove-user-story {
     position: absolute;
     bottom: 7px; right: 30px;
 }
@@ -317,18 +318,18 @@ div.fieldset div.field-inline {
 
 /** User Story Module **/
 
-.us-task-item {
+.user-story-task-item {
     margin-bottom: 2px;
     background-color: #eee;
     overflow: hidden;
     padding: 6px;
 }
 
-.us-task-item .box-row { 
+.user-story-task-item .box-row { 
     float: left;
     min-width: 300px;
 }
-.us-task-item .row-subject .assigned-to {
+.user-story-task-item .row-subject .assigned-to {
     font-size: 11px;
     padding: 3px;
     padding-left: 10px;

@@ -295,88 +295,6 @@ $(document).ready(function(){
     
     if ($("#dashboard").length) {        
         (function($) {
-            $.fn.updateHtml = function() {
-                if ($(this).hasClass('milestone')) {
-                    $(this).html(milestoneHtml($(this).data()));
-                } else {
-                    if ($(this).hasClass('task')) {
-                        $(this).html(taskHtml($(this).data()));
-                    }
-                }
-            };                
-            
-            function milestoneHtml(ml) {
-                var html =  '<div class="ml"><span class="name">' + ml.name + '</span><div>';
-                if (ml.id) {
-                     html += '<span class="estimated_finish">' + ml.estimated_finish + '</span>';
-                }
-                html += '</div></div>';
-                if (ml.id) {
-                    html += '<a href="" class="edit"></a><a href="' + ml.detail_url + '" class="detail-ml"></a>';
-                }
-                return html;
-            }
-            
-            function taskHtml(tk) {
-                var html = '<div class="dg">%s<span>[ Estado: %s | Prioridad: %s ]</span></div>'
-                    + '<a class="edit" href=""></a><a href="%s" class="detail"></a>';
-                return interpolate(html, [tk.subject,tk.status_view,tk.priority_view,tk.url]);
-            }            
-            
-            function loadTasks(url) {
-                $("#tasks").hide();
-
-                $.get(url, function(data) {
-                    var tkul = $("#tasks");
-                    $(tkul).html("");
-                    ln = data.tasks.length; 
-                    var tks = data.tasks;
-                    
-                    for(var i=0; i<ln; i++){
-                        var item = $("<li/>")
-                            .addClass('task')
-                            .data(tks[i])
-                            .html(taskHtml(tks[i]))
-                            .appendTo(tkul); 
-                    }
-                    $(tkul).show();
-                }, 'json');
-            }
-
-            var load_milestones = function() {
-                var milestones_req_url = $("#dashboard").attr("rel");
-                $.get(milestones_req_url, function(data) {
-                    var ln = data.milestones.length;
-                    var ml = data.milestones;
-                    var li = new Array();
-
-                    for(var i=0; i<ln; i++){
-                        li.push($("<li>").addClass('milestone').html(milestoneHtml(ml[i])).data(ml[i]));    
-                    }
-                   
-                    loadTasks($(li[0]).data().url);
-                    $(li[0]).addClass('selected');
-                    
-                    var mlul = $("#milestones");
-                    mlul.html('');
-
-                    $(li).each(function(){
-                        $(mlul).append(this);
-                    })
-                }, 'json');
-            };
-
-            var milestones_bindings = function() {
-                $("#milestones").delegate(".ml", "click", function(e){
-                    $("#tasks-filters select").val(-1);
-                    $("#milestones").find(".selected").removeClass("selected");
-                    var li = $(this).parent()
-                    $(li).addClass("selected");
-                    loadTasks($(li).data("url"))
-                });
-                load_milestones();
-            };
-            
             var dragAndDrop = function() {
                 $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
                 drop: function(ev, ui){
@@ -473,9 +391,9 @@ $(document).ready(function(){
             };
 
             //init dashboard
-            milestones_bindings();
+            //milestones_bindings();
             dragAndDrop();
-            filters();   
+            //filters();   
         })(jQuery);
     }
     
