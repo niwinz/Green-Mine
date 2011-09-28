@@ -289,6 +289,7 @@ class UserStoryCreateView(GenericView):
             instance = form.save(commit=False)
             instance.milestone = milestone
             instance.owner = request.user
+            instance.project = project
             instance.save()
 
             if milestone:
