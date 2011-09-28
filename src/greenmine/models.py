@@ -138,6 +138,10 @@ class Project(models.Model):
             {'pslug':self.slug, 'mid':'unassigned'})
 
     @models.permalink
+    def get_user_story_create_url(self):
+        return ('web:user-story-create', (), {'pslug': self.slug})
+
+    @models.permalink
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
 
@@ -202,7 +206,13 @@ class Milestone(models.Model):
     @models.permalink
     def get_dashboard_url(self):
         return ('web:project-dashboard', (), 
-            {'pslug':self.project.slug, "mid":self.id})
+            {'pslug':self.project.slug, 'mid':self.id})
+
+
+    @models.permalink
+    def get_user_story_create_url(self):
+        return ('web:user-story-create', (), 
+            {'pslug': self.project.slug, 'mid':self.id})
 
     @models.permalink
     def get_ml_detail_url(self):

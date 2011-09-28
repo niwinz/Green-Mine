@@ -16,7 +16,6 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils import simplejson
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from greenmine.views.generic import GenericView, ProjectGenericView
@@ -257,10 +256,37 @@ class UserStoryView(GenericView):
         context = {'form':form, 'user_story':user_story}
         return self.render(self.template_name, context)
 
+
 class UserStoryCreateView(GenericView):
     template_name = "user_story_create.html"
 
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        
+        form = forms.UserStoryForm()
+
+        context = {'form':form, 'project':project}
+        return self.render(self.template_name, context)
+
+    @login_required
+    def post(self, request, pslug, mid=None):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = None
+
+        if mid:
+            milestone = get_object_or_404(project.milestones, pk=mid)
+
+        form = forms.UserStoryForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.milestone = milestone
+            instance.owner = request.user
+            instance.save()
+
+            if milestone:
+                return HttpResponseRedirect(milestone.get_dashboard_url())
+            else:
+                return HttpResponseRedirect(project.get_unassigned_dashboard_url())
+    
+        context = {'form':form, 'project':project}
+        return self.render(self.template_name, context)
