@@ -11,7 +11,8 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="user_story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Editar esta user_storyer story" %}</a>
+        <a id="user-story-delete" class="btn01" href="{{ user_story.get_delete_url }}">{% trans "Eliminar" %}</a>
+        <a id="user-story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Editar" %}</a>
         <a id="task-new" class="btn01" href="{{ user_story.get_task_create_url }}">{% trans "Nueva tarea" %}</a>
         {% if user_story.milestone %}
         <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
