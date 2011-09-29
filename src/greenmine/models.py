@@ -6,7 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User
+from django.contrib.auth.models import UserManager
 
 import datetime
 
@@ -66,6 +67,7 @@ POINTS_CHOICES = (
     (10, u'10'),
 )
 
+
 def slugify_uniquely(value, model, slugfield="slug"):
     """
     Returns a slug on a name which is unique within a model's table
@@ -88,9 +90,12 @@ def ref_uniquely(model, field='ref'):
     Returns a unique reference code based on base64 and time.
     """
 
-    import time, baseconv
+    import time
+    import baseconv
+
     while True:
-        potential = baseconv.base62.encode(int("".join(str(time.time()).split("."))))
+        potential = baseconv.base62.encode(
+            int("".join(str(time.time()).split("."))))
         if not model.objects.filter(**{field: potential}).exists():
             return potential
 
@@ -100,8 +105,11 @@ def ref_uniquely(model, field='ref'):
 class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
-    photo = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
-    default_language = models.CharField(max_length=20, null=True, blank=True, default=None)
+    photo = models.FileField(upload_to="files/msg/%Y/%m/%d",
+        max_length=500, null=True, blank=True)
+
+    default_language = models.CharField(max_length=20,
+        null=True, blank=True, default=None)
 
 
 class ProjectManager(models.Manager):
@@ -118,7 +126,10 @@ class Project(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
 
     owner = models.ForeignKey("auth.User", related_name="projects")
-    participants = models.ManyToManyField('auth.User', related_name="projects_participant", through="ProjectUserRole", null=True, blank=True)
+    participants = models.ManyToManyField('auth.User',
+        related_name="projects_participant", through="ProjectUserRole",
+        null=True, blank=True)
+
     public = models.BooleanField(default=True)
 
     objects = ProjectManager()
@@ -135,12 +146,12 @@ class Project(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project-dashboard', (), {'pslug':self.slug})
+        return ('web:project-dashboard', (), {'pslug': self.slug})
 
     @models.permalink
     def get_unassigned_dashboard_url(self):
-        return ('web:project-dashboard', (), 
-            {'pslug':self.slug, 'mid':'unassigned'})
+        return ('web:project-dashboard', (),
+            {'pslug': self.slug, 'mid': 'unassigned'})
 
     @models.permalink
     def get_user_story_create_url(self):
@@ -149,7 +160,6 @@ class Project(models.Model):
     @models.permalink
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
-
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -163,7 +173,8 @@ class Project(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200)
     project = models.ForeignKey('Project', related_name='teams')
-    users = models.ManyToManyField('auth.User', related_name='teams', null=True, default=None)
+    users = models.ManyToManyField('auth.User',
+        related_name='teams', null=True, default=None)
 
     class Meta:
         unique_together = ('name', 'project')
@@ -173,14 +184,15 @@ class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project")
     user = models.ForeignKey("auth.User")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
-    
+
     # email notification settings
     send_email_on_group_message = models.BooleanField(default=True)
     send_email_on_us_asignement = models.BooleanField(default=True)
     send_email_on_new_us = models.BooleanField(default=False)
     send_email_on_new_us_as_watcher = models.BooleanField(default=True)
     send_email_on_incoming_question = models.BooleanField(default=False)
-    send_email_on_incoming_question_assigned = models.BooleanField(default=False)
+    send_email_on_incoming_question_assigned = \
+                                    models.BooleanField(default=False)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)
@@ -198,7 +210,7 @@ class Milestone(models.Model):
     name = models.CharField(max_length=200,)
     project = models.ForeignKey('Project', related_name="milestones")
     estimated_finish = models.DateField(null=True, default=None)
-    
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
@@ -210,14 +222,13 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project-dashboard', (), 
-            {'pslug':self.project.slug, 'mid':self.id})
-
+        return ('web:project-dashboard', (),
+            {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_user_story_create_url(self):
-        return ('web:user-story-create', (), 
-            {'pslug': self.project.slug, 'mid':self.id})
+        return ('web:user-story-create', (),
+            {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_ml_detail_url(self):
@@ -244,7 +255,7 @@ class Milestone(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     def __repr__(self):
         return u"<Milestone %s>" % (self.id)
 
@@ -256,18 +267,22 @@ class Milestone(models.Model):
 
 
 class UserStory(models.Model):
-    ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
-    milestone = models.ForeignKey("Milestone", related_name="user_stories", null=True, default=None)
+    ref = models.CharField(max_length=200, unique=True,
+        db_index=True, null=True, default=None)
+    milestone = models.ForeignKey("Milestone",
+        related_name="user_stories", null=True, default=None)
     project = models.ForeignKey("Project", related_name="user_stories")
-    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="user_stories")
+    owner = models.ForeignKey("auth.User", null=True,
+        default=None, related_name="user_stories")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     points = models.FloatField(choices=POINTS_CHOICES, default=-1)
-    status = models.CharField(max_length=50, choices=US_STATUS_CHOICES, db_index=True, default="open")
- 
+    status = models.CharField(max_length=50,
+        choices=US_STATUS_CHOICES, db_index=True, default="open")
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     tested = models.BooleanField(default=False)
-    
+
     subject = models.CharField(max_length=500)
     description = models.TextField()
     finish_date = models.DateTimeField(null=True, blank=True)
@@ -284,21 +299,21 @@ class UserStory(models.Model):
         if not self.ref:
             self.ref = ref_uniquely(self.__class__)
 
-        super(UserStory,self).save(*args, **kwargs)
+        super(UserStory, self).save(*args, **kwargs)
 
     @models.permalink
     def get_asoiciate_api_url(self):
-        return ('api:user-story-asociate', (), 
+        return ('api:user-story-asociate', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_drop_api_url(self):
-        return ('api:user-story-drop', (), 
+        return ('api:user-story-drop', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_view_url(self):
-        return ('web:user-story', (), 
+        return ('web:user-story', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
@@ -315,7 +330,6 @@ class UserStory(models.Model):
     def get_task_create_url(self):
         return ('web:task-create', (),
             {'pslug': self.project.slug, 'iref': self.ref})
-    
 
     """ Propertys """
 
@@ -334,36 +348,53 @@ class UserStory(models.Model):
 
 class Task(models.Model):
     user_story = models.ForeignKey('UserStory', related_name='tasks')
-    ref = models.CharField(max_length=200, unique=True, db_index=True, null=True, default=None)
-    status = models.CharField(max_length=50, choices=TASK_STATUS_CHOICES, default='open')
-    owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
+    ref = models.CharField(max_length=200, unique=True,
+        db_index=True, null=True, default=None)
+    status = models.CharField(max_length=50,
+        choices=TASK_STATUS_CHOICES, default='open')
+    owner = models.ForeignKey("auth.User", null=True,
+        default=None, related_name="tasks")
+
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
-    milestone = models.ForeignKey('Milestone', related_name='tasks', null=True, default=None)
-    type = models.CharField(max_length=10, choices=TASK_TYPE_CHOICES, default='task')
+    milestone = models.ForeignKey('Milestone', related_name='tasks',
+        null=True, default=None)
+
     project = models.ForeignKey('Project', related_name='tasks')
-    
+    type = models.CharField(max_length=10,
+        choices=TASK_TYPE_CHOICES, default='task')
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    
+
     subject = models.CharField(max_length=500)
     description = models.TextField(blank=True)
-    assigned_to = models.ForeignKey('auth.User', related_name='user_storys_assigned_to_me', 
+    assigned_to = models.ForeignKey('auth.User',
+        related_name='user_storys_assigned_to_me',
         blank=True, null=True, default=None)
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:task-edit', (),
-            {'pslug': self.project.slug, 'iref': self.user_story.ref, 'tref': self.ref })
+        return ('web:task-edit', (), {
+            'pslug': self.project.slug,
+            'iref': self.user_story.ref,
+            'tref': self.ref
+        })
 
     @models.permalink
     def get_alter_api_url(self):
-        return ('api:task-alter', (), {'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id, 'taskref': self.ref })
+        return ('api:task-alter', (), {
+            'pslug': self.milestone.project.slug,
+            'mid': self.milestone.id,
+            'taskref': self.ref
+        })
 
     @models.permalink
     def get_reassign_api_url(self):
-        return ('api:task-reassing', (), {'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id, 'taskref': self.ref })
+        return ('api:task-reassing', (), {
+            'pslug': self.milestone.project.slug,
+            'mid': self.milestone.id,
+            'taskref': self.ref
+        })
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -384,13 +415,16 @@ class UserStoryResponse(models.Model):
 
 
 class UserStoryFile(models.Model):
-    response = models.ForeignKey('UserStoryResponse', related_name='attached_files', null=True, blank=True)
-    user_story = models.ForeignKey('UserStory', related_name='attached_files', null=True, blank=True)
+    response = models.ForeignKey('UserStoryResponse',
+        related_name='attached_files', null=True, blank=True)
+    user_story = models.ForeignKey('UserStory',
+        related_name='attached_files', null=True, blank=True)
 
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(upload_to="files/msg/%Y/%m/%d", max_length=500, null=True, blank=True)
+    attached_file = models.FileField(upload_to="files/msg/%Y/%m/%d",
+        max_length=500, null=True, blank=True)
 
 
 class Question(models.Model):
@@ -398,7 +432,8 @@ class Question(models.Model):
     slug = models.SlugField(unique=True, max_length=200)
     content = models.TextField()
     closed = models.BooleanField(default=False)
-    attached_file = models.FileField(upload_to="messages/%Y/%m/%d", max_length=500, null=True, blank=True)
+    attached_file = models.FileField(upload_to="messages/%Y/%m/%d",
+        max_length=500, null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
@@ -409,7 +444,8 @@ class QuestionResponse(models.Model):
     content = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(upload_to="messages/%Y/%m/%d", max_length=500, null=True, blank=True)
+    attached_file = models.FileField(upload_to="messages/%Y/%m/%d",
+        max_length=500, null=True, blank=True)
 
     question = models.ForeignKey('Question', related_name='responses')
     owner = models.ForeignKey('auth.User', related_name='questions_responses')
