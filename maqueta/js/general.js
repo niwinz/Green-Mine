@@ -146,7 +146,7 @@ $(document).ready(function(){
         });
         
         formUtils.ajax("#forgotten-password-form", function(data){
-            
+            location.href=data.redirect_to;
         });        
         
         $("#open-forgotten-password-form").click(function(e){

@@ -94,6 +94,19 @@ class ForgottenPasswordForm(Form):
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if "email" in cleaned_data: 
+            try:
+                self.user = User.objects.get(email=cleaned_data['email'])
+            except User.DoesNotExist:
+                self._errors['email'] = self.error_class(
+                    [_(u'El email no corresponde a ningun usuario registrado.')]
+                )
+                del cleaned_data['email']
+
+        return cleaned_data
+
 
 class ProfileForm(Form):
     username = CharField(max_length=200, min_length=4, 

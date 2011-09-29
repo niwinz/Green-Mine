@@ -58,25 +58,6 @@ class UserListApiView(GenericView):
         return self.render_to_ok(context)
 
 
-
-class ProjectDeleteApiView(GenericView):
-    """ API Method for delete projects. """
-    @login_required
-    def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        project.delete()
-        return self.render_to_ok()
-
-
-class UserStoryDropApiView(GenericView):
-    @login_required
-    def post(self, request, pslug, iref):
-        us = get_object_or_404(models.UserStory, ref=iref, project__slug=pslug)
-        us.childs.all().delete()
-        us.delete()
-        return self.render_to_ok()
-
-
 class UserStoryAsociateApiView(GenericView):
     """ Asociate user story with one milestone. """
     @login_required
@@ -112,10 +93,15 @@ class I18NLangChangeApiView(GenericView):
         return HttpResponseRedirect('/')
 
 
+from django.core.cache import cache
+
 class ForgottenPasswordApiView(GenericView):
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
+            messages.info(request, _(u'Se ha enviado un un email con el enlace para'
+                                                        u' recuperar la contraseña'))
+
             return self.render_to_ok({'redirect_to':'/'})
 
         return self.render_to_error(form.jquery_errors)

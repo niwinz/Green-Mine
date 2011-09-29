@@ -3,6 +3,7 @@
 
 {% block middle-box %}
 <div id="login">
+    {% include "messages.html" %}
     <form id="login-form" method="post" action="{% url 'api:login' %}"  >
         <fieldset>
             <div class="form-field">

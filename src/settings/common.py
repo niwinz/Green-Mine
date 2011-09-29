@@ -30,12 +30,12 @@ DATABASES = {
 }
 
 # CACHE CONFIG
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'unique-snowflake'
-#    }
-#}
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}
 
 
 SEND_BROKEN_LINK_EMAILS = True
@@ -67,6 +67,8 @@ SESSION_SAVE_EVERY_REQUEST = False
 #EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = "niwi@niwi.be"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
 
 # Message System
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

@@ -4,7 +4,7 @@ from .common import *
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-USE_ETAGS=False
+USE_ETAGS = True
 
 MIDDLEWARE_CLASSES += [
     'django.middleware.http.ConditionalGetMiddleware',
