@@ -291,7 +291,7 @@ class UserStoryCreateView(GenericView):
             instance.owner = request.user
             instance.project = project
             instance.save()
-
+            messages.info(request, _(u'La user story se ha creado correctamente'))
             if milestone:
                 return HttpResponseRedirect(milestone.get_dashboard_url())
             else:

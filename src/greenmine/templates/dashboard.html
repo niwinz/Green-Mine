@@ -23,6 +23,7 @@
 
 {% block wrapper %}
 <div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
+    {% include "messages.html" %}
     <ul id="milestones">
         {# TODO: order_by filter #}
         {% for ml in project.milestones.all %}
