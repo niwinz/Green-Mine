@@ -104,7 +104,8 @@ class ForgottenPasswordApiView(GenericView):
             cache.set("fp_%s" % (token), form.cleaned_data['email'], 120)
 
             email_body = loader.render_to_string("email/forgot.password.html",
-                {'user': form.user }, context_instance=RequestContext(request))
+                {'user': form.user, 'token': token}, 
+                context_instance=RequestContext(request))
 
             email_message = EmailMessage(
                 body = email_body,

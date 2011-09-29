@@ -26,4 +26,5 @@ def main(request):
     context_extra['full_current_url'] = context_extra['current_url']
     if request.META.get("QUERY_STRING"):
         context_extra['full_current_url'] += "?%s" % (request.META.get("QUERY_STRING"))
+
     return context_extra

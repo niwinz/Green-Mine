@@ -37,6 +37,37 @@ class LoginView(GenericView):
             {'form': login_form, 'form2': forgotten_password_form})
 
 
+from django.core.cache import cache
+
+
+class PasswordRecoveryView(GenericView):
+    template_name = "password_recovery.html"
+
+    def get(self, request, token):
+        form = forms.PasswordRecoveryForm()
+        context = {'form':form}
+        return self.render(self.template_name, context)
+
+    def post(self, request, token):
+        form = forms.PasswordRecoveryForm(request.POST)
+        if form.is_valid():
+            email = cache.get("fp_%s" % token)
+            if not email:
+                messages.error(request, _(u'Token ha expirado, vuelva a intentarlo'))
+                return self.redirect(reverse('web:login'))
+
+            user = models.User.objects.get(email=email)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.info(request, _(u'La contraseña se ha reestablecido con exito.'))
+
+            cache.delete("fp_%s" % token)
+            return self.redirect(reverse('web:login'))
+
+        context = {'form':form}
+        return self.render(self.template_name, context)
+
+
 class HomeView(GenericView):
     """ General user projects view """
     template_name = 'projects.html'

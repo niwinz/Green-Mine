@@ -43,6 +43,8 @@ urlpatterns = patterns('',
         main.TaskEditView.as_view(), name='task-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$', main.UserStoryView.as_view(), name='user-story'),
+    url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
+        main.PasswordRecoveryView.as_view(), name='password-recovery')
 )
 
 urlpatterns += patterns('',

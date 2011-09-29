@@ -108,6 +108,25 @@ class ForgottenPasswordForm(Form):
         return cleaned_data
 
 
+class PasswordRecoveryForm(Form):
+    password = forms.CharField(max_length=200, widget=forms.PasswordInput,
+        label=_(u'Escriba su nueva contraseña'))
+    password2 = forms.CharField(max_length=200, widget=forms.PasswordInput,
+        label=_(u'Vuelva a escribir la contraseña'))
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if 'password2' in cleaned_data and 'password' in cleaned_data:
+            if cleaned_data['password'] != cleaned_data['password2']:
+                self._errors['password2'] = self.error_class(
+                    [_(u'Las contraseñas no coinciden')]
+                )
+                del cleaned_data['password2']
+                del cleaned_data['password']
+
+        return cleaned_data
+
+
 class ProfileForm(Form):
     username = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'Nombre de usuario'))
