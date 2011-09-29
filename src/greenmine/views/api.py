@@ -94,11 +94,25 @@ class I18NLangChangeApiView(GenericView):
 
 
 from django.core.cache import cache
+import uuid
 
 class ForgottenPasswordApiView(GenericView):
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
+            token = unicode(uuid.uuid4())
+            cache.set("fp_%s" % (token), form.cleaned_data['email'], 120)
+
+            email_body = loader.render_to_string("email/forgot.password.html",
+                {'user': form.user }, context_instance=RequestContext(request))
+
+            email_message = EmailMessage(
+                body = email_body,
+                to = [form.cleaned_data['email']],
+                subject = _(u'Greenmine: password recovery.'),
+            )
+            email_message.content_subtype = "html"
+            email_message.send(fail_silently=True)
             messages.info(request, _(u'Se ha enviado un un email con el enlace para'
                                                         u' recuperar la contraseña'))
 
