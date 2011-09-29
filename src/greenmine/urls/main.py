@@ -29,8 +29,16 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
         main.UserStoryCreateView.as_view(), name='user-story-create'),
-    url(r'(?P<pslug>[\w\d\-]+)/(?P<mid>\d+)/user-story/create/',
+    url(r'^(?P<pslug>[\w\d\-]+)/(?P<mid>\d+)/user-story/create/',
         main.UserStoryCreateView.as_view(), name='user-story-create'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit/$',
+        main.UserStoryEditView.as_view(), name='user-story-edit'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/task/create/$',
+        main.TaskCreateView.as_view(), name='task-create'),
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/task/(?P<tref>[\w\d]+)/edit/$',
+        main.TaskEditView.as_view(), name='task-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$', main.UserStoryView.as_view(), name='user-story'),
 )

@@ -28,6 +28,21 @@ class GenericView(View):
     def render(self, template_name, context={}, **kwargs):
         return render_to_response(template_name, context, 
             context_instance=RequestContext(self.request))
+
+    def redirect(self, url, handle_referer=False):
+        """
+        Simple alias to HttpResponseRedirect method.
+        In future implement correct handling, «next» parameters, 
+        http referer, and others...
+        """
+        request = self.request
+        if handle_referer:
+            if "HTTP_REFERER" in request.META and \
+                                request.META['HTTP_REFERER'].strip():
+                # TODO: check if is local domain or not.
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+        return HttpResponseRedirect(url)
     
     """ Api methods """
 

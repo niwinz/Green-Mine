@@ -303,3 +303,119 @@ class UserStoryCreateView(GenericView):
             'milestone': milestone
         }
         return self.render(self.template_name, context)
+
+
+class UserStoryEditView(GenericView):
+    template_name = "user_story_edit.html"
+
+    @login_required
+    def get(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        form = forms.UserStoryForm(instance=user_story)
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'form': form,
+        }
+        return self.render(self.template_name, context)
+
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        form = forms.UserStoryForm(request.POST, instance=user_story)
+        if form.is_valid():
+            user_story = form.save(commit=True)
+            messages.info(request, _(u'La user story se ha guardado correctamente'))
+            return self.redirect(user_story.get_view_url())
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'form': form,
+        }
+        return self.render(self.template_name, context)
+
+
+class TaskCreateView(GenericView):
+    template_name = 'task_create.html'
+
+    @login_required
+    def get(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        form = forms.TaskForm()
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'form': form,
+        }
+        return self.render(self.template_name, context)
+
+
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        form = forms.TaskForm(request.POST)
+
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user_story = user_story
+            task.milestone = user_story.milestone
+            task.owner = request.user
+            task.project = project
+            task.save()
+            
+            messages.info(request, _(u"La tarea ha sido creada con exito!"))
+            return self.redirect(user_story.get_view_url())
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'form': form,
+        }
+        return self.render(self.template_name, context)
+
+
+class TaskEditView(GenericView):
+    template_name = 'task_edit.html'
+
+    @login_required
+    def get(self, request, pslug, iref, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        task = get_object_or_404(user_story.tasks, ref=tref)
+        form = forms.TaskForm(instance=task)
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'task': task,
+            'form': form,
+        }
+        return self.render(self.template_name, context)
+    
+    @login_required
+    def post(self, request, pslug, iref, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        task = get_object_or_404(user_story.tasks, ref=tref)
+        form = forms.TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            task = form.save()
+
+            messages.info(request, _(u"La tarea ha sido creada con exito!"))
+            return self.redirect(user_story.get_view_url())
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+            'task': task,
+            'form': form,
+        }
+        return self.render(self.template_name, context)

@@ -11,8 +11,8 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="user_story-edit" class="btn01" href="">{% trans "Editar esta user_storyer story" %}</a>
-        <a id="task-new" class="btn01" href="">{% trans "Nueva tarea" %}</a>
+        <a id="user_story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Editar esta user_storyer story" %}</a>
+        <a id="task-new" class="btn01" href="{{ user_story.get_task_create_url }}">{% trans "Nueva tarea" %}</a>
         {% if user_story.milestone %}
         <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
         {% else %}
@@ -58,6 +58,7 @@
                 <div class="user-story-task-item">
                     <div class="box-row row-subject">
                         <div class="subject">{{ st.subject|truncatewords_html:4 }}</div>
+                        <!-- EDIT: {{ st.get_edit_url }} -->
                         {% if st.assigned_to %}
                         <div class="assigned-to"><b>{% trans "Assigned to:" %}</b><span>{{ st.assigned_to }}</span></div>
                         {% else %}

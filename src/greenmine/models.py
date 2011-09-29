@@ -47,6 +47,11 @@ US_STATUS_CHOICES = (
     ('closed', _(u'Closed')),
 )
 
+TASK_TYPE_CHOICES = (
+    ('bug', _(u'Bug')),
+    ('task', _(u'Task')),
+)
+
 TASK_STATUS_CHOICES = US_STATUS_CHOICES
 
 POINTS_CHOICES = (
@@ -283,15 +288,29 @@ class UserStory(models.Model):
 
     @models.permalink
     def get_asoiciate_api_url(self):
-        return ('api:user-story-asociate', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:user-story-asociate', (), 
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_drop_api_url(self):
-        return ('api:user-story-drop', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('api:user-story-drop', (), 
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_view_url(self):
-        return ('web:user-story', (), {'pslug': self.project.slug, 'iref': self.ref})
+        return ('web:user-story', (), 
+            {'pslug': self.project.slug, 'iref': self.ref})
+
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:user-story-edit', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
+
+
+    @models.permalink
+    def get_task_create_url(self):
+        return ('web:task-create', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
     
 
     """ Propertys """
@@ -316,6 +335,8 @@ class Task(models.Model):
     owner = models.ForeignKey("auth.User", null=True, default=None, related_name="tasks")
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
     milestone = models.ForeignKey('Milestone', related_name='tasks', null=True, default=None)
+    type = models.CharField(max_length=10, choices=TASK_TYPE_CHOICES, default='task')
+    project = models.ForeignKey('Project', related_name='tasks')
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
@@ -324,6 +345,11 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     assigned_to = models.ForeignKey('auth.User', related_name='user_storys_assigned_to_me', 
         blank=True, null=True, default=None)
+
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:task-edit', (),
+            {'pslug': self.project.slug, 'iref': self.user_story.ref, 'tref': self.ref })
 
     @models.permalink
     def get_alter_api_url(self):

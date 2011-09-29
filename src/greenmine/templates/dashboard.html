@@ -65,7 +65,7 @@
                 <div class="dg">{{ us.subject }}
                     <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
                 </div>
-                <a class="edit" href=""></a>
+                <a class="edit" href="{{ us.get_edit_url }}"></a>
                 <a class="detail" href="{{ us.get_view_url }}"></a>
             </li>
             {% empty %}
@@ -77,7 +77,7 @@
                 <div class="dg">{{ us.subject }}
                     <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
                 </div>
-                <a class="edit" href=""></a>
+                <a class="edit" href="{{ us.get_edit_url }}"></a>
                 <a class="detail" href="{{ us.get_view_url }}"></a>
             </li>
             {% empty %}

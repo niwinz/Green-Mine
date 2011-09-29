@@ -232,21 +232,10 @@ class UserStoryCommentForm(Form):
 
 
 class TaskForm(forms.ModelForm):
-    subject = CharField(max_length=200, required=True)
-
     class Meta:
+        fields = ('status', 'priority', 'subject',
+            'description', 'assigned_to','type')
         model = models.Task
-        exclude = ('ref', 'status', 'owner', 'milestone',
-            'created_date', 'modified_date')
-
-    def __init__(self, *args, **kwargs):
-        us_qs = kwargs.pop('user_story_qs', models.UserStory.objects.none())
-        assignedto_qs = kwargs.pop('assignedto_qs', models.User.objects.none())
-
-        super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['user_story'].queryset = us_qs
-        self.fields['user_story'].empty_label = None
-        self.fields['assigned_to'].queryset = assignedto_qs
 
 
 class DumpUploadForm(forms.Form):
