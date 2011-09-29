@@ -339,6 +339,33 @@ class UserStoryEditView(GenericView):
         }
         return self.render(self.template_name, context)
 
+class UserStoryDeleteView(GenericView):
+    template_name = "user_story_delete.html"
+
+    @login_required
+    def get(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        context = {
+            'project': project,
+            'user_story': user_story,
+        }
+        return self.render(self.template_name, context)
+    
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        if user_story.milestone:
+            response = self.redirect(user_story.milestone.get_dashboard_url())
+        else:
+            response = self.redirect(project.get_unassigned_dashboard_url())
+
+        user_story.delete()
+        return response
+
 
 class TaskCreateView(GenericView):
     template_name = 'task_create.html'

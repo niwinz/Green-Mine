@@ -18,12 +18,11 @@
 
 {% block wrapper %}
 <div id="user-story-module">
-    <h2>Ediar user story: {{ user_story.subject }}</h2>
+    <h2>¿Esta seguro que quiere eliminar: {{ user_story.subject }}?</h2>
     <div class="user-story-create">
         <form action="{{ current_url }}" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" class="btn01" value="{% trans "Guardar" %}" />
+            <input type="submit" class="btn01" value="{% trans "Eliminar" %}" />
         </form>
     </div>
 </div>

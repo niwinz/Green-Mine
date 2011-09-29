@@ -306,6 +306,10 @@ class UserStory(models.Model):
         return ('web:user-story-edit', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
+    @models.permalink
+    def get_delete_url(self):
+        return ('web:user-story-delete', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_task_create_url(self):
