@@ -18,6 +18,10 @@ ROLE_CHOICES = (
     ('partner', _(u'Partner')),
     ('client', _(u'Client')),
 )
+ORG_ROLE_CHOICES = (
+    ('owner', _(u'Owner')),
+    ('developer', _(u'Developer')),
+)
 
 MARKUP_TYPE = (
     ('', 'None'),
@@ -102,6 +106,23 @@ def ref_uniquely(model, field='ref'):
         time.sleep(0.002)
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True,
+        db_index=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='organization_owner')
+
+    participants = models.ManyToManyField('auth.User',
+        through='OrganizationUser', related_name='organizations')
+
+
+class OrganizationUser(models.Model):
+    user = models.ForeignKey('auth.User')
+    organization = models.ForeignKey('Organization')
+    role = models.CharField(max_length=20, choices=ORG_ROLE_CHOICES)
+    cost = models.FloatField(null=True, default=0)
+
+
 class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
@@ -121,6 +142,8 @@ class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     description = models.TextField(blank=False)
+    org = models.ForeignKey('Organization', related_name='projects',
+        null=True, blank=True, default=None)
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
@@ -453,7 +476,7 @@ class QuestionResponse(models.Model):
 
 class GSettings(models.Model):
     key = models.CharField(max_length=200, unique=True)
-    value = models.TextField(blank=True, default='')
+    value = models.TextField(blank=True, default='')  
 
 
 # load signals
