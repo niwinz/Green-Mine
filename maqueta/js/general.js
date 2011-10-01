@@ -60,64 +60,6 @@ var milestone_dashboard_bindings = function() {
         });
     };
 
-    $("#new-us").click(function(e) {
-        if (!$('#form-inserts').data('edit')) {
-            $('#form-inserts').data('edit', true);
-            $('#form-inserts #us-lb, #form-inserts').removeClass('hidden');
-            
-            var form = $("#form-inserts #us-lb form");
-            $(form).each (function() {this.reset();});
-        }
-        e.preventDefault();
-    });
-
-    $("#new-task").click(function(e) {
-        if (!$('#form-inserts').data('edit')) {
-            $('#form-inserts').data('edit', true);
-            $('#form-inserts #task-lb, #form-inserts').removeClass('hidden');
-
-            var form = $("#form-inserts #task-lb form");
-            $(form).each (function() {this.reset();});
-            if ($(form).data('us_id')) { $(form).find('#id_us').val($(form).data('us_id')); }
-        }
-        e.preventDefault();
-    });
-
-    $('#form-inserts .lb .cancel').click(function(e) {
-        $('#form-inserts .lb, #form-inserts').addClass('hidden');
-        $('#form-inserts').data('edit', false);
-        e.preventDefault();
-    });
-
-    formUtils.ajax("#us-lb form", function(data, form){
-        if(data.valid){
-            $('#user-stories-module').append($(data.html));
-        }
-        $('#form-inserts #us-lb, #form-inserts').addClass('hidden');
-    });
-
-    formUtils.ajax("#task-lb form", function(data, form){
-        if(data.valid){
-            var html = $(data.html);
-            $("#us" + data.us + " .status-new").append(html);
-            $('#form-inserts #task-lb, #form-inserts').addClass('hidden');
-        }
-    });
-
-    $(".user-story .user-story-header a.add-task").live('click', function(e) {
-        var usid = $(this).parents('.user-story').attr('us');
-        $("#form-inserts #task-lb form").data('us_id', usid);
-        $(document).scrollTop(50);
-        $("#new-task").trigger('click');
-
-        e.preventDefault();
-    });
-
-    $(".user-story .user-story-header a.remove-us").live('click', function(e) {
-        // TODO
-        e.preventDefault();
-    });
-
     $(".user-story .user-story-task .participants").live('change', function(e) {
         var self = $(this);
         $.get(self.attr('url'), {userid: self.val()}, function(data) {

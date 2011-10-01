@@ -130,17 +130,17 @@ class TaskAlterApiView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
         task = get_object_or_404(milestone.tasks, ref=taskref)
-        us = get_object_or_404(milestone.uss, pk=request.POST.get('us',None))
+        us = get_object_or_404(milestone.user_stories, pk=request.POST.get('us',None))
 
         mf = request.POST.get('modify_flag', '')
         if mf not in ['close', 'progress', 'new']:
             return self.render_to_error()
 
         # mark old us modified
-        if task.us and task.us != us:
-            task.us.modified_date = datetime.datetime.now()
+        if task.user_story and task.user_story != us:
+            task.user_story.modified_date = datetime.datetime.now()
 
-        task.us = us
+        task.user_story = us
         
         if mf == 'close':
             task.status = 'completed'

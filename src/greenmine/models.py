@@ -260,7 +260,7 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_create_task_url(self):
-        return ('api:milestone-task-create', (),
+        return ('api:task-create', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink

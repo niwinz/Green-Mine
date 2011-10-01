@@ -10,12 +10,13 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="project-admin" class="btn01" href="">{% trans "Project administration" %}</a>
+        <a id="project-admin" class="btn01" href="">{% trans "Notificaciones" %}</a>
+        <a id="new-milestone" class="btn01" href="">{% trans "Nuevo Sprint" %}</a>
 
         {% if milestone %}
-        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}">{% trans "Nueva user story" %}</a>
+        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}">{% trans "Nueva UserStory" %}</a>
         {% else %}
-        <a id="new-us" class="btn01" href="{{ project.get_user_story_create_url }}">{% trans "Nueva user story" %}</a>
+        <a id="new-us" class="btn01" href="{{ project.get_user_story_create_url }}">{% trans "Nueva UserStory" %}</a>
         {% endif %}
     </div>
 </div>

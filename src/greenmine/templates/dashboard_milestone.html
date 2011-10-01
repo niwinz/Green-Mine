@@ -11,85 +11,10 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="new-us" class="btn01" href="">Nueva US</a>
-        <a id="new-task" class="btn01" href="">Nueva tarea</a>
+        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}?next={{ current_url }}">{% trans "Nueva US" %}</a>
+        <a id="new-task" class="btn01" href="{{ milestone.get_create_task_url }}">{% trans "Nueva tarea" %}</a>
     </div>
 </div>
-<div id="form-inserts" class="hidden">
-    <div class="close"></div>
-    <div id="us-lb" class="hidden lb">
-        <h2>Nueva user story: </h2>
-        <form method="post" action="{{ project.get_us_create_api_url }}">
-            <div class="fieldset">
-                <div class="field-inline">
-                    <label>{{ usform.subject.label }}</label>
-                    {{ usform.subject }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ usform.estimation.label }}</label>
-                    {{ usform.estimation }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ usform.priority.label }} </label>
-                    {{ usform.priority }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ usform.milestone.label }}</label>
-                    {{ usform.milestone }}
-                </div>
-            </div>
-            <div class="fieldset">
-                <label>{{ usform.description.label }}</label>
-                {{ usform.description }}
-            </div>
-            <div class="fieldset submit-fieldset">
-                <div class="field-inline">
-                    <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input class="cancel" type="button" value="Cancelar" />
-                </div>
-            </div>
-        </form>                    
-    </div>
-
-    <div id="task-lb" class="hidden lb">
-        <h2>Nueva tarea: </h2>
-        <form method="post" action="{{ milestone.get_create_task_url }}">
-            <div class="fieldset">
-                <div class="field-inline">
-                    <label>{{ taskform.subject.label }}</label>
-                    {{ taskform.subject }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.us.label }}</label>
-                    {{ taskform.us }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.priority.label }} </label>
-                    {{ taskform.priority }}
-                </div>
-                <div class="field-inline">
-                    <label>{{ taskform.assigned_to.label }} </label>
-                    {{ taskform.assigned_to }}
-                </div>
-            </div>
-            <div class="fieldset">
-                <label>{{ taskform.description.label }}</label>
-                {{ taskform.description }}
-            </div>
-            <div class="fieldset submit-fieldset">
-                <div class="field-inline">
-                    <input type="submit" value="Guardar" />
-                </div>
-                <div class="field-inline">
-                    <input class="cancel" type="button" value="Cancelar" />
-                </div>
-            </div>
-        </form>                    
-    </div>
-</div>
-<!-- get_create_task_url -->
 {% endblock %}
 
 {% block wrapper %}

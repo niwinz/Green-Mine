@@ -24,7 +24,8 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$', main.DashboardView.as_view(), name='project-dashboard'),
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/$', 
         main.DashboardView.as_view(), name='project-dashboard'),
-    url(r'^(?P<pslug>[\w\d\-]+)/(?P<mid>\d+)/dashboard/$',
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/detail/$',
         main.MilestoneDashboardView.as_view(), name="milestone-dashboard"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 

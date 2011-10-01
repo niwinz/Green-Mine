@@ -17,6 +17,7 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.core.cache import cache
 
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
@@ -37,7 +38,6 @@ class LoginView(GenericView):
             {'form': login_form, 'form2': forgotten_password_form})
 
 
-from django.core.cache import cache
 
 
 class PasswordRecoveryView(GenericView):
@@ -124,21 +124,10 @@ class MilestoneDashboardView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
-        usform = forms.UsForm(
-            milestone_queryset=project.milestones.all(),
-            initial = {'milestone': milestone}
-        )
-        taskform = forms.TaskForm(
-            us_qs=milestone.uss.all(),
-            assignedto_qs=project.participants.all()
-        )
-
         context = {
-            'uss':milestone.uss.all(), 
+            'uss':milestone.user_stories.all(), 
             'milestone':milestone,
             'project': project,
-            'usform': usform,
-            'taskform': taskform,
         }
         return self.render(self.template_name, context)
 
