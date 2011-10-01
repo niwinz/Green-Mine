@@ -33,11 +33,17 @@
     <div id="import-project">
         <form class="validate" method="post" action="{{ current_url }}" enctype="multipart/form-data">
             {% csrf_token %}
-            <fieldset>
+            <fieldset class="fsborder">
                 <legend>{% trans "Importar un proyecto nuevo:" %}</legend>         
-                <div class="form-field">{{ dumpform.dumpfile.label }}: {{ dumpform.dumpfile }}</div>
-                <div class="form-field">{{ dumpform.overwrite.label }}: {{ dumpform.overwrite }}</div>
-                <input type="submit" value="{% trans 'Subir' %}" />
+                <div class="form-field">
+					<label>{{ dumpform.dumpfile.label }}</label>
+					{{ dumpform.dumpfile }}
+				</div>
+                <div class="form-field">
+					<label>{{ dumpform.overwrite.label }}</label>
+					{{ dumpform.overwrite }}
+				</div>
+                <input type="submit" class="btn01" value="{% trans 'Subir' %}" />
             </fieldset>
        </form>
    </div>
