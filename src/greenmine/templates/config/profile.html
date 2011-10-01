@@ -11,27 +11,27 @@
         {% include "messages.html" %}
         {% csrf_token %}
         <fieldset>
-            <p class="form-field">
-                {{ form.username.label }}
+            <div class="form-field">
+                <label>{{ form.username.label }}</label>
                 {{ form.username }}
                 {{ form.username.errors }}
-            </p>
-            <p class="form-field">
-                {{ form.password.label }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.password.label }}</label>
                 {{ form.password }}
                 {{ form.password.errors }}
-            </p>
-            <p class="form-field">
-                {{ form.email.label }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.email.label }}</label>
                 {{ form.email }}
                 {{ form.email.errors }}
-            </p>    
-            <p class="form-field">
-                {{ form.description.label }}
+            </div>    
+            <div class="form-field">
+                <label>{{ form.description.label }}</label>
                 {{ form.description }}
                 {{ form.description.errors }}
-            </p>
-            <p class="form-field">
+            </div>
+            <div class="form-field">
                 {% if not user.get_profile.photo %}
                 <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
                 {% else %}
@@ -41,11 +41,11 @@
                 {{ form.photo.label }}
                 {{ form.photo }}
                 {{ form.photo.errors }}
-            </p>
-            <p class="width100 float-left">
+            </div>
+            <div class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />
                 <span class="ajax-loader"></span>        
-            </p>
+            </div>
         </fieldset>
     </form>
 </div>

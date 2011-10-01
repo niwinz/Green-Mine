@@ -10,12 +10,12 @@
         {% include "messages.html" %}
         <fieldset>
             <div class="form-field">
-                {{ form.projectname.label }}
+                <label>{{ form.projectname.label }}</label>
                 {{ form.projectname }}
                 {{ form.projectname.errors }}
             </div>
             <div class="form-field width100">
-                {{ form.description.label }}
+                <label>{{ form.description.label }}</label>
                 {{ form.description }}
                 {{ form.description.errors }}
             </div>
@@ -32,12 +32,12 @@
                     </table>
                 </div>
                 <div class="users-roles">
-                    <fieldset>
+                    <fieldset class="fsborder">
                         <legend>Usuarios</legend>
                         <input type="text" name="username" class="user-autocomplete" link="{% url "api:user-list" %}" />
                         <input type="hidden" class="user-currentvalue" value="" />
                     </fieldset>
-                    <fieldset>
+                    <fieldset class="fsborder">
                         <legend>Roles</legend>
                         <ul class="roles">
                             {% for rolid, rolname in roles %}
@@ -48,11 +48,11 @@
                     <input id="btn-usr-project" type="button" value="Añadir" class="btn01" />
                 </div>
             </div>
-            <p class="width100 float-left">
+            <div class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />
                 <a href="{% url 'web:admin-projects' %}" class="btn01">Volver</a>
                 <span class="ajax-loader"></span>
-            </p>
+            </div>
         </fieldset>
     </form>
 </div>
