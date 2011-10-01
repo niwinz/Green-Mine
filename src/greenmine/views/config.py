@@ -99,28 +99,40 @@ class AdminProjectsView(GenericView):
 
 class AdminProjectExport(GenericView):
     def serialize(self, objects):
-        return serializers.serialize("json", objects, indent=4, use_natural_keys=True)
+        return serializers.serialize("json", objects, indent=4, \
+                                                use_natural_keys=True)
 
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        
+
         tmpfile = StringIO()
         zfile = zipfile.ZipFile(tmpfile, 'a')
+
+        # Collect data
         project_data = self.serialize([project])
         milestones_data = self.serialize(project.milestones.all())
-        uss = self.serialize(project.uss.filter(parent__isnull=True))
-        uss_childs = self.serialize(project.uss.filter(parent__isnull=False))
+        user_stories = self.serialize(project.user_stories.all())
 
-        
+        tasks  = self.serialize(project.tasks.all())
+        pur_qs = models.ProjectUserRole.objects.filter(project=project)
+        u_qs = pur_qs.values_list('user_id', flat=True)
+
+        user_role = self.serialize(pur_qs)
+        user = self.serialize(models.User.objects.filter(id__in=u_qs))
+
         zfile.writestr('project.json', project_data)
         zfile.writestr('milestones.json', milestones_data)
-        zfile.writestr('uss.json', uss)
-        zfile.writestr('uss_childs.json', uss_childs)
+        zfile.writestr('us.json', user_stories)
+        zfile.writestr('tasks.json', tasks)
+        zfile.writestr('user_role.json', user_role)
+        zfile.writestr('user.json', user)
         zfile.close()
 
         response = HttpResponse(tmpfile.getvalue(), mimetype='application/zip')
+        response['Content-Disposition'] = \
+                            'attachment; filename=%s-bkp.zip' % (project.slug)
+
         tmpfile.close()
-        response['Content-Disposition'] = 'attachment; filename=%s-backup.zip' % (project.slug)
         return response
 
 

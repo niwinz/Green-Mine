@@ -89,21 +89,22 @@ def slugify_uniquely(value, model, slugfield="slug"):
         suffix += 1
 
 
-def ref_uniquely(model, field='ref'):
+def ref_uniquely(project, model, field='ref'):
     """
     Returns a unique reference code based on base64 and time.
     """
 
     import time
     import baseconv
-
+    
+    new_timestamp = lambda: int("".join(str(time.time()).split(".")))
     while True:
-        potential = baseconv.base62.encode(
-            int("".join(str(time.time()).split("."))))
-        if not model.objects.filter(**{field: potential}).exists():
+        potential = baseconv.base62.encode(new_timestamp())
+        params = {field: potential, 'project': project}
+        if not model.objects.filter(**params).exists():
             return potential
 
-        time.sleep(0.002)
+        time.sleep(0.0002)
 
 
 class Organization(models.Model):
@@ -310,6 +311,9 @@ class UserStory(models.Model):
     description = models.TextField()
     finish_date = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ('ref', 'project')
+
     def __repr__(self):
         return u"<UserStory %s>" % (self.id)
 
@@ -320,7 +324,7 @@ class UserStory(models.Model):
         if self.id:
             self.modified_date = datetime.datetime.now()
         if not self.ref:
-            self.ref = ref_uniquely(self.__class__)
+            self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
 
@@ -395,6 +399,9 @@ class Task(models.Model):
         related_name='user_storys_assigned_to_me',
         blank=True, null=True, default=None)
 
+    class Meta:
+        unique_together = ('ref', 'project')
+
     @models.permalink
     def get_edit_url(self):
         return ('web:task-edit', (), {
@@ -423,7 +430,7 @@ class Task(models.Model):
         if self.id:
             self.modified_date = datetime.datetime.now()
         if not self.ref:
-            self.ref = ref_uniquely(self.__class__)
+            self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
 
