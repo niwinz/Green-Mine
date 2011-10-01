@@ -15,7 +15,7 @@
         <tr>
             <td><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></td>
             <td><img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />{{ project.owner.first_name }}</td>
-            <td><a href="">Editar</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">Borrar</a></td>
+            <td><a href="{{project.get_edit_url}}">Editar</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">Borrar</a></td>
         </tr>
         {% endfor %}
     </table>

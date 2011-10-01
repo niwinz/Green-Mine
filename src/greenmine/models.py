@@ -184,6 +184,10 @@ class Project(models.Model):
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:project-edit', (), {'pslug': self.slug})        
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
@@ -204,7 +208,7 @@ class Team(models.Model):
 
 
 class ProjectUserRole(models.Model):
-    project = models.ForeignKey("Project")
+    project = models.ForeignKey("Project", related_name="user_role")
     user = models.ForeignKey("auth.User")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
 
