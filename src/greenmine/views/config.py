@@ -22,6 +22,7 @@ from .decorators import login_required
 from .. import models, forms
 
 from django.core import serializers
+from django.utils import simplejson as json
 import zipfile
 from StringIO import StringIO
 
@@ -65,18 +66,38 @@ class AdminProjectsView(GenericView):
 
         zfile_names = zfile.namelist()
         print zfile_names
-        if "project.json" not in zfile_names or "milestones.json" not in zfile_names:
-            messages.error(self.request, _(u"El archivo que ha subido no es un backup valido."))
-            return
 
-        project_data = zfile.read('project.json')
-        milestone_data = zfile.read('milestones.json')
+        big_map = {'users':{}}
+        users = zfile.read('user.json')
+
+        for user in serializers.deserialize('json', users):
+            qs = models.User.objects.filter(username=user.object.username)
+            if len(qs) == 0:
+                old_id = user.object.id
+                user.object.set_unusable_password()
+                user.object.id = None
+                user.save()
+                big_map['users'][old_id] = user.object.id
+
+            else:
+                qsuser = qs[0]
+                big_map['users'][user.object.id] = qs[0].id
         
-        projects = list(serializers.deserialize('json', project_data))
+        # fix project json
+        projects = zfile.read('project.json')
+        pdata = json.loads(projects)
+        for x in xrange(len(pdata)):
+            current_owner = pdata[x]['fields']['owner']
+            if current_owner in big_map['users']:
+                pdata[x]['fields']['owner'] = big_map['users'][current_owner]
+
+        projects = json.dumps(pdata)
+
+        projects = list(serializers.deserialize('json', projects))
         if len(projects) > 1 or len(projects) < 1:
             messages.error(self.request, _(u"Backup invalido"))
             return
-        
+
         project = projects[0]
         if models.Project.objects.filter(slug=project.object.slug).exists():
             messages.error(self.request, _(u"El proyecto ya existe, abortado."))
@@ -85,9 +106,78 @@ class AdminProjectsView(GenericView):
         project.object.id = None
         project.save()
 
-        for ml in serializers.deserialize('json', milestone_data):
+        from pprint import pprint
+        pprint(big_map)
+
+        user_roles = zfile.read('user_role.json')
+
+        #fix user_role
+        urdata = json.loads(user_roles)
+        for x in xrange(len(urdata)):
+            current_user = urdata[x]['fields']['user']
+            if current_user in big_map['users']:
+                urdata[x]['fields']['user'] = big_map['users'][current_user]
+
+        user_roles = json.dumps(urdata)
+        for ur in serializers.deserialize('json', user_roles):
+            ur.object.id = None
+            ur.save()
+
+
+        milestones = zfile.read('milestones.json')
+        big_map['mls'] = {}
+
+        for ml in serializers.deserialize('json', milestones):
+            old_id = ml.object.id
             ml.object.id = None
             ml.save()
+            big_map['mls'][old_id] = ml.object.id
+
+        pprint(big_map)
+
+        userstories = zfile.read('us.json')
+
+        # fix user_stories json
+        udata = json.loads(userstories)
+        for x in xrange(len(udata)):
+            current_ownerid = udata[x]['fields']['owner']
+            if current_ownerid in big_map['users']:
+                udata[x]['fields']['owner'] = big_map['users'][current_ownerid]
+
+        big_map['us'] = {}
+        userstories = json.dumps(udata)
+        for us in serializers.deserialize('json', userstories):
+            old_id = us.object.id
+            us.object.id = None
+            us.save()
+            big_map['us'][old_id] = us.object.id
+
+        tasks = zfile.read('tasks.json')
+
+        # fix tasks json
+        tdata = json.loads(tasks)
+        for x in xrange(len(tdata)):
+            cur_assignedto = tdata[x]['fields']['assigned_to']
+            cur_owner = tdata[x]['fields']['owner']
+            cur_us = tdata[x]['fields']['user_story']
+
+            if cur_assignedto and cur_assignedto in big_map['users']:
+                tdata[x]['fields']['assigned_to'] = \
+                    big_map['users'][cur_assignedto]
+
+            if cur_owner in big_map['users']:
+                tdata[x]['fields']['owner'] = big_map['users'][cur_owner]
+
+            if cur_us and cur_us in big_map['us']:
+                tdata[x]['fields']['user_story'] = big_map['us'][cur_us]
+
+        big_map['tsk'] = {}
+        tasks = json.dumps(tdata)
+        for task in serializers.deserialize('json', tasks):
+            old_id = task.object.id
+            task.object.id = None
+            task.save()
+            big_map['tsk'][old_id] = task.object.id
 
         messages.info(self.request, _(u"Backup restaurado con exito."))
     

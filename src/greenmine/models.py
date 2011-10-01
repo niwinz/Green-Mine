@@ -231,7 +231,7 @@ class MilestoneManager(models.Manager):
 
 
 class Milestone(models.Model):
-    name = models.CharField(max_length=200,)
+    name = models.CharField(max_length=200, db_index=True)
     project = models.ForeignKey('Project', related_name="milestones")
     estimated_finish = models.DateField(null=True, default=None)
 
@@ -243,6 +243,7 @@ class Milestone(models.Model):
 
     class Meta:
         ordering = ['-created_date']
+        unique_together = ('name', 'project')
 
     @models.permalink
     def get_dashboard_url(self):
