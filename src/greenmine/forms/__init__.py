@@ -176,12 +176,13 @@ class ProjectForm(Form):
         super(ProjectForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        cleaned_data = self.cleaned_data
-        if "projectname" in cleaned_data and Project.objects\
-            .filter(name=cleaned_data['projectname']).count() > 0:
+        cleaned_data = self.cleaned_data        
+        if self.project is None:
+            if "projectname" in cleaned_data and Project.objects\
+                .filter(name=cleaned_data['projectname']).count() > 0:
 
-            messages.error(self._request, _(u'Project name is already occupied.'))
-            raise forms.ValidationError(u'Project name is already occupied.')
+                messages.error(self._request, _(u'Project name is already occupied.'))
+                raise forms.ValidationError(u'Project name is already occupied.')
 
         return cleaned_data
 

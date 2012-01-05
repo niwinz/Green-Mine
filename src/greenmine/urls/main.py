@@ -45,7 +45,10 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$', main.UserStoryView.as_view(), name='user-story'),
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
-        main.PasswordRecoveryView.as_view(), name='password-recovery')
+        main.PasswordRecoveryView.as_view(), name='password-recovery'),
+        
+    url(r'^(?P<pslug>[\w\d\-]+)/edit/$',
+        main.ProjectEditView.as_view(), name="project-edit")        
 )
 
 urlpatterns += patterns('',

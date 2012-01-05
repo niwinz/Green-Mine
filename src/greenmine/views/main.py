@@ -23,6 +23,9 @@ from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
 
+
+from django.contrib.auth.models import User
+
 import re
 
 class LoginView(GenericView):
@@ -202,16 +205,16 @@ class ProjectEditView(ProjectCreateView):
     template_name = 'config/project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
-    def get(self, request, pslug):
+    def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.ProjectForm(instance=project)
-        context = {'form':form, 'roles': ROLE_CHOICES}
+        context = {'form':form, 'roles': models.ROLE_CHOICES, 'project': project}
         return self.render(self.template_name, context)
 
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.ProjectForm(request.POST, request=request, instance=project)
-        context = {'form': form, 'roles': ROLE_CHOICES}
+        context = {'form': form, 'roles': models.ROLE_CHOICES, 'project': project}
         
         if not form.is_valid():
             return self.render(self.template_name, context)
@@ -226,7 +229,7 @@ class ProjectEditView(ProjectCreateView):
                 return self.render(self.template_name, context)
 
             project = form.save()
-            models.ProjectUserRole.objects.find(project=project).delete()
+            models.ProjectUserRole.objects.filter(project=project).delete()
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(
                     project = project,

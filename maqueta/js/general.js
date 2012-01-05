@@ -140,7 +140,7 @@ $(document).ready(function(){
         });
         
         $("#btn-usr-project").click(function(e){
-            var roles = $("#edit-profile-form [name='rol-aux']:checked");
+            var roles = $(".users-roles [name='rol-aux']:checked");
             if (roles.length == 0){
                 alert("Selecciona un rol");
             } else {
@@ -153,16 +153,16 @@ $(document).ready(function(){
                             '<td><a class="delete" rel="' + user.val() + '" href="">Borrar</a></td>' +
                             '<input type="hidden" name="user_' + user.val() + '" value="' + $(roles[0]).val() + '" /></tr>';
                         $("#user-project tbody").append(html);
-                        $("#user-project tbody").find("a.delete").click(function(event){
-                            $(this).parents('tr').remove();
-                            event.preventDefault();
-                        });
                         $("input.user-autocomplete").val("");
                     }
                 }
             }
             e.preventDefault();
         });
+		$("#user-project").delegate('a.delete', 'click', function(event){
+			$(this).parents('tr').remove();
+			event.preventDefault();
+		});        
     }
     
     if($("#issue").length){
