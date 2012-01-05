@@ -2,7 +2,10 @@
 Classes allowing "generic" relations through ContentType and object-id fields.
 """
 
+from collections import defaultdict
 from functools import partial
+from operator import attrgetter
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.db.models import signals
@@ -58,6 +61,49 @@ class GenericForeignKey(object):
         else:
             # This should never happen. I love comments like this, don't you?
             raise Exception("Impossible arguments to GFK.get_content_type!")
+
+    def get_prefetch_query_set(self, instances):
+        # For efficiency, group the instances by content type and then do one
+        # query per model
+        fk_dict = defaultdict(set)
+        # We need one instance for each group in order to get the right db:
+        instance_dict = {}
+        ct_attname = self.model._meta.get_field(self.ct_field).get_attname()
+        for instance in instances:
+            # We avoid looking for values if either ct_id or fkey value is None
+            ct_id = getattr(instance, ct_attname)
+            if ct_id is not None:
+                fk_val = getattr(instance, self.fk_field)
+                if fk_val is not None:
+                    fk_dict[ct_id].add(fk_val)
+                    instance_dict[ct_id] = instance
+
+        ret_val = []
+        for ct_id, fkeys in fk_dict.items():
+            instance = instance_dict[ct_id]
+            ct = self.get_content_type(id=ct_id, using=instance._state.db)
+            ret_val.extend(ct.get_all_objects_for_this_type(pk__in=fkeys))
+
+        # For doing the join in Python, we have to match both the FK val and the
+        # content type, so the 'attr' vals we return need to be callables that
+        # will return a (fk, class) pair.
+        def gfk_key(obj):
+            ct_id = getattr(obj, ct_attname)
+            if ct_id is None:
+                return None
+            else:
+                return (getattr(obj, self.fk_field),
+                        self.get_content_type(id=ct_id,
+                                              using=obj._state.db).model_class())
+
+        return (ret_val,
+                lambda obj: (obj._get_pk_val(), obj.__class__),
+                gfk_key,
+                True,
+                self.cache_attr)
+
+    def is_cached(self, instance):
+        return hasattr(instance, self.cache_attr)
 
     def __get__(self, instance, instance_type=None):
         if instance is None:
@@ -225,11 +271,7 @@ class ReverseGenericRelatedObjectsDescriptor(object):
             content_type = content_type,
             content_type_field_name = self.field.content_type_field_name,
             object_id_field_name = self.field.object_id_field_name,
-            core_filters = {
-                '%s__pk' % self.field.content_type_field_name: content_type.id,
-                '%s__exact' % self.field.object_id_field_name: instance._get_pk_val(),
-            }
-
+            prefetch_cache_name = self.field.attname,
         )
 
         return manager
@@ -250,12 +292,12 @@ def create_generic_related_manager(superclass):
     """
 
     class GenericRelatedObjectManager(superclass):
-        def __init__(self, model=None, core_filters=None, instance=None, symmetrical=None,
+        def __init__(self, model=None, instance=None, symmetrical=None,
                      source_col_name=None, target_col_name=None, content_type=None,
-                     content_type_field_name=None, object_id_field_name=None):
+                     content_type_field_name=None, object_id_field_name=None,
+                     prefetch_cache_name=None):
 
             super(GenericRelatedObjectManager, self).__init__()
-            self.core_filters = core_filters
             self.model = model
             self.content_type = content_type
             self.symmetrical = symmetrical
@@ -264,11 +306,33 @@ def create_generic_related_manager(superclass):
             self.target_col_name = target_col_name
             self.content_type_field_name = content_type_field_name
             self.object_id_field_name = object_id_field_name
+            self.prefetch_cache_name = prefetch_cache_name
             self.pk_val = self.instance._get_pk_val()
+            self.core_filters = {
+                '%s__pk' % content_type_field_name: content_type.id,
+                '%s__exact' % object_id_field_name: instance._get_pk_val(),
+            }
 
         def get_query_set(self):
-            db = self._db or router.db_for_read(self.model, instance=self.instance)
-            return super(GenericRelatedObjectManager, self).get_query_set().using(db).filter(**self.core_filters)
+            try:
+                return self.instance._prefetched_objects_cache[self.prefetch_cache_name]
+            except (AttributeError, KeyError):
+                db = self._db or router.db_for_read(self.model, instance=self.instance)
+                return super(GenericRelatedObjectManager, self).get_query_set().using(db).filter(**self.core_filters)
+
+        def get_prefetch_query_set(self, instances):
+            db = self._db or router.db_for_read(self.model)
+            query = {
+                '%s__pk' % self.content_type_field_name: self.content_type.id,
+                '%s__in' % self.object_id_field_name:
+                    set(obj._get_pk_val() for obj in instances)
+                }
+            qs = super(GenericRelatedObjectManager, self).get_query_set().using(db).filter(**query)
+            return (qs,
+                    attrgetter(self.object_id_field_name),
+                    lambda obj: obj._get_pk_val(),
+                    False,
+                    self.prefetch_cache_name)
 
         def add(self, *objs):
             for obj in objs:
@@ -410,6 +474,7 @@ class GenericInlineModelAdmin(InlineModelAdmin):
             # GenericInlineModelAdmin doesn't define its own.
             exclude.extend(self.form._meta.exclude)
         exclude = exclude or None
+        can_delete = self.can_delete and self.has_delete_permission(request, obj)
         defaults = {
             "ct_field": self.ct_field,
             "fk_field": self.ct_fk_field,
@@ -417,7 +482,7 @@ class GenericInlineModelAdmin(InlineModelAdmin):
             "formfield_callback": partial(self.formfield_for_dbfield, request=request),
             "formset": self.formset,
             "extra": self.extra,
-            "can_delete": self.can_delete,
+            "can_delete": can_delete,
             "can_order": False,
             "fields": fields,
             "max_num": self.max_num,

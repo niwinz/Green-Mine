@@ -6,17 +6,18 @@ from django.template import loader, TemplateDoesNotExist, RequestContext
 from django.utils import feedgenerator, tzinfo
 from django.utils.encoding import force_unicode, iri_to_uri, smart_unicode
 from django.utils.html import escape
+from django.utils.timezone import is_naive
 
 def add_domain(domain, url, secure=False):
-    if not (url.startswith('http://')
+    protocol = 'https' if secure else 'http'
+    if url.startswith('//'):
+        # Support network-path reference (see #16753) - RSS requires a protocol
+        url = '%s:%s' % (protocol, url)
+    elif not (url.startswith('http://')
             or url.startswith('https://')
             or url.startswith('mailto:')):
         # 'url' must already be ASCII and URL-quoted, so no need for encoding
         # conversions here.
-        if secure:
-            protocol = 'https'
-        else:
-            protocol = 'http'
         url = iri_to_uri(u'%s://%s%s' % (protocol, domain, url))
     return url
 
@@ -35,7 +36,7 @@ class Feed(object):
         except ObjectDoesNotExist:
             raise Http404('Feed object does not exist.')
         feedgen = self.get_feed(obj, request)
-        response = HttpResponse(mimetype=feedgen.mime_type)
+        response = HttpResponse(content_type=feedgen.mime_type)
         feedgen.write(response, 'utf-8')
         return response
 
@@ -164,7 +165,7 @@ class Feed(object):
                 author_email = author_link = None
 
             pubdate = self.__get_dynamic_attr('item_pubdate', item)
-            if pubdate and not pubdate.tzinfo:
+            if pubdate and is_naive(pubdate):
                 ltz = tzinfo.LocalTimezone(pubdate)
                 pubdate = pubdate.replace(tzinfo=ltz)
 

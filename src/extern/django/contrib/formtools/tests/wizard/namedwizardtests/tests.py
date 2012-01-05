@@ -28,6 +28,8 @@ class NamedWizardTests(object):
         self.assertEqual(wizard['steps'].prev, None)
         self.assertEqual(wizard['steps'].next, 'form2')
         self.assertEqual(wizard['steps'].count, 4)
+        self.assertEqual(wizard['url_name'], self.wizard_urlname)
+
 
     def test_initial_call_with_params(self):
         get_params = {'getvar1': 'getval1', 'getvar2': 'getval2'}
@@ -83,7 +85,7 @@ class NamedWizardTests(object):
         response = self.client.post(
             reverse(self.wizard_urlname, kwargs={
                 'step': response.context['wizard']['steps'].current
-            }), {'wizard_prev_step': response.context['wizard']['steps'].prev})
+            }), {'wizard_goto_step': response.context['wizard']['steps'].prev})
         response = self.client.get(response['Location'])
 
         self.assertEqual(response.status_code, 200)
@@ -319,24 +321,24 @@ class NamedFormTests(object):
         instance.render_done(None)
         self.assertEqual(instance.storage.current_step, 'start')
 
-class TestNamedUrlSessionFormWizard(NamedUrlSessionWizardView):
+class TestNamedUrlSessionWizardView(NamedUrlSessionWizardView):
 
     def dispatch(self, request, *args, **kwargs):
-        response = super(TestNamedUrlSessionFormWizard, self).dispatch(request, *args, **kwargs)
+        response = super(TestNamedUrlSessionWizardView, self).dispatch(request, *args, **kwargs)
         return response, self
 
-class TestNamedUrlCookieFormWizard(NamedUrlCookieWizardView):
+class TestNamedUrlCookieWizardView(NamedUrlCookieWizardView):
 
     def dispatch(self, request, *args, **kwargs):
-        response = super(TestNamedUrlCookieFormWizard, self).dispatch(request, *args, **kwargs)
+        response = super(TestNamedUrlCookieWizardView, self).dispatch(request, *args, **kwargs)
         return response, self
 
 
 class NamedSessionFormTests(NamedFormTests, TestCase):
-    formwizard_class = TestNamedUrlSessionFormWizard
+    formwizard_class = TestNamedUrlSessionWizardView
     wizard_urlname = 'nwiz_session'
 
 
 class NamedCookieFormTests(NamedFormTests, TestCase):
-    formwizard_class = TestNamedUrlCookieFormWizard
+    formwizard_class = TestNamedUrlCookieWizardView
     wizard_urlname = 'nwiz_cookie'

@@ -33,6 +33,7 @@ from django.db.backends.mysql.creation import DatabaseCreation
 from django.db.backends.mysql.introspection import DatabaseIntrospection
 from django.db.backends.mysql.validation import DatabaseValidation
 from django.utils.safestring import SafeString, SafeUnicode
+from django.utils.timezone import is_aware, is_naive, utc
 
 # Raise exceptions for database warnings if DEBUG is on
 from django.conf import settings
@@ -43,16 +44,29 @@ if settings.DEBUG:
 DatabaseError = Database.DatabaseError
 IntegrityError = Database.IntegrityError
 
+# It's impossible to import datetime_or_None directly from MySQLdb.times
+datetime_or_None = conversions[FIELD_TYPE.DATETIME]
+
+def datetime_or_None_with_timezone_support(value):
+    dt = datetime_or_None(value)
+    # Confirm that dt is naive before overwriting its tzinfo.
+    if dt is not None and settings.USE_TZ and is_naive(dt):
+        dt = dt.replace(tzinfo=utc)
+    return dt
+
 # MySQLdb-1.2.1 returns TIME columns as timedelta -- they are more like
 # timedelta in terms of actual behavior as they are signed and include days --
 # and Django expects time, so we still need to override that. We also need to
 # add special handling for SafeUnicode and SafeString as MySQLdb's type
 # checking is too tight to catch those (see Django ticket #6052).
+# Finally, MySQLdb always returns naive datetime objects. However, when
+# timezone support is active, Django expects timezone-aware datetime objects.
 django_conversions = conversions.copy()
 django_conversions.update({
     FIELD_TYPE.TIME: util.typecast_time,
     FIELD_TYPE.DECIMAL: util.typecast_decimal,
     FIELD_TYPE.NEWDECIMAL: util.typecast_decimal,
+    FIELD_TYPE.DATETIME: datetime_or_None_with_timezone_support,
 })
 
 # This should match the numerical portion of the version numbers (we can treat
@@ -136,18 +150,28 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     requires_explicit_null_ordering_when_grouping = True
     allows_primary_key_0 = False
 
+    def __init__(self, connection):
+        super(DatabaseFeatures, self).__init__(connection)
+        self._storage_engine = None
+
+    def _mysql_storage_engine(self):
+        "Internal method used in Django tests. Don't rely on this from your code"
+        if self._storage_engine is None:
+            cursor = self.connection.cursor()
+            cursor.execute('CREATE TABLE INTROSPECT_TEST (X INT)')
+            # This command is MySQL specific; the second column
+            # will tell you the default table type of the created
+            # table. Since all Django's test tables will have the same
+            # table type, that's enough to evaluate the feature.
+            cursor.execute("SHOW TABLE STATUS WHERE Name='INTROSPECT_TEST'")
+            result = cursor.fetchone()
+            cursor.execute('DROP TABLE INTROSPECT_TEST')
+            self._storage_engine = result[1]
+        return self._storage_engine
+
     def _can_introspect_foreign_keys(self):
         "Confirm support for introspected foreign keys"
-        cursor = self.connection.cursor()
-        cursor.execute('CREATE TABLE INTROSPECT_TEST (X INT)')
-        # This command is MySQL specific; the second column
-        # will tell you the default table type of the created
-        # table. Since all Django's test tables will have the same
-        # table type, that's enough to evaluate the feature.
-        cursor.execute("SHOW TABLE STATUS WHERE Name='INTROSPECT_TEST'")
-        result = cursor.fetchone()
-        cursor.execute('DROP TABLE INTROSPECT_TEST')
-        return result[1] != 'MyISAM'
+        return self._mysql_storage_engine() != 'MyISAM'
 
 class DatabaseOperations(BaseDatabaseOperations):
     compiler_module = "django.db.backends.mysql.compiler"
@@ -238,8 +262,11 @@ class DatabaseOperations(BaseDatabaseOperations):
             return None
 
         # MySQL doesn't support tz-aware datetimes
-        if value.tzinfo is not None:
-            raise ValueError("MySQL backend does not support timezone-aware datetimes.")
+        if is_aware(value):
+            if settings.USE_TZ:
+                value = value.astimezone(utc).replace(tzinfo=None)
+            else:
+                raise ValueError("MySQL backend does not support timezone-aware datetimes when USE_TZ is False.")
 
         # MySQL doesn't support microseconds
         return unicode(value.replace(microsecond=0))
@@ -248,9 +275,9 @@ class DatabaseOperations(BaseDatabaseOperations):
         if value is None:
             return None
 
-        # MySQL doesn't support tz-aware datetimes
-        if value.tzinfo is not None:
-            raise ValueError("MySQL backend does not support timezone-aware datetimes.")
+        # MySQL doesn't support tz-aware times
+        if is_aware(value):
+            raise ValueError("MySQL backend does not support timezone-aware times.")
 
         # MySQL doesn't support microseconds
         return unicode(value.replace(microsecond=0))
@@ -267,6 +294,15 @@ class DatabaseOperations(BaseDatabaseOperations):
     def bulk_insert_sql(self, fields, num_values):
         items_sql = "(%s)" % ", ".join(["%s"] * len(fields))
         return "VALUES " + ", ".join([items_sql] * num_values)
+
+    def savepoint_create_sql(self, sid):
+        return "SAVEPOINT %s" % sid
+
+    def savepoint_commit_sql(self, sid):
+        return "RELEASE SAVEPOINT %s" % sid
+
+    def savepoint_rollback_sql(self, sid):
+        return "ROLLBACK TO SAVEPOINT %s" % sid
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'mysql'
@@ -337,6 +373,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             self.connection = Database.connect(**kwargs)
             self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
             self.connection.encoders[SafeString] = self.connection.encoders[str]
+            self.features.uses_savepoints = \
+                self.get_server_version() >= (5, 0, 3)
             connection_created.send(sender=self.__class__, connection=self)
         cursor = self.connection.cursor()
         if new_connection:

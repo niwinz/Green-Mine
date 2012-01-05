@@ -12,6 +12,7 @@ except ImportError:
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.utils.crypto import constant_time_compare, salted_hmac
+from django.utils import timezone
 
 # Use the system (hardware-based) random number generator if it exists.
 if hasattr(random, 'SystemRandom'):
@@ -52,12 +53,6 @@ class SessionBase(object):
     def __delitem__(self, key):
         del self._session[key]
         self.modified = True
-
-    def keys(self):
-        return self._session.keys()
-
-    def items(self):
-        return self._session.items()
 
     def get(self, key, default=None):
         return self._session.get(key, default)
@@ -115,8 +110,14 @@ class SessionBase(object):
     def has_key(self, key):
         return key in self._session
 
+    def keys(self):
+        return self._session.keys()
+
     def values(self):
         return self._session.values()
+
+    def items(self):
+        return self._session.items()
 
     def iterkeys(self):
         return self._session.iterkeys()
@@ -144,7 +145,7 @@ class SessionBase(object):
         except AttributeError:
             # No getpid() in Jython, for example
             pid = 1
-        while 1:
+        while True:
             session_key = hashlib.md5("%s%s%s%s"
                     % (randrange(0, MAX_SESSION_KEY), pid, time.time(),
                        settings.SECRET_KEY)).hexdigest()
@@ -152,17 +153,15 @@ class SessionBase(object):
                 break
         return session_key
 
-    def _get_session_key(self):
-        if self._session_key:
-            return self._session_key
-        else:
+    def _get_or_create_session_key(self):
+        if self._session_key is None:
             self._session_key = self._get_new_session_key()
-            return self._session_key
+        return self._session_key
 
-    def _set_session_key(self, session_key):
-        self._session_key = session_key
+    def _get_session_key(self):
+        return self._session_key
 
-    session_key = property(_get_session_key, _set_session_key)
+    session_key = property(_get_session_key)
 
     def _get_session(self, no_load=False):
         """
@@ -173,7 +172,7 @@ class SessionBase(object):
         try:
             return self._session_cache
         except AttributeError:
-            if self._session_key is None or no_load:
+            if self.session_key is None or no_load:
                 self._session_cache = {}
             else:
                 self._session_cache = self.load()
@@ -188,7 +187,7 @@ class SessionBase(object):
             return settings.SESSION_COOKIE_AGE
         if not isinstance(expiry, datetime):
             return expiry
-        delta = expiry - datetime.now()
+        delta = expiry - timezone.now()
         return delta.days * 86400 + delta.seconds
 
     def get_expiry_date(self):
@@ -198,7 +197,7 @@ class SessionBase(object):
             return expiry
         if not expiry:   # Checks both None and 0 cases
             expiry = settings.SESSION_COOKIE_AGE
-        return datetime.now() + timedelta(seconds=expiry)
+        return timezone.now() + timedelta(seconds=expiry)
 
     def set_expiry(self, value):
         """
@@ -223,7 +222,7 @@ class SessionBase(object):
                 pass
             return
         if isinstance(value, timedelta):
-            value = datetime.now() + value
+            value = timezone.now() + value
         self['_session_expiry'] = value
 
     def get_expire_at_browser_close(self):

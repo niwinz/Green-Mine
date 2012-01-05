@@ -5,8 +5,7 @@ import sys
 import socket
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.handlers.wsgi import WSGIHandler
-from django.core.servers.basehttp import AdminMediaHandler, run, WSGIServerException
+from django.core.servers.basehttp import AdminMediaHandler, run, WSGIServerException, get_internal_wsgi_application
 from django.utils import autoreload
 
 naiveip_re = re.compile(r"""^(?:
@@ -37,7 +36,7 @@ class BaseRunserverCommand(BaseCommand):
         """
         Returns the default WSGI handler for the runner.
         """
-        return WSGIHandler()
+        return get_internal_wsgi_application()
 
     def handle(self, addrport='', *args, **options):
         self.use_ipv6 = options.get('use_ipv6')
@@ -140,4 +139,4 @@ class Command(BaseRunserverCommand):
         Serves admin media like old-school (deprecation pending).
         """
         handler = super(Command, self).get_handler(*args, **options)
-        return AdminMediaHandler(handler, options.get('admin_media_path', ''))
+        return AdminMediaHandler(handler, options.get('admin_media_path'))

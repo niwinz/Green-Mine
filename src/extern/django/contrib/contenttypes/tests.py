@@ -1,12 +1,13 @@
+from __future__ import with_statement
+
 import urllib
-from django import db
-from django.conf import settings
+
+from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from django.contrib.contenttypes.views import shortcut
+from django.contrib.sites.models import Site
 from django.http import HttpRequest, Http404
 from django.test import TestCase
-from django.db import models
 from django.utils.encoding import smart_str
 
 
@@ -29,20 +30,21 @@ class FooWithUrl(FooWithoutUrl):
     def get_absolute_url(self):
         return "/users/%s/" % urllib.quote(smart_str(self.name))
 
+class FooWithBrokenAbsoluteUrl(FooWithoutUrl):
+    """
+    Fake model defining a ``get_absolute_url`` method containing an error
+    """
+
+    def get_absolute_url(self):
+        return "/users/%s/" % self.unknown_field
 
 class ContentTypesTests(TestCase):
 
     def setUp(self):
-        # First, let's make sure we're dealing with a blank slate (and that
-        # DEBUG is on so that queries get logged)
-        self.old_DEBUG = settings.DEBUG
         self.old_Site_meta_installed = Site._meta.installed
-        settings.DEBUG = True
         ContentType.objects.clear_cache()
-        db.reset_queries()
 
     def tearDown(self):
-        settings.DEBUG = self.old_DEBUG
         Site._meta.installed = self.old_Site_meta_installed
         ContentType.objects.clear_cache()
 
@@ -54,19 +56,49 @@ class ContentTypesTests(TestCase):
         """
 
         # At this point, a lookup for a ContentType should hit the DB
-        ContentType.objects.get_for_model(ContentType)
-        self.assertEqual(1, len(db.connection.queries))
+        with self.assertNumQueries(1):
+            ContentType.objects.get_for_model(ContentType)
 
         # A second hit, though, won't hit the DB, nor will a lookup by ID
-        ct = ContentType.objects.get_for_model(ContentType)
-        self.assertEqual(1, len(db.connection.queries))
-        ContentType.objects.get_for_id(ct.id)
-        self.assertEqual(1, len(db.connection.queries))
+        with self.assertNumQueries(0):
+            ct = ContentType.objects.get_for_model(ContentType)
+        with self.assertNumQueries(0):
+            ContentType.objects.get_for_id(ct.id)
 
         # Once we clear the cache, another lookup will again hit the DB
         ContentType.objects.clear_cache()
+        with self.assertNumQueries(1):
+            ContentType.objects.get_for_model(ContentType)
+
+    def test_get_for_models_empty_cache(self):
+        # Empty cache.
+        with self.assertNumQueries(1):
+            cts = ContentType.objects.get_for_models(ContentType, FooWithUrl)
+        self.assertEqual(cts, {
+            ContentType: ContentType.objects.get_for_model(ContentType),
+            FooWithUrl: ContentType.objects.get_for_model(FooWithUrl),
+        })
+
+    def test_get_for_models_partial_cache(self):
+        # Partial cache
         ContentType.objects.get_for_model(ContentType)
-        self.assertEqual(2, len(db.connection.queries))
+        with self.assertNumQueries(1):
+            cts = ContentType.objects.get_for_models(ContentType, FooWithUrl)
+        self.assertEqual(cts, {
+            ContentType: ContentType.objects.get_for_model(ContentType),
+            FooWithUrl: ContentType.objects.get_for_model(FooWithUrl),
+        })
+
+    def test_get_for_models_full_cache(self):
+        # Full cache
+        ContentType.objects.get_for_model(ContentType)
+        ContentType.objects.get_for_model(FooWithUrl)
+        with self.assertNumQueries(0):
+            cts = ContentType.objects.get_for_models(ContentType, FooWithUrl)
+        self.assertEqual(cts, {
+            ContentType: ContentType.objects.get_for_model(ContentType),
+            FooWithUrl: ContentType.objects.get_for_model(FooWithUrl),
+        })
 
     def test_shortcut_view(self):
         """
@@ -109,6 +141,22 @@ class ContentTypesTests(TestCase):
         obj = FooWithoutUrl.objects.create(name="john")
 
         self.assertRaises(Http404, shortcut, request, user_ct.id, obj.id)
+
+    def test_shortcut_view_with_broken_get_absolute_url(self):
+        """
+        Check that the shortcut view does not catch an AttributeError raised
+        by the model's get_absolute_url method.
+        Refs #8997.
+        """
+        request = HttpRequest()
+        request.META = {
+            "SERVER_NAME": "Example.com",
+            "SERVER_PORT": "80",
+        }
+        user_ct = ContentType.objects.get_for_model(FooWithBrokenAbsoluteUrl)
+        obj = FooWithBrokenAbsoluteUrl.objects.create(name="john")
+
+        self.assertRaises(AttributeError, shortcut, request, user_ct.id, obj.id)
 
     def test_missing_model(self):
         """

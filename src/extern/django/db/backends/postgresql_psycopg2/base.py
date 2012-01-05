@@ -13,8 +13,9 @@ from django.db.backends.postgresql_psycopg2.client import DatabaseClient
 from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation
 from django.db.backends.postgresql_psycopg2.version import get_version
 from django.db.backends.postgresql_psycopg2.introspection import DatabaseIntrospection
-from django.utils.safestring import SafeUnicode, SafeString
 from django.utils.log import getLogger
+from django.utils.safestring import SafeUnicode, SafeString
+from django.utils.timezone import utc
 
 try:
     import psycopg2 as Database
@@ -31,6 +32,11 @@ psycopg2.extensions.register_adapter(SafeString, psycopg2.extensions.QuotedStrin
 psycopg2.extensions.register_adapter(SafeUnicode, psycopg2.extensions.QuotedString)
 
 logger = getLogger('django.db.backends')
+
+def utc_tzinfo_factory(offset):
+    if offset != 0:
+        raise AssertionError("database connection isn't set to UTC")
+    return utc
 
 class CursorWrapper(object):
     """
@@ -75,7 +81,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_select_for_update = True
     has_select_for_update_nowait = True
     has_bulk_insert = True
-
+    supports_tablespaces = True
+    can_distinct_on_fields = True
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'postgresql'
@@ -102,7 +109,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         self.features = DatabaseFeatures(self)
         autocommit = self.settings_dict["OPTIONS"].get('autocommit', False)
         self.features.uses_autocommit = autocommit
-        self._set_isolation_level(int(not autocommit))
+        if autocommit:
+            level = psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT
+        else:
+            level = psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED
+        self._set_isolation_level(level)
         self.ops = DatabaseOperations(self)
         self.client = DatabaseClient(self)
         self.creation = DatabaseCreation(self)
@@ -119,6 +130,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         self.cursor().execute('SET CONSTRAINTS ALL DEFERRED')
 
     def close(self):
+        self.validate_thread_sharing()
         if self.connection is None:
             return
 
@@ -143,12 +155,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     pg_version = property(_get_pg_version)
 
     def _cursor(self):
-        new_connection = False
-        set_tz = False
         settings_dict = self.settings_dict
         if self.connection is None:
-            new_connection = True
-            set_tz = settings_dict.get('TIME_ZONE')
             if settings_dict['NAME'] == '':
                 from django.core.exceptions import ImproperlyConfigured
                 raise ImproperlyConfigured("You need to specify NAME in your Django settings file.")
@@ -168,14 +176,26 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 conn_params['port'] = settings_dict['PORT']
             self.connection = Database.connect(**conn_params)
             self.connection.set_client_encoding('UTF8')
+            tz = 'UTC' if settings.USE_TZ else settings_dict.get('TIME_ZONE')
+            if tz:
+                try:
+                    get_parameter_status = self.connection.get_parameter_status
+                except AttributeError:
+                    # psycopg2 < 2.0.12 doesn't have get_parameter_status
+                    conn_tz = None
+                else:
+                    conn_tz = get_parameter_status('TimeZone')
+
+                if conn_tz != tz:
+                    # Set the time zone in autocommit mode (see #17062)
+                    self.connection.set_isolation_level(
+                            psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+                    self.connection.cursor().execute("SET TIME ZONE %s", [tz])
             self.connection.set_isolation_level(self.isolation_level)
+            self._get_pg_version()
             connection_created.send(sender=self.__class__, connection=self)
         cursor = self.connection.cursor()
-        cursor.tzinfo_factory = None
-        if new_connection:
-            if set_tz:
-                cursor.execute("SET TIME ZONE %s", [settings_dict['TIME_ZONE']])
-            self._get_pg_version()
+        cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return CursorWrapper(cursor)
 
     def _enter_transaction_management(self, managed):
@@ -184,7 +204,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         the same transaction is visible across all the queries.
         """
         if self.features.uses_autocommit and managed and not self.isolation_level:
-            self._set_isolation_level(1)
+            self._set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED)
 
     def _leave_transaction_management(self, managed):
         """
@@ -192,7 +212,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         leaving transaction management.
         """
         if self.features.uses_autocommit and not managed and self.isolation_level:
-            self._set_isolation_level(0)
+            self._set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
     def _set_isolation_level(self, level):
         """
@@ -200,7 +220,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         levels. This doesn't touch the uses_autocommit feature, since that
         controls the movement *between* isolation levels.
         """
-        assert level in (0, 1)
+        assert level in range(5)
         try:
             if self.connection is not None:
                 self.connection.set_isolation_level(level)

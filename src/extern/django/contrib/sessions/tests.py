@@ -16,6 +16,7 @@ from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.http import HttpResponse
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
+from django.utils import timezone
 from django.utils import unittest
 
 
@@ -135,6 +136,7 @@ class SessionTestsMixin(object):
         self.assertTrue(self.session.exists(self.session.session_key))
 
     def test_delete(self):
+        self.session.save()
         self.session.delete(self.session.session_key)
         self.assertFalse(self.session.exists(self.session.session_key))
 
@@ -162,7 +164,10 @@ class SessionTestsMixin(object):
         # removed the key) results in a new key being generated.
         try:
             session = self.backend('1')
-            session.save()
+            try:
+                session.save()
+            except AttributeError:
+                self.fail("The session object did not save properly.  Middleware may be saving cache items without namespaces.")
             self.assertNotEqual(session.session_key, '1')
             self.assertEqual(session.get('cat'), None)
             session.delete()
@@ -170,6 +175,11 @@ class SessionTestsMixin(object):
             # Some backends leave a stale cache entry for the invalid
             # session key; make sure that entry is manually deleted
             session.delete('1')
+
+    def test_session_key_is_read_only(self):
+        def set_session_key(session):
+            session.session_key = session._get_new_session_key()
+        self.assertRaises(AttributeError, set_session_key, self.session)
 
     # Custom session expiry
     def test_default_expiry(self):
@@ -184,7 +194,7 @@ class SessionTestsMixin(object):
     def test_custom_expiry_seconds(self):
         # Using seconds
         self.session.set_expiry(10)
-        delta = self.session.get_expiry_date() - datetime.now()
+        delta = self.session.get_expiry_date() - timezone.now()
         self.assertTrue(delta.seconds in (9, 10))
 
         age = self.session.get_expiry_age()
@@ -193,7 +203,7 @@ class SessionTestsMixin(object):
     def test_custom_expiry_timedelta(self):
         # Using timedelta
         self.session.set_expiry(timedelta(seconds=10))
-        delta = self.session.get_expiry_date() - datetime.now()
+        delta = self.session.get_expiry_date() - timezone.now()
         self.assertTrue(delta.seconds in (9, 10))
 
         age = self.session.get_expiry_age()
@@ -201,8 +211,8 @@ class SessionTestsMixin(object):
 
     def test_custom_expiry_datetime(self):
         # Using fixed datetime
-        self.session.set_expiry(datetime.now() + timedelta(seconds=10))
-        delta = self.session.get_expiry_date() - datetime.now()
+        self.session.set_expiry(timezone.now() + timedelta(seconds=10))
+        delta = self.session.get_expiry_date() - timezone.now()
         self.assertTrue(delta.seconds in (9, 10))
 
         age = self.session.get_expiry_age()
@@ -276,9 +286,21 @@ class DatabaseSessionTests(SessionTestsMixin, TestCase):
         self.assertEqual(self.session['y'], 2)
 
 
+DatabaseSessionWithTimeZoneTests = override_settings(USE_TZ=True)(DatabaseSessionTests)
+
+
 class CacheDBSessionTests(SessionTestsMixin, TestCase):
 
     backend = CacheDBSession
+
+    def test_exists_searches_cache_first(self):
+        self.session.save()
+        with self.assertNumQueries(0):
+            self.assertTrue(self.session.exists(self.session.session_key))
+
+
+CacheDBSessionWithTimeZoneTests = override_settings(USE_TZ=True)(CacheDBSessionTests)
+
 
 # Don't need DB flushing for these tests, so can use unittest.TestCase as base class
 class FileSessionTests(SessionTestsMixin, unittest.TestCase):
@@ -332,7 +354,8 @@ class SessionMiddlewareTests(unittest.TestCase):
 
         # Handle the response through the middleware
         response = middleware.process_response(request, response)
-        self.assertTrue(response.cookies[settings.SESSION_COOKIE_NAME]['secure'])
+        self.assertTrue(
+            response.cookies[settings.SESSION_COOKIE_NAME]['secure'])
 
     @override_settings(SESSION_COOKIE_HTTPONLY=True)
     def test_httponly_session_cookie(self):
@@ -346,8 +369,30 @@ class SessionMiddlewareTests(unittest.TestCase):
 
         # Handle the response through the middleware
         response = middleware.process_response(request, response)
-        self.assertTrue(response.cookies[settings.SESSION_COOKIE_NAME]['httponly'])
+        self.assertTrue(
+            response.cookies[settings.SESSION_COOKIE_NAME]['httponly'])
+        self.assertIn('httponly',
+            str(response.cookies[settings.SESSION_COOKIE_NAME]))
 
+    @override_settings(SESSION_COOKIE_HTTPONLY=False)
+    def test_no_httponly_session_cookie(self):
+        request = RequestFactory().get('/')
+        response = HttpResponse('Session test')
+        middleware = SessionMiddleware()
+
+        # Simulate a request the modifies the session
+        middleware.process_request(request)
+        request.session['hello'] = 'world'
+
+        # Handle the response through the middleware
+        response = middleware.process_response(request, response)
+        # If it isn't in the cookie, that's fine (Python 2.5)
+        if 'httponly' in settings.SESSION_COOKIE_NAME:
+            self.assertFalse(
+               response.cookies[settings.SESSION_COOKIE_NAME]['httponly'])
+
+        self.assertNotIn('httponly',
+                         str(response.cookies[settings.SESSION_COOKIE_NAME]))
 
 class CookieSessionTests(SessionTestsMixin, TestCase):
 
@@ -365,6 +410,6 @@ class CookieSessionTests(SessionTestsMixin, TestCase):
         This test tested cycle_key() which would create a new session
         key for the same session data. But we can't invalidate previously
         signed cookies (other than letting them expire naturally) so
-        testing for this behaviour is meaningless.
+        testing for this behavior is meaningless.
         """
         pass

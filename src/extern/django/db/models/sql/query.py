@@ -14,6 +14,7 @@ from django.utils.encoding import force_unicode
 from django.utils.tree import Node
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.db.models import signals
+from django.db.models.expressions import ExpressionNode
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.query_utils import InvalidQuery
 from django.db.models.sql import aggregates as base_aggregates_module
@@ -126,6 +127,7 @@ class Query(object):
         self.order_by = []
         self.low_mark, self.high_mark = 0, None  # Used for offset/limit
         self.distinct = False
+        self.distinct_fields = []
         self.select_for_update = False
         self.select_for_update_nowait = False
         self.select_related = False
@@ -264,6 +266,7 @@ class Query(object):
         obj.order_by = self.order_by[:]
         obj.low_mark, obj.high_mark = self.low_mark, self.high_mark
         obj.distinct = self.distinct
+        obj.distinct_fields = self.distinct_fields[:]
         obj.select_for_update = self.select_for_update
         obj.select_for_update_nowait = self.select_for_update_nowait
         obj.select_related = self.select_related
@@ -297,6 +300,7 @@ class Query(object):
         else:
             obj.used_aliases = set()
         obj.filter_is_sticky = False
+
         obj.__dict__.update(kwargs)
         if hasattr(obj, '_setup_query'):
             obj._setup_query()
@@ -392,7 +396,7 @@ class Query(object):
         Performs a COUNT() query using the current filter constraints.
         """
         obj = self.clone()
-        if len(self.select) > 1 or self.aggregate_select:
+        if len(self.select) > 1 or self.aggregate_select or (self.distinct and self.distinct_fields):
             # If a select clause exists, then the query has already started to
             # specify the columns that are to be returned.
             # In this case, we need to use a subquery to evaluate the count.
@@ -451,6 +455,8 @@ class Query(object):
                 "Cannot combine queries once a slice has been taken."
         assert self.distinct == rhs.distinct, \
             "Cannot combine a unique query with a non-unique query."
+        assert self.distinct_fields == rhs.distinct_fields, \
+            "Cannot combine queries with different distinct fields."
 
         self.remove_inherited_models()
         # Work out how to relabel the rhs aliases, if necessary.
@@ -673,9 +679,9 @@ class Query(object):
         """ Increases the reference count for this alias. """
         self.alias_refcount[alias] += 1
 
-    def unref_alias(self, alias):
+    def unref_alias(self, alias, amount=1):
         """ Decreases the reference count for this alias. """
-        self.alias_refcount[alias] -= 1
+        self.alias_refcount[alias] -= amount
 
     def promote_alias(self, alias, unconditional=False):
         """
@@ -703,6 +709,15 @@ class Query(object):
         for alias in chain:
             if self.promote_alias(alias, must_promote):
                 must_promote = True
+
+    def reset_refcounts(self, to_counts):
+        """
+        This method will reset reference counts for aliases so that they match
+        the value passed in :param to_counts:.
+        """
+        for alias, cur_refcount in self.alias_refcount.copy().items():
+            unref_amount = cur_refcount - to_counts.get(alias, 0)
+            self.unref_alias(alias, unref_amount)
 
     def promote_unused_aliases(self, initial_refcounts, used_aliases):
         """
@@ -831,7 +846,8 @@ class Query(object):
     def count_active_tables(self):
         """
         Returns the number of tables in this query with a non-zero reference
-        count.
+        count. Note that after execution, the reference counts are zeroed, so
+        tables added in compiler will not be seen by this method.
         """
         return len([1 for count in self.alias_refcount.itervalues() if count])
 
@@ -1064,7 +1080,7 @@ class Query(object):
             value = True
         elif callable(value):
             value = value()
-        elif hasattr(value, 'evaluate'):
+        elif isinstance(value, ExpressionNode):
             # If value is a query expression, evaluate it
             value = SQLEvaluator(value, self)
             having_clause = value.contains_aggregate
@@ -1248,7 +1264,7 @@ class Query(object):
         case). Finally, 'negate' is used in the same sense as for add_filter()
         -- it indicates an exclude() filter, or something similar. It is only
         passed in here so that it can be passed to a field's extra_filter() for
-        customised behaviour.
+        customized behavior.
 
         Returns the final field involved in the join, the target database
         column (used for any 'where' constraint), the final 'opts' value and the
@@ -1594,6 +1610,13 @@ class Query(object):
         """
         self.select = []
         self.select_fields = []
+
+    def add_distinct_fields(self, *field_names):
+        """
+        Adds and resolves the given fields to the query's "distinct on" clause.
+        """
+        self.distinct_fields = field_names
+        self.distinct = True
 
     def add_fields(self, field_names, allow_m2m=True):
         """

@@ -1,7 +1,11 @@
+from __future__ import absolute_import
+
 import datetime
 import os
 import re
 import time
+import warnings
+
 from pprint import pformat
 from urllib import urlencode, quote
 from urlparse import urljoin
@@ -17,7 +21,7 @@ except ImportError:
         # Python 2.6 and greater
         from urlparse import parse_qsl
     except ImportError:
-        # Python 2.5.  Works on Python 2.6 but raises PendingDeprecationWarning
+        # Python 2.5. Works on Python 2.6 but raises PendingDeprecationWarning
         from cgi import parse_qsl
 
 import Cookie
@@ -67,7 +71,7 @@ else:
 
                 # SimpleCookie already does the hard work of encoding and decoding.
                 # It uses octal sequences like '\\012' for newline etc.
-                # and non-ASCII chars.  We just make use of this mechanism, to
+                # and non-ASCII chars. We just make use of this mechanism, to
                 # avoid introducing two encoding schemes which would be confusing
                 # and especially awkward for javascript.
 
@@ -106,17 +110,17 @@ class CompatCookie(SimpleCookie):
     def __init__(self, *args, **kwargs):
         super(CompatCookie, self).__init__(*args, **kwargs)
         import warnings
-        warnings.warn("CompatCookie is deprecated, use django.http.SimpleCookie instead.",
-                      DeprecationWarning)
+        warnings.warn("CompatCookie is deprecated. Use django.http.SimpleCookie instead.", DeprecationWarning)
 
+from django.conf import settings
+from django.core import signing
+from django.core.exceptions import ImproperlyConfigured
+from django.core.files import uploadhandler
+from django.http.multipartparser import MultiPartParser
+from django.http.utils import *
 from django.utils.datastructures import MultiValueDict, ImmutableList
 from django.utils.encoding import smart_str, iri_to_uri, force_unicode
 from django.utils.http import cookie_date
-from django.http.multipartparser import MultiPartParser
-from django.conf import settings
-from django.core import signing
-from django.core.files import uploadhandler
-from utils import *
 
 RESERVED_CHARS="!*'();:@&=+$,/?%#[]"
 
@@ -249,8 +253,22 @@ class HttpRequest(object):
             location = urljoin(current_uri, location)
         return iri_to_uri(location)
 
-    def is_secure(self):
+    def _is_secure(self):
         return os.environ.get("HTTPS") == "on"
+
+    def is_secure(self):
+        # First, check the SECURE_PROXY_SSL_HEADER setting.
+        if settings.SECURE_PROXY_SSL_HEADER:
+            try:
+                header, value = settings.SECURE_PROXY_SSL_HEADER
+            except ValueError:
+                raise ImproperlyConfigured('The SECURE_PROXY_SSL_HEADER setting must be a tuple containing two values.')
+            if self.META.get(header, None) == value:
+                return True
+
+        # Failing that, fall back to _is_secure(), which is a hook for
+        # subclasses to implement.
+        return self._is_secure()
 
     def is_ajax(self):
         return self.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
@@ -298,14 +316,19 @@ class HttpRequest(object):
         parser = MultiPartParser(META, post_data, self.upload_handlers, self.encoding)
         return parser.parse()
 
-    def _get_raw_post_data(self):
-        if not hasattr(self, '_raw_post_data'):
+    @property
+    def body(self):
+        if not hasattr(self, '_body'):
             if self._read_started:
-                raise Exception("You cannot access raw_post_data after reading from request's data stream")
-            self._raw_post_data = self.read()
-            self._stream = StringIO(self._raw_post_data)
-        return self._raw_post_data
-    raw_post_data = property(_get_raw_post_data)
+                raise Exception("You cannot access body after reading from request's data stream")
+            self._body = self.read()
+            self._stream = StringIO(self._body)
+        return self._body
+
+    @property
+    def raw_post_data(self):
+        warnings.warn('HttpRequest.raw_post_data has been deprecated. Use HttpRequest.body instead.', PendingDeprecationWarning)
+        return self.body
 
     def _mark_post_parse_error(self):
         self._post = QueryDict('')
@@ -317,37 +340,37 @@ class HttpRequest(object):
         if self.method != 'POST':
             self._post, self._files = QueryDict('', encoding=self._encoding), MultiValueDict()
             return
-        if self._read_started and not hasattr(self, '_raw_post_data'):
+        if self._read_started and not hasattr(self, '_body'):
             self._mark_post_parse_error()
             return
 
         if self.META.get('CONTENT_TYPE', '').startswith('multipart'):
-            if hasattr(self, '_raw_post_data'):
+            if hasattr(self, '_body'):
                 # Use already read data
-                data = StringIO(self._raw_post_data)
+                data = StringIO(self._body)
             else:
                 data = self
             try:
                 self._post, self._files = self.parse_file_upload(self.META, data)
             except:
-                # An error occured while parsing POST data.  Since when
+                # An error occured while parsing POST data. Since when
                 # formatting the error the request handler might access
                 # self.POST, set self._post and self._file to prevent
                 # attempts to parse POST data again.
-                # Mark that an error occured.  This allows self.__repr__ to
+                # Mark that an error occured. This allows self.__repr__ to
                 # be explicit about it instead of simply representing an
                 # empty POST
                 self._mark_post_parse_error()
                 raise
         else:
-            self._post, self._files = QueryDict(self.raw_post_data, encoding=self._encoding), MultiValueDict()
+            self._post, self._files = QueryDict(self.body, encoding=self._encoding), MultiValueDict()
 
     ## File-like and iterator interface.
     ##
     ## Expects self._stream to be set to an appropriate source of bytes by
     ## a corresponding request subclass (WSGIRequest or ModPythonRequest).
     ## Also when request data has already been read by request.POST or
-    ## request.raw_post_data, self._stream points to a StringIO instance
+    ## request.body, self._stream points to a StringIO instance
     ## containing that data.
 
     def read(self, *args, **kwargs):
@@ -536,11 +559,11 @@ class HttpResponse(object):
             content_type=None):
         # _headers is a mapping of the lower-case name to the original case of
         # the header (required for working with legacy systems) and the header
-        # value.  Both the name of the header and its value are ASCII strings.
+        # value. Both the name of the header and its value are ASCII strings.
         self._headers = {}
         self._charset = settings.DEFAULT_CHARSET
-        if mimetype:
-            content_type = mimetype     # For backwards compatibility
+        if mimetype: # For backwards compatibility.
+            content_type = mimetype
         if not content_type:
             content_type = "%s; charset=%s" % (settings.DEFAULT_CONTENT_TYPE,
                     self._charset)
@@ -584,6 +607,17 @@ class HttpResponse(object):
 
     def __getitem__(self, header):
         return self._headers[header.lower()][1]
+
+    def __getstate__(self):
+        # SimpleCookie is not pickeable with pickle.HIGHEST_PROTOCOL, so we
+        # serialise to a string instead
+        state = self.__dict__.copy()
+        state['cookies'] = str(state['cookies'])
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.cookies = SimpleCookie(self.cookies)
 
     def has_header(self, header):
         """Case-insensitive check for a header."""

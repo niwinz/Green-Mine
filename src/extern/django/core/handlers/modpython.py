@@ -12,11 +12,6 @@ from django.utils.log import getLogger
 
 logger = getLogger('django.request')
 
-
-# NOTE: do *not* import settings (or any module which eventually imports
-# settings) until after ModPythonHandler has been called; otherwise os.environ
-# won't be set up correctly (with respect to settings).
-
 class ModPythonRequest(http.HttpRequest):
     def __init__(self, req):
         self._req = req
@@ -49,7 +44,7 @@ class ModPythonRequest(http.HttpRequest):
         # doesn't always happen, so rather than crash, we defensively encode it.
         return '%s%s' % (self.path, self._req.args and ('?' + iri_to_uri(self._req.args)) or '')
 
-    def is_secure(self):
+    def _is_secure(self):
         try:
             return self._req.is_https()
         except AttributeError:

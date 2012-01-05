@@ -2,12 +2,16 @@
 Canada-specific Form helpers
 """
 
+from __future__ import absolute_import
+
+import re
+
 from django.core.validators import EMPTY_VALUES
 from django.forms import ValidationError
 from django.forms.fields import Field, CharField, Select
 from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
-import re
+
 
 phone_digits_re = re.compile(r'^(?:1-?)?(\d{3})[-\.]?(\d{3})[-\.]?(\d{4})$')
 sin_re = re.compile(r"^(\d{3})-(\d{3})-(\d{3})$")
@@ -66,7 +70,6 @@ class CAProvinceField(Field):
     }
 
     def clean(self, value):
-        from ca_provinces import PROVINCES_NORMALIZED
         super(CAProvinceField, self).clean(value)
         if value in EMPTY_VALUES:
             return u''
@@ -75,6 +78,8 @@ class CAProvinceField(Field):
         except AttributeError:
             pass
         else:
+            # Load data in memory only when it is required, see also #17275
+            from django.contrib.localflavor.ca.ca_provinces import PROVINCES_NORMALIZED
             try:
                 return PROVINCES_NORMALIZED[value.strip().lower()].decode('ascii')
             except KeyError:
@@ -87,7 +92,8 @@ class CAProvinceSelect(Select):
     territories as its choices.
     """
     def __init__(self, attrs=None):
-        from ca_provinces import PROVINCE_CHOICES # relative import
+        # Load data in memory only when it is required, see also #17275
+        from django.contrib.localflavor.ca.ca_provinces import PROVINCE_CHOICES
         super(CAProvinceSelect, self).__init__(attrs, choices=PROVINCE_CHOICES)
 
 class CASocialInsuranceNumberField(Field):

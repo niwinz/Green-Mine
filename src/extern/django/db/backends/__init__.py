@@ -1,26 +1,28 @@
+from django.db.utils import DatabaseError
+
 try:
     import thread
 except ImportError:
     import dummy_thread as thread
-from threading import local
 from contextlib import contextmanager
 
 from django.conf import settings
 from django.db import DEFAULT_DB_ALIAS
 from django.db.backends import util
 from django.db.transaction import TransactionManagementError
-from django.utils import datetime_safe
 from django.utils.importlib import import_module
+from django.utils.timezone import is_aware
 
 
-class BaseDatabaseWrapper(local):
+class BaseDatabaseWrapper(object):
     """
     Represents a database connection.
     """
     ops = None
     vendor = 'unknown'
 
-    def __init__(self, settings_dict, alias=DEFAULT_DB_ALIAS):
+    def __init__(self, settings_dict, alias=DEFAULT_DB_ALIAS,
+                 allow_thread_sharing=False):
         # `settings_dict` should be a dictionary containing keys such as
         # NAME, USER, etc. It's called `settings_dict` instead of `settings`
         # to disambiguate it from Django settings modules.
@@ -34,6 +36,8 @@ class BaseDatabaseWrapper(local):
         self.transaction_state = []
         self.savepoint_state = 0
         self._dirty = None
+        self._thread_ident = thread.get_ident()
+        self.allow_thread_sharing = allow_thread_sharing
 
     def __eq__(self, other):
         return self.alias == other.alias
@@ -116,6 +120,21 @@ class BaseDatabaseWrapper(local):
                 "pending COMMIT/ROLLBACK")
         self._dirty = False
 
+    def validate_thread_sharing(self):
+        """
+        Validates that the connection isn't accessed by another thread than the
+        one which originally created it, unless the connection was explicitly
+        authorized to be shared between threads (via the `allow_thread_sharing`
+        property). Raises an exception if the validation fails.
+        """
+        if (not self.allow_thread_sharing
+            and self._thread_ident != thread.get_ident()):
+                raise DatabaseError("DatabaseWrapper objects created in a "
+                    "thread can only be used in that same thread. The object "
+                    "with alias '%s' was created in thread id %s and this is "
+                    "thread id %s."
+                    % (self.alias, self._thread_ident, thread.get_ident()))
+
     def is_dirty(self):
         """
         Returns True if the current transaction requires a commit for changes to
@@ -179,6 +198,7 @@ class BaseDatabaseWrapper(local):
         """
         Commits changes if the system is not in managed transaction mode.
         """
+        self.validate_thread_sharing()
         if not self.is_managed():
             self._commit()
             self.clean_savepoints()
@@ -189,6 +209,7 @@ class BaseDatabaseWrapper(local):
         """
         Rolls back changes if the system is not in managed transaction mode.
         """
+        self.validate_thread_sharing()
         if not self.is_managed():
             self._rollback()
         else:
@@ -198,6 +219,7 @@ class BaseDatabaseWrapper(local):
         """
         Does the commit itself and resets the dirty flag.
         """
+        self.validate_thread_sharing()
         self._commit()
         self.set_clean()
 
@@ -205,6 +227,7 @@ class BaseDatabaseWrapper(local):
         """
         This function does the rollback itself and resets the dirty flag.
         """
+        self.validate_thread_sharing()
         self._rollback()
         self.set_clean()
 
@@ -228,6 +251,7 @@ class BaseDatabaseWrapper(local):
         Rolls back the most recent savepoint (if one exists). Does nothing if
         savepoints are not supported.
         """
+        self.validate_thread_sharing()
         if self.savepoint_state:
             self._savepoint_rollback(sid)
 
@@ -236,6 +260,7 @@ class BaseDatabaseWrapper(local):
         Commits the most recent savepoint (if one exists). Does nothing if
         savepoints are not supported.
         """
+        self.validate_thread_sharing()
         if self.savepoint_state:
             self._savepoint_commit(sid)
 
@@ -269,11 +294,13 @@ class BaseDatabaseWrapper(local):
         pass
 
     def close(self):
+        self.validate_thread_sharing()
         if self.connection is not None:
             self.connection.close()
             self.connection = None
 
     def cursor(self):
+        self.validate_thread_sharing()
         if (self.use_debug_cursor or
             (self.use_debug_cursor is None and settings.DEBUG)):
             cursor = self.make_debug_cursor(self._cursor())
@@ -312,6 +339,8 @@ class BaseDatabaseFeatures(object):
     allow_sliced_subqueries = True
     has_select_for_update = False
     has_select_for_update_nowait = False
+
+    supports_select_related = True
 
     # Does the default test database allow multiple connections?
     # Usually an indication that the test database is in-memory
@@ -366,12 +395,19 @@ class BaseDatabaseFeatures(object):
     # date_interval_sql can properly handle mixed Date/DateTime fields and timedeltas
     supports_mixed_date_datetime_comparisons = True
 
+    # Does the backend support tablespaces? Default to False because it isn't
+    # in the SQL standard.
+    supports_tablespaces = False
+
     # Features that need to be confirmed at runtime
     # Cache whether the confirmation has been performed.
     _confirmed = False
     supports_transactions = None
     supports_stddev = None
     can_introspect_foreign_keys = None
+
+    # Support for the DISTINCT ON clause
+    can_distinct_on_fields = False
 
     def __init__(self, connection):
         self.connection = connection
@@ -525,6 +561,17 @@ class BaseDatabaseOperations(object):
         contain a '%s' placeholder for the value being searched against.
         """
         raise NotImplementedError('Full-text search is not implemented for this database backend')
+
+    def distinct_sql(self, fields):
+        """
+        Returns an SQL DISTINCT clause which removes duplicate rows from the
+        result set. If any fields are given, only the given fields are being
+        checked for duplicates.
+        """
+        if fields:
+            raise NotImplementedError('DISTINCT ON fields is not supported by this database backend')
+        else:
+            return 'DISTINCT'
 
     def last_executed_query(self, cursor, sql, params):
         """
@@ -697,8 +744,12 @@ class BaseDatabaseOperations(object):
 
     def tablespace_sql(self, tablespace, inline=False):
         """
-        Returns the SQL that will be appended to tables or rows to define
-        a tablespace. Returns '' if the backend doesn't use tablespaces.
+        Returns the SQL that will be used in a query to define the tablespace.
+
+        Returns '' if the backend doesn't support tablespaces.
+
+        If inline is True, the SQL is appended to a row; otherwise it's appended
+        to the entire CREATE TABLE or CREATE INDEX statement.
         """
         return ''
 
@@ -718,7 +769,7 @@ class BaseDatabaseOperations(object):
         """
         if value is None:
             return None
-        return datetime_safe.new_date(value).strftime('%Y-%m-%d')
+        return unicode(value)
 
     def value_to_db_datetime(self, value):
         """
@@ -731,11 +782,13 @@ class BaseDatabaseOperations(object):
 
     def value_to_db_time(self, value):
         """
-        Transform a datetime value to an object compatible with what is expected
+        Transform a time value to an object compatible with what is expected
         by the backend driver for time columns.
         """
         if value is None:
             return None
+        if is_aware(value):
+            raise ValueError("Django does not support timezone-aware times.")
         return unicode(value)
 
     def value_to_db_decimal(self, value, max_digits, decimal_places):
@@ -792,7 +845,7 @@ class BaseDatabaseOperations(object):
         This is used on specific backends to rule out known aggregates
         that are known to have faulty implementations. If the named
         aggregate function has a known problem, the backend should
-        raise NotImplemented.
+        raise NotImplementedError.
         """
         pass
 

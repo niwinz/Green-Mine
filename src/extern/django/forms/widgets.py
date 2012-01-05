@@ -2,13 +2,15 @@
 HTML Widget classes
 """
 
+from __future__ import absolute_import
+
 import copy
 import datetime
 from itertools import chain
 from urlparse import urljoin
-from util import flatatt
 
 from django.conf import settings
+from django.forms.util import flatatt, to_current_timezone
 from django.utils.datastructures import MultiValueDict, MergeDict
 from django.utils.html import escape, conditional_escape
 from django.utils.translation import ugettext, ugettext_lazy
@@ -135,10 +137,26 @@ class MediaDefiningClass(type):
             new_class.media = media_property(new_class)
         return new_class
 
+class SubWidget(StrAndUnicode):
+    """
+    Some widgets are made of multiple HTML elements -- namely, RadioSelect.
+    This is a class that represents the "inner" HTML element of a widget.
+    """
+    def __init__(self, parent_widget, name, value, attrs, choices):
+        self.parent_widget = parent_widget
+        self.name, self.value = name, value
+        self.attrs, self.choices = attrs, choices
+
+    def __unicode__(self):
+        args = [self.name, self.value, self.attrs]
+        if self.choices:
+            args.append(self.choices)
+        return self.parent_widget.render(*args)
+
 class Widget(object):
     __metaclass__ = MediaDefiningClass
     is_hidden = False          # Determines whether this corresponds to an <input type="hidden">.
-    needs_multipart_form = False # Determines does this widget need multipart-encrypted form
+    needs_multipart_form = False # Determines does this widget need multipart form
     is_localized = False
     is_required = False
 
@@ -153,6 +171,15 @@ class Widget(object):
         obj.attrs = self.attrs.copy()
         memo[id(self)] = obj
         return obj
+
+    def subwidgets(self, name, value, attrs=None, choices=()):
+        """
+        Yields all "subwidgets" of this widget. Used only by RadioSelect to
+        allow template access to individual <input type="radio"> buttons.
+
+        Arguments are the same as for render().
+        """
+        yield SubWidget(self, name, value, attrs, choices)
 
     def render(self, name, value, attrs=None):
         """
@@ -462,11 +489,14 @@ class TimeInput(Input):
         return super(TimeInput, self)._has_changed(self._format_value(initial), data)
 
 class CheckboxInput(Widget):
-    def __init__(self, attrs=None, check_test=bool):
+    def __init__(self, attrs=None, check_test=None):
         super(CheckboxInput, self).__init__(attrs)
         # check_test is a callable that takes a value and returns True
         # if the checkbox should be checked for that value.
-        self.check_test = check_test
+        if check_test is None:
+            self.check_test = lambda v: not (v is False or v is None or v == '')
+        else:
+            self.check_test = check_test
 
     def render(self, name, value, attrs=None):
         final_attrs = self.build_attrs(attrs, type='checkbox', name=name)
@@ -476,7 +506,7 @@ class CheckboxInput(Widget):
             result = False
         if result:
             final_attrs['checked'] = 'checked'
-        if value not in ('', True, False, None):
+        if not (value is True or value is False or value is None or value == ''):
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = force_unicode(value)
         return mark_safe(u'<input%s />' % flatatt(final_attrs))
@@ -550,7 +580,9 @@ class NullBooleanSelect(Select):
     A Select Widget intended to be used with NullBooleanField.
     """
     def __init__(self, attrs=None):
-        choices = ((u'1', ugettext('Unknown')), (u'2', ugettext('Yes')), (u'3', ugettext('No')))
+        choices = ((u'1', ugettext_lazy('Unknown')),
+                   (u'2', ugettext_lazy('Yes')),
+                   (u'3', ugettext_lazy('No')))
         super(NullBooleanSelect, self).__init__(attrs, choices)
 
     def render(self, name, value, attrs=None, choices=()):
@@ -607,7 +639,7 @@ class SelectMultiple(Select):
         data_set = set([force_unicode(value) for value in data])
         return data_set != initial_set
 
-class RadioInput(StrAndUnicode):
+class RadioInput(SubWidget):
     """
     An object used by RadioFieldRenderer that represents a single
     <input type='radio'>.
@@ -621,6 +653,12 @@ class RadioInput(StrAndUnicode):
         self.index = index
 
     def __unicode__(self):
+        return self.render()
+
+    def render(self, name=None, value=None, attrs=None, choices=()):
+        name = name or self.name
+        value = value or self.value
+        attrs = attrs or self.attrs
         if 'id' in self.attrs:
             label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
         else:
@@ -673,6 +711,10 @@ class RadioSelect(Select):
         if renderer:
             self.renderer = renderer
         super(RadioSelect, self).__init__(*args, **kwargs)
+
+    def subwidgets(self, name, value, attrs=None, choices=()):
+        for widget in self.get_renderer(name, value, attrs, choices):
+            yield widget
 
     def get_renderer(self, name, value, attrs=None, choices=()):
         """Returns an instance of the renderer."""
@@ -843,6 +885,7 @@ class SplitDateTimeWidget(MultiWidget):
 
     def decompress(self, value):
         if value:
+            value = to_current_timezone(value)
             return [value.date(), value.time().replace(microsecond=0)]
         return [None, None]
 

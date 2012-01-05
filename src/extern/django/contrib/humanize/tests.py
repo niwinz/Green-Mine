@@ -1,13 +1,14 @@
 from __future__ import with_statement
-from datetime import timedelta, date, datetime
 
-from django.template import Template, Context, add_to_builtins, defaultfilters
+import datetime
+import new
+
+from django.template import Template, Context, defaultfilters
 from django.test import TestCase
 from django.utils import translation, tzinfo
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
-
-add_to_builtins('django.contrib.humanize.templatetags.humanize')
+from django.utils.timezone import utc
 
 
 class HumanizeTests(TestCase):
@@ -16,7 +17,7 @@ class HumanizeTests(TestCase):
         # Using max below ensures we go through both lists
         # However, if the lists are not equal length, this raises an exception
         for test_content, result in zip(test_list, result_list):
-            t = Template('{{ test_content|%s }}' % method)
+            t = Template('{%% load humanize %%}{{ test_content|%s }}' % method)
             rendered = t.render(Context(locals())).strip()
             self.assertEqual(rendered, escape(result),
                              msg="%s test failed, produced '%s', should've produced '%s'" % (method, rendered, result))
@@ -51,6 +52,12 @@ class HumanizeTests(TestCase):
 
         with self.settings(USE_L10N=True, USE_THOUSAND_SEPARATOR=False):
             self.humanize_tester(test_list, result_list, 'intcomma')
+
+    def test_intcomma_without_number_grouping(self):
+        # Regression for #17414
+        with translation.override('ja'):
+            with self.settings(USE_L10N=True):
+                self.humanize_tester([100], ['100'], 'intcomma')
 
     def test_intword(self):
         test_list = ('100', '1000000', '1200000', '1290000',
@@ -90,10 +97,10 @@ class HumanizeTests(TestCase):
         self.humanize_tester(test_list, result_list, 'apnumber')
 
     def test_naturalday(self):
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-        tomorrow = today + timedelta(days=1)
-        someday = today - timedelta(days=10)
+        today = datetime.date.today()
+        yesterday = today - datetime.timedelta(days=1)
+        tomorrow = today + datetime.timedelta(days=1)
+        someday = today - datetime.timedelta(days=10)
         notdate = u"I'm not a date value"
 
         test_list = (today, yesterday, tomorrow, someday, notdate, None)
@@ -105,40 +112,46 @@ class HumanizeTests(TestCase):
     def test_naturalday_tz(self):
         from django.contrib.humanize.templatetags.humanize import naturalday
 
-        today = date.today()
-        tz_one = tzinfo.FixedOffset(timedelta(hours=-12))
-        tz_two = tzinfo.FixedOffset(timedelta(hours=12))
+        today = datetime.date.today()
+        tz_one = tzinfo.FixedOffset(datetime.timedelta(hours=-12))
+        tz_two = tzinfo.FixedOffset(datetime.timedelta(hours=12))
 
         # Can be today or yesterday
-        date_one = datetime(today.year, today.month, today.day, tzinfo=tz_one)
+        date_one = datetime.datetime(today.year, today.month, today.day, tzinfo=tz_one)
         naturalday_one = naturalday(date_one)
         # Can be today or tomorrow
-        date_two = datetime(today.year, today.month, today.day, tzinfo=tz_two)
+        date_two = datetime.datetime(today.year, today.month, today.day, tzinfo=tz_two)
         naturalday_two = naturalday(date_two)
 
         # As 24h of difference they will never be the same
         self.assertNotEqual(naturalday_one, naturalday_two)
 
     def test_naturaltime(self):
-        now = datetime.now()
+        class naive(datetime.tzinfo):
+            def utcoffset(self, dt):
+                return None
+        # we're going to mock datetime.datetime, so use a fixed datetime
+        now = datetime.datetime(2011, 8, 15)
         test_list = [
             now,
-            now - timedelta(seconds=1),
-            now - timedelta(seconds=30),
-            now - timedelta(minutes=1, seconds=30),
-            now - timedelta(minutes=2),
-            now - timedelta(hours=1, minutes=30, seconds=30),
-            now - timedelta(hours=23, minutes=50, seconds=50),
-            now - timedelta(days=1),
-            now - timedelta(days=500),
-            now + timedelta(seconds=1),
-            now + timedelta(seconds=30),
-            now + timedelta(minutes=1, seconds=30),
-            now + timedelta(minutes=2),
-            now + timedelta(hours=1, minutes=30, seconds=30),
-            now + timedelta(hours=23, minutes=50, seconds=50),
-            now + timedelta(days=1),
-            now + timedelta(days=500),
+            now - datetime.timedelta(seconds=1),
+            now - datetime.timedelta(seconds=30),
+            now - datetime.timedelta(minutes=1, seconds=30),
+            now - datetime.timedelta(minutes=2),
+            now - datetime.timedelta(hours=1, minutes=30, seconds=30),
+            now - datetime.timedelta(hours=23, minutes=50, seconds=50),
+            now - datetime.timedelta(days=1),
+            now - datetime.timedelta(days=500),
+            now + datetime.timedelta(seconds=1),
+            now + datetime.timedelta(seconds=30),
+            now + datetime.timedelta(minutes=1, seconds=30),
+            now + datetime.timedelta(minutes=2),
+            now + datetime.timedelta(hours=1, minutes=30, seconds=30),
+            now + datetime.timedelta(hours=23, minutes=50, seconds=50),
+            now + datetime.timedelta(days=1),
+            now + datetime.timedelta(days=500),
+            now.replace(tzinfo=naive()),
+            now.replace(tzinfo=utc),
         ]
         result_list = [
             'now',
@@ -158,5 +171,32 @@ class HumanizeTests(TestCase):
             '23 hours from now',
             '1 day from now',
             '1 year, 4 months from now',
+            'now',
+            'now',
         ]
-        self.humanize_tester(test_list, result_list, 'naturaltime')
+
+        # mock out datetime so these tests don't fail occasionally when the
+        # test runs too slow
+        class MockDateTime(datetime.datetime):
+            @classmethod
+            def now(self, tz=None):
+                if tz is None or tz.utcoffset(now) is None:
+                    return now
+                else:
+                    # equals now.replace(tzinfo=utc)
+                    return now.replace(tzinfo=tz) + tz.utcoffset(now)
+
+        # naturaltime also calls timesince/timeuntil
+        from django.contrib.humanize.templatetags import humanize
+        from django.utils import timesince
+        orig_humanize_datetime = humanize.datetime
+        orig_timesince_datetime = timesince.datetime
+        humanize.datetime = MockDateTime
+        timesince.datetime = new.module("mock_datetime")
+        timesince.datetime.datetime = MockDateTime
+
+        try:
+            self.humanize_tester(test_list, result_list, 'naturaltime')
+        finally:
+            humanize.datetime = orig_humanize_datetime
+            timesince.datetime = orig_timesince_datetime

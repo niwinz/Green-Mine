@@ -2,6 +2,8 @@
 Field classes.
 """
 
+from __future__ import absolute_import
+
 import copy
 import datetime
 import os
@@ -13,21 +15,21 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from django.core.exceptions import ValidationError
 from django.core import validators
+from django.core.exceptions import ValidationError
+from django.forms.util import ErrorList, from_current_timezone, to_current_timezone
+from django.forms.widgets import (TextInput, PasswordInput, HiddenInput,
+    MultipleHiddenInput, ClearableFileInput, CheckboxInput, Select,
+    NullBooleanSelect, SelectMultiple, DateInput, DateTimeInput, TimeInput,
+    SplitDateTimeWidget, SplitHiddenDateTimeWidget, FILE_INPUT_CONTRADICTION)
 from django.utils import formats
-from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_unicode, smart_str, force_unicode
 from django.utils.ipv6 import clean_ipv6_address
+from django.utils.translation import ugettext_lazy as _
 
 # Provide this import for backwards compatibility.
 from django.core.validators import EMPTY_VALUES
 
-from util import ErrorList
-from widgets import (TextInput, PasswordInput, HiddenInput,
-    MultipleHiddenInput, ClearableFileInput, CheckboxInput, Select,
-    NullBooleanSelect, SelectMultiple, DateInput, DateTimeInput, TimeInput,
-    SplitDateTimeWidget, SplitHiddenDateTimeWidget, FILE_INPUT_CONTRADICTION)
 
 __all__ = (
     'Field', 'CharField', 'IntegerField',
@@ -176,6 +178,7 @@ class Field(object):
         result = copy.copy(self)
         memo[id(self)] = result
         result.widget = copy.deepcopy(self.widget, memo)
+        result.validators = self.validators[:]
         return result
 
 class CharField(Field):
@@ -194,9 +197,11 @@ class CharField(Field):
         return smart_unicode(value)
 
     def widget_attrs(self, widget):
+        attrs = super(CharField, self).widget_attrs(widget)
         if self.max_length is not None and isinstance(widget, (TextInput, PasswordInput)):
             # The HTML attribute is maxlength, not max_length.
-            return {'maxlength': str(self.max_length)}
+            attrs.update({'maxlength': str(self.max_length)})
+        return attrs
 
 class IntegerField(Field):
     default_error_messages = {
@@ -337,11 +342,13 @@ class BaseTemporalField(Field):
                     return self.strptime(value, format)
                 except ValueError:
                     if format.endswith('.%f'):
-                        if value.count('.') != 1:
+                        # Compatibility with datetime in pythons < 2.6.
+                        # See: http://docs.python.org/library/datetime.html#strftime-and-strptime-behavior
+                        if value.count('.') != format.count('.'):
                             continue
                         try:
                             datetime_str, usecs_str = value.rsplit('.', 1)
-                            usecs = int(usecs_str)
+                            usecs = int(usecs_str[:6].ljust(6, '0'))
                             dt = datetime.datetime.strptime(datetime_str, format[:-3])
                             return dt.replace(microsecond=usecs)
                         except ValueError:
@@ -402,6 +409,11 @@ class DateTimeField(BaseTemporalField):
         'invalid': _(u'Enter a valid date/time.'),
     }
 
+    def prepare_value(self, value):
+        if isinstance(value, datetime.datetime):
+            value = to_current_timezone(value)
+        return value
+
     def to_python(self, value):
         """
         Validates that the input can be converted to a datetime. Returns a
@@ -410,9 +422,10 @@ class DateTimeField(BaseTemporalField):
         if value in validators.EMPTY_VALUES:
             return None
         if isinstance(value, datetime.datetime):
-            return value
+            return from_current_timezone(value)
         if isinstance(value, datetime.date):
-            return datetime.datetime(value.year, value.month, value.day)
+            result = datetime.datetime(value.year, value.month, value.day)
+            return from_current_timezone(result)
         if isinstance(value, list):
             # Input comes from a SplitDateTimeWidget, for example. So, it's two
             # components: date and time.
@@ -421,7 +434,8 @@ class DateTimeField(BaseTemporalField):
             if value[0] in validators.EMPTY_VALUES and value[1] in validators.EMPTY_VALUES:
                 return None
             value = '%s %s' % tuple(value)
-        return super(DateTimeField, self).to_python(value)
+        result = super(DateTimeField, self).to_python(value)
+        return from_current_timezone(result)
 
     def strptime(self, value, format):
         return datetime.datetime.strptime(value, format)
@@ -439,10 +453,21 @@ class RegexField(CharField):
             error_messages['invalid'] = error_message
             kwargs['error_messages'] = error_messages
         super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
+        self._set_regex(regex)
+
+    def _get_regex(self):
+        return self._regex
+
+    def _set_regex(self, regex):
         if isinstance(regex, basestring):
             regex = re.compile(regex)
-        self.regex = regex
-        self.validators.append(validators.RegexValidator(regex=regex))
+        self._regex = regex
+        if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
+            self.validators.remove(self._regex_validator)
+        self._regex_validator = validators.RegexValidator(regex=regex)
+        self.validators.append(self._regex_validator)
+
+    regex = property(_get_regex, _set_regex)
 
 class EmailField(CharField):
     default_error_messages = {
@@ -961,7 +986,8 @@ class SplitDateTimeField(MultiValueField):
                 raise ValidationError(self.error_messages['invalid_date'])
             if data_list[1] in validators.EMPTY_VALUES:
                 raise ValidationError(self.error_messages['invalid_time'])
-            return datetime.datetime.combine(*data_list)
+            result = datetime.datetime.combine(*data_list)
+            return from_current_timezone(result)
         return None
 
 

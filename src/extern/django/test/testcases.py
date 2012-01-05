@@ -1,16 +1,25 @@
 from __future__ import with_statement
 
+import os
 import re
 import sys
 from functools import wraps
 from urlparse import urlsplit, urlunsplit
 from xml.dom.minidom import parseString, Node
+import select
+import socket
+import threading
+import errno
 
 from django.conf import settings
+from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.core import mail
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ImproperlyConfigured
+from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
 from django.core.signals import request_started
+from django.core.servers.basehttp import (WSGIRequestHandler, WSGIServer,
+    WSGIServerException)
 from django.core.urlresolvers import clear_url_caches
 from django.core.validators import EMPTY_VALUES
 from django.db import (transaction, connection, connections, DEFAULT_DB_ALIAS,
@@ -19,15 +28,18 @@ from django.forms.fields import CharField
 from django.http import QueryDict
 from django.test import _doctest as doctest
 from django.test.client import Client
-from django.test.utils import get_warnings_state, restore_warnings_state, override_settings
+from django.test.utils import (get_warnings_state, restore_warnings_state,
+    override_settings)
 from django.utils import simplejson, unittest as ut2
 from django.utils.encoding import smart_str
+from django.views.static import serve
 
 __all__ = ('DocTestRunner', 'OutputChecker', 'TestCase', 'TransactionTestCase',
            'SimpleTestCase', 'skipIfDBFeature', 'skipUnlessDBFeature')
 
 normalize_long_ints = lambda s: re.sub(r'(?<![\w])(\d+)L(?![\w])', '\\1', s)
-normalize_decimals = lambda s: re.sub(r"Decimal\('(\d+(\.\d*)?)'\)", lambda m: "Decimal(\"%s\")" % m.groups()[0], s)
+normalize_decimals = lambda s: re.sub(r"Decimal\('(\d+(\.\d*)?)'\)",
+                                lambda m: "Decimal(\"%s\")" % m.groups()[0], s)
 
 def to_list(value):
     """
@@ -65,7 +77,10 @@ def restore_transaction_methods():
 
 class OutputChecker(doctest.OutputChecker):
     def check_output(self, want, got, optionflags):
-        "The entry method for doctest output checking. Defers to a sequence of child checkers"
+        """
+        The entry method for doctest output checking. Defers to a sequence of
+        child checkers
+        """
         checks = (self.check_output_default,
                   self.check_output_numeric,
                   self.check_output_xml,
@@ -76,7 +91,10 @@ class OutputChecker(doctest.OutputChecker):
         return False
 
     def check_output_default(self, want, got, optionflags):
-        "The default comparator provided by doctest - not perfect, but good for most purposes"
+        """
+        The default comparator provided by doctest - not perfect, but good for
+        most purposes
+        """
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
 
     def check_output_numeric(self, want, got, optionflags):
@@ -147,17 +165,19 @@ class OutputChecker(doctest.OutputChecker):
         try:
             want_root = parseString(want).firstChild
             got_root = parseString(got).firstChild
-        except:
+        except Exception:
             return False
         return check_element(want_root, got_root)
 
     def check_output_json(self, want, got, optionsflags):
-        "Tries to compare want and got as if they were JSON-encoded data"
+        """
+        Tries to compare want and got as if they were JSON-encoded data
+        """
         want, got = self._strip_quotes(want, got)
         try:
             want_json = simplejson.loads(want)
             got_json = simplejson.loads(got)
-        except:
+        except Exception:
             return False
         return want_json == got_json
 
@@ -210,6 +230,7 @@ class DocTestRunner(doctest.DocTestRunner):
         for conn in connections:
             transaction.rollback_unless_managed(using=conn)
 
+
 class _AssertNumQueriesContext(object):
     def __init__(self, test_case, num, connection):
         self.test_case = test_case
@@ -238,6 +259,7 @@ class _AssertNumQueriesContext(object):
             )
         )
 
+
 class SimpleTestCase(ut2.TestCase):
 
     def save_warnings_state(self):
@@ -248,7 +270,7 @@ class SimpleTestCase(ut2.TestCase):
 
     def restore_warnings_state(self):
         """
-        Restores the sate of the warnings module to the state
+        Restores the state of the warnings module to the state
         saved by save_warnings_state()
         """
         restore_warnings_state(self._warnings_state)
@@ -262,7 +284,9 @@ class SimpleTestCase(ut2.TestCase):
 
     def assertRaisesMessage(self, expected_exception, expected_message,
                            callable_obj=None, *args, **kwargs):
-        """Asserts that the message in a raised exception matches the passe value.
+        """
+        Asserts that the message in a raised exception matches the passed
+        value.
 
         Args:
             expected_exception: Exception class expected to be raised.
@@ -295,7 +319,8 @@ class SimpleTestCase(ut2.TestCase):
         if field_kwargs is None:
             field_kwargs = {}
         required = fieldclass(*field_args, **field_kwargs)
-        optional = fieldclass(*field_args, **dict(field_kwargs, required=False))
+        optional = fieldclass(*field_args,
+                              **dict(field_kwargs, required=False))
         # test valid inputs
         for input, output in valid.items():
             self.assertEqual(required.clean(input), output)
@@ -314,12 +339,15 @@ class SimpleTestCase(ut2.TestCase):
         for e in EMPTY_VALUES:
             with self.assertRaises(ValidationError) as context_manager:
                 required.clean(e)
-            self.assertEqual(context_manager.exception.messages, error_required)
+            self.assertEqual(context_manager.exception.messages,
+                             error_required)
             self.assertEqual(optional.clean(e), empty_value)
         # test that max_length and min_length are always accepted
         if issubclass(fieldclass, CharField):
             field_kwargs.update({'min_length':2, 'max_length':20})
-            self.assertTrue(isinstance(fieldclass(*field_args, **field_kwargs), fieldclass))
+            self.assertTrue(isinstance(fieldclass(*field_args, **field_kwargs),
+                                       fieldclass))
+
 
 class TransactionTestCase(SimpleTestCase):
     # The class we'll use for the test client self.client.
@@ -353,7 +381,8 @@ class TransactionTestCase(SimpleTestCase):
             if hasattr(self, 'fixtures'):
                 # We have to use this slightly awkward syntax due to the fact
                 # that we're using *args and **kwargs together.
-                call_command('loaddata', *self.fixtures, **{'verbosity': 0, 'database': db})
+                call_command('loaddata', *self.fixtures,
+                             **{'verbosity': 0, 'database': db})
 
     def _urlconf_setup(self):
         if hasattr(self, 'urls'):
@@ -466,7 +495,8 @@ class TransactionTestCase(SimpleTestCase):
                 " response code was %d (expected %d)" %
                     (path, redirect_response.status_code, target_status_code))
 
-        e_scheme, e_netloc, e_path, e_query, e_fragment = urlsplit(expected_url)
+        e_scheme, e_netloc, e_path, e_query, e_fragment = urlsplit(
+                                                              expected_url)
         if not (e_scheme or e_netloc):
             expected_url = urlunsplit(('http', host or 'testserver', e_path,
                 e_query, e_fragment))
@@ -484,6 +514,13 @@ class TransactionTestCase(SimpleTestCase):
         If ``count`` is None, the count doesn't matter - the assertion is true
         if the text occurs at least once in the response.
         """
+
+        # If the response supports deferred rendering and hasn't been rendered
+        # yet, then ensure that it does get rendered before proceeding further.
+        if (hasattr(response, 'render') and callable(response.render)
+            and not response.is_rendered):
+            response.render()
+
         if msg_prefix:
             msg_prefix += ": "
 
@@ -507,6 +544,13 @@ class TransactionTestCase(SimpleTestCase):
         successfully, (i.e., the HTTP status code was as expected), and that
         ``text`` doesn't occurs in the content of the response.
         """
+
+        # If the response supports deferred rendering and hasn't been rendered
+        # yet, then ensure that it does get rendered before proceeding further.
+        if (hasattr(response, 'render') and callable(response.render)
+            and not response.is_rendered):
+            response.render()
+
         if msg_prefix:
             msg_prefix += ": "
 
@@ -613,18 +657,22 @@ class TransactionTestCase(SimpleTestCase):
         with context:
             func(*args, **kwargs)
 
+
 def connections_support_transactions():
     """
     Returns True if all connections support transactions.
     """
-    return all(conn.features.supports_transactions for conn in connections.all())
+    return all(conn.features.supports_transactions
+               for conn in connections.all())
+
 
 class TestCase(TransactionTestCase):
     """
     Does basically the same as TransactionTestCase, but surrounds every test
-    with a transaction, monkey-patches the real transaction management routines to
-    do nothing, and rollsback the test transaction at the end of the test. You have
-    to use TransactionTestCase, if you need transaction management inside a test.
+    with a transaction, monkey-patches the real transaction management routines
+    to do nothing, and rollsback the test transaction at the end of the test.
+    You have to use TransactionTestCase, if you need transaction management
+    inside a test.
     """
 
     def _fixture_setup(self):
@@ -648,11 +696,12 @@ class TestCase(TransactionTestCase):
 
         for db in databases:
             if hasattr(self, 'fixtures'):
-                call_command('loaddata', *self.fixtures, **{
-                                                            'verbosity': 0,
-                                                            'commit': False,
-                                                            'database': db
-                                                            })
+                call_command('loaddata', *self.fixtures,
+                             **{
+                                'verbosity': 0,
+                                'commit': False,
+                                'database': db
+                             })
 
     def _fixture_teardown(self):
         if not connections_support_transactions():
@@ -670,9 +719,11 @@ class TestCase(TransactionTestCase):
             transaction.rollback(using=db)
             transaction.leave_transaction_management(using=db)
 
+
 def _deferredSkip(condition, reason):
     def decorator(test_func):
-        if not (isinstance(test_func, type) and issubclass(test_func, TestCase)):
+        if not (isinstance(test_func, type) and
+                issubclass(test_func, TestCase)):
             @wraps(test_func)
             def skip_wrapper(*args, **kwargs):
                 if condition():
@@ -685,12 +736,284 @@ def _deferredSkip(condition, reason):
         return test_item
     return decorator
 
+
 def skipIfDBFeature(feature):
-    "Skip a test if a database has the named feature"
+    """
+    Skip a test if a database has the named feature
+    """
     return _deferredSkip(lambda: getattr(connection.features, feature),
                          "Database has feature %s" % feature)
 
+
 def skipUnlessDBFeature(feature):
-    "Skip a test unless a database has the named feature"
+    """
+    Skip a test unless a database has the named feature
+    """
     return _deferredSkip(lambda: not getattr(connection.features, feature),
                          "Database doesn't support feature %s" % feature)
+
+
+class QuietWSGIRequestHandler(WSGIRequestHandler):
+    """
+    Just a regular WSGIRequestHandler except it doesn't log to the standard
+    output any of the requests received, so as to not clutter the output for
+    the tests' results.
+    """
+
+    def log_message(*args):
+        pass
+
+
+class _ImprovedEvent(threading._Event):
+    """
+    Does the same as `threading.Event` except it overrides the wait() method
+    with some code borrowed from Python 2.7 to return the set state of the
+    event (see: http://hg.python.org/cpython/rev/b5aa8aa78c0f/). This allows
+    to know whether the wait() method exited normally or because of the
+    timeout. This class can be removed when Django supports only Python >= 2.7.
+    """
+
+    def wait(self, timeout=None):
+        self._Event__cond.acquire()
+        try:
+            if not self._Event__flag:
+                self._Event__cond.wait(timeout)
+            return self._Event__flag
+        finally:
+            self._Event__cond.release()
+
+
+class StoppableWSGIServer(WSGIServer):
+    """
+    The code in this class is borrowed from the `SocketServer.BaseServer` class
+    in Python 2.6. The important functionality here is that the server is non-
+    blocking and that it can be shut down at any moment. This is made possible
+    by the server regularly polling the socket and checking if it has been
+    asked to stop.
+    Note for the future: Once Django stops supporting Python 2.6, this class
+    can be removed as `WSGIServer` will have this ability to shutdown on
+    demand and will not require the use of the _ImprovedEvent class whose code
+    is borrowed from Python 2.7.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(StoppableWSGIServer, self).__init__(*args, **kwargs)
+        self.__is_shut_down = _ImprovedEvent()
+        self.__serving = False
+
+    def serve_forever(self, poll_interval=0.5):
+        """
+        Handle one request at a time until shutdown.
+
+        Polls for shutdown every poll_interval seconds.
+        """
+        self.__serving = True
+        self.__is_shut_down.clear()
+        while self.__serving:
+            r, w, e = select.select([self], [], [], poll_interval)
+            if r:
+                self._handle_request_noblock()
+        self.__is_shut_down.set()
+
+    def shutdown(self):
+        """
+        Stops the serve_forever loop.
+
+        Blocks until the loop has finished. This must be called while
+        serve_forever() is running in another thread, or it will
+        deadlock.
+        """
+        self.__serving = False
+        if not self.__is_shut_down.wait(2):
+            raise RuntimeError(
+                "Failed to shutdown the live test server in 2 seconds. The "
+                "server might be stuck or generating a slow response.")
+
+    def handle_request(self):
+        """Handle one request, possibly blocking.
+        """
+        fd_sets = select.select([self], [], [], None)
+        if not fd_sets[0]:
+            return
+        self._handle_request_noblock()
+
+    def _handle_request_noblock(self):
+        """
+        Handle one request, without blocking.
+
+        I assume that select.select has returned that the socket is
+        readable before this function was called, so there should be
+        no risk of blocking in get_request().
+        """
+        try:
+            request, client_address = self.get_request()
+        except socket.error:
+            return
+        if self.verify_request(request, client_address):
+            try:
+                self.process_request(request, client_address)
+            except Exception:
+                self.handle_error(request, client_address)
+                self.close_request(request)
+
+
+class _MediaFilesHandler(StaticFilesHandler):
+    """
+    Handler for serving the media files. This is a private class that is
+    meant to be used solely as a convenience by LiveServerThread.
+    """
+
+    def get_base_dir(self):
+        return settings.MEDIA_ROOT
+
+    def get_base_url(self):
+        return settings.MEDIA_URL
+
+    def serve(self, request):
+        return serve(request, self.file_path(request.path),
+            document_root=self.get_base_dir())
+
+
+class LiveServerThread(threading.Thread):
+    """
+    Thread for running a live http server while the tests are running.
+    """
+
+    def __init__(self, host, possible_ports, connections_override=None):
+        self.host = host
+        self.port = None
+        self.possible_ports = possible_ports
+        self.is_ready = threading.Event()
+        self.error = None
+        self.connections_override = connections_override
+        super(LiveServerThread, self).__init__()
+
+    def run(self):
+        """
+        Sets up the live server and databases, and then loops over handling
+        http requests.
+        """
+        if self.connections_override:
+            from django.db import connections
+            # Override this thread's database connections with the ones
+            # provided by the main thread.
+            for alias, conn in self.connections_override.items():
+                connections[alias] = conn
+        try:
+            # Create the handler for serving static and media files
+            handler = StaticFilesHandler(_MediaFilesHandler(WSGIHandler()))
+
+            # Go through the list of possible ports, hoping that we can find
+            # one that is free to use for the WSGI server.
+            for index, port in enumerate(self.possible_ports):
+                try:
+                    self.httpd = StoppableWSGIServer(
+                        (self.host, port), QuietWSGIRequestHandler)
+                except WSGIServerException, e:
+                    if sys.version_info < (2, 6):
+                        error_code = e.args[0].args[0]
+                    else:
+                        error_code = e.args[0].errno
+                    if (index + 1 < len(self.possible_ports) and
+                        error_code == errno.EADDRINUSE):
+                        # This port is already in use, so we go on and try with
+                        # the next one in the list.
+                        continue
+                    else:
+                        # Either none of the given ports are free or the error
+                        # is something else than "Address already in use". So
+                        # we let that error bubble up to the main thread.
+                        raise
+                else:
+                    # A free port was found.
+                    self.port = port
+                    break
+
+            self.httpd.set_app(handler)
+            self.is_ready.set()
+            self.httpd.serve_forever()
+        except Exception, e:
+            self.error = e
+            self.is_ready.set()
+
+    def join(self, timeout=None):
+        if hasattr(self, 'httpd'):
+            # Stop the WSGI server
+            self.httpd.shutdown()
+            self.httpd.server_close()
+        super(LiveServerThread, self).join(timeout)
+
+
+class LiveServerTestCase(TransactionTestCase):
+    """
+    Does basically the same as TransactionTestCase but also launches a live
+    http server in a separate thread so that the tests may use another testing
+    framework, such as Selenium for example, instead of the built-in dummy
+    client.
+    Note that it inherits from TransactionTestCase instead of TestCase because
+    the threads do not share the same transactions (unless if using in-memory
+    sqlite) and each thread needs to commit all their transactions so that the
+    other thread can see the changes.
+    """
+
+    @property
+    def live_server_url(self):
+        return 'http://%s:%s' % (
+            self.server_thread.host, self.server_thread.port)
+
+    @classmethod
+    def setUpClass(cls):
+        connections_override = {}
+        for conn in connections.all():
+            # If using in-memory sqlite databases, pass the connections to
+            # the server thread.
+            if (conn.settings_dict['ENGINE'] == 'django.db.backends.sqlite3'
+                and conn.settings_dict['NAME'] == ':memory:'):
+                # Explicitly enable thread-shareability for this connection
+                conn.allow_thread_sharing = True
+                connections_override[conn.alias] = conn
+
+        # Launch the live server's thread
+        specified_address = os.environ.get(
+            'DJANGO_LIVE_TEST_SERVER_ADDRESS', 'localhost:8081')
+
+        # The specified ports may be of the form '8000-8010,8080,9200-9300'
+        # i.e. a comma-separated list of ports or ranges of ports, so we break
+        # it down into a detailed list of all possible ports.
+        possible_ports = []
+        try:
+            host, port_ranges = specified_address.split(':')
+            for port_range in port_ranges.split(','):
+                # A port range can be of either form: '8000' or '8000-8010'.
+                extremes = map(int, port_range.split('-'))
+                assert len(extremes) in [1, 2]
+                if len(extremes) == 1:
+                    # Port range of the form '8000'
+                    possible_ports.append(extremes[0])
+                else:
+                    # Port range of the form '8000-8010'
+                    for port in range(extremes[0], extremes[1] + 1):
+                        possible_ports.append(port)
+        except Exception:
+            raise ImproperlyConfigured('Invalid address ("%s") for live '
+                'server.' % specified_address)
+        cls.server_thread = LiveServerThread(
+            host, possible_ports, connections_override)
+        cls.server_thread.daemon = True
+        cls.server_thread.start()
+
+        # Wait for the live server to be ready
+        cls.server_thread.is_ready.wait()
+        if cls.server_thread.error:
+            raise cls.server_thread.error
+
+        super(LiveServerTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        # There may not be a 'server_thread' attribute if setUpClass() for some
+        # reasons has raised an exception.
+        if hasattr(cls, 'server_thread'):
+            # Terminate the live server's thread
+            cls.server_thread.join()
+        super(LiveServerTestCase, cls).tearDownClass()

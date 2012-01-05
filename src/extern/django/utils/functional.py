@@ -1,3 +1,4 @@
+import copy
 import operator
 from functools import wraps, update_wrapper
 
@@ -27,6 +28,18 @@ def memoize(func, cache, num_args):
         cache[mem_args] = result
         return result
     return wrapper
+
+class cached_property(object):
+    """
+    Decorator that creates converts a method with a single
+    self argument into a property cached on the instance.
+    """
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, instance, type):
+        res = instance.__dict__[self.func.__name__] = self.func(instance)
+        return res
 
 class Promise(object):
     """
@@ -246,8 +259,17 @@ class SimpleLazyObject(LazyObject):
             memo[id(self)] = result
             return result
         else:
-            import copy
             return copy.deepcopy(self._wrapped, memo)
+
+    # Because we have messed with __class__ below, we confuse pickle as to what
+    # class we are pickling. It also appears to stop __reduce__ from being
+    # called. So, we define __getstate__ in a way that cooperates with the way
+    # that pickle interprets this class.  This fails when the wrapped class is a
+    # builtin, but it is better than nothing.
+    def __getstate__(self):
+        if self._wrapped is empty:
+            self._setup()
+        return self._wrapped.__dict__
 
     # Need to pretend to be the wrapped class, for the sake of objects that care
     # about this (especially in equality tests)

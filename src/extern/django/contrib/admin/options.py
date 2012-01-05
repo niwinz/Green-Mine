@@ -270,6 +270,41 @@ class BaseModelAdmin(object):
             clean_lookup = LOOKUP_SEP.join(parts)
             return clean_lookup in self.list_filter or clean_lookup == self.date_hierarchy
 
+    def has_add_permission(self, request):
+        """
+        Returns True if the given request has permission to add an object.
+        Can be overriden by the user in subclasses.
+        """
+        opts = self.opts
+        return request.user.has_perm(opts.app_label + '.' + opts.get_add_permission())
+
+    def has_change_permission(self, request, obj=None):
+        """
+        Returns True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+
+        Can be overriden by the user in subclasses. In such case it should
+        return True if the given request has permission to change the `obj`
+        model instance. If `obj` is None, this should return True if the given
+        request has permission to change *any* object of the given type.
+        """
+        opts = self.opts
+        return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission())
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Returns True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+
+        Can be overriden by the user in subclasses. In such case it should
+        return True if the given request has permission to delete the `obj`
+        model instance. If `obj` is None, this should return True if the given
+        request has permission to delete *any* object of the given type.
+        """
+        opts = self.opts
+        return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission())
 
 class ModelAdmin(BaseModelAdmin):
     "Encapsulates all admin options and functionality for a given model."
@@ -307,18 +342,22 @@ class ModelAdmin(BaseModelAdmin):
         self.model = model
         self.opts = model._meta
         self.admin_site = admin_site
-        self.inline_instances = []
-        for inline_class in self.inlines:
-            inline_instance = inline_class(self.model, self.admin_site)
-            self.inline_instances.append(inline_instance)
-        if 'action_checkbox' not in self.list_display and self.actions is not None:
-            self.list_display = ['action_checkbox'] +  list(self.list_display)
-        if not self.list_display_links:
-            for name in self.list_display:
-                if name != 'action_checkbox':
-                    self.list_display_links = [name]
-                    break
         super(ModelAdmin, self).__init__()
+
+    def get_inline_instances(self, request):
+        inline_instances = []
+        for inline_class in self.inlines:
+            inline = inline_class(self.model, self.admin_site)
+            if request:
+                if not (inline.has_add_permission(request) or
+                        inline.has_change_permission(request) or
+                        inline.has_delete_permission(request)):
+                    continue
+                if not inline.has_add_permission(request):
+                    inline.max_num = 0
+            inline_instances.append(inline)
+
+        return inline_instances
 
     def get_urls(self):
         from django.conf.urls import patterns, url
@@ -368,42 +407,6 @@ class ModelAdmin(BaseModelAdmin):
         if self.opts.get_ordered_objects():
             js.extend(['getElementsBySelector.js', 'dom-drag.js' , 'admin/ordering.js'])
         return forms.Media(js=[static('admin/js/%s' % url) for url in js])
-
-    def has_add_permission(self, request):
-        """
-        Returns True if the given request has permission to add an object.
-        Can be overriden by the user in subclasses.
-        """
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_add_permission())
-
-    def has_change_permission(self, request, obj=None):
-        """
-        Returns True if the given request has permission to change the given
-        Django model instance, the default implementation doesn't examine the
-        `obj` parameter.
-
-        Can be overriden by the user in subclasses. In such case it should
-        return True if the given request has permission to change the `obj`
-        model instance. If `obj` is None, this should return True if the given
-        request has permission to change *any* object of the given type.
-        """
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission())
-
-    def has_delete_permission(self, request, obj=None):
-        """
-        Returns True if the given request has permission to change the given
-        Django model instance, the default implementation doesn't examine the
-        `obj` parameter.
-
-        Can be overriden by the user in subclasses. In such case it should
-        return True if the given request has permission to delete the `obj`
-        model instance. If `obj` is None, this should return True if the given
-        request has permission to delete *any* object of the given type.
-        """
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission())
 
     def get_model_perms(self, request):
         """
@@ -500,7 +503,7 @@ class ModelAdmin(BaseModelAdmin):
             fields=self.list_editable, **defaults)
 
     def get_formsets(self, request, obj=None):
-        for inline in self.inline_instances:
+        for inline in self.get_inline_instances(request):
             yield inline.get_formset(request, obj)
 
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
@@ -647,6 +650,18 @@ class ModelAdmin(BaseModelAdmin):
         """
         return self.list_display
 
+    def get_list_display_links(self, request, list_display):
+        """
+        Return a sequence containing the fields to be displayed as links
+        on the changelist. The list_display parameter is the list of fields
+        returned by get_list_display().
+        """
+        if self.list_display_links or not list_display:
+            return self.list_display_links
+        else:
+            # Use only the first item in list_display as link
+            return list(list_display)[:1]
+
     def construct_change_message(self, request, form, formsets):
         """
         Construct a change message from a changed object.
@@ -764,7 +779,9 @@ class ModelAdmin(BaseModelAdmin):
             return HttpResponseRedirect(post_url_continue % pk_value)
 
         if "_popup" in request.POST:
-            return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % \
+            return HttpResponse(
+                '<!DOCTYPE html><html><head><title></title></head><body>'
+                '<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script></body></html>' % \
                 # escape() calls force_unicode.
                 (escape(pk_value), escapejs(obj)))
         elif "_addanother" in request.POST:
@@ -914,6 +931,7 @@ class ModelAdmin(BaseModelAdmin):
 
         ModelForm = self.get_form(request)
         formsets = []
+        inline_instances = self.get_inline_instances(request)
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES)
             if form.is_valid():
@@ -923,7 +941,7 @@ class ModelAdmin(BaseModelAdmin):
                 form_validated = False
                 new_object = self.model()
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):
+            for FormSet, inline in zip(self.get_formsets(request), inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
@@ -951,8 +969,7 @@ class ModelAdmin(BaseModelAdmin):
                     initial[k] = initial[k].split(",")
             form = ModelForm(initial=initial)
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request),
-                                       self.inline_instances):
+            for FormSet, inline in zip(self.get_formsets(request), inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
@@ -968,7 +985,7 @@ class ModelAdmin(BaseModelAdmin):
         media = self.media + adminForm.media
 
         inline_admin_formsets = []
-        for inline, formset in zip(self.inline_instances, formsets):
+        for inline, formset in zip(inline_instances, formsets):
             fieldsets = list(inline.get_fieldsets(request))
             readonly = list(inline.get_readonly_fields(request))
             prepopulated = dict(inline.get_prepopulated_fields(request))
@@ -1012,6 +1029,7 @@ class ModelAdmin(BaseModelAdmin):
 
         ModelForm = self.get_form(request, obj)
         formsets = []
+        inline_instances = self.get_inline_instances(request)
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES, instance=obj)
             if form.is_valid():
@@ -1021,8 +1039,7 @@ class ModelAdmin(BaseModelAdmin):
                 form_validated = False
                 new_object = obj
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request, new_object),
-                                       self.inline_instances):
+            for FormSet, inline in zip(self.get_formsets(request, new_object), inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
@@ -1043,7 +1060,7 @@ class ModelAdmin(BaseModelAdmin):
         else:
             form = ModelForm(instance=obj)
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request, obj), self.inline_instances):
+            for FormSet, inline in zip(self.get_formsets(request, obj), inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
@@ -1059,7 +1076,7 @@ class ModelAdmin(BaseModelAdmin):
         media = self.media + adminForm.media
 
         inline_admin_formsets = []
-        for inline, formset in zip(self.inline_instances, formsets):
+        for inline, formset in zip(inline_instances, formsets):
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
             prepopulated = dict(inline.get_prepopulated_fields(request, obj))
@@ -1084,29 +1101,31 @@ class ModelAdmin(BaseModelAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        "The 'change list' admin view for this model."
+        """
+        The 'change list' admin view for this model.
+        """
         from django.contrib.admin.views.main import ERROR_FLAG
         opts = self.model._meta
         app_label = opts.app_label
         if not self.has_change_permission(request, None):
             raise PermissionDenied
 
+        list_display = self.get_list_display(request)
+        list_display_links = self.get_list_display_links(request, list_display)
+
         # Check actions to see if any are available on this changelist
         actions = self.get_actions(request)
-
-        # Remove action checkboxes if there aren't any actions available.
-        list_display = list(self.get_list_display(request))
-        if not actions:
-            try:
-                list_display.remove('action_checkbox')
-            except ValueError:
-                pass
+        if actions:
+            # Add the action checkboxes if there are any actions available.
+            list_display = ['action_checkbox'] +  list(list_display)
 
         ChangeList = self.get_changelist(request)
         try:
-            cl = ChangeList(request, self.model, list_display, self.list_display_links,
-                self.list_filter, self.date_hierarchy, self.search_fields,
-                self.list_select_related, self.list_per_page, self.list_max_show_all, self.list_editable, self)
+            cl = ChangeList(request, self.model, list_display,
+                list_display_links, self.list_filter, self.date_hierarchy,
+                self.search_fields, self.list_select_related,
+                self.list_per_page, self.list_max_show_all, self.list_editable,
+                self)
         except IncorrectLookupParameters:
             # Wacky lookup parameters were given, so redirect to the main
             # changelist page, without parameters, and pass an 'invalid=1'
@@ -1377,6 +1396,7 @@ class InlineModelAdmin(BaseModelAdmin):
         # if exclude is an empty list we use None, since that's the actual
         # default
         exclude = exclude or None
+        can_delete = self.can_delete and self.has_delete_permission(request, obj)
         defaults = {
             "form": self.form,
             "formset": self.formset,
@@ -1386,7 +1406,7 @@ class InlineModelAdmin(BaseModelAdmin):
             "formfield_callback": partial(self.formfield_for_dbfield, request=request),
             "extra": self.extra,
             "max_num": self.max_num,
-            "can_delete": self.can_delete,
+            "can_delete": can_delete,
         }
         defaults.update(kwargs)
         return inlineformset_factory(self.parent_model, self.model, **defaults)
@@ -1397,6 +1417,44 @@ class InlineModelAdmin(BaseModelAdmin):
         form = self.get_formset(request, obj).form
         fields = form.base_fields.keys() + list(self.get_readonly_fields(request, obj))
         return [(None, {'fields': fields})]
+
+    def queryset(self, request):
+        queryset = super(InlineModelAdmin, self).queryset(request)
+        if not self.has_change_permission(request):
+            queryset = queryset.none()
+        return queryset
+
+    def has_add_permission(self, request):
+        if self.opts.auto_created:
+            # We're checking the rights to an auto-created intermediate model,
+            # which doesn't have its own individual permissions. The user needs
+            # to have the change permission for the related model in order to
+            # be able to do anything with the intermediate model.
+            return self.has_change_permission(request)
+        return request.user.has_perm(
+            self.opts.app_label + '.' + self.opts.get_add_permission())
+
+    def has_change_permission(self, request, obj=None):
+        opts = self.opts
+        if opts.auto_created:
+            # The model was auto-created as intermediary for a
+            # ManyToMany-relationship, find the target model
+            for field in opts.fields:
+                if field.rel and field.rel.to != self.parent_model:
+                    opts = field.rel.to._meta
+                    break
+        return request.user.has_perm(
+            opts.app_label + '.' + opts.get_change_permission())
+
+    def has_delete_permission(self, request, obj=None):
+        if self.opts.auto_created:
+            # We're checking the rights to an auto-created intermediate model,
+            # which doesn't have its own individual permissions. The user needs
+            # to have the change permission for the related model in order to
+            # be able to do anything with the intermediate model.
+            return self.has_change_permission(request, obj)
+        return request.user.has_perm(
+            self.opts.app_label + '.' + self.opts.get_delete_permission())
 
 class StackedInline(InlineModelAdmin):
     template = 'admin/edit_inline/stacked.html'
