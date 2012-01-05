@@ -2,10 +2,10 @@
 {% load url from future %}
 <div id="sub-menu">
     <ul>
-        <li {% if csel == 'profile' %}class="selected"{% endif %}><a href="{% url 'web:profile' %}">{% trans "Mi perfil" %}</a></li>
+        <li {% if csel == 'profile' %}class="selected"{% endif %}><a href="{% url 'web:profile' %}">{% trans "My Profile" %}</a></li>
         {% if user.is_superuser %}
-        <li {% if csel == 'users' %}class="selected"{% endif %}><a href="">{% trans "Usuarios" %}</a></li>
-        <li {% if csel == 'projects' %}class="selected"{% endif %}><a href="{% url 'web:admin-projects' %}">{% trans "Proyectos" %}</a></li>
+        <li {% if csel == 'users' %}class="selected"{% endif %}><a href="">{% trans "Users" %}</a></li>
+        <li {% if csel == 'projects' %}class="selected"{% endif %}><a href="{% url 'web:admin-projects' %}">{% trans "Projects" %}</a></li>
         {% endif %}
     </ul>
 </div>

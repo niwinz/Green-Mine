@@ -114,8 +114,7 @@ class ForgottenPasswordApiView(GenericView):
             )
             email_message.content_subtype = "html"
             email_message.send(fail_silently=True)
-            messages.info(request, _(u'Se ha enviado un un email con el enlace para'
-                                                        u' recuperar la contraseña'))
+            messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
 
             return self.render_to_ok({'redirect_to':'/'})
 

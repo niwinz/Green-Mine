@@ -53,13 +53,13 @@ class PasswordRecoveryView(GenericView):
         if form.is_valid():
             email = cache.get("fp_%s" % token)
             if not email:
-                messages.error(request, _(u'Token ha expirado, vuelva a intentarlo'))
+                messages.error(request, _(u'Token has expired, try again'))
                 return self.redirect(reverse('web:login'))
 
             user = models.User.objects.get(email=email)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            messages.info(request, _(u'La contraseña se ha reestablecido con exito.'))
+            messages.info(request, _(u'The password has been successfully restored.'))
 
             cache.delete("fp_%s" % token)
             return self.redirect(reverse('web:login'))
@@ -172,7 +172,7 @@ class ProjectCreateView(GenericView):
             user_role = self.parse_roles()
             if not user_role:
                 transaction.savepoint_rollback(sem)
-                emsg = _(u'Debe especificar al menos una persona al proyecto')
+                emsg = _(u'You must specify at least one person to the project')
                 messages.error(request, emsg)
                 return self.render(self.template_name, context)
             
@@ -221,7 +221,7 @@ class ProjectEditView(ProjectCreateView):
             user_role = self.parse_roles()
             if not user_role:
                 transaction.savepoint_rollback(sem)
-                emsg = _(u'Debe especificar al menos una persona al proyecto')
+                emsg = _(u'You must specify at least one person to the project')
                 messages.error(request, emsg)
                 return self.render(self.template_name, context)
 
@@ -311,7 +311,7 @@ class UserStoryCreateView(GenericView):
             instance.owner = request.user
             instance.project = project
             instance.save()
-            messages.info(request, _(u'La user story se ha creado correctamente'))
+            messages.info(request, _(u'The user story was created correctly'))
             if milestone:
                 return HttpResponseRedirect(milestone.get_dashboard_url())
             else:
@@ -349,7 +349,7 @@ class UserStoryEditView(GenericView):
         form = forms.UserStoryForm(request.POST, instance=user_story)
         if form.is_valid():
             user_story = form.save(commit=True)
-            messages.info(request, _(u'La user story se ha guardado correctamente'))
+            messages.info(request, _(u'The user story has been successfully saved'))
             return self.redirect(user_story.get_view_url())
 
         context = {
@@ -418,7 +418,7 @@ class TaskCreateView(GenericView):
             task.project = project
             task.save()
             
-            messages.info(request, _(u"La tarea ha sido creada con exito!"))
+            messages.info(request, _(u"The task has been created with success!"))
             return self.redirect(user_story.get_view_url())
 
         context = {
@@ -456,7 +456,7 @@ class TaskEditView(GenericView):
         if form.is_valid():
             task = form.save()
 
-            messages.info(request, _(u"La tarea ha sido creada con exito!"))
+            messages.info(request, _(u"The task has been created with success!"))
             return self.redirect(user_story.get_view_url())
 
         context = {

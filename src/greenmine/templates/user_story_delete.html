@@ -11,7 +11,7 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="return" class="btn01" href="{{ user_story.get_view_url }}">{% trans "Volver" %}</a>
+        <a id="return" class="btn01" href="{{ user_story.get_view_url }}">{% trans "Return" %}</a>
     </div>
 </div>
 {% endblock %}
@@ -22,7 +22,7 @@
     <div class="user-story-create">
         <form action="{{ current_url }}" method="post">
             {% csrf_token %}
-            <input type="submit" class="btn01" value="{% trans "Eliminar" %}" />
+            <input type="submit" class="btn01" value="{% trans "Remove" %}" />
         </form>
     </div>
 </div>

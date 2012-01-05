@@ -11,13 +11,13 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="user-story-delete" class="btn01" href="{{ user_story.get_delete_url }}">{% trans "Eliminar" %}</a>
-        <a id="user-story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Editar" %}</a>
-        <a id="task-new" class="btn01" href="{{ user_story.get_task_create_url }}">{% trans "Nueva tarea" %}</a>
+        <a id="user-story-delete" class="btn01" href="{{ user_story.get_delete_url }}">{% trans "Remove" %}</a>
+        <a id="user-story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Edit" %}</a>
+        <a id="task-new" class="btn01" href="{{ user_story.get_task_create_url }}">{% trans "New task" %}</a>
         {% if user_story.milestone %}
-        <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Back to dashboard" %}</a>
         {% else %}
-        <a id="return" class="btn01" href="{{ user_story.project.get_unassigned_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="return" class="btn01" href="{{ user_story.project.get_unassigned_dashboard_url }}">{% trans "Back to dashboard" %}</a>
         {% endif %}
     </div>
 </div>
@@ -54,7 +54,7 @@
 
         {% with subtasks=user_story.tasks.all %}
         <div class="form-field width100 tasks">
-            <h3>{% trans "Tareas en esta user_storyer story: " %}</h3>
+            <h3>{% trans "User story tasks in this story:" %}</h3>
             <div class="user-story-tasks">
                 {% for st in subtasks %}
                 <div class="user-story-task-item">
@@ -64,7 +64,7 @@
                         {% if st.assigned_to %}
                         <div class="assigned-to"><b>{% trans "Assigned to:" %}</b><span>{{ st.assigned_to }}</span></div>
                         {% else %}
-                        <div class="assigned-to not-assigned"><b>{% trans "Assigned to:" %}</b><span>{% trans "No body" %}</span></div>
+                        <div class="assigned-to not-assigned"><b>{% trans "Assigned to:" %}</b><span>{% trans "Nobody" %}</span></div>
                         {% endif %}
                     </div>
                     <div class="box-row row-priority radio-choices" rel="change-priority-api-url">
@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 {% empty %}
-                <p>{% trans "No hay tareas, añade una!" %}</p>
+                <p>{% trans "No tasks, add one!" %}</p>
                 {% endfor %}
             </div>
         </div>

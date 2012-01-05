@@ -54,14 +54,14 @@ class AdminProjectsView(GenericView):
             self.upload_backup(form.cleaned_data)
             return HttpResponseRedirect(reverse('web:admin-projects'))
 
-        messages.error(request, _(u"Datos erroneos, seguramente por que se le olvido especificar un fichero."))
+        messages.error(request, _(u"Erroneous data, probably because you forgot to specify a file."))
         return self.render('config/projects.html', context)
 
     def upload_backup(self, data):
         try:
             zfile = zipfile.ZipFile(data['dumpfile'], 'r')
         except zipfile.BadZipfile:
-            messages.error(self.request, _(u"El archivo debe ser un zip valido."))
+            messages.error(self.request, _(u"The zip file must be a valid."))
             return
 
         zfile_names = zfile.namelist()
@@ -95,12 +95,12 @@ class AdminProjectsView(GenericView):
 
         projects = list(serializers.deserialize('json', projects))
         if len(projects) > 1 or len(projects) < 1:
-            messages.error(self.request, _(u"Backup invalido"))
+            messages.error(self.request, _(u"Backup invalid"))
             return
 
         project = projects[0]
         if models.Project.objects.filter(slug=project.object.slug).exists():
-            messages.error(self.request, _(u"El proyecto ya existe, abortado."))
+            messages.error(self.request, _(u"The project already exists, aborted."))
             return
         
         project.object.id = None
@@ -179,7 +179,7 @@ class AdminProjectsView(GenericView):
             task.save()
             big_map['tsk'][old_id] = task.object.id
 
-        messages.info(self.request, _(u"Backup restaurado con exito."))
+        messages.info(self.request, _(u"Backup successfully restored."))
     
     @login_required
     def dispatch(self, *args, **kwargs):

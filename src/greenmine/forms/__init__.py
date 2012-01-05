@@ -57,9 +57,9 @@ class CharField(DjangoCharField):
 
 class LoginForm(Form):
     username = CharField(max_length=200, min_length=4, 
-        required=True, type='text', label=_(u'Nombre de usuario'))
+        required=True, type='text', label=_(u'Username'))
     password = CharField(max_length=200, min_length=4, 
-        required=True, type='password', label=_(u'Contraseña'))
+        required=True, type='password', label=_(u'Password'))
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop('request', None)
@@ -101,7 +101,7 @@ class ForgottenPasswordForm(Form):
                 self.user = User.objects.get(email=cleaned_data['email'])
             except User.DoesNotExist:
                 self._errors['email'] = self.error_class(
-                    [_(u'El email no corresponde a ningun usuario registrado.')]
+                    [_(u'The email does not correspond to any registered user.')]
                 )
                 del cleaned_data['email']
 
@@ -110,16 +110,16 @@ class ForgottenPasswordForm(Form):
 
 class PasswordRecoveryForm(Form):
     password = forms.CharField(max_length=200, widget=forms.PasswordInput,
-        label=_(u'Escriba su nueva contraseña'))
+        label=_(u'Enter your new password'))
     password2 = forms.CharField(max_length=200, widget=forms.PasswordInput,
-        label=_(u'Vuelva a escribir la contraseña'))
+        label=_(u'Retype the password'))
 
     def clean(self):
         cleaned_data = self.cleaned_data
         if 'password2' in cleaned_data and 'password' in cleaned_data:
             if cleaned_data['password'] != cleaned_data['password2']:
                 self._errors['password2'] = self.error_class(
-                    [_(u'Las contraseñas no coinciden')]
+                    [_(u'Passwords do not match')]
                 )
                 del cleaned_data['password2']
                 del cleaned_data['password']
@@ -129,14 +129,14 @@ class PasswordRecoveryForm(Form):
 
 class ProfileForm(Form):
     username = CharField(max_length=200, min_length=4, 
-        required=True, type='text', label=_(u'Nombre de usuario'))
+        required=True, type='text', label=_(u'Username'))
     password = CharField(max_length=200, min_length=4, 
-        required=False, type='password', label=_(u'Contraseña'))
+        required=False, type='password', label=_(u'Password'))
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
     description = forms.CharField(widget=Textarea, required=False,
-        label=_(u'Descripcion'))
-    photo = forms.ImageField(required=False, label=_(u'Foto'))
+        label=_(u'Description'))
+    photo = forms.ImageField(required=False, label=_(u'Photo'))
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -162,8 +162,8 @@ class ProfileForm(Form):
 
 class ProjectForm(Form):
     projectname = CharField(max_length=200, min_length=4,
-        required=True, type='text', label=_(u'Nombre de proyecto'))
-    description = CharField(widget=Textarea(), label=_(u'Descripcion'))
+        required=True, type='text', label=_(u'Project name'))
+    description = CharField(widget=Textarea(), label=_(u'Description'))
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop('request', None)
@@ -180,8 +180,8 @@ class ProjectForm(Form):
         if "projectname" in cleaned_data and Project.objects\
             .filter(name=cleaned_data['projectname']).count() > 0:
 
-            messages.error(self._request, _(u'Nombre de proyecto ya esta ocupado.'))
-            raise forms.ValidationError(u'Nombre de proyecto ya esta ocupado.')
+            messages.error(self._request, _(u'Project name is already occupied.'))
+            raise forms.ValidationError(u'Project name is already occupied.')
 
         return cleaned_data
 

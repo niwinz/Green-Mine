@@ -11,7 +11,7 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="return" class="btn01" href="{{ user_story.get_view_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="return" class="btn01" href="{{ user_story.get_view_url }}">{% trans "Back to dashboard" %}</a>
     </div>
 </div>
 {% endblock %}
@@ -23,7 +23,7 @@
         <form action="{{ current_url }}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" class="btn01" value="{% trans "Guardar" %}" />
+            <input type="submit" class="btn01" value="{% trans "Save" %}" />
         </form>
     </div>
 </div>

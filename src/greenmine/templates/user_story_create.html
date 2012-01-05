@@ -12,9 +12,9 @@
     </div>
     <div class="right">
         {% if milestone %}
-        <a id="return" class="btn01" href="{{ milestone.get_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="return" class="btn01" href="{{ milestone.get_dashboard_url }}">{% trans "Back to dashboard" %}</a>
         {% else %}
-        <a id="return" class="btn01" href="{{ project.get_unassigned_dashboard_url }}">{% trans "Volver a dashboard" %}</a>
+        <a id="return" class="btn01" href="{{ project.get_unassigned_dashboard_url }}">{% trans "Back to dashboard" %}</a>
         {% endif %}
     </div>
 </div>
@@ -27,7 +27,7 @@
         <form action="{{ current_url }}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" class="btn01" value="{% trans "Guardar" %}" />
+            <input type="submit" class="btn01" value="{% trans "Save" %}" />
         </form>
     </div>
 </div>

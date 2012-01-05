@@ -68,7 +68,7 @@ def random_name(chars=string.ascii_lowercase, length=16, prefix='',suffix=''):
 
 def api_login_required(function):
     def _view_wrapper(request, *args, **kwargs):
-        response = {'id': None, 'valid': False, 'errors':[_(u'Tiene que iniciar session para proceder')]}
+        response = {'id': None, 'valid': False, 'errors':[_(u'You have to start session to proceed')]}
         if request.user.is_authenticated() or request.path == '/api/login':
             return function(request, *args, **kwargs)
         else:

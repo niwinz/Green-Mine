@@ -15,7 +15,7 @@ def login_required(view_func):
             return view_func(self, request, *args, **kwargs)
         else:
             if request.is_ajax():
-                response_dict = {'valid': False, 'errors':[_(u"Permision denied.")]}
+                response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
                 response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
                 return HttpResponse(response_data, mimetype='text/plain')
             else:
