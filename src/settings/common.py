@@ -38,6 +38,16 @@ CACHES = {
 }
 
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'django.contrib.auth.hashers.CryptPasswordHasher',
+]
+
+
 SEND_BROKEN_LINK_EMAILS = True
 IGNORABLE_404_ENDS = ('.php', '.cgi')
 IGNORABLE_404_STARTS = ('/phpmyadmin/',)
@@ -69,6 +79,8 @@ DEFAULT_FROM_EMAIL = "niwi@niwi.be"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
+SV_CSS_MENU_ACTIVE = 'selected'
+SV_CONTEXT_VARNAME = 'menu'
 
 # Message System
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -125,24 +137,18 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.csrf.CsrfResponseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-import django
-# django 1.4 compatibility
-if django.VERSION[:2] > (1,3):
-    i = MIDDLEWARE_CLASSES.index("django.middleware.csrf.CsrfResponseMiddleware")
-    del MIDDLEWARE_CLASSES[i]
-
 
 TEMPLATE_CONTEXT_PROCESSORS = [
     "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
-    'django.core.context_processors.static',
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
     "greenmine.context.main",
 ]
@@ -163,6 +169,8 @@ INSTALLED_APPS = [
     'greenmine_mobile',
     'html5forms',
 ]
+
+WSGI_APPLICATION = 'greenmine.wsgi.application'
 
 LOGGING = {
     'version': 1,
@@ -229,6 +237,8 @@ LOGGING = {
 
 AUTH_PROFILE_MODULE = 'greenmine.Profile'
 FORMAT_MODULE_PATH = 'greenmine.formats'
-DATE_INPUT_FORMATS = ('%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',
-'%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
-'%B %d, %Y', '%d %B %Y', '%d %B, %Y')
+DATE_INPUT_FORMATS = (
+    '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',
+    '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
+    '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
+)
