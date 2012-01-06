@@ -236,6 +236,19 @@ div.main-menu ul.right-menu li {
     width: 295px;
 }
 
+#dashboard .right-block .context-menu {
+    margin-bottom: 10px;
+}
+#dashboard .right-block .context-menu ul {
+    list-style: none;
+    text-align: right;
+}
+
+#dashboard .right-block .context-menu ul li {
+    display: inline;
+    padding-left: 10px;
+    font-size: 11px;
+}
 
 
 div.fieldset {

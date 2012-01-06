@@ -15,7 +15,7 @@
                     <span><a href="">{{ us.ref }}</a></span>
                 </div>
                 <div class="row title">
-                    <span><a href="">{{ us.description|truncatechars:40 }}</a></span>
+                    <span><a href="">{{ us.description|truncatechars:45 }}</a></span>
                 </div>
                 <div class="row priority">
                     <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>
@@ -31,6 +31,12 @@
         </div>
     </div>       
     <div class="right-block">
+        <div class="context-menu">
+            <ul>
+                <li><a href="">{% trans "Add new user story" %}</a></li>
+                <li><a href="">{% trans "Add new milestone" %}</a></li>
+            </ul>
+        </div>
         <div class="milestones">
             {% for ml in milestones %}
             <div class="milestone-item {% if ml == milestone %}selected{% endif %}">
