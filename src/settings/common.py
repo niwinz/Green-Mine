@@ -52,9 +52,6 @@ SEND_BROKEN_LINK_EMAILS = True
 IGNORABLE_404_ENDS = ('.php', '.cgi')
 IGNORABLE_404_STARTS = ('/phpmyadmin/',)
 
-REPO_ROOT = os.path.join(PROJECT_ROOT, 'repos')
-AUTH_REALM = "Greenmine mercurial proxy"
-
 TIME_ZONE = 'Europe/Madrid'
 LANGUAGE_CODE = 'es'
 USE_I18N = True
@@ -175,6 +172,11 @@ WSGI_APPLICATION = 'greenmine.wsgi.application'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'formatters': {
         'simple': {
             'format': '%(levelname)s:%(asctime)s:%(module)s %(message)s'
@@ -203,6 +205,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
