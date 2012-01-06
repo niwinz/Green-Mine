@@ -29,7 +29,6 @@ from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 import datetime
 
-
 class ApiLogin(GenericView):
     def post(self, request):
         login_form = forms.LoginForm(request.POST, request = request)
@@ -97,6 +96,7 @@ from django.core.cache import cache
 import uuid
 
 class ForgottenPasswordApiView(GenericView):
+    """ TODO: send mails asyncronous with celery tasks. """
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
@@ -115,7 +115,6 @@ class ForgottenPasswordApiView(GenericView):
             email_message.content_subtype = "html"
             email_message.send(fail_silently=True)
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
-
             return self.render_to_ok({'redirect_to':'/'})
 
         return self.render_to_error(form.jquery_errors)

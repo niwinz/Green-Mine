@@ -26,7 +26,6 @@
 <div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
     {% include "messages.html" %}
     <ul id="milestones">
-        {# TODO: order_by filter #}
         {% for ml in project.milestones.all %}
         <li class="milestone {% if ml == milestone %}selected{% endif %}">
             <div class="ml">
@@ -39,25 +38,15 @@
             <a class="detail-ml" href="{{ ml.get_ml_detail_url }}"></a>
         </li>
         {% endfor %}
-
         <li class="milestone {% if not milestone %}selected{% endif %}">
             <div class="ml">
                 <a href="{{ project.get_unassigned_dashboard_url }}" class="name">{% trans "Unassigned" %}</a>
             </div>
         </li>
     </ul>
-
+    
+    <!-- TODO: filters -->
     <div id="tasks-filters">
-        <!-- TODO: fix this form and javascript -->
-        <p>
-            {{ filtersform.to }}
-        </p>
-        <p>
-            {{ filtersform.state }}
-        </p>
-        <p>
-            {{ filtersform.priority }}
-        </p>
     </div>
 
     <ul id="tasks">

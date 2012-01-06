@@ -110,14 +110,14 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
 #tasks-filters p{float: left; margin-right: 10px;}
 
-#tasks{float: right; width: 650px;}
+#tasks{float: right; width: 668px;}
 #tasks li{
     border: 1px solid #ddd; 
     background-color: #eee;
     line-height: 25px;
     margin-bottom: 2px; 
     position: relative;
-    width: 647px; 
+    width: 663px; 
     background-color: #FFF;
     height: 50px;
 }
