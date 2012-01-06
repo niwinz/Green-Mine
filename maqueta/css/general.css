@@ -54,6 +54,49 @@ form input[type="text"], form input[type="password"], form textarea, form input[
     border: 1px solid #ddd;
     border-radius:2px;
 }
+
+div.main-menu {
+    width:980px;
+    margin: 0px auto 0 auto;
+    padding: 0px;
+    overflow: hidden;
+}
+div.main-menu ul.menu-item {
+    margin-top: 10px;
+    list-style: none;
+    float: left;
+    display: block;
+}
+div.main-menu ul.menu-item li {
+    display: inline;
+}
+div.main-menu ul.menu-item li a { 
+    text-decoration: none;
+}
+
+div.main-menu ul.menu-item li.selected a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+div.main-menu ul.left-menu {
+    width: 770px;
+}
+
+div.main-menu ul.left-menu li {
+    padding-right: 10px;
+}
+
+div.main-menu ul.right-menu {
+    width: 200px;
+    text-align: right;
+}
+
+div.main-menu ul.right-menu li {
+    padding-left: 10px;
+}
+
+
 #sub-menu{width: 100%; overflow: auto; margin-bottom: 20px;}
 #sub-menu li{float:left; margin-right:10px;}
 #sub-menu a{ font-weight:bold; text-decoration: none; color:#000; border: 1px solid #458745; padding: 12px 35px; line-height: 15px; float: left; border-radius: 7px;}

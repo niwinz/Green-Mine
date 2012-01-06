@@ -41,8 +41,6 @@ class LoginView(GenericView):
             {'form': login_form, 'form2': forgotten_password_form})
 
 
-
-
 class PasswordRecoveryView(GenericView):
     template_name = "password_recovery.html"
 
@@ -94,9 +92,9 @@ class HomeView(GenericView):
         return self.render(self.template_name, context)
     
 
-class DashboardView(GenericView):
+class BacklogView(GenericView):
     """ General dasboard view,  with all milestones and all tasks. """
-    template_name = 'dashboard.html'
+    template_name = 'backlog.html'
 
     @login_required
     def get(self, request, pslug, mid=None):
@@ -119,8 +117,8 @@ class DashboardView(GenericView):
         return self.render(self.template_name, context)
 
 
-class MilestoneDashboardView(GenericView):
-    template_name = 'dashboard_milestone.html'
+class DashboardView(GenericView):
+    template_name = 'dashboard.html'
 
     @login_required
     def get(self, request, pslug, mid):

@@ -18,7 +18,20 @@
         <li><a href="{% url "web:auth_logout" %}">{% trans "Logout" %}</a></li>
     </ul>
 </div>
-{% block middle %}{% endblock %}
+<div class="main-menu">
+    {% block middle %}
+    <ul class="left-menu menu-item">
+        <li><a href="">{% trans "Backlog" %}</a></li>
+        <li><a href="">{% trans "Dashboard" %}</a></li>
+        <li><a href="">{% trans "Wiki" %}</a></li>
+    </ul>
+
+    <ul class="right-menu menu-item">
+        <li><a href="">{% trans "Projects" %}</a></li>
+        <li><a href="">{% trans "Settings" %}</a></li>
+    </ul>
+    {% endblock %}
+</div>
 <div id="wrapper">
     {% block wrapper %}{% endblock %}
 </div>

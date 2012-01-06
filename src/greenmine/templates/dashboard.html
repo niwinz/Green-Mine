@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load i18n %}
+{% load cache %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
@@ -10,71 +11,38 @@
         <div id="bin"></div>
     </div>
     <div class="right">
-        <a id="project-admin" class="btn01" href="">{% trans "Notifications" %}</a>
-        <a id="new-milestone" class="btn01" href="">{% trans "New Sprint" %}</a>
-
-        {% if milestone %}
-        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}">{% trans "New UserStory" %}</a>
-        {% else %}
-        <a id="new-us" class="btn01" href="{{ project.get_user_story_create_url }}">{% trans "New UserStory" %}</a>
-        {% endif %}
+        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}?next={{ current_url }}">{% trans "New US" %}</a>
+        <a id="new-task" class="btn01" href="{{ milestone.get_create_task_url }}">{% trans "New task" %}</a>
     </div>
 </div>
 {% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
-    {% include "messages.html" %}
-    <ul id="milestones">
-        {% for ml in project.milestones.all %}
-        <li class="milestone {% if ml == milestone %}selected{% endif %}">
-            <div class="ml">
-                <a href="{{ ml.get_dashboard_url }}" class="name">{{ ml.name }}</a>
-                {% if ml.estimated_finish %}
-                <div><span class="estimated_finish">{{ ml.estimated_finish }}</span></div>
-                {% endif %}
-            </div>
-            <a href="" class="icon0 edit"></a>
-            <a class="detail-ml" href="{{ ml.get_ml_detail_url }}"></a>
-        </li>
-        {% endfor %}
-        <li class="milestone {% if not milestone %}selected{% endif %}">
-            <div class="ml">
-                <a href="{{ project.get_unassigned_dashboard_url }}" class="name">{% trans "Unassigned" %}</a>
-            </div>
-        </li>
-    </ul>
-    
-    <!-- TODO: filters -->
-    <div id="tasks-filters">
+<div id="milestone-dashboard" rel="{{ milestone.id }}">
+    <div id="milestone-dashboard-title">
+        <h2>{{ milestone.name }}</h2>
     </div>
-
-    <ul id="tasks">
-        {% if not milestone %}
-            {% for us in project.unasociated_user_stories %}
-            <li class="task">
-                <div class="dg">{{ us.subject }}
-                    <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
-                </div>
-                <a class="edit" href="{{ us.get_edit_url }}"></a>
-                <a class="detail" href="{{ us.get_view_url }}"></a>
-            </li>
-            {% empty %}
-            <h3>No hay user stories</h3>
-            {% endfor %}
-        {% else %}
-            {% for us in milestone.user_stories.all %}
-            <li class="task">
-                <div class="dg">{{ us.subject }}
-                    <span>[ Estado: {{ us.get_status_display }} | Prioridad: {{ us.get_priority_display }} ]</span>
-                </div>
-                <a class="edit" href="{{ us.get_edit_url }}"></a>
-                <a class="detail" href="{{ us.get_view_url }}"></a>
-            </li>
-            {% empty %}
-            <h3>No hay user stories</h3>
-            {% endfor %}
-        {% endif %}
-    </ul>
+    <div id="progress-bar" rel="{{ milestone.get_stats_api_url }}"></div>
+    <div id="user-stories-module">
+        <div class="user-story-legend">
+            <div class="user-story-header hfield">
+                <b>User story: </b>
+            </div>
+            <div class="user-story-status hfield status-new">
+                <b>New tasks...</b>
+            </div>
+            <div class="user-story-status hfield status-progess">
+                <b>Tasks in progress...</b>
+            </div>
+            <div class="user-story-status hfield status-closed">
+                <b>Tasks finished...</b>
+            </div>
+        </div>
+        {% for us in uss %}
+            {% cache 3600 us.id us.modified_date %}
+            {% include "modules/user-story-dashboard.html" %}
+            {% endcache %}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
