@@ -105,6 +105,7 @@ class BacklogView(GenericView):
         
         context = {
             'project': project,
+            'milestones': project.milestones.order_by('-created_date'),
             'unassigned_us': unassigned
         }
 
@@ -121,6 +122,9 @@ class DashboardView(GenericView):
 
         milestones = project.milestones.order_by('-created_date')
         milestone = milestones.get(pk=mid) if mid is not None else milestones[0]
+
+        if mid is None:
+            return self.render_redirect(milestone.get_dashboard_url())
 
         context = {
             'uss':milestone.user_stories.all(),

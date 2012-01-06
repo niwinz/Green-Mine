@@ -5,6 +5,7 @@
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
+{% comment %}
 {% block middle %}
 <div id="dashboard-actions">
     <div class="left">
@@ -16,6 +17,7 @@
     </div>
 </div>
 {% endblock %}
+{% endcomment %}
 
 {% block wrapper %}
 <div id="milestone-dashboard" rel="{{ milestone.id }}">

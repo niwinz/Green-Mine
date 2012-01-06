@@ -170,7 +170,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project-dashboard', (), {'pslug': self.slug})
+        return ('web:dashboard', (), {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_url(self):
@@ -251,7 +251,7 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:project-dashboard', (),
+        return ('web:dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink

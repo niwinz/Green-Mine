@@ -32,7 +32,7 @@
     </div>       
     <div class="right-block">
         <div class="milestones">
-            {% for ml in project.milestones.all %}
+            {% for ml in milestones %}
             <div class="milestone-item {% if ml == milestone %}selected{% endif %}">
                 <div class="milestone-title">
                     <div class="text">{{ ml.name|capfirst }}</div>
