@@ -74,7 +74,7 @@ div.main-menu ul.menu-item li a {
     text-decoration: none;
 }
 
-div.main-menu ul.menu-item li.selected a {
+div.main-menu ul.menu-item li a.selected {
     text-decoration: none;
     font-weight: bold;
 }
@@ -149,73 +149,94 @@ div.main-menu ul.right-menu li {
 #project .th1{width: 309px;}
 #project .th2{width: 133px;}
 
-/* dashboard */
-#tasks-filters{width: 650px; float: right; margin-bottom: 20px;}
-#tasks-filters p{float: left; margin-right: 10px;}
 
-#tasks{float: right; width: 668px;}
-#tasks li{
-    border: 1px solid #ddd; 
-    background-color: #eee;
-    line-height: 25px;
-    margin-bottom: 2px; 
-    position: relative;
-    width: 663px; 
-    background-color: #FFF;
-    height: 50px;
+/* Backlog */
+#dashboard {
+    overflow:hidden;
 }
-#tasks .dg{padding: 0px 15px; height: 50px;}
-#tasks li:hover {cursor: move; background-color: #eee;}
-#tasks .edit{position: absolute; right: 4px; top: 2px;}
-#tasks span{font-size: 12px; position: absolute; top: 27px; right: 35px; line-height: 25px;}
 
-#milestones{float: left;}
-#milestones li{
-    line-height: 25px;
-    position: relative;
-    border: 1px solid #ddd;
-    color: #FFF; font-weight: bold;
-    background: #458745; margin-bottom: 2px;
-    width: 298px;
+#dashboard .left-block,
+#dashboard .right-block {
+    float:left;
 }
-#milestones li.add{background: #458745 url("../imgs/addt.png") no-repeat 2px center;}
-#milestones .ml{padding-left: 15px;}
-#milestones li:hover, #milestones li.selected{background-color: #99b5a3; cursor: pointer}
-#milestones li div div{float: right; font-size: 12px; margin-right: 28px;}
-#milestones a.icon0 {position: absolute; right: 2px; top: 2px;}
-#milestones .ml a { color: white; text-decoration: none;}
 
-#dashboard-actions .left{ float: left;}
-#dashboard-actions .right { float: right; }
-#dashboard-actions .btn01{
-    float: right; margin-right: 10px;
-    border: 2px solid white;
+#dashboard .left-block {
+    width: 650px;
 }
-#dashboard-actions {
-    margin-bottom: 20px; 
-    width: 100%; 
-    position: relative; 
-    height: 33px;
-    width: 980px;
-    padding: 10px;
-    margin: 10px auto 0 auto;
+
+#dashboard .left-block .unassigned-us {
+    padding: 5px;
+}
+
+#dashboard .left-block .unassigned-us .un-us-item {
+    padding: 5px;
     overflow: hidden;
+    border-bottom: 1px solid #ddd;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row {
+    float: left;
 }
 
-#form-inserts {
-    width: 980px;
-    margin: 10px auto 0 auto;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    background-color: white;
-    position: relative;
+#dashboard .left-block .unassigned-us .un-us-item .row.identify {
+    width: 65px;
+    font-family: monospace;
 }
-#form-inserts #issue-lb #id_name,
-#form-inserts #milestone-lb #id_name {  width: 600px; }
-#form-inserts #issue-lb #id_description { width: 900px;}
-#form-inserts .submit-fieldset input { padding: 10px; }
-#form-inserts #task-lb #id_us { width: 200px; }
+
+#dashboard .left-block .unassigned-us .un-us-item .row.title { 
+    width: 380px;
+}
+
+#dashboard .left-block .unassigned-us .un-us-item .row.priority {
+    width: 65px;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.milestone {}
+#dashboard .left-block .unassigned-us .un-us-item .row.metaicon {
+    float: right;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.metaicon img,
+#dashboard .left-block .unassigned-us .un-us-item .row { cursor: pointer; }
+
+
+#dashboard .right-block {
+    width: 325px;
+}
+#dashboard .right-block .milestone-item {
+    margin-bottom: 10px;
+    background-color: #eee;
+    padding: 5px;
+}
+
+#dashboard .right-block .milestone-item .milestone-title { overflow: hidden; }
+#dashboard .right-block .milestone-item .milestone-title .text {
+    font-weight: bold;
+    padding-bottom: 4px;
+    float: left;
+}
+#dashboard .right-block .milestone-item .milestone-title .meta {
+    float: right;
+    font-size: 12px;
+}
+
+#dashboard .right-block .milestone-item .us-item {
+    overflow: hidden;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 20px;
+    vertical-align: middle;
+}
+#dashboard .right-block .milestone-item .us-item:hover {
+    background-color: white;
+}
+
+#dashboard .right-block .milestone-item .us-item .us-title,
+#dashboard .right-block .milestone-item .us-item .us-meta {
+    float: left;
+}
+#dashboard .right-block .milestone-item .us-item .us-title {
+    width: 295px;
+}
+
+
 
 div.fieldset {
     margin-bottom: 20px;

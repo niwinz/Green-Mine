@@ -173,9 +173,9 @@ class Project(models.Model):
         return ('web:project-dashboard', (), {'pslug': self.slug})
 
     @models.permalink
-    def get_unassigned_dashboard_url(self):
-        return ('web:project-dashboard', (),
-            {'pslug': self.slug, 'mid': 'unassigned'})
+    def get_backlog_url(self):
+        return ('web:project-backlog', (),
+            {'pslug': self.slug})
 
     @models.permalink
     def get_user_story_create_url(self):

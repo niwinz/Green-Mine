@@ -95,23 +95,17 @@ class HomeView(GenericView):
 class BacklogView(GenericView):
     """ General dasboard view,  with all milestones and all tasks. """
     template_name = 'backlog.html'
+    menu = ['backlog']
 
     @login_required
-    def get(self, request, pslug, mid=None):
+    def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        if mid:
-            if mid != 'unassigned':
-                milestone = get_object_or_404(project.milestones, pk=mid)
-            else:
-                milestone = None
-        else:
-            mqueryset = project.milestones.order_by('-created_date')
-            milestone = len(mqueryset) and mqueryset[0] or None
+        unassigned = project.user_stories.filter(milestone__isnull=True)\
+            .order_by('-priority')
         
         context = {
-            'filtersform': forms.FiltersForm(queryset=project.participants.all()),
             'project': project,
-            'milestone': milestone,
+            'unassigned_us': unassigned
         }
 
         return self.render(self.template_name, context)
@@ -119,14 +113,18 @@ class BacklogView(GenericView):
 
 class DashboardView(GenericView):
     template_name = 'dashboard.html'
+    menu = ['dashboard']
 
     @login_required
-    def get(self, request, pslug, mid):
+    def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        milestones = project.milestones.order_by('-created_date')
+        milestone = milestones.get(pk=mid) if mid is not None else milestones[0]
 
         context = {
-            'uss':milestone.user_stories.all(), 
+            'uss':milestone.user_stories.all(),
+            'milestones': milestones,
             'milestone':milestone,
             'project': project,
         }

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load static from staticfiles %}
+{% load i18n %}
 
 {% block wrapper %}
 <div id="projects">
@@ -7,15 +9,15 @@
     {% if page.paginator.count > 0 %}
     <table class="table01">
         <tr>
-            <th>Nombre</th>
-            <th>Propietario</th>
-            <th>Opciones</th>
+            <th>{% trans "Project name" %}</th>
+            <th>{% trans "Owner" %}</th>
+            <th>{% trans "Opctions" %}</th>
         </tr>
         {% for project in page.object_list %}
         <tr>
-            <td><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></td>
-            <td><img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />{{ project.owner.first_name }}</td>
-            <td><a href="{{project.get_edit_url}}">Editar</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">Borrar</a></td>
+            <td><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></td>
+            <td><img width="30" src="{% static "auxiliar/imgs/gravatar.jpg" %}" />{{ project.owner.first_name }}</td>
+            <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">{% trans "Delete" %}</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -24,6 +26,6 @@
     {% endif %}
 
     {% include "paginator.html" %}
-    <a href="{% url 'web:project-create' %}" class="btn01 float-right">Crear proyecto</a>
+    <a href="{% url 'web:project-create' %}" class="btn01 float-right">{% trans "Create project" %}</a>
 </div>
 {% endblock %}
