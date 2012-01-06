@@ -21,14 +21,18 @@
 <div class="main-menu">
     {% block middle %}
     <ul class="left-menu menu-item">
-        <li><a href="">{% trans "Backlog" %}</a></li>
-        <li><a href="">{% trans "Dashboard" %}</a></li>
-        <li><a href="">{% trans "Wiki" %}</a></li>
+        {% if menu.in_projects == "" %}
+        <li><a href="" class="{{ menu.in_backlog }}">{% trans "Backlog" %}</a></li>
+        <li><a href="" class="{{ menu.in_dashboard }}">{% trans "Dashboard" %}</a></li>
+        <li><a href="" class="{{ menu.in_wiki }}">{% trans "Wiki" %}</a></li>
+        {% endif %}
     </ul>
 
     <ul class="right-menu menu-item">
-        <li><a href="">{% trans "Projects" %}</a></li>
-        <li><a href="">{% trans "Settings" %}</a></li>
+        <li><a href="" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
+        {% if menu.in_projects == "" %}
+        <li><a href="" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
+        {% endif %}
     </ul>
     {% endblock %}
 </div>

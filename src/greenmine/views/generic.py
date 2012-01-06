@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from django.views.generic import View
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
@@ -19,6 +18,8 @@ from django.utils.decorators import method_decorator
 from django.utils import simplejson
 from ..utils import LazyEncoder
 
+from superview.views import SuperView as View
+
 class GenericView(View):
     """ Generic view with some util methods. """
 
@@ -26,46 +27,12 @@ class GenericView(View):
         return {}
 
     def render(self, template_name, context={}, **kwargs):
-        return render_to_response(template_name, context, 
-            context_instance=RequestContext(self.request))
-
-    def redirect(self, url, handle_referer=False):
-        """
-        Simple alias to HttpResponseRedirect method.
-        In future implement correct handling, «next» parameters, 
-        http referer, and others...
-        """
-        request = self.request
-        if handle_referer:
-            if "HTTP_REFERER" in request.META and \
-                                request.META['HTTP_REFERER'].strip():
-                # TODO: check if is local domain or not.
-                return HttpResponseRedirect(request.META['HTTP_REFERER'])
-
-        return HttpResponseRedirect(url)
-    
-    """ Api methods """
-
-    def render_to_response(self, context):
-        if isinstance(context, dict):
-            response_data = simplejson.dumps(context, cls=LazyEncoder, indent=4, sort_keys=True)
-        else:
-            response_data = context
-        return HttpResponse(response_data, mimetype='text/plain')
-
-    def render_to_error(self, context=[]):
-        response_dict = {'valid': False, 'errors':[]}
-        if isinstance(context, (str, unicode, dict)):
-            response_dict['errors'].append(context)
-        elif isinstance(context, (list,tuple)):
-            response_dict['errors'] = context
-
-        return self.render_to_response(response_dict)
+        return self.render_to_response(template_name, context=context, **kwargs)
 
     def render_to_ok(self, context={}):
         response = {'valid': True, 'errors': []}
         response.update(context)
-        return self.render_to_response(response)
+        return self.render_json(response)
 
     
 class ProjectGenericView(GenericView):

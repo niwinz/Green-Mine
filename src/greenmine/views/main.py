@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from django.views.generic import View
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
@@ -72,6 +71,7 @@ class PasswordRecoveryView(GenericView):
 class HomeView(GenericView):
     """ General user projects view """
     template_name = 'projects.html'
+    menu = ['projects']
 
     @login_required
     def get(self, request, *args, **kwargs):
