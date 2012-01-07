@@ -33,11 +33,25 @@ class LoginView(GenericView):
     
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
-        login_form, forgotten_password_form = \
-            forms.LoginForm(request=request), forms.ForgottenPasswordForm()
+        login_form = forms.LoginForm(request=request)
 
         return self.render(self.template_name, 
-            {'form': login_form, 'form2': forgotten_password_form})
+            {'form': login_form})
+
+    def post(self, request):
+        login_form = forms.LoginForm(request.POST, request=request)
+        if login_form.is_valid():
+            user_profile = login_form._user.get_profile()
+            if user_profile.default_language:
+                request.session['django_language'] = user_profile.default_language
+
+            return self.render_redirect("/")
+
+        return self.render_to_response(self.template_name,
+            {'form': login_form})
+           
+
+
 
 
 class PasswordRecoveryView(GenericView):

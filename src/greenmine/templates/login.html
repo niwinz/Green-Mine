@@ -3,15 +3,17 @@
 
 {% block middle-box %}
 <div id="login">
-    {% include "messages.html" %}
-    <form id="login-form" method="post" action="{% url 'api:login' %}"  >
+    <form id="login-form" method="post" action=""  >
+        {% csrf_token %}
         <fieldset>
             <div class="form-field">
                 <label>{{ form.username.label }}</label>
+                {{ form.username.errors }}
                 {{ form.username }}
             </div>
             <div class="form-field">
                 <label>{{ form.password.label }}</label>
+                {{ form.password.errors }}
                 {{ form.password }}
             </div>
             <p class="forgot-pass"><a id="open-forgotten-password-form" href="">¿Olvidaste la contraseña?</a></p>
@@ -21,6 +23,7 @@
             </div>
         </fieldset>
     </form>
+    {% comment %}
     <form id="forgotten-password-form" method="post" action="{% url 'api:password-forgotten' %}">
         <fieldset>
             <div class="form-field">
@@ -34,5 +37,6 @@
             </div>
         </fieldset>
     </form>
+    {% endcomment %}
 </div>
 {% endblock %}

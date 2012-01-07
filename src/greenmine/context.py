@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import messages
 from urlparse import urlparse
 
-from greenmine.models import GSettings
 
 def main(request):
     context_extra = dict(
@@ -15,12 +14,8 @@ def main(request):
     )
     
     # Put main_title into context
-    try:
-        tmp_main_title = GSettings.objects.get(key='core.maintitle')
-    except GSettings.DoesNotExist:
-        tmp_main_title = 'Greenmine'
-    finally:
-        context_extra['MAIN_TITLE'] = tmp_main_title
+    tmp_main_title = 'Greenmine'
+    context_extra['MAIN_TITLE'] = tmp_main_title
 
     # Make current_url manually
     context_extra['full_current_url'] = context_extra['current_url']

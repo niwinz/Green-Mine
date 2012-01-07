@@ -130,12 +130,6 @@ div.main-menu ul.right-menu li {
 #dashboard .detail-ml{background: url("../imgs/arrow-double-right.png") top left; width: 21px; height: 17px; display: block; position: absolute; right: 26px; top: 4px;}
 .delete-user-ac{margin-right: 10px; float: left;}
 .delete-user-ac a{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; float: right; margin-bottom: 8px;}
-#responses{width: 100%; float: left; border-top: 1px solid #eee;}
-#responses .response{width: 100%; float: left; border-bottom: 1px dotted #ddd; padding: 10px 0;}
-#responses .name{margin-bottom: 10px;}
-#responses .files{margin-top: 15px;}
-#responses form{width: 100%; float: left; margin-top: 15px;}
-#responses textarea{height: 100px; width: 800px;}
 #issue .list-files a{float: left;}
 #issue .list-files li{margin-right: 15px; float: left;}
 #issue .delete-file{display: block; background: url("../imgs/delete-icon.png") top left; width: 16px; height: 16px; margin-left: 2px; margin-bottom: 8px;}
@@ -183,11 +177,14 @@ div.main-menu ul.right-menu li {
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.title { 
-    width: 380px;
+    width: 365px;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.priority {
-    width: 65px;
+    width: 60px;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.points {
+    width: 35px;
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.milestone {}
 #dashboard .left-block .unassigned-us .un-us-item .row.metaicon {
@@ -426,7 +423,7 @@ div.fieldset div.field-inline {
 }
 
 .form-container .form-row.submit-row {
-    padding: 10px;
+    /*padding: 10px;*/
 }
 
 ul.errorlist {
@@ -477,3 +474,30 @@ ul.errorlist li {
 }
 #user-story-module .us-tasks .us-task-item .row.metaicon img,
 #user-story-module .us-tasks .us-task-item .row { cursor: pointer; }
+#user-story-module .inline { overflow: hidden; }
+
+.responses-list .response {
+    background-color: #eee;
+    position: relative;
+    border-bottom: 1px solid white;
+    padding: 10px;
+    overflow: hidden;
+}
+.responses-list .response .col { float: left; width: 40px; }
+.responses-list .response .col.second-col { width: 700px; }
+.responses-list .response .name {
+    color: #999;
+    padding-bottom: 10px;
+}
+.responses-list .responses-title {
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+.response-form {
+    margin-top: 20px;
+}
+.response-form #id_description {
+    width: 800px;
+    height: 100px;
+}

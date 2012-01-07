@@ -10,7 +10,7 @@
 <div id="user-story-module">
     <div class="inline">
         <div class="form-field">
-            <span class="label">{% trans "Subject" %}</span>
+            <span class="label">{% trans "User story subject" %}</span>
             <span>{{ user_story.subject }}</span>
         </div>
         <div class="form-field">
@@ -49,7 +49,7 @@
                         <span><a href="{{ st.get_view_url }}">{{ st.subject|truncatechars:45 }}</a></span>
                     </div>
                     <div class="row priority">
-                        <span priprity="{{ st.priority }}">{{ st.get_priority_display }}</span>
+                        <span priority="{{ st.priority }}">{{ st.get_priority_display }}</span>
                     </div>
                     <div class="row assignation">
                         <span><a href="">{{ st.assigned_to|default:"Unassigned" }}</a></span>
@@ -82,47 +82,66 @@
         {% endwith %}
         {% endcomment %}
     </div>
-    <div id="responses">
-        {% for response in user_story.responses.all %}
-        <div class="response">
-            <p class="name">
-                {% if response.owner.get_profile.photo %}
-                <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
-                {% else %}
-                <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
-                {% endif %}
-                {{ response.owner.first_name }} {{ response.owner.last_name }}
-            </p>
-            <div class="txt">{{ response.content|linebreaks }}</div>
-            {% with responsefiles=response.attached_files.all %}
-                {% if responsefiles|length > 0 %}
-                <p>
-                    {% for file in responsefiles %}
-                    <a href="{{ file.attached_file.url }}">{{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )</a>
-                    {% endfor %}
-                </p>
-                {% endif %}
-            {% endwith %}
-        </div>
-        {% endfor %}
 
-        <form class="validate" enctype="multipart/form-data" method="post" action="">
+    <div class="user-story-responses">
+        <div class="responses-list">
+            <div class="responses-title">
+                <span>{% trans "Responses:" %}</span>
+            </div>
+            {% for response in user_story.responses.all %}
+            <div class="response">
+                <div class="col">
+                    <div class="icon">
+                        {% if response.owner.get_profile.photo %}
+                        <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
+                        {% else %}
+                        <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col second-col">
+                    <div class="name">
+                        {{ response.owner.first_name }} {{ response.owner.last_name }}
+                    </div>
+                    <div class="content">
+                        {{ response.content|linebreaks }}
+                    </div>
+
+                    <div class="content-files">
+                        {% with responsefiles=response.attached_files.all %}
+                            {% if responsefiles|length > 0 %}
+                            <p>
+                                {% for file in responsefiles %}
+                                <a href="{{ file.attached_file.url }}">
+                                    {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
+                                </a>
+                                {% endfor %}
+                            </p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-container response-form">
+        <form enctype="multipart/form-data" method="post" action="">
             {% csrf_token %}
-            <fieldset>
-                <p class="form-field width100">
-                    <label>Escriba su comentario:</label>
-                    {{ form.description }}
-                    {{ form.description.errors }}
-                </p>      
-                <p class="form-field width100">
-                    {{ form.attached_file.label }}
-                    {{ form.attached_file }}
-                </p>                        
-                <p class="width100 float-left">
-                    <input class="btn01" type="submit" value="Enviar" />
-                </p>
-            </fieldset>
-        </form>                             
+            <div class="form-row">
+                <label>{% trans "Write your comment:" %}</label>
+                {{ form.description.errors }}
+                {{ form.description }}
+            </div>
+            <div class="form-row">
+                {{ form.attached_file.label }}
+                {{ form.attached_file.errors }}
+                {{ form.attached_file }}
+            </div>
+            <div class="form-row submit-row">
+                <input type="submit" value="{% trans "Send comment" %}" />
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
