@@ -48,6 +48,35 @@ var backlog_handlers = function() {
             buttons: buttons
         });
     });
+    $(".un-us-item .milestone a").live('click', function(event) {
+        event.preventDefault();
+
+        var buttons = {};
+        buttons[gettext("Ok")] = function() {
+        
+        };
+    });
+
+    $(".milestone-item .milestone-title  a.delete").live('click', function(event){
+        event.preventDefault();
+        var self = $(this);
+        // TODO: ajax call
+        
+        var buttons = {};
+        buttons[gettext('Ok')] = function() {
+            $(this).dialog('close');
+            self.parents('.milestone-item').remove();
+        };
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close');
+        };
+
+        $(".delete-milestone-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });
+    });
 };
 
 $(document).ready(function() {

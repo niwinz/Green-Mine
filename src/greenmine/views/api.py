@@ -29,19 +29,6 @@ from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 import datetime
 
-class ApiLogin(GenericView):
-    def post(self, request):
-        login_form = forms.LoginForm(request.POST, request = request)
-        if not login_form.is_valid():
-            return self.render_to_error(login_form.jquery_errors)
-
-        user_profile = login_form._user.get_profile()
-        if user_profile.default_language:
-            request.session['django_language'] = user_profile.default_language
-
-        return self.render_to_ok({'userid': login_form._user.id, 'redirect_to': '/'})
-
-
 class UserListApiView(GenericView):
     @login_required
     def get(self, request):

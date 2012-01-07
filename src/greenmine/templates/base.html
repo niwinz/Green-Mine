@@ -28,7 +28,7 @@
     </ul>
 
     <ul class="right-menu menu-item">
-        <li><a href="" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
+        <li><a href="{% url 'web:projects' %}" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
         {% if menu.in_projects == "" %}
         <li><a href="" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
         {% endif %}

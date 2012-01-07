@@ -4,7 +4,6 @@ from django.conf.urls.defaults import patterns, include, url
 from greenmine.views import api
 
 urlpatterns = patterns('',
-    url(r'^login$', api.ApiLogin.as_view(), name='login'),
     url(r'^user/list/$', api.UserListApiView.as_view(), name='user-list'),
     url(r'^project/(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/(?P<taskref>[\w\d]+)/alter/$',
         api.TaskAlterApiView.as_view(), name="task-alter"),
