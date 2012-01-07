@@ -33,8 +33,8 @@
     <div class="right-block">
         <div class="context-menu">
             <ul>
-                <li><a href="">{% trans "Add new user story" %}</a></li>
-                <li><a href="">{% trans "Add new milestone" %}</a></li>
+                <li><a class="new-us" href="">{% trans "Add new user story" %}</a></li>
+                <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
             </ul>
         </div>
         <div class="milestones">
@@ -63,6 +63,13 @@
             </div>
             {% endfor %}
         </div>
+    </div>
+</div>
+<div class="new-milestone-dialog" style="display: none">
+    <div class="dialog-content">
+        <form action="/gooo" method="POST">
+            {{ form_new_milestone.as_p }}
+        </form>
     </div>
 </div>
 {% endblock %}

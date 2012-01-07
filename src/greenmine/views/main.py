@@ -102,11 +102,14 @@ class BacklogView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         unassigned = project.user_stories.filter(milestone__isnull=True)\
             .order_by('-priority')
+
+        form_new_milestone = forms.MilestoneForm()
         
         context = {
             'project': project,
             'milestones': project.milestones.order_by('-created_date'),
-            'unassigned_us': unassigned
+            'unassigned_us': unassigned,
+            'form_new_milestone': form_new_milestone,
         }
 
         return self.render(self.template_name, context)
@@ -205,12 +208,14 @@ class ProjectEditView(ProjectCreateView):
     template_name = 'config/project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
+    @login_required
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.ProjectForm(instance=project)
         context = {'form':form, 'roles': models.ROLE_CHOICES, 'project': project}
         return self.render(self.template_name, context)
 
+    @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.ProjectForm(request.POST, request=request, instance=project)
@@ -247,8 +252,40 @@ class ProjectEditView(ProjectCreateView):
         return HttpResponseRedirect(reverse('web:projects'))
 
 
+class MilestoneCreateView(GenericView):
+    template_name = 'milestone_create.html'
+    menu = []
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.MilestoneForm()
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_name, context)
+
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.MilestoneForm(request.POST)
+        if form.is_valid():
+            milestone = form.save()
+            return self.render_redirect(project.get_backlog_url())
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+        return self.render_to_response(self.template_name, context)
+
+
 class UserStoryView(GenericView):
     template_name = "user_story.html"
+
     @login_required
     def get(self, request, pslug, iref):
         """ View US Detail """

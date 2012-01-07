@@ -178,6 +178,11 @@ class Project(models.Model):
             {'pslug': self.slug})
 
     @models.permalink
+    def get_milestone_create_url(self):
+        return ('web:milestone-create', (),
+            {'pslug': self.slug})
+
+    @models.permalink
     def get_user_story_create_url(self):
         return ('web:user-story-create', (), {'pslug': self.slug})
 
