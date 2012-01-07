@@ -85,44 +85,48 @@
 
     <div class="user-story-responses">
         <div class="responses-list">
-            <div class="responses-title">
-                <span>{% trans "Responses:" %}</span>
-            </div>
-            {% for response in user_story.responses.all %}
-            <div class="response">
-                <div class="col">
-                    <div class="icon">
-                        {% if response.owner.get_profile.photo %}
-                        <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
-                        {% else %}
-                        <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
-                        {% endif %}
-                    </div>
+            {% with responses=user_story.responses.all %}
+                {% if responses|length > 0 %}
+                <div class="responses-title">
+                    <span>{% trans "Responses:" %}</span>
                 </div>
-                <div class="col second-col">
-                    <div class="name">
-                        {{ response.owner.first_name }} {{ response.owner.last_name }}
-                    </div>
-                    <div class="content">
-                        {{ response.content|linebreaks }}
-                    </div>
-
-                    <div class="content-files">
-                        {% with responsefiles=response.attached_files.all %}
-                            {% if responsefiles|length > 0 %}
-                            <p>
-                                {% for file in responsefiles %}
-                                <a href="{{ file.attached_file.url }}">
-                                    {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
-                                </a>
-                                {% endfor %}
-                            </p>
+                {% for response in responses %}
+                <div class="response">
+                    <div class="col">
+                        <div class="icon">
+                            {% if response.owner.get_profile.photo %}
+                            <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
+                            {% else %}
+                            <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
                             {% endif %}
-                        {% endwith %}
+                        </div>
+                    </div>
+                    <div class="col second-col">
+                        <div class="name">
+                            {{ response.owner.first_name }} {{ response.owner.last_name }}
+                        </div>
+                        <div class="content">
+                            {{ response.content|linebreaks }}
+                        </div>
+
+                        <div class="content-files">
+                            {% with responsefiles=response.attached_files.all %}
+                                {% if responsefiles|length > 0 %}
+                                <p>
+                                    {% for file in responsefiles %}
+                                    <a href="{{ file.attached_file.url }}">
+                                        {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
+                                    </a>
+                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
     </div>
     <div class="form-container response-form">
