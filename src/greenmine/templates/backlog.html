@@ -27,7 +27,7 @@
                     <span><a href="">{% trans "Unassigned" %}</a></span>
                 </div>
                 <div class="row metaicon">
-                    <img src="{% static 'imgs/close-icon.png' %}"></img>
+                    <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
                 </div>
             </div>
             {% endfor %}
@@ -47,14 +47,22 @@
                     <div class="text">{{ ml.name|capfirst }}</div>
                     <div class="meta">
                         <a href="{{ ml.get_dashboard_url }}">{% trans "(Dashboard)" %}</a>
+                        <a href="" class="delete">
+                            <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img></a>
                     </div>
                 </div>
                 <div class="milestone-userstorys">
                     {% for us in ml.user_stories.all %}
                     <div class="us-item">
-                        <div class="us-title">{{ us.description|truncatechars:40 }}</div>
+                        <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
                         <div class="us-meta">
-                            <a href=""><img src="{% static 'imgs/close-icon.png' %}"></img></a>
+                            <div class="meta-data" style="display: none"
+                                viewurl="{{ us.get_view_url }}" 
+                                ref="{{ us.ref }}"
+                                priorityid="{{ us.priority }}"
+                                priority="{{ us.get_priority_display }}"
+                                points="{{ us.get_points_display }}"></div>
+                            <a href="" class="unassign"><img src="{% static 'imgs/close-icon.png' %}"></img></a>
                         </div>
                     </div>
                     {% empty %}
@@ -68,11 +76,46 @@
         </div>
     </div>
 </div>
-<div class="new-milestone-dialog" style="display: none">
-    <div class="dialog-content">
-        <form action="/gooo" method="POST">
-            {{ form_new_milestone.as_p }}
-        </form>
+
+<div class="unassign-dialog" style="display: none" title="{% trans "What do you do?" %}">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+        {% trans "Choose the appropriate option." %}
+    </p>
+</div>
+
+
+<div id="examples" style="display: none">
+    <div class="us-item">
+        <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
+        <div class="us-meta">
+            <div class="meta-data" style="display: none"
+                viewurl=""
+                ref=""
+                priorityid=""
+                priority=""
+                points=""></div>
+            <a href="" class="unassign"><img src="{% static 'imgs/close-icon.png' %}"></img></a>
+        </div>
+    </div>
+    <div class="un-us-item">
+        <div class="row identify">
+            <span><a href=""></a></span>
+        </div>
+        <div class="row title">
+            <span><a href=""></a></span>
+        </div>
+        <div class="row points">
+            <span></span>
+        </div>
+        <div class="row priority">
+            <span priprity=""></span>
+        </div>
+        <div class="row milestone">
+            <span><a href="">{% trans "Unassigned" %}</a></span>
+        </div>
+        <div class="row metaicon">
+            <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
+        </div>
     </div>
 </div>
 {% endblock %}

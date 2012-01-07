@@ -203,10 +203,14 @@ div.main-menu ul.right-menu li {
     padding: 5px;
 }
 
-#dashboard .right-block .milestone-item .milestone-title { overflow: hidden; }
+#dashboard .right-block .milestone-item .milestone-title { 
+    overflow: hidden; 
+    border-bottom: 1px dotted white;
+    margin-bottom: 6px;
+}
 #dashboard .right-block .milestone-item .milestone-title .text {
     font-weight: bold;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
     float: left;
 }
 #dashboard .right-block .milestone-item .milestone-title .meta {
