@@ -438,3 +438,42 @@ ul.errorlist {
 ul.errorlist li {
     font-size: 12px;
 }
+
+/* User Story View */
+#user-story-module {
+    padding: 5px;
+}
+
+#user-story-module .us-tasks .us-tasks-title {
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#user-story-module .us-tasks .us-task-item {
+    padding: 5px;
+    overflow: hidden;
+    border-bottom: 1px solid #ddd;
+}
+#user-story-module .us-tasks .us-task-item .row {
+    float: left;
+}
+
+#user-story-module .us-tasks .us-task-item .row.identify {
+    width: 65px;
+    font-family: monospace;
+}
+
+#user-story-module .us-tasks .us-task-item .row.title { 
+    width: 380px;
+}
+
+#user-story-module .us-tasks .us-task-item .row.priority {
+    width: 65px;
+}
+#user-story-module .us-tasks .us-task-item .row.milestone {}
+#user-story-module .us-tasks .us-task-item .row.metaicon {
+    float: right;
+}
+#user-story-module .us-tasks .us-task-item .row.metaicon img,
+#user-story-module .us-tasks .us-task-item .row { cursor: pointer; }

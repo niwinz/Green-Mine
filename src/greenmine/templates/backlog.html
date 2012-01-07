@@ -12,10 +12,10 @@
             {% for us in unassigned_us %}
             <div class="un-us-item">
                 <div class="row identify">
-                    <span><a href="">{{ us.ref }}</a></span>
+                    <span><a href="{{ us.get_view_url }}">{{ us.ref }}</a></span>
                 </div>
                 <div class="row title">
-                    <span><a href="">{{ us.subject|truncatechars:45 }}</a></span>
+                    <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:45 }}</a></span>
                 </div>
                 <div class="row priority">
                     <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>

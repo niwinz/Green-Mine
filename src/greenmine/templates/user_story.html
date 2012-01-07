@@ -1,31 +1,13 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load static from staticfiles %}
 {% load greenmine_utils %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
-{% block middle %}
-<div id="dashboard-actions">
-    <div class="left">
-        <div id="bin"></div>
-    </div>
-    <div class="right">
-        <a id="user-story-delete" class="btn01" href="{{ user_story.get_delete_url }}">{% trans "Remove" %}</a>
-        <a id="user-story-edit" class="btn01" href="{{ user_story.get_edit_url }}">{% trans "Edit" %}</a>
-        <a id="task-new" class="btn01" href="{{ user_story.get_task_create_url }}">{% trans "New task" %}</a>
-        {% if user_story.milestone %}
-        <a id="return" class="btn01" href="{{ user_story.milestone.get_dashboard_url }}">{% trans "Back to dashboard" %}</a>
-        {% else %}
-        <a id="return" class="btn01" href="{{ user_story.project.get_unassigned_dashboard_url }}">{% trans "Back to dashboard" %}</a>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
-
 {% block wrapper %}
 <div id="user-story-module">
-    {% include "messages.html" %}   
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "Subject" %}</span>
@@ -53,34 +35,33 @@
         {% endif %}
 
         {% with subtasks=user_story.tasks.all %}
-        <div class="form-field width100 tasks">
-            <h3>{% trans "User story tasks in this story:" %}</h3>
-            <div class="user-story-tasks">
+        <div class="form-field width100 us-tasks">
+            <div class="us-tasks-title">
+                <span>{% trans "User story tasks in this story:" %}</span>
+            </div>
+            <div class="us-tasks-list">
                 {% for st in subtasks %}
-                <div class="user-story-task-item">
-                    <div class="box-row row-subject">
-                        <div class="subject">{{ st.subject|truncatewords_html:4 }}</div>
-                        <!-- EDIT: {{ st.get_edit_url }} -->
-                        {% if st.assigned_to %}
-                        <div class="assigned-to"><b>{% trans "Assigned to:" %}</b><span>{{ st.assigned_to }}</span></div>
-                        {% else %}
-                        <div class="assigned-to not-assigned"><b>{% trans "Assigned to:" %}</b><span>{% trans "Nobody" %}</span></div>
-                        {% endif %}
+                <div class="us-task-item">
+                    <div class="row identify">
+                        <span><a href="{{ st.get_view_url }}">{{ st.ref }}</a></span>
                     </div>
-                    <div class="box-row row-priority radio-choices" rel="change-priority-api-url">
-                        <div rel="low" class="row-priority-choice active first">{% trans "Low" %}</div>
-                        <div rel="normal" class="row-priority-choice">{% trans "Normal" %}</div>
-                        <div rel="higt" class="row-priority-choice last">{% trans "High" %}</div>
+                    <div class="row title">
+                        <span><a href="{{ st.get_view_url }}">{{ st.subject|truncatechars:45 }}</a></span>
                     </div>
-                    <div class="box-row row-statuser_story radio-choices" rel="change-statuser_story-api-url">
-                        <div rel="new" class="row-priority-choice active first">{% trans "New" %}</div>
-                        <div rel="progress" class="row-priority-choice">{% trans "In progress" %}</div>
-                        <div rel="finished" class="row-priority-choice">{% trans "Finished" %}</div>
-                        <div rel="closed" class="row-priority-choice last">{% trans "Closed" %}</div>
+                    <div class="row priority">
+                        <span priprity="{{ st.priority }}">{{ st.get_priority_display }}</span>
+                    </div>
+                    <div class="row assignation">
+                        <span><a href="">{{ st.assigned_to|default:"Unassigned" }}</a></span>
+                    </div>
+                    <div class="row metaicon">
+                        <img src="{% static 'imgs/close-icon.png' %}"></img>
                     </div>
                 </div>
                 {% empty %}
-                <p>{% trans "No tasks, add one!" %}</p>
+                <div class="us-task-item us-task-item-empty">
+                    {% trans "No tasks, add one!" %}
+                </div>
                 {% endfor %}
             </div>
         </div>
