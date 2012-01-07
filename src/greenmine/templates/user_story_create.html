@@ -2,33 +2,55 @@
 {% load url from future %}
 {% load greenmine_utils %}
 {% load i18n %}
+{% load l10n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
-{% block middle %}
-<div id="dashboard-actions">
-    <div class="left">
-        <div id="bin"></div>
-    </div>
-    <div class="right">
-        {% if milestone %}
-        <a id="return" class="btn01" href="{{ milestone.get_dashboard_url }}">{% trans "Back to dashboard" %}</a>
-        {% else %}
-        <a id="return" class="btn01" href="{{ project.get_unassigned_dashboard_url }}">{% trans "Back to dashboard" %}</a>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
-
 {% block wrapper %}
-<div id="user-story-module">
-    <h2>Crear user story.</h2>
-    <div class="user-story-create">
-        <form action="{{ current_url }}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" class="btn01" value="{% trans "Save" %}" />
-        </form>
+<div class="userstory userstory-create form-container">
+    <div class="form-legend">
+        <span>{% trans "Create user story:" %}</span>
     </div>
+    <form method="post" action="{{ project.get_userstory_create_url }}">
+        {% csrf_token %}
+        <div class="form-row">
+            <label>{{ form.subject.label }}</label>
+            {{ form.subject.errors }}
+            {{ form.subject }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.priority.label }}</label>
+            {{ form.priority.errors }}
+            {{ form.priority }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.status.label }}</label>
+            {{ form.status.errors }}
+            {{ form.status }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.description.label }}</label>
+            {{ form.description.errors }}
+            {{ form.description }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.points.label }}</label>
+            {{ form.points.errors }}
+            {{ form.points }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.finish_date.label }}</label>
+            {{ form.finish_date.errors }}
+            {{ form.finish_date }}
+        </div>
+        <div class="form-row">
+            <label>{{ form.tested.label }}</label>
+            {{ form.tested.errors }}
+            {{ form.tested }}
+        </div>
+        <div class="form-row submit-row">
+            <input type="submit" value="{% trans "Save" %}"></input>
+        </div>
+    </form>
 </div>
 {% endblock %}

@@ -407,3 +407,34 @@ div.fieldset div.field-inline {
     padding-left: 10px;
 }
 .ui-widget { font-size: 14px; }
+
+
+/* Forms */
+
+.form-container {
+    padding: 10px;
+}
+
+.form-container .form-legend {
+    font-size: 22px;
+    padding-bottom: 10px;
+}
+
+.form-container .form-row {
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.form-container .form-row.submit-row {
+    padding: 10px;
+}
+
+ul.errorlist {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    color: red;
+}
+ul.errorlist li {
+    font-size: 12px;
+}

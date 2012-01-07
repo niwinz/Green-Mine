@@ -273,7 +273,9 @@ class MilestoneCreateView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.MilestoneForm(request.POST)
         if form.is_valid():
-            milestone = form.save()
+            milestone = form.save(commit=False)
+            milestone.project = project
+            milestone.save()
             return self.render_redirect(project.get_backlog_url())
 
         context = {
@@ -321,46 +323,32 @@ class UserStoryCreateView(GenericView):
     template_name = "user_story_create.html"
 
     @login_required
-    def get(self, request, pslug, mid=None):
+    def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = None
-
-        if mid:
-            milestone = get_object_or_404(project.milestones, pk=mid)
-
         form = forms.UserStoryForm()
         context = {
             'form':form, 
             'project':project,
-            'milestone': milestone
         }
         return self.render(self.template_name, context)
 
     @login_required
-    def post(self, request, pslug, mid=None):
+    def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = None
-
-        if mid:
-            milestone = get_object_or_404(project.milestones, pk=mid)
-
         form = forms.UserStoryForm(request.POST)
+
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.milestone = milestone
+            instance.milestone = None
             instance.owner = request.user
             instance.project = project
             instance.save()
             messages.info(request, _(u'The user story was created correctly'))
-            if milestone:
-                return HttpResponseRedirect(milestone.get_dashboard_url())
-            else:
-                return HttpResponseRedirect(project.get_unassigned_dashboard_url())
+            return self.render_redirect(project.get_backlog_url())
     
         context = {
             'form':form, 
             'project':project,
-            'milestone': milestone
         }
         return self.render(self.template_name, context)
 

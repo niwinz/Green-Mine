@@ -2,7 +2,7 @@
     $( ".datepicker, #id_finish_date" ).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd/mm/yy"
+        dateFormat: "mm/dd/yy"
     });
 })(jQuery);
 

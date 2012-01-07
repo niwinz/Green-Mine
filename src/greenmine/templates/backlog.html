@@ -15,7 +15,7 @@
                     <span><a href="">{{ us.ref }}</a></span>
                 </div>
                 <div class="row title">
-                    <span><a href="">{{ us.description|truncatechars:45 }}</a></span>
+                    <span><a href="">{{ us.subject|truncatechars:45 }}</a></span>
                 </div>
                 <div class="row priority">
                     <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>
@@ -33,7 +33,7 @@
     <div class="right-block">
         <div class="context-menu">
             <ul>
-                <li><a class="new-us" href="">{% trans "Add new user story" %}</a></li>
+                <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>
                 <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
             </ul>
         </div>
