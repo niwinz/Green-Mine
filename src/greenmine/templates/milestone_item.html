@@ -1,0 +1,7 @@
+{% load static from staticfiles %}
+<div class="us-item" unasignurl="{{ us.get_unasign_url }}" >
+    <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
+    <div class="us-meta">
+        <a href="" class="unassign"><img src="{% static 'imgs/close-icon.png' %}"></img></a>
+    </div>
+</div>
