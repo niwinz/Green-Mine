@@ -250,6 +250,7 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.project = kwargs.pop('project', None)
         self.initial_milestone = kwargs.pop('initial_milestone', None)
+        self.initial_us = kwargs.pop('initial_us', None)
 
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['user_story'].queryset = self.project.user_stories.all()
@@ -260,6 +261,9 @@ class TaskForm(forms.ModelForm):
             self.fields['milestone'].initial = self.initial_milestone
         else:
             self.fields['milestone'].initial = self.project.default_milestone
+
+        if self.initial_us:
+            self.fields['user_story'].initial = self.initial_us
 
         self.fields['milestone'].empty_label = None
 

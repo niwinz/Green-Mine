@@ -9,7 +9,7 @@
 <div id="user-story-module">
     <h2>{% trans "Create task" %}</h2>
     <div class="user-story-create">
-        <form action="{{ current_url }}" method="post">
+        <form action="{{ full_current_url }}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" class="btn01" value="{% trans "Save" %}" />

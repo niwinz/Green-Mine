@@ -445,14 +445,21 @@ class TaskCreateView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = None
+        milestone = us = None
 
         mid = request.GET.get('milestone', None)
         if mid is not None:
             milestoneqs = project.milestones.filter(pk=mid)
             milestone = milestoneqs and milestoneqs.get() or None
 
-        form = forms.TaskForm(project=project, initial_milestone=milestone)
+        us = request.GET.get('us', None)
+        if us is not None:
+            usqs = project.user_stories.filter(pk=us)
+            us = usqs and usqs.get() or None
+
+        form = forms.TaskForm(project=project, 
+            initial_milestone=milestone, initial_us=us)
+
         context = {
             'project': project,
             'form': form,
@@ -462,15 +469,23 @@ class TaskCreateView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = None
+        milestone = us = None
 
         mid = request.GET.get('milestone', None)
         if mid is not None:
             milestoneqs = project.milestones.filter(pk=mid)
             milestone = milestoneqs and milestoneqs.get() or None
 
-        form = forms.TaskForm(request.POST, project=project, initial_milestone=milestone)
+        us = request.GET.get('us', None)
+        if us is not None:
+            usqs = project.user_stories.filter(pk=us)
+            us = usqs and usqs.get() or None
+
+        form = forms.TaskForm(request.POST, project=project, 
+            initial_milestone=milestone, initial_us=us)
+
         next_url = request.GET.get('next', None)
+        print request.GET
 
         if form.is_valid():
             task = form.save(commit=False)
@@ -479,9 +494,11 @@ class TaskCreateView(GenericView):
             task.save()
             
             messages.info(request, _(u"The task has been created with success!"))
+
+            print next_url, type(next_url)
             if next_url:
                 # TODO fix security
-                return self.redirect(next_url)
+                return self.render_redirect(next_url)
             
             return self.render_redirect(task.milestone.get_tasks_url())
 

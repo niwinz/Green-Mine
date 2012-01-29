@@ -148,10 +148,9 @@ class TaskAlterApiView(GenericView):
  
 
 class TaskReasignationsApiView(GenericView):
-    def get(self, request, pslug, mid, taskref):
+    def get(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-        task = get_object_or_404(milestone.tasks, ref=taskref)
+        task = get_object_or_404(project.tasks, ref=taskref)
         
         userid = request.GET.get('userid', '')
         if not userid:

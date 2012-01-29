@@ -2,7 +2,7 @@
 <div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}" url="{{ task.get_alter_api_url }}">
     <div class="task-desc">
         <div class="reference">
-            <a href="">{{ task.ref }}</a>
+            <a href="{{ task.get_view_url }}">{{ task.ref }}</a>
         </div>
         <div class="subject">{{ task.subject|truncatewords:5 }}</div>
     </div>

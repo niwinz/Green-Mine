@@ -9,7 +9,8 @@
                 <a href="{{ us.get_view_url }}">{{ us.subject }}</a>
             </div>
         </div>
-        <a href="" class="add-task"><img src="{{ STATIC_URL }}imgs/plus-icon.png" width="14" height="14"></img></a>
+        <a href="{{ project.get_task_create_url }}?milestone={{ us.milestone.id }}&us={{ us.id }}&next={{ current_url }}" class="add-task">
+            <img src="{{ STATIC_URL }}imgs/plus-icon.png" width="14" height="14"></img></a>
         <span class="estimation">{% trans "Points:" %} {{ us.get_points_display }}</span>
     </div>
     <div class="user-story-status hfield status-new" rel="new">
