@@ -51,9 +51,6 @@ class LoginView(GenericView):
             {'form': login_form})
            
 
-
-
-
 class PasswordRecoveryView(GenericView):
     template_name = "password_recovery.html"
 
@@ -153,7 +150,7 @@ class DashboardView(GenericView):
 
 
 class ProjectCreateView(GenericView):
-    template_name = 'config/project.html'
+    template_name = 'project-create.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
     def parse_roles(self):
@@ -219,7 +216,7 @@ class ProjectCreateView(GenericView):
 
 
 class ProjectEditView(ProjectCreateView):
-    template_name = 'config/project-edit.html'
+    template_name = 'project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
     @login_required
