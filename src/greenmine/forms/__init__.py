@@ -160,7 +160,8 @@ class ProfileForm(Form):
 
         profile = self.instance.get_profile()
         profile.description = self.cleaned_data['description']
-        profile.photo = self.cleaned_data['photo']
+        if self.cleaned_data['photo']:
+            profile.photo = self.cleaned_data['photo']
         profile.save()
 
         return self.instance
