@@ -58,11 +58,17 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
         main.TaskEditView.as_view(), name='task-edit'),
     
+    url(r'^(?P<pslug>[\w\d\-]+)//task/list/$',
+        main.TasksView.as_view(), name='tasks-view'),
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
+        main.TasksView.as_view(), name='tasks-view'),
+    
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
     url(r'^(?P<pslug>[\w\d\-]+)/edit/$',
-        main.ProjectEditView.as_view(), name="project-edit")        
+        main.ProjectEditView.as_view(), name="project-edit")
 )
 
 urlpatterns += patterns('',

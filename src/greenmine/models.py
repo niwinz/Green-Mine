@@ -184,6 +184,15 @@ class Project(models.Model):
     def get_edit_url(self):
         return ('web:project-edit', (), {'pslug': self.slug})        
 
+    @models.permalink
+    def get_default_tasks_url(self):
+        return ('web:tasks-view', (), 
+            {'pslug': self.slug, 'mid': self.default_milestone.id })
+
+    @models.permalink
+    def get_tasks_url(self):
+        return ('web:tasks-view', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
@@ -267,6 +276,11 @@ class Milestone(models.Model):
     @models.permalink
     def get_stats_api_url(self):
         return ('api:stats-milestone', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
+    def get_tasks_url(self):
+        return ('web:tasks-view', (), 
             {'pslug': self.project.slug, 'mid': self.id})
 
     class Meta(object):

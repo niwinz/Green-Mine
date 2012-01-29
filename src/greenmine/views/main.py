@@ -126,6 +126,34 @@ class BacklogView(GenericView):
         return self.render(self.template_name, context)
 
 
+class TasksView(GenericView):
+    """ 
+    General dasboard view,  with all milestones and all tasks. 
+    """
+
+    template_name = 'tasks.html'
+    menu = ['tasks']
+
+    @login_required
+    def get(self, request, pslug, mid=None):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        if mid is None:
+            return self.render_redirect(project.get_default_tasks_url())
+
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        tasks = milestone.tasks.all()
+
+        context = {
+            'project': project,
+            'milestones': project.milestones.order_by('-created_date'),
+            'milestone': milestone,
+            'tasks': tasks,
+        }
+
+        return self.render(self.template_name, context)
+
+
 class DashboardView(GenericView):
     template_name = 'dashboard.html'
     menu = ['dashboard']
@@ -444,21 +472,22 @@ class TaskCreateView(GenericView):
 
 
     @login_required
-    def post(self, request, pslug, iref):
+    def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
         form = forms.TaskForm(request.POST)
 
+        next_url = request.GET.get('next', None)
+
         if form.is_valid():
             task = form.save(commit=False)
-            task.user_story = user_story
             task.milestone = user_story.milestone
             task.owner = request.user
             task.project = project
             task.save()
             
             messages.info(request, _(u"The task has been created with success!"))
-            return self.redirect(user_story.get_view_url())
+            return self.redirect()
 
         context = {
             'project': project,

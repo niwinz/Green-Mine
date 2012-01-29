@@ -217,6 +217,11 @@ div.main-menu ul.right-menu li {
     border-bottom: 1px dotted white;
     margin-bottom: 6px;
 }
+#dashboard .right-block .milestone-item.simple .milestone-title {
+    border: 0px;
+    margin-bottom: 0px;
+}
+
 #dashboard .right-block .milestone-item .milestone-title .text {
     font-weight: bold;
     padding-bottom: 2px;

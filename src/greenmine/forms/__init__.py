@@ -252,6 +252,7 @@ class TaskForm(forms.ModelForm):
         self.fields['assigned_to'].queryset = self.project.all_participants
         self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
         self.fields['milestone'].initial = self.project.default_milestone
+        self.fields['milestone'].empty_label = None
 
     class Meta:
         fields = ('status', 'priority', 'subject','milestone',
