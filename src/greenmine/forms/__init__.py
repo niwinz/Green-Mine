@@ -245,9 +245,15 @@ class UserStoryCommentForm(Form):
 
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.project = kwargs.pop('project', None)
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['user_story'].queryset = self.project.user_stories.all()
+        self.fields['assigned_to'].queryset = self.project.all_participants
+
     class Meta:
         fields = ('status', 'priority', 'subject',
-            'description', 'assigned_to','type')
+            'description', 'assigned_to','type', 'user_story')
         model = models.Task
 
 

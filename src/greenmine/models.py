@@ -146,6 +146,11 @@ class Project(models.Model):
     def unasociated_user_stories(self):
         return self.user_stories.filter(milestone__isnull=True)
 
+    @property
+    def all_participants(self):
+        qs = ProjectUserRole.objects.filter(project=self)
+        return User.objects.filter(id__in=qs.values_list('user__pk', flat=True))
+
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
 
@@ -166,7 +171,6 @@ class Project(models.Model):
     @models.permalink
     def get_userstory_create_url(self):
         return ('web:user-story-create', (), {'pslug': self.slug})
-
 
     @models.permalink
     def get_delete_api_url(self):
@@ -310,7 +314,7 @@ class UserStory(models.Model):
         return u"<UserStory %s>" % (self.id)
 
     def __unicode__(self):
-        return self.subject
+        return self.ref + " - " + self.subject
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -366,7 +370,7 @@ class UserStory(models.Model):
 
 
 class Task(models.Model):
-    user_story = models.ForeignKey('UserStory', related_name='tasks')
+    user_story = models.ForeignKey('UserStory', related_name='tasks', null=True)
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
     status = models.CharField(max_length=50,
@@ -398,7 +402,6 @@ class Task(models.Model):
     def get_edit_url(self):
         return ('web:task-edit', (), {
             'pslug': self.project.slug,
-            'iref': self.user_story.ref,
             'tref': self.ref
         })
 
@@ -406,7 +409,6 @@ class Task(models.Model):
     def get_alter_api_url(self):
         return ('api:task-alter', (), {
             'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id,
             'taskref': self.ref
         })
 
@@ -414,13 +416,13 @@ class Task(models.Model):
     def get_reassign_api_url(self):
         return ('api:task-reassing', (), {
             'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id,
             'taskref': self.ref
         })
 
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
+            
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
 

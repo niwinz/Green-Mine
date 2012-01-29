@@ -68,7 +68,8 @@
         {% endwith %}
 
         <div class="form-field width100" style="min-height: 30px">
-            <a href="" class="btn01 float-right">{% trans "Create task" %}</a>
+            <a href="{% url 'web:task-create' pslug=project.slug %}?next={{ current_url }}" 
+                class="btn01 float-right">{% trans "Create task" %}</a>
         </div>
         
         {% comment %}

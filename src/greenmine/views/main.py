@@ -399,6 +399,7 @@ class UserStoryEditView(GenericView):
         }
         return self.render(self.template_name, context)
 
+
 class UserStoryDeleteView(GenericView):
     template_name = "user-story-delete.html"
 
@@ -428,17 +429,15 @@ class UserStoryDeleteView(GenericView):
 
 
 class TaskCreateView(GenericView):
-    template_name = 'task_create.html'
+    template_name = 'task-create.html'
 
     @login_required
-    def get(self, request, pslug, iref):
+    def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.TaskForm()
 
+        form = forms.TaskForm(project=project)
         context = {
             'project': project,
-            'user_story': user_story,
             'form': form,
         }
         return self.render(self.template_name, context)
