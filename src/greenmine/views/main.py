@@ -152,6 +152,7 @@ class DashboardView(GenericView):
 class ProjectCreateView(GenericView):
     template_name = 'project-create.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+    menu = ['projects']
 
     def parse_roles(self):
         user_role = {}

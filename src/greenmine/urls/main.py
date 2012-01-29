@@ -17,11 +17,8 @@ urlpatterns = patterns('',
     url(r'^config/profile/$', 
         config.ProfileView.as_view(), name='profile'),
 
-    url(r'^config/projects/$', 
-        config.AdminProjectsView.as_view(), name='admin-projects'),
-
-    url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
-            config.AdminProjectExport.as_view(), name="admin-project-export"),
+    #url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
+    #        config.AdminProjectExport.as_view(), name="admin-project-export"),
 
     url(r'^project/create/$', 
         main.ProjectCreateView.as_view(), name='project-create'),
