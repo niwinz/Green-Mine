@@ -111,11 +111,10 @@ class TaskAlterApiView(GenericView):
     """ Api view for alter task status, priority and other 
     minor modifications. """
 
-    def post(self, request, pslug, mid, taskref):
+    def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-        task = get_object_or_404(milestone.tasks, ref=taskref)
-        us = get_object_or_404(milestone.user_stories, pk=request.POST.get('us',None))
+        task = get_object_or_404(project.tasks, ref=taskref)
+        us = get_object_or_404(project.user_stories, pk=request.POST.get('us',None))
 
         mf = request.POST.get('modify_flag', '')
         if mf not in ['close', 'progress', 'new']:
