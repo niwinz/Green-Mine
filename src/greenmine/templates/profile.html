@@ -21,6 +21,16 @@
         {% csrf_token %}
         <fieldset>
             <div class="form-field">
+                <label>{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+            <div class="form-field">
                 <label>{{ form.username.label }}</label>
                 {{ form.username }}
                 {{ form.username.errors }}

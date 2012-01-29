@@ -128,8 +128,12 @@ class PasswordRecoveryForm(Form):
 
 
 class ProfileForm(Form):
-    username = CharField(max_length=200, min_length=4, 
+    username = CharField(max_length=30, min_length=4, 
         required=True, type='text', label=_(u'Username'))
+    first_name = CharField(max_length=30, min_length=4, 
+        required=True, type='text', label=_(u'First name'))
+    last_name = CharField(max_length=30, min_length=4, 
+        required=True, type='text', label=_(u'Last_name'))
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
     description = forms.CharField(widget=Textarea, required=False,
@@ -140,6 +144,8 @@ class ProfileForm(Form):
         self.instance = kwargs.pop('instance')
         kwargs['initial'] = {
             'username': self.instance.username,
+            'first_name': self.instance.first_name,
+            'last_name': self.instance.last_name,
             'description': self.instance.get_profile().description,
             'email': self.instance.email,
         }
@@ -148,10 +154,15 @@ class ProfileForm(Form):
     def save(self):
         self.instance.username = self.cleaned_data['username']
         self.instance.email = self.cleaned_data['email']
+        self.instance.first_name = self.cleaned_data['first_name']
+        self.instance.last_name = self.cleaned_data['last_name']
+        self.instance.save()
+
         profile = self.instance.get_profile()
         profile.description = self.cleaned_data['description']
         profile.photo = self.cleaned_data['photo']
         profile.save()
+
         return self.instance
 
 
