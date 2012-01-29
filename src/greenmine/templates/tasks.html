@@ -50,7 +50,11 @@
                     <span>{{ task.get_status_display }}</span>
                 </div>
                 <div class="row milestone">
-                    <span><a href="">{% trans "Unassigned" %}</a></span>
+                    {% if task.assigned_to %}
+                    <span><a href="">{{ task.assigned_to.get_full_name }}</a></span>
+                    {% else %}
+                    <span>{% trans "Unassigned" %}</span>
+                    {% endif %}
                 </div>
                 <div class="row metaicon">
                     <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
