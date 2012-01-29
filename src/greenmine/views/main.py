@@ -462,32 +462,45 @@ class TaskCreateView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+        milestone = None
 
-        form = forms.TaskForm(project=project)
+        mid = request.GET.get('milestone', None)
+        if mid is not None:
+            milestoneqs = project.milestones.filter(pk=mid)
+            milestone = milestoneqs and milestoneqs.get() or None
+
+        form = forms.TaskForm(project=project, initial_milestone=milestone)
         context = {
             'project': project,
             'form': form,
         }
         return self.render(self.template_name, context)
 
-
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.TaskForm(request.POST)
+        milestone = None
 
+        mid = request.GET.get('milestone', None)
+        if mid is not None:
+            milestoneqs = project.milestones.filter(pk=mid)
+            milestone = milestoneqs and milestoneqs.get() or None
+
+        form = forms.TaskForm(request.POST, project=project, initial_milestone=milestone)
         next_url = request.GET.get('next', None)
 
         if form.is_valid():
             task = form.save(commit=False)
-            task.milestone = user_story.milestone
             task.owner = request.user
             task.project = project
             task.save()
             
             messages.info(request, _(u"The task has been created with success!"))
-            return self.redirect()
+            if next_url:
+                # TODO fix security
+                return self.redirect(next_url)
+            
+            return self.redirect(task.milestone.get_tasks_url())
 
         context = {
             'project': project,

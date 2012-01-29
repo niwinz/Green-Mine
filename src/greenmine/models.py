@@ -193,6 +193,10 @@ class Project(models.Model):
     def get_tasks_url(self):
         return ('web:tasks-view', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_task_create_url(self):
+        return ('web:task-create', (), {'pslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)

@@ -56,7 +56,8 @@
     <div class="right-block">
         <div class="context-menu">
             <ul>
-                <li><a class="new-milestone" href="">{% trans "Create new task" %}</a></li>
+                <li><a class="new-milestone" href="{{ project.get_task_create_url }}?milestone={{ milestone.id }}">
+                    {% trans "Create new task" %}</a></li>
             </ul>
         </div>
         <div class="milestones simple-list">
