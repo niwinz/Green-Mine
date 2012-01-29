@@ -392,7 +392,7 @@ class UserStory(models.Model):
 
 
 class Task(models.Model):
-    user_story = models.ForeignKey('UserStory', related_name='tasks', null=True)
+    user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
     status = models.CharField(max_length=50,

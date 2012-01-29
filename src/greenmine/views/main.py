@@ -500,11 +500,10 @@ class TaskCreateView(GenericView):
                 # TODO fix security
                 return self.redirect(next_url)
             
-            return self.redirect(task.milestone.get_tasks_url())
+            return self.render_redirect(task.milestone.get_tasks_url())
 
         context = {
             'project': project,
-            'user_story': user_story,
             'form': form,
         }
         return self.render(self.template_name, context)

@@ -27,6 +27,7 @@ def us_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Task)
 def task_post_save(sender, instance, created, **kwargs):
-    instance.user_story.modified_date = datetime.datetime.now()
-    instance.user_story.save()
+    if instance.user_story:
+        instance.user_story.modified_date = datetime.datetime.now()
+        instance.user_story.save()
 
