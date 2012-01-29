@@ -13,6 +13,7 @@
             <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
         </ul>
     </div>
+    {% include "messages.html" %}
     <div class="left-block">
         <div class="unassigned-us">
             {% for us in unassigned_us %}

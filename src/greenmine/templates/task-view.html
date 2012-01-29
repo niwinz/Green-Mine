@@ -13,8 +13,12 @@
             <li><a class="new-milestone" href="{{ task.get_edit_url }}?next={{ current_url }}">
                 {% trans "Edit this task" %}</a>
             </li>
+            <li><a class="new-milestone" href="{{ task.get_delete_url }}">
+                {% trans "Delete this task" %}</a>
+            </li>
         </ul>
     </div>
+    {% include "messages.html" %}
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "Task subject" %}</span>

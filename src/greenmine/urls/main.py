@@ -43,7 +43,7 @@ urlpatterns = patterns('',
         main.UserStoryCreateView.as_view(), name='user-story-create'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit/$',
-        main.UserStoryEditView.as_view(), name='user-story-edit'),
+        main.UserStoryEdit.as_view(), name='user-story-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/delete/$',
         main.UserStoryDeleteView.as_view(), name='user-story-delete'),
@@ -55,8 +55,8 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
 
-    #url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
-    #    main.TaskEditView.as_view(), name='task-edit'),
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
+        main.TaskEdit.as_view(), name='task-edit'),
 
      url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
         main.TaskView.as_view(), name='task-view'),

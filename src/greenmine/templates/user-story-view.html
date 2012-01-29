@@ -8,6 +8,13 @@
 
 {% block wrapper %}
 <div id="user-story-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{{ user_story.get_edit_url }}">{% trans "Edit this user story" %}</a></li>
+            <li><a class="new-milestone" href="{{ user_story.get_delete_url }}">{% trans "Delete this user story" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
     <div class="inline">
         <div class="form-field">
             <span class="label">{% trans "User story subject" %}</span>
@@ -18,15 +25,25 @@
             <span>{{ user_story.get_priority_display }}</span>
         </div> 
         <div class="form-field">
+            <span class="label">{% trans "Story points" %}</span>
+            <span>{{ user_story.get_points_display }}</span>
+        </div>
+        <div class="form-field">
+            <span class="label">{% trans "Milestone/Sprint" %}</span>
+            <span>{{ user_story.milestone }}</span>
+        </div>
+        <div class="form-field">
             <span class="label">{% trans "Tested" %}</span>
             <span>{{ user_story.tested|yesno }}</span>
         </div>
+
         {% if user_story.finish_date %}
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
             <span>{{ user_story.finish_date|date:"DATE_FORMAT" }}</span>
         </div>
         {% endif %}
+
         {% if user_story.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
@@ -37,7 +54,7 @@
         {% with subtasks=user_story.tasks.all %}
         <div class="form-field width100 us-tasks">
             <div class="us-tasks-title">
-                <span>{% trans "User story tasks in this story:" %}</span>
+                <span>{% trans "Tasks/Bugs on this user story:" %}</span>
             </div>
             <div class="us-tasks-list">
                 {% for st in subtasks %}
@@ -71,88 +88,6 @@
             <a href="{% url 'web:task-create' pslug=project.slug %}?next={{ current_url }}" 
                 class="btn01 float-right">{% trans "Create task" %}</a>
         </div>
-        
-        {% comment %}
-        {% with files=user_story.attached_files.all %}
-            {% if files|length > 0 %}
-            <div class="form-field width100">
-                <span class="label">Ficheros</span>
-                <ul>
-                    <li><a href="">Fichero 1 (1 mb)</a></li>
-                    <li><a href="">Fichero 2 (2 mb)</a></li>
-                    <li><a href="">Fichero 3 (2 mb)</a></li>
-                </ul>
-            </div>
-            {% endif %}
-        {% endwith %}
-        {% endcomment %}
     </div>
-    
-    {% comment %}
-    <div class="user-story-responses">
-        <div class="responses-list">
-            {% with responses=user_story.responses.all %}
-                {% if responses|length > 0 %}
-                <div class="responses-title">
-                    <span>{% trans "Responses:" %}</span>
-                </div>
-                {% for response in responses %}
-                <div class="response">
-                    <div class="col">
-                        <div class="icon">
-                            {% if response.owner.get_profile.photo %}
-                            <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
-                            {% else %}
-                            <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col second-col">
-                        <div class="name">
-                            {{ response.owner.first_name }} {{ response.owner.last_name }}
-                        </div>
-                        <div class="content">
-                            {{ response.content|linebreaks }}
-                        </div>
-
-                        <div class="content-files">
-                            {% with responsefiles=response.attached_files.all %}
-                                {% if responsefiles|length > 0 %}
-                                <p>
-                                    {% for file in responsefiles %}
-                                    <a href="{{ file.attached_file.url }}">
-                                        {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
-                                    </a>
-                                    {% endfor %}
-                                </p>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
-    </div>
-    <div class="form-container response-form">
-        <form enctype="multipart/form-data" method="post" action="">
-            {% csrf_token %}
-            <div class="form-row">
-                <label>{% trans "Write your comment:" %}</label>
-                {{ form.description.errors }}
-                {{ form.description }}
-            </div>
-            <div class="form-row">
-                {{ form.attached_file.label }}
-                {{ form.attached_file.errors }}
-                {{ form.attached_file }}
-            </div>
-            <div class="form-row submit-row">
-                <input type="submit" value="{% trans "Send comment" %}" />
-            </div>
-        </form>
-    </div>
-    {% endcomment %}
 </div>
 {% endblock %}

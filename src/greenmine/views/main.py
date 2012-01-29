@@ -376,7 +376,7 @@ class UserStoryCreateView(GenericView):
         return self.render(self.template_name, context)
 
 
-class UserStoryEditView(GenericView):
+class UserStoryEdit(GenericView):
     template_name = "user-story-edit.html"
 
     @login_required
@@ -401,7 +401,7 @@ class UserStoryEditView(GenericView):
         if form.is_valid():
             user_story = form.save(commit=True)
             messages.info(request, _(u'The user story has been successfully saved'))
-            return self.redirect(user_story.get_view_url())
+            return self.render_redirect(user_story.get_view_url())
 
         context = {
             'project': project,
@@ -532,40 +532,43 @@ class TaskView(GenericView):
         return self.render(self.template_path, context)
 
 
-#class TaskEditView(GenericView):
-#    template_name = 'task_edit.html'
-#
-#    @login_required
-#    def get(self, request, pslug, iref, tref):
-#        project = get_object_or_404(models.Project, slug=pslug)
-#        user_story = get_object_or_404(project.user_stories, ref=iref)
-#        task = get_object_or_404(user_story.tasks, ref=tref)
-#        form = forms.TaskForm(instance=task)
-#
-#        context = {
-#            'project': project,
-#            'user_story': user_story,
-#            'task': task,
-#            'form': form,
-#        }
-#        return self.render(self.template_name, context)
-#    
-#    @login_required
-#    def post(self, request, pslug, iref, tref):
-#        project = get_object_or_404(models.Project, slug=pslug)
-#        user_story = get_object_or_404(project.user_stories, ref=iref)
-#        task = get_object_or_404(user_story.tasks, ref=tref)
-#        form = forms.TaskForm(request.POST, instance=task)
-#        if form.is_valid():
-#            task = form.save()
-#
-#            messages.info(request, _(u"The task has been created with success!"))
-#            return self.redirect(user_story.get_view_url())
-#
-#        context = {
-#            'project': project,
-#            'user_story': user_story,
-#            'task': task,
-#            'form': form,
-#        }
-#        return self.render(self.template_name, context)
+class TaskEdit(GenericView):
+    template_path = 'task-edit.html'
+
+    @login_required
+    def get(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.TaskForm(instance=task, project=project)
+
+        context = {
+            'project': project,
+            'task': task,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    def post(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.TaskForm(request.POST, instance=task, project=project)
+
+        next_url = request.GET.get('next', None)
+
+        if form.is_valid():
+            form.save()
+            messages.info(request, _(u"The task has been saved!"))
+            if next_url:
+                return self.render_redirect(next_url)
+
+            return self.render_redirect(task.get_view_url())
+
+        context = {
+            'project': project,
+            'task': task,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)

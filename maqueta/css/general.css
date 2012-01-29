@@ -227,6 +227,12 @@ div.main-menu ul.right-menu li {
 #dashboard.tasks-ds .right-block .milestone-item {
     margin-bottom: 3px;
 }
+#dashboard.tasks-ds .right-block .milestone-item.selected {
+    margin-bottom: 3px;
+    background-color: #dedede;
+    border: 1px solid white;
+    outline: 1px solid #ddd;
+}
 
 #dashboard .right-block .milestone-item .milestone-title { 
     overflow: hidden; 
