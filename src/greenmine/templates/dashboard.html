@@ -5,20 +5,6 @@
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
-{% comment %}
-{% block middle %}
-<div id="dashboard-actions">
-    <div class="left">
-        <div id="bin"></div>
-    </div>
-    <div class="right">
-        <a id="new-us" class="btn01" href="{{ milestone.get_user_story_create_url }}?next={{ current_url }}">{% trans "New US" %}</a>
-        <a id="new-task" class="btn01" href="{{ milestone.get_create_task_url }}">{% trans "New task" %}</a>
-    </div>
-</div>
-{% endblock %}
-{% endcomment %}
-
 {% block wrapper %}
 <div id="milestone-dashboard" rel="{{ milestone.id }}">
     <div id="milestone-dashboard-title">
@@ -41,9 +27,9 @@
             </div>
         </div>
         {% for us in uss %}
-            {% cache 3600 us.id us.modified_date %}
+            {#{% cache 0 us.id us.modified_date %} #}
             {% include "modules/user-story-dashboard.html" %}
-            {% endcache %}
+            {#{% endcache %}  #}
         {% endfor %}
     </div>
 </div>

@@ -1,9 +1,15 @@
 {% load i18n %}
 <div class="user-story" id="us{{ us.id }}" us="{{ us.id }}">
     <div class="user-story-header hfield">
-        <b>[{{ us.ref }}]</b> - <a href="{{ us.get_view_url }}">{{ us.subject }}</a>
+        <div class="hfield-description">
+            <div class="reference">
+                <b>[{{ us.ref }}]</b>
+            </div>
+            <div class="description-text">
+                <a href="{{ us.get_view_url }}">{{ us.subject }}</a>
+            </div>
+        </div>
         <a href="" class="add-task"><img src="{{ STATIC_URL }}imgs/plus-icon.png" width="14" height="14"></img></a>
-        <a href="" class="remove-us"><img src="{{ STATIC_URL }}imgs/trash.png" width="14" height="14"></img></a>
         <span class="estimation">{% trans "Points:" %} {{ us.get_points_display }}</span>
     </div>
     <div class="user-story-status hfield status-new" rel="new">

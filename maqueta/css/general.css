@@ -105,6 +105,7 @@ div.main-menu ul.right-menu li {
 .width100{width: 100% !important;}
 .float-left{float: left;}
 .float-right{float: right;}
+.align-right { text-align: right; }
 .table01 img{float: left; margin-right:10px;}
 .table01 td{line-height: 30px; padding:12px;}
 .table01 th{background-color: #458745; color: #FFFFFF; font-weight: bold; padding: 0 10px 0 15px;}
@@ -285,14 +286,17 @@ div.fieldset div.field-inline {
 #milestone-dashboard #progress-bar {
     margin-bottom: 20px;
 }
+
 #milestone-dashboard .user-story { 
     overflow: hidden; 
     margin-bottom: 4px;
 }
+
 #milestone-dashboard .user-story .hfield {
     float: left;
     min-height: 100px;
     margin-right: 4px;
+    border-top: 1px solid #CCC;
 }
 
 #milestone-dashboard .user-story .user-story-header {
@@ -302,6 +306,7 @@ div.fieldset div.field-inline {
     padding: 6px;
     font-size: 11px;
     position: relative;
+    border: 1px solid #999;
 }
 #milestone-dashboard .user-story .user-story-header a.add-task {
     position: absolute;
@@ -322,13 +327,16 @@ div.fieldset div.field-inline {
     padding: 4px;
 }
 #milestone-dashboard .user-story .user-story-task {
-    min-height: 60px;
+    min-height: 85px;
     background-color: #eee;
-    border: 1px solid #ddd;
-    border-radius: 2px;
+    border: 1px solid #999;
     padding: 5px;
     margin-bottom: 3px;
     position: relative;
+}
+
+#milestone-dashboard .user-story .user-story-task .task-desc .reference {
+    font-weight: bold;
 }
 
 #milestone-dashboard .user-story .user-story-task .participants {

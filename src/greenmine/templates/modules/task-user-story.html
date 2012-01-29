@@ -1,6 +1,11 @@
 {% load i18n %}
 <div class="user-story-task" rel="{{ task.id }}" ml="{{ milestone.id }}" url="{{ task.get_alter_api_url }}">
-    <span class="subject">{{ task.subject|truncatewords:5 }}</span>
+    <div class="task-desc">
+        <div class="reference">
+            <a href="">{{ task.ref }}</a>
+        </div>
+        <div class="subject">{{ task.subject|truncatewords:5 }}</div>
+    </div>
     <select class="participants" name="assigned_to" url="{{ task.get_reassign_api_url }}">
         <option value="">{% trans "Unassigned" %}</option>
         {% for u in project.participants.all %}

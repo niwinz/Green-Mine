@@ -66,6 +66,10 @@
             </div>
         </div>
         {% endwith %}
+
+        <div class="form-field width100" style="min-height: 30px">
+            <a href="" class="btn01 float-right">{% trans "Create task" %}</a>
+        </div>
         
         {% comment %}
         {% with files=user_story.attached_files.all %}
@@ -82,7 +86,8 @@
         {% endwith %}
         {% endcomment %}
     </div>
-
+    
+    {% comment %}
     <div class="user-story-responses">
         <div class="responses-list">
             {% with responses=user_story.responses.all %}
@@ -147,5 +152,6 @@
             </div>
         </form>
     </div>
+    {% endcomment %}
 </div>
 {% endblock %}
