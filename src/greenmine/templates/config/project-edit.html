@@ -4,7 +4,6 @@
 
 {% block wrapper %}
 <div id="project">
-    {% include "config/menu.html" %}
     <form id="edit-project-form" method="post" class="validate">
         {% csrf_token %}
         {% include "messages.html" %}
