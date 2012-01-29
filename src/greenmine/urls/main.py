@@ -55,10 +55,13 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
-        main.TaskEditView.as_view(), name='task-edit'),
+    #url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
+    #    main.TaskEditView.as_view(), name='task-edit'),
+
+     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
+        main.TaskView.as_view(), name='task-view'),
     
-    url(r'^(?P<pslug>[\w\d\-]+)//task/list/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
     
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',

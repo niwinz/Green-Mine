@@ -221,25 +221,27 @@ class UserStoryForm(forms.ModelForm):
             'tested', 'subject', 'description', 'finish_date')
 
 
-class UserStoryCommentForm(Form):
+class CommentForm(Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
     
     def __init__(self, *args, **kwargs):
-        self._user_story = kwargs.pop('user_story', None)
+        self._task = kwargs.pop('task', None)
         self._request = kwargs.pop('request', None)
-        super(UserStoryCommentForm, self).__init__(*args, **kwargs)
-
+        super(CommentForm, self).__init__(*args, **kwargs)
+    
     def save(self):
-        self._instance = models.UserStoryResponse.objects.create(
+        self._instance = models.TaskResponse.objects.create(
             owner = self._request.user,
-            user_story = self._user_story,
+            task = self._task,
             content = self.cleaned_data['description'],
         )
+
         if self.cleaned_data['attached_file']:
-            instance_file = models.UserStoryFile.objects.create(
+            instance_file = models.TaskAttachedFile.objects.create(
                 response = self._instance,
                 owner = self._request.user,
+                task = self._task,
                 attached_file = self.cleaned_data['attached_file']
             )
 

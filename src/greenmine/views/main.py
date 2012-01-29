@@ -333,30 +333,13 @@ class UserStoryView(GenericView):
         """ View US Detail """
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.UserStoryCommentForm()
         
         context = {
             'user_story':user_story,
-            'form': form, 
             'milestone':user_story.milestone,
             'project': project,
         }
         return self.render(self.template_name, context)
-
-    #@login_required
-    #def post(self, request, pslug, iref):
-    #    """ Add comments method """
-    #    project = get_object_or_404(models.Project, slug=pslug)
-    #    user_story = get_object_or_404(project.user_stories, ref=iref)
-    #    form = forms.UserStoryCommentForm(request.POST, \
-    #                request.FILES, user_story=user_story, request=request)
-
-    #    if form.is_valid():
-    #        form.save()
-    #        return HttpResponseRedirect(user_story.get_view_url())
-
-    #    context = {'form':form, 'user_story':user_story}
-    #    return self.render(self.template_name, context)
 
 
 class UserStoryCreateView(GenericView):
@@ -509,40 +492,80 @@ class TaskCreateView(GenericView):
         return self.render(self.template_name, context)
 
 
-class TaskEditView(GenericView):
-    template_name = 'task_edit.html'
+class TaskView(GenericView):
+    menu = ['tasks']
+    template_path = 'task-view.html'
 
     @login_required
-    def get(self, request, pslug, iref, tref):
+    def get(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        task = get_object_or_404(user_story.tasks, ref=tref)
-        form = forms.TaskForm(instance=task)
-
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.CommentForm(task=task, request=request)
+        
         context = {
-            'project': project,
-            'user_story': user_story,
-            'task': task,
             'form': form,
+            'task': task,
+            'project': project,
         }
-        return self.render(self.template_name, context)
-    
+
+        return self.render_to_response(self.template_path, context)
+
+
     @login_required
-    def post(self, request, pslug, iref, tref):
+    def post(self, request, pslug, tref):
+        """ Add comments method """
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        task = get_object_or_404(user_story.tasks, ref=tref)
-        form = forms.TaskForm(request.POST, instance=task)
+        task = get_object_or_404(project.tasks, ref=tref)
+
+        form = forms.CommentForm(request.POST, \
+                    request.FILES, task=task, request=request)
+        
         if form.is_valid():
-            task = form.save()
-
-            messages.info(request, _(u"The task has been created with success!"))
-            return self.redirect(user_story.get_view_url())
+            form.save()
+            return self.render_redirect(task.get_view_url())
 
         context = {
-            'project': project,
-            'user_story': user_story,
-            'task': task,
             'form': form,
+            'task': task,
+            'project': project,
         }
-        return self.render(self.template_name, context)
+        return self.render(self.template_path, context)
+
+
+#class TaskEditView(GenericView):
+#    template_name = 'task_edit.html'
+#
+#    @login_required
+#    def get(self, request, pslug, iref, tref):
+#        project = get_object_or_404(models.Project, slug=pslug)
+#        user_story = get_object_or_404(project.user_stories, ref=iref)
+#        task = get_object_or_404(user_story.tasks, ref=tref)
+#        form = forms.TaskForm(instance=task)
+#
+#        context = {
+#            'project': project,
+#            'user_story': user_story,
+#            'task': task,
+#            'form': form,
+#        }
+#        return self.render(self.template_name, context)
+#    
+#    @login_required
+#    def post(self, request, pslug, iref, tref):
+#        project = get_object_or_404(models.Project, slug=pslug)
+#        user_story = get_object_or_404(project.user_stories, ref=iref)
+#        task = get_object_or_404(user_story.tasks, ref=tref)
+#        form = forms.TaskForm(request.POST, instance=task)
+#        if form.is_valid():
+#            task = form.save()
+#
+#            messages.info(request, _(u"The task has been created with success!"))
+#            return self.redirect(user_story.get_view_url())
+#
+#        context = {
+#            'project': project,
+#            'user_story': user_story,
+#            'task': task,
+#            'form': form,
+#        }
+#        return self.render(self.template_name, context)
