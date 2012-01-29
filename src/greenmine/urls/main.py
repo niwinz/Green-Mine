@@ -32,11 +32,12 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/$',
         main.DashboardView.as_view(), name="dashboard"),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
-        main.UserStoryCreateView.as_view(), name='user-story-create'),
-
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$', 
         main.MilestoneCreateView.as_view(), name='milestone-create'),
+
+    # User storys
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
+        main.UserStoryCreateView.as_view(), name='user-story-create'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/(?P<mid>\d+)/user-story/create/',
         main.UserStoryCreateView.as_view(), name='user-story-create'),
@@ -46,16 +47,17 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/delete/$',
         main.UserStoryDeleteView.as_view(), name='user-story-delete'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/task/create/$',
-        main.TaskCreateView.as_view(), name='task-create'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/task/(?P<tref>[\w\d]+)/edit/$',
-        main.TaskEditView.as_view(), name='task-edit'),
-
+    
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$', 
         main.UserStoryView.as_view(), name='user-story'),
+    
+    # Task
+    url(r'^(?P<pslug>[\w\d\-]+)/task/create/$',
+        main.TaskCreateView.as_view(), name='task-create'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
+        main.TaskEditView.as_view(), name='task-edit'),
+    
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         

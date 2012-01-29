@@ -265,7 +265,7 @@ class ProjectEditView(ProjectCreateView):
 
 
 class MilestoneCreateView(GenericView):
-    template_name = 'milestone_create.html'
+    template_name = 'milestone-create.html'
     menu = []
 
     @login_required
@@ -298,7 +298,7 @@ class MilestoneCreateView(GenericView):
 
 
 class UserStoryView(GenericView):
-    template_name = "user_story.html"
+    template_name = "user-story-view.html"
 
     @login_required
     def get(self, request, pslug, iref):
@@ -315,24 +315,24 @@ class UserStoryView(GenericView):
         }
         return self.render(self.template_name, context)
 
-    @login_required
-    def post(self, request, pslug, iref):
-        """ Add comments method """
-        project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.UserStoryCommentForm(request.POST, \
-                    request.FILES, user_story=user_story, request=request)
+    #@login_required
+    #def post(self, request, pslug, iref):
+    #    """ Add comments method """
+    #    project = get_object_or_404(models.Project, slug=pslug)
+    #    user_story = get_object_or_404(project.user_stories, ref=iref)
+    #    form = forms.UserStoryCommentForm(request.POST, \
+    #                request.FILES, user_story=user_story, request=request)
 
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(user_story.get_view_url())
+    #    if form.is_valid():
+    #        form.save()
+    #        return HttpResponseRedirect(user_story.get_view_url())
 
-        context = {'form':form, 'user_story':user_story}
-        return self.render(self.template_name, context)
+    #    context = {'form':form, 'user_story':user_story}
+    #    return self.render(self.template_name, context)
 
 
 class UserStoryCreateView(GenericView):
-    template_name = "user_story_create.html"
+    template_name = "user-story-create.html"
 
     @login_required
     def get(self, request, pslug):
@@ -366,7 +366,7 @@ class UserStoryCreateView(GenericView):
 
 
 class UserStoryEditView(GenericView):
-    template_name = "user_story_edit.html"
+    template_name = "user-story-edit.html"
 
     @login_required
     def get(self, request, pslug, iref):
@@ -400,7 +400,7 @@ class UserStoryEditView(GenericView):
         return self.render(self.template_name, context)
 
 class UserStoryDeleteView(GenericView):
-    template_name = "user_story_delete.html"
+    template_name = "user-story-delete.html"
 
     @login_required
     def get(self, request, pslug, iref):
