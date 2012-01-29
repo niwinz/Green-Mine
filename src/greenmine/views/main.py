@@ -618,3 +618,21 @@ class TaskEdit(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+
+class ProjectSettings(GenericView):
+    template_path = "config/project.html"
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        pur = get_object_or_404(project.user_roles, user=request.user)
+
+        form = forms.ProjectPersonalSettingsForm(instance=pur)
+
+        context = {
+            'pur': pur,
+            'project': project,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)

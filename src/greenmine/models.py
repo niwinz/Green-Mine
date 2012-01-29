@@ -217,8 +217,8 @@ class Team(models.Model):
 
 
 class ProjectUserRole(models.Model):
-    project = models.ForeignKey("Project", related_name="user_role")
-    user = models.ForeignKey("auth.User")
+    project = models.ForeignKey("Project", related_name="user_roles")
+    user = models.ForeignKey("auth.User", related_name="user_roles")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
 
     # email notification settings

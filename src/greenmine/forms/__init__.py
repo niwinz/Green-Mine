@@ -167,7 +167,6 @@ class ProfileForm(Form):
         return self.instance
 
 
-
 class ProjectForm(Form):
     projectname = CharField(max_length=200, min_length=4,
         required=True, type='text', label=_(u'Project name'))
@@ -206,6 +205,19 @@ class ProjectForm(Form):
                 owner = self._request.user,
             )
         return self.project
+
+
+class ProjectPersonalSettingsForm(forms.ModelForm):
+    class Meta:
+        model = ProjectUserRole
+        fields = (
+            'send_email_on_group_message',
+            'send_email_on_us_asignement',
+            'send_email_on_new_us',
+            'send_email_on_new_us_as_watcher',
+            'send_email_on_incoming_question',
+            'send_email_on_incoming_question_assigned',
+        )
 
 
 class FiltersForm(Form):
