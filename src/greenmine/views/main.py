@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
 
-from django.views.decorators.cache import cache_page
-from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext, loader
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
+from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
-
-
-from django.contrib.auth.models import User
 
 import re
 
@@ -49,7 +47,38 @@ class LoginView(GenericView):
 
         return self.render_to_response(self.template_name,
             {'form': login_form})
-           
+
+
+class ProfileView(GenericView):
+    template_name = 'profile.html'
+
+    @login_required
+    def get(self, request):
+        form = forms.ProfileForm(instance=request.user)
+        context = {'form':form}
+        return self.render(self.template_name, context)
+
+    @login_required
+    def post(self, request):
+        form = forms.ProfileForm(request.POST, request.FILES, instance=request.user)
+        context = {'form':form}
+
+        if not form.is_valid():
+            return self.render(self.template_name, context)
+
+        sem = transaction.savepoint()
+        try:
+            request.user = form.save()
+        except IntegrityError as e:
+            transaction.savepoint_rollback(sem)
+            
+            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
+            return self.render(self.template_name, context)
+        
+        transaction.savepoint_commit(sem)
+        messages.info(request, _(u'Profile save success!'))
+        return HttpResponseRedirect(reverse('web:profile'))
+
 
 class PasswordRecoveryView(GenericView):
     template_name = "password_recovery.html"

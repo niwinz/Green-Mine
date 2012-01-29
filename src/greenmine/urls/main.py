@@ -14,8 +14,8 @@ urlpatterns = patterns('',
     url(r'^login/$', main.LoginView.as_view(), name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
 
-    url(r'^config/profile/$', 
-        config.ProfileView.as_view(), name='profile'),
+    url(r'^profile/$', 
+        main.ProfileView.as_view(), name='profile'),
 
     #url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
     #        config.AdminProjectExport.as_view(), name="admin-project-export"),

@@ -130,8 +130,6 @@ class PasswordRecoveryForm(Form):
 class ProfileForm(Form):
     username = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'Username'))
-    password = CharField(max_length=200, min_length=4, 
-        required=False, type='password', label=_(u'Password'))
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
     description = forms.CharField(widget=Textarea, required=False,
@@ -142,7 +140,6 @@ class ProfileForm(Form):
         self.instance = kwargs.pop('instance')
         kwargs['initial'] = {
             'username': self.instance.username,
-            'password': '',
             'description': self.instance.get_profile().description,
             'email': self.instance.email,
         }
@@ -155,7 +152,6 @@ class ProfileForm(Form):
         profile.description = self.cleaned_data['description']
         profile.photo = self.cleaned_data['photo']
         profile.save()
-        self.instance.set_password(self.cleaned_data['password'])
         return self.instance
 
 
