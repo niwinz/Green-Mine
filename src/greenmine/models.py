@@ -151,6 +151,10 @@ class Project(models.Model):
         qs = ProjectUserRole.objects.filter(project=self)
         return User.objects.filter(id__in=qs.values_list('user__pk', flat=True))
 
+    @property
+    def default_milestone(self):
+        return self.milestones.order_by('-created_date')[0]
+
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
 

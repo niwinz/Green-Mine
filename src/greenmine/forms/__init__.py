@@ -250,9 +250,11 @@ class TaskForm(forms.ModelForm):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['user_story'].queryset = self.project.user_stories.all()
         self.fields['assigned_to'].queryset = self.project.all_participants
+        self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
+        self.fields['milestone'].initial = self.project.default_milestone
 
     class Meta:
-        fields = ('status', 'priority', 'subject',
+        fields = ('status', 'priority', 'subject','milestone',
             'description', 'assigned_to','type', 'user_story')
         model = models.Task
 
