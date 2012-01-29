@@ -166,6 +166,9 @@ div.main-menu ul.right-menu li {
 #dashboard .left-block {
     width: 650px;
 }
+#dashboard.tasks-ds .left-block {
+    width: 755px;
+}
 
 #dashboard .left-block .unassigned-us {
     padding: 5px;
@@ -195,6 +198,12 @@ div.main-menu ul.right-menu li {
 #dashboard .left-block .unassigned-us .un-us-item .row.points {
     width: 35px;
 }
+#dashboard .left-block .unassigned-us .un-us-item .row.us {
+    width: 75px;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.status {
+    width: 90px;
+}
 #dashboard .left-block .unassigned-us .un-us-item .row.milestone {}
 #dashboard .left-block .unassigned-us .un-us-item .row.metaicon {
     float: right;
@@ -206,10 +215,17 @@ div.main-menu ul.right-menu li {
 #dashboard .right-block {
     width: 325px;
 }
+#dashboard.tasks-ds .right-block {
+    width: 220px;
+}
 #dashboard .right-block .milestone-item {
     margin-bottom: 10px;
     background-color: #eee;
     padding: 5px;
+}
+
+#dashboard.tasks-ds .right-block .milestone-item {
+    margin-bottom: 3px;
 }
 
 #dashboard .right-block .milestone-item .milestone-title { 

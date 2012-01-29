@@ -396,7 +396,7 @@ class Task(models.Model):
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="tasks")
 
-    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=3)
     milestone = models.ForeignKey('Milestone', related_name='tasks',
         null=True, default=None)
 

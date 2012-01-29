@@ -6,22 +6,42 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
+<div id="dashboard" class="tasks-ds" rel="{{ project.get_milestones_list_api_url }}">
     <div class="left-block">
         <div class="unassigned-us">
+            <div class="un-us-item head-title">
+                <div class="row identify">
+                    <span>{% trans "Ref." %}</span>
+                </div>
+                <div class="row title">
+                    <span>{% trans "Subject" %}</span>
+                </div>
+                <div class="row us">
+                    <span>{% trans "US" %}</span>
+                </div>
+                <div class="row status">
+                    <span>{% trans "Status" %}</span>
+                </div>
+                <div class="row milestone">
+                    <span>{% trans "Assinged to" %}</span>
+                </div>
+                <div class="row metaicon">
+                    <span>{% trans "Acctions" %}</span>
+                </div>
+            </div>
             {% for task in tasks %}
             <div class="un-us-item">
                 <div class="row identify">
                     <span><a href="{{ task.get_view_url }}">{{ task.ref }}</a></span>
                 </div>
                 <div class="row title">
-                    <span><a href="{{ us.get_view_url }}">{{ task.subject|truncatechars:45 }}</a></span>
+                    <span><a href="{{ task.get_view_url }}">{{ task.subject|truncatechars:45 }}</a></span>
                 </div>
-                <div class="row points">
-                    <span>{{ us.get_points_display }}</span>
+                <div class="row us">
+                    <span><a href="">{{ task.user_story.ref|default:"Null" }}</a></span>
                 </div>
-                <div class="row priority">
-                    <span priprity="{{ us.priority }}">{{ task.get_priority_display }}</span>
+                <div class="row status">
+                    <span>{{ task.get_status_display }}</span>
                 </div>
                 <div class="row milestone">
                     <span><a href="">{% trans "Unassigned" %}</a></span>
@@ -36,8 +56,7 @@
     <div class="right-block">
         <div class="context-menu">
             <ul>
-                <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>
-                <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
+                <li><a class="new-milestone" href="">{% trans "Create new task" %}</a></li>
             </ul>
         </div>
         <div class="milestones simple-list">
