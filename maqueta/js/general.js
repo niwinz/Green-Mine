@@ -331,7 +331,7 @@ $(document).ready(function(){
                     }).show();
                 });
             };
-
+                        
             //init dashboard
             //milestones_bindings();
             dragAndDrop();

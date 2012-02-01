@@ -1,0 +1,22 @@
+{% load static from staticfiles %}
+{% load i18n %}
+    <div class="un-us-item">
+        <div class="row identify">
+            <span><a href="{{ us.get_view_url }}">{{ us.ref }}</a></span>
+        </div>
+        <div class="row title">
+            <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:45 }}</a></span>
+        </div>
+        <div class="row points">
+            <span>{{ us.get_points_display }}</span>
+        </div>
+        <div class="row priority">
+            <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>
+        </div>
+        <div class="row milestone">
+            <span><a rel="{{ us.ref }}" href="">{% trans "Unassigned" %}</a></span>
+        </div>
+        <div class="row metaicon">
+            <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
+        </div>
+    </div>

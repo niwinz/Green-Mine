@@ -617,6 +617,37 @@ class TaskEdit(GenericView):
             'form': form,
         }
 
+        return self.render(self.template_name, context)
+        
+class AssignUs(GenericView):      
+    template_name = 'milestone_item.html'
+    
+    @login_required
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=request.POST.get('iref'))
+        milestone = get_object_or_404(models.Milestone, id=mid)
+        user_story.milestone = milestone
+        user_story.save()
+        
+        context = {'us': user_story}
+        
+        return self.render(self.template_name, context)
+        
+class UnassignUs(GenericView):       
+    template_name = 'user_story_item.html'   
+    
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        user_story.milestone = None
+        user_story.save()        
+        
+        context = {'us': user_story}
+        
+        return self.render(self.template_name, context)
+        
         return self.render_to_response(self.template_path, context)
 
 
