@@ -83,6 +83,10 @@ div.main-menu ul.left-menu {
     width: 770px;
 }
 
+div.main-menu ul.left-menu.settings {
+    width: 670px;
+}
+
 div.main-menu ul.left-menu li {
     padding-right: 10px;
 }
@@ -90,6 +94,11 @@ div.main-menu ul.left-menu li {
 div.main-menu ul.right-menu {
     width: 200px;
     text-align: right;
+}
+
+
+div.main-menu ul.right-menu.settings {
+    width: 300px;
 }
 
 div.main-menu ul.right-menu li {

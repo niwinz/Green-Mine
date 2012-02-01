@@ -274,14 +274,22 @@ class ProjectCreateView(GenericView):
 
 
 class ProjectEditView(ProjectCreateView):
-    template_name = 'project-edit.html'
+    template_name = 'config/project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+
+    menu = ["settings", "editproject"]
 
     @login_required
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.ProjectForm(instance=project)
-        context = {'form':form, 'roles': models.ROLE_CHOICES, 'project': project}
+        
+        print project.user_roles.all()
+        context = {
+            'form':form, 
+            'roles': models.ROLE_CHOICES, 
+            'project': project
+        }
         return self.render(self.template_name, context)
 
     @login_required

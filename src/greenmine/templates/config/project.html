@@ -1,13 +1,8 @@
-{% extends "base.html" %}
+{% extends "config/base.html" %}
 {% load url from future %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / Profile edit{% endblock %}
-
-{% block middle %}
-    {% include "config/middle-menu-left.html" %}
-    {% include "middle-menu-right.html" %}
-{% endblock %}
+{% block title %}{{ block.super }} / {% trans "Notifications" %}{% endblock %}
 
 {% block wrapper %}
 <div id="my-profile" class="form-container">

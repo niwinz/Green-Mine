@@ -1,6 +1,9 @@
-{% extends "base.html" %}
+{% extends "config/base.html" %}
 {% load url from future %}
 {% load i18n %}
+
+
+{% block title %}{{ block.super }} / {% trans "Edit" %}{% endblock %}
 
 {% block wrapper %}
 <div id="project">
@@ -27,7 +30,7 @@
                                 <th class="th2">Rol</th>
                                 <th class="th3">Opciones</th>
                             </tr>
-                            {% for user_role in project.user_role.all %}
+                            {% for user_role in project.user_roles.all %}
                             <tr>
                                 <td>
                                     <img width="30" src="/static/auxiliar/imgs/gravatar.jpg">{{user_role.user.first_name}}
@@ -59,7 +62,7 @@
             </div>
             <div class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />
-                <a href="{% url 'web:admin-projects' %}" class="btn01">Volver</a>
+                <a href="{% url 'web:projects' %}" class="btn01">Volver</a>
                 <span class="ajax-loader"></span>
             </div>
         </fieldset>
