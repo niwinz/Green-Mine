@@ -10,26 +10,7 @@
     <div class="left-block">
         <div class="unassigned-us">
             {% for us in unassigned_us %}
-            <div class="un-us-item">
-                <div class="row identify">
-                    <span><a href="{{ us.get_view_url }}">{{ us.ref }}</a></span>
-                </div>
-                <div class="row title">
-                    <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:45 }}</a></span>
-                </div>
-                <div class="row points">
-                    <span>{{ us.get_points_display }}</span>
-                </div>
-                <div class="row priority">
-                    <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>
-                </div>
-                <div class="row milestone">
-                    <span><a href="">{% trans "Unassigned" %}</a></span>
-                </div>
-                <div class="row metaicon">
-                    <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
-                </div>
-            </div>
+                {% include "user_story_item.html" with us=us %}
             {% endfor %}
         </div>
     </div>       
@@ -42,7 +23,7 @@
         </div>
         <div class="milestones">
             {% for ml in milestones %}
-            <div class="milestone-item {% if ml == milestone %}selected{% endif %}">
+            <div id="milestone-{{ml.id}}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
                 <div class="milestone-title">
                     <div class="text">{{ ml.name|capfirst }}</div>
                     <div class="meta">
@@ -53,18 +34,7 @@
                 </div>
                 <div class="milestone-userstorys">
                     {% for us in ml.user_stories.all %}
-                    <div class="us-item">
-                        <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
-                        <div class="us-meta">
-                            <div class="meta-data" style="display: none"
-                                viewurl="{{ us.get_view_url }}" 
-                                ref="{{ us.ref }}"
-                                priorityid="{{ us.priority }}"
-                                priority="{{ us.get_priority_display }}"
-                                points="{{ us.get_points_display }}"></div>
-                            <a href="" class="unassign"><img src="{% static 'imgs/close-icon.png' %}"></img></a>
-                        </div>
-                    </div>
+                        {% include "milestone_item.html" with us=us %}
                     {% empty %}
                     <div class="us-item-empty us-item">
                         <div class="us-title">{% trans "No user storys" %}</div>
@@ -125,4 +95,13 @@
         </div>
     </div>
 </div>
+
+<div id="lightbox-backlog">
+    <ul>
+        {% for ml in milestones %}
+        <li><a rel="{{ ml.id }}" href="{{ml.get_assign_url}}">{{ ml.name|capfirst }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+<div id="overlay"></div>
 {% endblock %}

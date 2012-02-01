@@ -237,6 +237,11 @@ class Milestone(models.Model):
         unique_together = ('name', 'project')
 
     @models.permalink
+    def get_assign_url(self):
+        return ('web:assign-us', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
     def get_dashboard_url(self):
         return ('web:dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})
@@ -319,6 +324,11 @@ class UserStory(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_unassign_url(self):
+        return ('web:unassign-us', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_asoiciate_api_url(self):
