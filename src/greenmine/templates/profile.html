@@ -1,25 +1,39 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} / Profile edit{% endblock %}
 
-{% include "config/menu.html" %}{% block wrapper %}
+{% block middle %}
+{% endblock %}
+
+{% block wrapper %}
 <div id="my-profile">
-    {% include "config/menu.html" %}
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="">
+                {% trans "Change password" %}</a></li>
+        </ul>
+    </div>
     <form id="edit-profile-form" method="post" enctype="multipart/form-data"
         action="{% url 'web:profile' %}" class="inline">
         {% include "messages.html" %}
         {% csrf_token %}
         <fieldset>
             <div class="form-field">
+                <label>{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+            <div class="form-field">
                 <label>{{ form.username.label }}</label>
                 {{ form.username }}
                 {{ form.username.errors }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.password.label }}</label>
-                {{ form.password }}
-                {{ form.password.errors }}
             </div>
             <div class="form-field">
                 <label>{{ form.email.label }}</label>

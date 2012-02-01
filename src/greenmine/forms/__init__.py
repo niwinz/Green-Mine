@@ -128,10 +128,12 @@ class PasswordRecoveryForm(Form):
 
 
 class ProfileForm(Form):
-    username = CharField(max_length=200, min_length=4, 
+    username = CharField(max_length=30, min_length=4, 
         required=True, type='text', label=_(u'Username'))
-    password = CharField(max_length=200, min_length=4, 
-        required=False, type='password', label=_(u'Password'))
+    first_name = CharField(max_length=30, min_length=4, 
+        required=True, type='text', label=_(u'First name'))
+    last_name = CharField(max_length=30, min_length=4, 
+        required=True, type='text', label=_(u'Last_name'))
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
     description = forms.CharField(widget=Textarea, required=False,
@@ -142,7 +144,8 @@ class ProfileForm(Form):
         self.instance = kwargs.pop('instance')
         kwargs['initial'] = {
             'username': self.instance.username,
-            'password': '',
+            'first_name': self.instance.first_name,
+            'last_name': self.instance.last_name,
             'description': self.instance.get_profile().description,
             'email': self.instance.email,
         }
@@ -151,13 +154,17 @@ class ProfileForm(Form):
     def save(self):
         self.instance.username = self.cleaned_data['username']
         self.instance.email = self.cleaned_data['email']
+        self.instance.first_name = self.cleaned_data['first_name']
+        self.instance.last_name = self.cleaned_data['last_name']
+        self.instance.save()
+
         profile = self.instance.get_profile()
         profile.description = self.cleaned_data['description']
-        profile.photo = self.cleaned_data['photo']
+        if self.cleaned_data['photo']:
+            profile.photo = self.cleaned_data['photo']
         profile.save()
-        self.instance.set_password(self.cleaned_data['password'])
-        return self.instance
 
+        return self.instance
 
 
 class ProjectForm(Form):
@@ -200,6 +207,19 @@ class ProjectForm(Form):
         return self.project
 
 
+class ProjectPersonalSettingsForm(forms.ModelForm):
+    class Meta:
+        model = ProjectUserRole
+        fields = (
+            'send_email_on_group_message',
+            'send_email_on_us_asignement',
+            'send_email_on_new_us',
+            'send_email_on_new_us_as_watcher',
+            'send_email_on_incoming_question',
+            'send_email_on_incoming_question_assigned',
+        )
+
+
 class FiltersForm(Form):
     priority = forms.ChoiceField(choices=(('', _(u'US priority...'),),) + US_PRIORITY_CHOICES)
 
@@ -221,33 +241,55 @@ class UserStoryForm(forms.ModelForm):
             'tested', 'subject', 'description', 'finish_date')
 
 
-class UserStoryCommentForm(Form):
+class CommentForm(Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
     
     def __init__(self, *args, **kwargs):
-        self._user_story = kwargs.pop('user_story', None)
+        self._task = kwargs.pop('task', None)
         self._request = kwargs.pop('request', None)
-        super(UserStoryCommentForm, self).__init__(*args, **kwargs)
-
+        super(CommentForm, self).__init__(*args, **kwargs)
+    
     def save(self):
-        self._instance = models.UserStoryResponse.objects.create(
+        self._instance = models.TaskResponse.objects.create(
             owner = self._request.user,
-            user_story = self._user_story,
+            task = self._task,
             content = self.cleaned_data['description'],
         )
+
         if self.cleaned_data['attached_file']:
-            instance_file = models.UserStoryFile.objects.create(
+            instance_file = models.TaskAttachedFile.objects.create(
                 response = self._instance,
                 owner = self._request.user,
+                task = self._task,
                 attached_file = self.cleaned_data['attached_file']
             )
 
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.project = kwargs.pop('project', None)
+        self.initial_milestone = kwargs.pop('initial_milestone', None)
+        self.initial_us = kwargs.pop('initial_us', None)
+
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['user_story'].queryset = self.project.user_stories.all()
+        self.fields['assigned_to'].queryset = self.project.all_participants
+        self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
+
+        if self.initial_milestone:
+            self.fields['milestone'].initial = self.initial_milestone
+        else:
+            self.fields['milestone'].initial = self.project.default_milestone
+
+        if self.initial_us:
+            self.fields['user_story'].initial = self.initial_us
+
+        self.fields['milestone'].empty_label = None
+
     class Meta:
-        fields = ('status', 'priority', 'subject',
-            'description', 'assigned_to','type')
+        fields = ('status', 'priority', 'subject','milestone',
+            'description', 'assigned_to','type', 'user_story')
         model = models.Task
 
 

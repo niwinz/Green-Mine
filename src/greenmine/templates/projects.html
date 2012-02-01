@@ -16,8 +16,16 @@
         {% for project in page.object_list %}
         <tr>
             <td><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></td>
-            <td><img width="30" src="{% static "auxiliar/imgs/gravatar.jpg" %}" />{{ project.owner.first_name }}</td>
-            <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | <a class="delete" rel="{{ project.get_delete_api_url }}" href="">{% trans "Delete" %}</a></td>
+            <td>
+                {% if project.owner.get_profile.photo %}
+                <img width="30" src="{{ project.owner.get_profile.photo.url }}" />{{ project.owner.get_full_name }}
+                {% else %}
+                <img width="30" src="{% static "auxiliar/imgs/gravatar.jpg" %}" />{{ project.owner.get_full_name }}
+                {% endif %}
+            </td>
+            <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | 
+                <a class="delete" rel="{{ project.get_delete_api_url }}" href="">{% trans "Delete" %}</a>
+            </td>
         </tr>
         {% endfor %}
     </table>

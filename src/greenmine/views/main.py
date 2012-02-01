@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
 
-from django.views.decorators.cache import cache_page
-from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext, loader
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
+from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required
 from greenmine import models, forms
-
-
-from django.contrib.auth.models import User
 
 import re
 
@@ -49,9 +47,37 @@ class LoginView(GenericView):
 
         return self.render_to_response(self.template_name,
             {'form': login_form})
-           
 
 
+class ProfileView(GenericView):
+    template_name = 'profile.html'
+
+    @login_required
+    def get(self, request):
+        form = forms.ProfileForm(instance=request.user)
+        context = {'form':form}
+        return self.render(self.template_name, context)
+
+    @login_required
+    def post(self, request):
+        form = forms.ProfileForm(request.POST, request.FILES, instance=request.user)
+        context = {'form':form}
+
+        if not form.is_valid():
+            return self.render(self.template_name, context)
+
+        sem = transaction.savepoint()
+        try:
+            request.user = form.save()
+        except IntegrityError as e:
+            transaction.savepoint_rollback(sem)
+            
+            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
+            return self.render(self.template_name, context)
+        
+        transaction.savepoint_commit(sem)
+        messages.info(request, _(u'Profile save success!'))
+        return HttpResponseRedirect(reverse('web:profile'))
 
 
 class PasswordRecoveryView(GenericView):
@@ -129,6 +155,34 @@ class BacklogView(GenericView):
         return self.render(self.template_name, context)
 
 
+class TasksView(GenericView):
+    """ 
+    General dasboard view,  with all milestones and all tasks. 
+    """
+
+    template_name = 'tasks.html'
+    menu = ['tasks']
+
+    @login_required
+    def get(self, request, pslug, mid=None):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        if mid is None:
+            return self.render_redirect(project.get_default_tasks_url())
+
+        milestone = get_object_or_404(project.milestones, pk=mid)
+        tasks = milestone.tasks.all()
+
+        context = {
+            'project': project,
+            'milestones': project.milestones.order_by('-created_date'),
+            'milestone': milestone,
+            'tasks': tasks,
+        }
+
+        return self.render(self.template_name, context)
+
+
 class DashboardView(GenericView):
     template_name = 'dashboard.html'
     menu = ['dashboard']
@@ -153,8 +207,9 @@ class DashboardView(GenericView):
 
 
 class ProjectCreateView(GenericView):
-    template_name = 'config/project.html'
+    template_name = 'project-create.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+    menu = ['projects']
 
     def parse_roles(self):
         user_role = {}
@@ -219,7 +274,7 @@ class ProjectCreateView(GenericView):
 
 
 class ProjectEditView(ProjectCreateView):
-    template_name = 'config/project-edit.html'
+    template_name = 'project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
 
     @login_required
@@ -267,7 +322,7 @@ class ProjectEditView(ProjectCreateView):
 
 
 class MilestoneCreateView(GenericView):
-    template_name = 'milestone_create.html'
+    template_name = 'milestone-create.html'
     menu = []
 
     @login_required
@@ -300,41 +355,24 @@ class MilestoneCreateView(GenericView):
 
 
 class UserStoryView(GenericView):
-    template_name = "user_story.html"
+    template_name = "user-story-view.html"
 
     @login_required
     def get(self, request, pslug, iref):
         """ View US Detail """
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.UserStoryCommentForm()
         
         context = {
             'user_story':user_story,
-            'form': form, 
             'milestone':user_story.milestone,
             'project': project,
         }
         return self.render(self.template_name, context)
 
-    @login_required
-    def post(self, request, pslug, iref):
-        """ Add comments method """
-        project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.UserStoryCommentForm(request.POST, \
-                    request.FILES, user_story=user_story, request=request)
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(user_story.get_view_url())
-
-        context = {'form':form, 'user_story':user_story}
-        return self.render(self.template_name, context)
-
 
 class UserStoryCreateView(GenericView):
-    template_name = "user_story_create.html"
+    template_name = "user-story-create.html"
 
     @login_required
     def get(self, request, pslug):
@@ -367,8 +405,8 @@ class UserStoryCreateView(GenericView):
         return self.render(self.template_name, context)
 
 
-class UserStoryEditView(GenericView):
-    template_name = "user_story_edit.html"
+class UserStoryEdit(GenericView):
+    template_name = "user-story-edit.html"
 
     @login_required
     def get(self, request, pslug, iref):
@@ -392,7 +430,7 @@ class UserStoryEditView(GenericView):
         if form.is_valid():
             user_story = form.save(commit=True)
             messages.info(request, _(u'The user story has been successfully saved'))
-            return self.redirect(user_story.get_view_url())
+            return self.render_redirect(user_story.get_view_url())
 
         context = {
             'project': project,
@@ -401,8 +439,9 @@ class UserStoryEditView(GenericView):
         }
         return self.render(self.template_name, context)
 
+
 class UserStoryDeleteView(GenericView):
-    template_name = "user_story_delete.html"
+    template_name = "user-story-delete.html"
 
     @login_required
     def get(self, request, pslug, iref):
@@ -430,83 +469,154 @@ class UserStoryDeleteView(GenericView):
 
 
 class TaskCreateView(GenericView):
-    template_name = 'task_create.html'
+    template_name = 'task-create.html'
 
     @login_required
-    def get(self, request, pslug, iref):
+    def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.TaskForm()
+        milestone = us = None
+
+        mid = request.GET.get('milestone', None)
+        if mid is not None:
+            milestoneqs = project.milestones.filter(pk=mid)
+            milestone = milestoneqs and milestoneqs.get() or None
+
+        us = request.GET.get('us', None)
+        if us is not None:
+            usqs = project.user_stories.filter(pk=us)
+            us = usqs and usqs.get() or None
+
+        form = forms.TaskForm(project=project, 
+            initial_milestone=milestone, initial_us=us)
 
         context = {
             'project': project,
-            'user_story': user_story,
             'form': form,
         }
         return self.render(self.template_name, context)
 
-
     @login_required
-    def post(self, request, pslug, iref):
+    def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        form = forms.TaskForm(request.POST)
+        milestone = us = None
+
+        mid = request.GET.get('milestone', None)
+        if mid is not None:
+            milestoneqs = project.milestones.filter(pk=mid)
+            milestone = milestoneqs and milestoneqs.get() or None
+
+        us = request.GET.get('us', None)
+        if us is not None:
+            usqs = project.user_stories.filter(pk=us)
+            us = usqs and usqs.get() or None
+
+        form = forms.TaskForm(request.POST, project=project, 
+            initial_milestone=milestone, initial_us=us)
+
+        next_url = request.GET.get('next', None)
+        print request.GET
 
         if form.is_valid():
             task = form.save(commit=False)
-            task.user_story = user_story
-            task.milestone = user_story.milestone
             task.owner = request.user
             task.project = project
             task.save()
             
             messages.info(request, _(u"The task has been created with success!"))
-            return self.redirect(user_story.get_view_url())
+
+            print next_url, type(next_url)
+            if next_url:
+                # TODO fix security
+                return self.render_redirect(next_url)
+            
+            return self.render_redirect(task.milestone.get_tasks_url())
 
         context = {
             'project': project,
-            'user_story': user_story,
             'form': form,
         }
         return self.render(self.template_name, context)
 
 
-class TaskEditView(GenericView):
-    template_name = 'task_edit.html'
+class TaskView(GenericView):
+    menu = ['tasks']
+    template_path = 'task-view.html'
 
     @login_required
-    def get(self, request, pslug, iref, tref):
+    def get(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        task = get_object_or_404(user_story.tasks, ref=tref)
-        form = forms.TaskForm(instance=task)
-
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.CommentForm(task=task, request=request)
+        
         context = {
-            'project': project,
-            'user_story': user_story,
+            'form': form,
             'task': task,
-            'form': form,
+            'project': project,
         }
-        return self.render(self.template_name, context)
-    
+
+        return self.render_to_response(self.template_path, context)
+
+
     @login_required
-    def post(self, request, pslug, iref, tref):
+    def post(self, request, pslug, tref):
+        """ Add comments method """
         project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=iref)
-        task = get_object_or_404(user_story.tasks, ref=tref)
-        form = forms.TaskForm(request.POST, instance=task)
+        task = get_object_or_404(project.tasks, ref=tref)
+
+        form = forms.CommentForm(request.POST, \
+                    request.FILES, task=task, request=request)
+        
         if form.is_valid():
-            task = form.save()
+            form.save()
+            return self.render_redirect(task.get_view_url())
 
-            messages.info(request, _(u"The task has been created with success!"))
-            return self.redirect(user_story.get_view_url())
+        context = {
+            'form': form,
+            'task': task,
+            'project': project,
+        }
+        return self.render(self.template_path, context)
+
+
+class TaskEdit(GenericView):
+    template_path = 'task-edit.html'
+
+    @login_required
+    def get(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.TaskForm(instance=task, project=project)
 
         context = {
             'project': project,
-            'user_story': user_story,
             'task': task,
             'form': form,
         }
+
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    def post(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        task = get_object_or_404(project.tasks, ref=tref)
+        form = forms.TaskForm(request.POST, instance=task, project=project)
+
+        next_url = request.GET.get('next', None)
+
+        if form.is_valid():
+            form.save()
+            messages.info(request, _(u"The task has been saved!"))
+            if next_url:
+                return self.render_redirect(next_url)
+
+            return self.render_redirect(task.get_view_url())
+
+        context = {
+            'project': project,
+            'task': task,
+            'form': form,
+        }
+
         return self.render(self.template_name, context)
         
 class AssignUs(GenericView):      
@@ -538,3 +648,22 @@ class UnassignUs(GenericView):
         
         return self.render(self.template_name, context)
         
+        return self.render_to_response(self.template_path, context)
+
+class ProjectSettings(GenericView):
+    template_path = "config/project.html"
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        pur = get_object_or_404(project.user_roles, user=request.user)
+
+        form = forms.ProjectPersonalSettingsForm(instance=pur)
+
+        context = {
+            'pur': pur,
+            'project': project,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)

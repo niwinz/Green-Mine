@@ -146,6 +146,15 @@ class Project(models.Model):
     def unasociated_user_stories(self):
         return self.user_stories.filter(milestone__isnull=True)
 
+    @property
+    def all_participants(self):
+        qs = ProjectUserRole.objects.filter(project=self)
+        return User.objects.filter(id__in=qs.values_list('user__pk', flat=True))
+
+    @property
+    def default_milestone(self):
+        return self.milestones.order_by('-created_date')[0]
+
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
 
@@ -167,7 +176,6 @@ class Project(models.Model):
     def get_userstory_create_url(self):
         return ('web:user-story-create', (), {'pslug': self.slug})
 
-
     @models.permalink
     def get_delete_api_url(self):
         return ('api:project-delete', (), {'pslug': self.slug})
@@ -175,6 +183,19 @@ class Project(models.Model):
     @models.permalink
     def get_edit_url(self):
         return ('web:project-edit', (), {'pslug': self.slug})        
+
+    @models.permalink
+    def get_default_tasks_url(self):
+        return ('web:tasks-view', (), 
+            {'pslug': self.slug, 'mid': self.default_milestone.id })
+
+    @models.permalink
+    def get_tasks_url(self):
+        return ('web:tasks-view', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_task_create_url(self):
+        return ('web:task-create', (), {'pslug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -196,8 +217,8 @@ class Team(models.Model):
 
 
 class ProjectUserRole(models.Model):
-    project = models.ForeignKey("Project", related_name="user_role")
-    user = models.ForeignKey("auth.User")
+    project = models.ForeignKey("Project", related_name="user_roles")
+    user = models.ForeignKey("auth.User", related_name="user_roles")
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
 
     # email notification settings
@@ -266,6 +287,11 @@ class Milestone(models.Model):
         return ('api:stats-milestone', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
+    @models.permalink
+    def get_tasks_url(self):
+        return ('web:tasks-view', (), 
+            {'pslug': self.project.slug, 'mid': self.id})
+
     class Meta(object):
         unique_together = ('name', 'project')
 
@@ -315,7 +341,7 @@ class UserStory(models.Model):
         return u"<UserStory %s>" % (self.id)
 
     def __unicode__(self):
-        return self.subject
+        return self.ref + " - " + self.subject
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -376,7 +402,7 @@ class UserStory(models.Model):
 
 
 class Task(models.Model):
-    user_story = models.ForeignKey('UserStory', related_name='tasks')
+    user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
     status = models.CharField(max_length=50,
@@ -384,7 +410,7 @@ class Task(models.Model):
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="tasks")
 
-    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=3)
     milestone = models.ForeignKey('Milestone', related_name='tasks',
         null=True, default=None)
 
@@ -408,7 +434,6 @@ class Task(models.Model):
     def get_edit_url(self):
         return ('web:task-edit', (), {
             'pslug': self.project.slug,
-            'iref': self.user_story.ref,
             'tref': self.ref
         })
 
@@ -416,7 +441,6 @@ class Task(models.Model):
     def get_alter_api_url(self):
         return ('api:task-alter', (), {
             'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id,
             'taskref': self.ref
         })
 
@@ -424,33 +448,37 @@ class Task(models.Model):
     def get_reassign_api_url(self):
         return ('api:task-reassing', (), {
             'pslug': self.milestone.project.slug,
-            'mid': self.milestone.id,
             'taskref': self.ref
         })
+
+    @models.permalink
+    def get_view_url(self):
+        return ('web:task-view', (), 
+            {'pslug':self.project.slug, 'tref': self.ref})
 
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
+            
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
 
 
-class UserStoryResponse(models.Model):
-    user_story = models.ForeignKey('UserStory', related_name='responses')
+class TaskResponse(models.Model):
     owner = models.ForeignKey('auth.User', related_name='responses')
+    task = models.ForeignKey('Task', related_name='responses')
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
 
 
-class UserStoryFile(models.Model):
-    response = models.ForeignKey('UserStoryResponse',
+class TaskAttachedFile(models.Model):
+    response = models.ForeignKey('TaskResponse',
         related_name='attached_files', null=True, blank=True)
-    user_story = models.ForeignKey('UserStory',
-        related_name='attached_files', null=True, blank=True)
+    task = models.ForeignKey('Task', related_name='attached_files')
 
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)

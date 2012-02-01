@@ -118,8 +118,17 @@ div.main-menu ul.right-menu li {
 #user-project .users-added{width: 515px; float: left;}
 #user-project .users-roles{padding-left: 20px; width: 390px; float: left;}
 #user-project fieldset{padding: 20px; margin-bottom: 15px;}
-.messages-container ul.messages {padding: 10px 0; margin: 10px 0; background-color: #EFEFEF;}
-.messages-container ul.messages li{color: #FFF; font-weight: bold; margin-bottom: 5px; color: #000; margin-left: 10px;}
+.messages-container ul.messages {
+    padding: 10px 0; 
+    margin: 10px 0; 
+    background-color: #EFEFEF;
+    border:1px solid #eee;
+}
+.messages-container ul.messages li {
+    font-weight: bold; 
+    color: #000; 
+    margin-left: 10px;
+}
 .messages-container ul.messages li.info{color: #458745;}
 .messages-container ul.messages li.error{color: red;}
 .datepicker{width: 85px !important;}
@@ -157,6 +166,9 @@ div.main-menu ul.right-menu li {
 #dashboard .left-block {
     width: 650px;
 }
+#dashboard.tasks-ds .left-block {
+    width: 755px;
+}
 
 #dashboard .left-block .unassigned-us {
     padding: 5px;
@@ -186,6 +198,12 @@ div.main-menu ul.right-menu li {
 #dashboard .left-block .unassigned-us .un-us-item .row.points {
     width: 35px;
 }
+#dashboard .left-block .unassigned-us .un-us-item .row.us {
+    width: 75px;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.status {
+    width: 90px;
+}
 #dashboard .left-block .unassigned-us .un-us-item .row.milestone {}
 #dashboard .left-block .unassigned-us .un-us-item .row.metaicon {
     float: right;
@@ -197,10 +215,23 @@ div.main-menu ul.right-menu li {
 #dashboard .right-block {
     width: 325px;
 }
+#dashboard.tasks-ds .right-block {
+    width: 220px;
+}
 #dashboard .right-block .milestone-item {
     margin-bottom: 10px;
     background-color: #eee;
     padding: 5px;
+}
+
+#dashboard.tasks-ds .right-block .milestone-item {
+    margin-bottom: 3px;
+}
+#dashboard.tasks-ds .right-block .milestone-item.selected {
+    margin-bottom: 3px;
+    background-color: #dedede;
+    border: 1px solid white;
+    outline: 1px solid #ddd;
 }
 
 #dashboard .right-block .milestone-item .milestone-title { 
@@ -208,6 +239,11 @@ div.main-menu ul.right-menu li {
     border-bottom: 1px dotted white;
     margin-bottom: 6px;
 }
+#dashboard .right-block .milestone-item.simple .milestone-title {
+    border: 0px;
+    margin-bottom: 0px;
+}
+
 #dashboard .right-block .milestone-item .milestone-title .text {
     font-weight: bold;
     padding-bottom: 2px;
@@ -236,16 +272,25 @@ div.main-menu ul.right-menu li {
 #dashboard .right-block .milestone-item .us-item .us-title {
     width: 295px;
 }
-
-#dashboard .right-block .context-menu {
-    margin-bottom: 10px;
+#dashboard .right-block .milestones {
+    margin-top: 10px;
 }
-#dashboard .right-block .context-menu ul {
+
+
+/* Context Menu */
+.context-menu {
+    margin-bottom: 10px;
+    padding-right: 10px;
+    background-color: #EFEFEF;
+    overflow: hidden;
+    line-height: 21px;
+}
+.context-menu ul {
     list-style: none;
     text-align: right;
 }
 
-#dashboard .right-block .context-menu ul li {
+.context-menu ul li {
     display: inline;
     padding-left: 10px;
     font-size: 11px;
@@ -285,14 +330,17 @@ div.fieldset div.field-inline {
 #milestone-dashboard #progress-bar {
     margin-bottom: 20px;
 }
+
 #milestone-dashboard .user-story { 
     overflow: hidden; 
     margin-bottom: 4px;
 }
+
 #milestone-dashboard .user-story .hfield {
     float: left;
     min-height: 100px;
     margin-right: 4px;
+    border-top: 1px solid #CCC;
 }
 
 #milestone-dashboard .user-story .user-story-header {
@@ -302,6 +350,7 @@ div.fieldset div.field-inline {
     padding: 6px;
     font-size: 11px;
     position: relative;
+    border: 1px solid #999;
 }
 #milestone-dashboard .user-story .user-story-header a.add-task {
     position: absolute;
@@ -322,13 +371,17 @@ div.fieldset div.field-inline {
     padding: 4px;
 }
 #milestone-dashboard .user-story .user-story-task {
-    min-height: 60px;
+    min-height: 85px;
     background-color: #eee;
-    border: 1px solid #ddd;
-    border-radius: 2px;
+    border: 1px solid #999;
     padding: 5px;
+    width: 226px;
     margin-bottom: 3px;
     position: relative;
+}
+
+#milestone-dashboard .user-story .user-story-task .task-desc .reference {
+    font-weight: bold;
 }
 
 #milestone-dashboard .user-story .user-story-task .participants {

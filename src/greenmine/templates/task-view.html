@@ -8,67 +8,44 @@
 
 {% block wrapper %}
 <div id="user-story-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="{{ task.get_edit_url }}?next={{ current_url }}">
+                {% trans "Edit this task" %}</a>
+            </li>
+            <li><a class="new-milestone" href="{{ task.get_delete_url }}">
+                {% trans "Delete this task" %}</a>
+            </li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
     <div class="inline">
         <div class="form-field">
-            <span class="label">{% trans "User story subject" %}</span>
-            <span>{{ user_story.subject }}</span>
+            <span class="label">{% trans "Task subject" %}</span>
+            <span>{{ task.subject }}</span>
         </div>
         <div class="form-field">
-            <span class="label">{% trans "Priority" %}</span>
-            <span>{{ user_story.get_priority_display }}</span>
+            <span class="label">{% trans "Status" %}</span>
+            <span>{{ task.get_status_display }}</span>
         </div> 
         <div class="form-field">
             <span class="label">{% trans "Tested" %}</span>
             <span>{{ user_story.tested|yesno }}</span>
         </div>
-        {% if user_story.finish_date %}
+        {% if task.finish_date %}
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
-            <span>{{ user_story.finish_date|date:"DATE_FORMAT" }}</span>
+            <span>{{ .finish_date|date:"DATE_FORMAT" }}</span>
         </div>
         {% endif %}
-        {% if user_story.description %}
+        {% if task.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
-            {{ user_story.description|linebreaks }}
+            {{ task.description|linebreaks }}
         </div>
         {% endif %}
-
-        {% with subtasks=user_story.tasks.all %}
-        <div class="form-field width100 us-tasks">
-            <div class="us-tasks-title">
-                <span>{% trans "User story tasks in this story:" %}</span>
-            </div>
-            <div class="us-tasks-list">
-                {% for st in subtasks %}
-                <div class="us-task-item">
-                    <div class="row identify">
-                        <span><a href="{{ st.get_view_url }}">{{ st.ref }}</a></span>
-                    </div>
-                    <div class="row title">
-                        <span><a href="{{ st.get_view_url }}">{{ st.subject|truncatechars:45 }}</a></span>
-                    </div>
-                    <div class="row priority">
-                        <span priority="{{ st.priority }}">{{ st.get_priority_display }}</span>
-                    </div>
-                    <div class="row assignation">
-                        <span><a href="">{{ st.assigned_to|default:"Unassigned" }}</a></span>
-                    </div>
-                    <div class="row metaicon">
-                        <img src="{% static 'imgs/close-icon.png' %}"></img>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="us-task-item us-task-item-empty">
-                    {% trans "No tasks, add one!" %}
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endwith %}
         
-        {% comment %}
-        {% with files=user_story.attached_files.all %}
+        {% with files=task.attached_files.all %}
             {% if files|length > 0 %}
             <div class="form-field width100">
                 <span class="label">Ficheros</span>
@@ -80,12 +57,11 @@
             </div>
             {% endif %}
         {% endwith %}
-        {% endcomment %}
     </div>
-
+    
     <div class="user-story-responses">
         <div class="responses-list">
-            {% with responses=user_story.responses.all %}
+            {% with responses=task.responses.all %}
                 {% if responses|length > 0 %}
                 <div class="responses-title">
                     <span>{% trans "Responses:" %}</span>
@@ -143,7 +119,7 @@
                 {{ form.attached_file }}
             </div>
             <div class="form-row submit-row">
-                <input type="submit" value="{% trans "Send comment" %}" />
+                <input type="submit" class="btn01" value="{% trans "Send comment" %}" />
             </div>
         </form>
     </div>

@@ -5,22 +5,11 @@
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
-{% block middle %}
-<div id="dashboard-actions">
-    <div class="left">
-        <div id="bin"></div>
-    </div>
-    <div class="right">
-        <a id="return" class="btn01" href="{{ user_story.get_view_url }}">{% trans "Back to dashboard" %}</a>
-    </div>
-</div>
-{% endblock %}
-
 {% block wrapper %}
 <div id="user-story-module">
-    <h2>Crear tarea para la user story: {{ user_story.subject }}</h2>
+    <h2>{% trans "Create task" %}</h2>
     <div class="user-story-create">
-        <form action="{{ current_url }}" method="post">
+        <form action="{{ full_current_url }}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" class="btn01" value="{% trans "Save" %}" />

@@ -7,6 +7,13 @@
 
 {% block wrapper %}
 <div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>
+            <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
     <div class="left-block">
         <div class="unassigned-us">
             {% for us in unassigned_us %}
@@ -15,12 +22,6 @@
         </div>
     </div>       
     <div class="right-block">
-        <div class="context-menu">
-            <ul>
-                <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>
-                <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
-            </ul>
-        </div>
         <div class="milestones">
             {% for ml in milestones %}
             <div id="milestone-{{ml.id}}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
