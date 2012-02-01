@@ -70,9 +70,6 @@ class ExpressionNode(tree.Node):
     def __or__(self, other):
         return self._combine(other, self.OR, False)
 
-    def __invert__(self):
-        return NotNode([self])
-
     def __radd__(self, other):
         return self._combine(other, self.ADD, True)
 
@@ -101,6 +98,9 @@ class F(ExpressionNode):
     """
     An expression representing the value of the given field.
     """
+
+    _invert = False
+
     def __init__(self, name):
         super(F, self).__init__(None, None, False)
         self.name = name
@@ -110,22 +110,19 @@ class F(ExpressionNode):
         obj.name = self.name
         return obj
 
+    def __invert__(self):
+        self._invert = True
+        return self
+
     def prepare(self, evaluator, query, allow_joins):
         return evaluator.prepare_leaf(self, query, allow_joins)
 
     def evaluate(self, evaluator, qn, connection):
-        return evaluator.evaluate_leaf(self, qn, connection)
+        evresult = list(evaluator.evaluate_leaf(self, qn, connection))
+        if self._invert:
+            evresult[0] = "NOT %s" % evresult[0]
+        return tuple(evresult)
 
-class NotNode(ExpressionNode):
-    """
-    Node that represents a negation.
-    """
-    def __init__(self, children=None):
-        super(NotNode, self).__init__(children, None, True)
-
-    def evaluate(self, evaluator, qn, connection):
-        sql, params = evaluator.evaluate_node(self, qn, connection)
-        return ("NOT %s" % sql, params)
 
 class DateModifierNode(ExpressionNode):
     """

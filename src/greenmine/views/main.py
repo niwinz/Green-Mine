@@ -479,6 +479,8 @@ class UserStoryDeleteView(GenericView):
 class TaskCreateView(GenericView):
     template_name = 'task-create.html'
 
+    menu = ["tasks"]
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)

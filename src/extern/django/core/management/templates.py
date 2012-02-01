@@ -1,6 +1,5 @@
 from __future__ import with_statement
 import cgi
-import errno
 import mimetypes
 import os
 import posixpath
@@ -78,11 +77,7 @@ class TemplateCommand(BaseCommand):
             try:
                 os.makedirs(top_dir)
             except OSError, e:
-                if e.errno == errno.EEXIST:
-                    message = "'%s' already exists" % top_dir
-                else:
-                    message = e
-                raise CommandError(message)
+                raise CommandError(e)
         else:
             top_dir = path.expanduser(target)
 

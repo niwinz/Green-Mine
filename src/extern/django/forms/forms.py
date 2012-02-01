@@ -98,8 +98,8 @@ class BaseForm(StrAndUnicode):
         return self.as_table()
 
     def __iter__(self):
-        for name in self.fields:
-            yield self[name]
+        for name, field in self.fields.items():
+            yield BoundField(self, field, name)
 
     def __getitem__(self, name):
         "Returns a BoundField with the given name."
@@ -145,7 +145,7 @@ class BaseForm(StrAndUnicode):
 
         for name, field in self.fields.items():
             html_class_attr = ''
-            bf = self[name]
+            bf = BoundField(self, field, name)
             bf_errors = self.error_class([conditional_escape(error) for error in bf.errors]) # Escape and cache in local variable.
             if bf.is_hidden:
                 if bf_errors:

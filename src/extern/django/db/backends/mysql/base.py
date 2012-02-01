@@ -105,7 +105,7 @@ class CursorWrapper(object):
             # misclassified and Django would prefer the more logical place.
             if e[0] in self.codes_for_integrityerror:
                 raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+            raise
         except Database.DatabaseError, e:
             raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
 
@@ -119,7 +119,7 @@ class CursorWrapper(object):
             # misclassified and Django would prefer the more logical place.
             if e[0] in self.codes_for_integrityerror:
                 raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+            raise
         except Database.DatabaseError, e:
             raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
 

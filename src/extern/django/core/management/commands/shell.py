@@ -13,8 +13,9 @@ class Command(NoArgsCommand):
 
     def ipython(self):
         try:
-            from IPython import embed
-            embed()
+            from IPython.frontend.terminal.embed import TerminalInteractiveShell
+            shell = TerminalInteractiveShell()
+            shell.mainloop()
         except ImportError:
             # IPython < 0.11
             # Explicitly pass an empty list as arguments, because otherwise
