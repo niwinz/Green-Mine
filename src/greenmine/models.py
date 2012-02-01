@@ -444,14 +444,14 @@ class Task(models.Model):
     @models.permalink
     def get_alter_api_url(self):
         return ('api:task-alter', (), {
-            'pslug': self.milestone.project.slug,
+            'pslug': self.project.slug,
             'taskref': self.ref
         })
 
     @models.permalink
     def get_reassign_api_url(self):
         return ('api:task-reassing', (), {
-            'pslug': self.milestone.project.slug,
+            'pslug': self.project.slug,
             'taskref': self.ref
         })
 
