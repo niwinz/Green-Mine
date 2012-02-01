@@ -7,8 +7,11 @@
 
 {% block wrapper %}
 <div id="user-story-module">
-    <h2>{% trans "Edit task" %}</h2>
-    <div class="user-story-create">
+    <div class="user-story-create" class="form-container">
+        <div class="form-legend">
+            <span>{% trans "Edit task:" %}</span>
+        </div>
+
         <form action="{{ current_url }}" method="post">
             {% csrf_token %}
             {{ form.as_p }}

@@ -204,22 +204,18 @@ class Lexer(object):
         otherwise it should be treated as a literal string.
         """
         if in_tag:
+            # The [2:-2] ranges below strip off *_TAG_START and *_TAG_END.
+            # We could do len(BLOCK_TAG_START) to be more "correct", but we've
+            # hard-coded the 2s here for performance. And it's not like
+            # the TAG_START values are going to change anytime, anyway.
             if token_string.startswith(VARIABLE_TAG_START):
-                token = Token(TOKEN_VAR,
-                              token_string[
-                                len(VARIABLE_TAG_START):-len(VARIABLE_TAG_END)
-                              ].strip())
+                token = Token(TOKEN_VAR, token_string[2:-2].strip())
             elif token_string.startswith(BLOCK_TAG_START):
-                token = Token(TOKEN_BLOCK,
-                              token_string[
-                                len(BLOCK_TAG_START):-len(BLOCK_TAG_END)
-                              ].strip())
+                token = Token(TOKEN_BLOCK, token_string[2:-2].strip())
             elif token_string.startswith(COMMENT_TAG_START):
                 content = ''
                 if token_string.find(TRANSLATOR_COMMENT_MARK):
-                    content = token_string[
-                                len(COMMENT_TAG_START):-len(COMMENT_TAG_END)
-                              ].strip()
+                    content = token_string[2:-2].strip()
                 token = Token(TOKEN_COMMENT, content)
         else:
             token = Token(TOKEN_TEXT, token_string)
@@ -241,15 +237,16 @@ class Parser(object):
         nodelist = self.create_nodelist()
         while self.tokens:
             token = self.next_token()
-            if token.token_type == TOKEN_TEXT:
+            # Use the raw values here for TOKEN_* for a tiny performance boost.
+            if token.token_type == 0: # TOKEN_TEXT
                 self.extend_nodelist(nodelist, TextNode(token.contents), token)
-            elif token.token_type == TOKEN_VAR:
+            elif token.token_type == 1: # TOKEN_VAR
                 if not token.contents:
                     self.empty_variable(token)
                 filter_expression = self.compile_filter(token.contents)
                 var_node = self.create_variable_node(filter_expression)
                 self.extend_nodelist(nodelist, var_node, token)
-            elif token.token_type == TOKEN_BLOCK:
+            elif token.token_type == 2: # TOKEN_BLOCK
                 try:
                     command = token.contents.split()[0]
                 except IndexError:
