@@ -22,6 +22,10 @@ urlpatterns = patterns('',
 
     url(r'^project/create/$', 
         main.ProjectCreateView.as_view(), name='project-create'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/$', 
+        main.ProjectSettings.as_view(), name='project-settings'),
+
     
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),

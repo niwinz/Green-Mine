@@ -192,6 +192,10 @@ class Project(models.Model):
     @models.permalink
     def get_tasks_url(self):
         return ('web:tasks-view', (), {'pslug': self.slug})
+    
+    @models.permalink
+    def get_settings_url(self):
+        return ('web:project-settings', (), {'pslug': self.slug})
 
     @models.permalink
     def get_task_create_url(self):

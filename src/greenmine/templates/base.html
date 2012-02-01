@@ -22,6 +22,9 @@
 <!-- Page menu -->
 <div class="main-menu">
     {% block middle %}
+    {% include "middle-menu-left.html" %}
+    {% include "middle-menu-right.html" %}
+    {% comment %}
     <ul class="left-menu menu-item">
         {% if menu.in_projects == "" %}
         <li><a href="{{ project.get_backlog_url }}" class="{{ menu.in_backlog }}">{% trans "Backlog" %}</a></li>
@@ -35,9 +38,10 @@
     <ul class="right-menu menu-item">
         <li><a href="{% url 'web:projects' %}" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
         {% if menu.in_projects == "" %}
-        <li><a href="" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
+        <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
         {% endif %}
     </ul>
+    {% endcomment %}
     {% endblock %}
 </div>
 <div id="wrapper">

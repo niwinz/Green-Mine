@@ -619,8 +619,10 @@ class TaskEdit(GenericView):
 
         return self.render_to_response(self.template_path, context)
 
+
 class ProjectSettings(GenericView):
     template_path = "config/project.html"
+    menu = ['settings', 'notifications']
 
     @login_required
     def get(self, request, pslug):
@@ -628,6 +630,25 @@ class ProjectSettings(GenericView):
         pur = get_object_or_404(project.user_roles, user=request.user)
 
         form = forms.ProjectPersonalSettingsForm(instance=pur)
+
+        context = {
+            'pur': pur,
+            'project': project,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        pur = get_object_or_404(project.user_roles, user=request.user)
+        form = forms.ProjectPersonalSettingsForm(request.POST, instance=pur)
+
+        if form.is_valid():
+            form.save()
+            messages.info(request, _(u"Project preferences saved successfull"))
+            return self.render_redirect(project.get_settings_url())
 
         context = {
             'pur': pur,

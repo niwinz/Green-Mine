@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / Profile edit{% endblock %}
+
+{% block middle %}
+    {% include "config/middle-menu-left.html" %}
+    {% include "middle-menu-right.html" %}
+{% endblock %}
+
+{% block wrapper %}
+<div id="my-profile" class="form-container">
+    {% comment %}
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="">
+                {% trans "Change password" %}</a></li>
+        </ul>
+    </div>
+    {% endcomment %}
+
+    {% include "messages.html" %}
+
+    <div class="form-legend">
+        <span>{% trans "Email notifications:" %}</span>
+    </div>
+
+    <form id="edit-project-settings" method="post" enctype="multipart/form-data"
+        action="{{ full_current_url }}" class="inline">
+        {% csrf_token %}
+        <fieldset>
+            <div class="form-field">
+                <label>{{ form.send_email_on_group_message.label }}</label>
+                {{ form.send_email_on_group_message }}
+                {{ form.send_email_on_group_message.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.send_email_on_us_asignement.label }}</label>
+                {{ form.send_email_on_us_asignement }}
+                {{ form.send_email_on_us_asignement.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.send_email_on_new_us.label }}</label>
+                {{ form.send_email_on_new_us }}
+                {{ form.send_email_on_new_us.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.send_email_on_new_us_as_watcher.label }}</label>
+                {{ form.send_email_on_new_us_as_watcher }}
+                {{ form.send_email_on_new_us_as_watcher.errors }}
+            </div>    
+            <div class="form-field">
+                <label>{{ form.send_email_on_incoming_question.label }}</label>
+                {{ form.send_email_on_incoming_question }}
+                {{ form.send_email_on_incoming_question.errors }}
+            </div>
+
+            <div class="width100 float-left">
+                <input class="btn01" type="submit" value="Guardar" />
+                <span class="ajax-loader"></span>        
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}
