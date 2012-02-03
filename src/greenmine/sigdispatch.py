@@ -39,7 +39,7 @@ def user_story_post_save(sender, instance, created, **kwargs):
     performance improvements.
     """
 
-    if not instance.category.strip():
+    if not instance.category or not instance.category.strip():
         return
 
     # TODO: remove accents from category string.
