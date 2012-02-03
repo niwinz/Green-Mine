@@ -59,13 +59,20 @@
             <span>{% trans "Category colors:" %}</span>
         </div>
         <fieldset>
-            <div class="form-field width100">
-                <select name="category">
-                    {% for key, value in categorys %}
-                    <option value="{{ key }}">{{ value }}</option>
-                    {% endfor %}
-                </select>
-                <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
+            <div class="form-field width100 category-field">
+                <div class="sub-item-field">
+                    <select name="category">
+                        {% for key, value in categorys %}
+                        <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="sub-item-field">
+                    <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
+                </div>
+                <div class="sub-item-field">
+                    <a href="#" class="add-category-color">{% trans "Add" %}</a>
+                </div>
             </div>
         </fieldset>
 
