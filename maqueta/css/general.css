@@ -573,8 +573,8 @@ ul.errorlist li {
 .tooltip-backlog a{color: #FFF; font-weight: bold;}
 .select-enable{cursor: pointer; opacity: 0.5;} 
 .select-enable:hover{opacity: 1;}
-#lightbox-backlog{background-color: #458745; padding: 20px; border-radius: 10px;}
-#lightbox-backlog ul{background-color: #FFF; padding: 20px; border-radius: 10px;}
+#lightbox-backlog{background-color: #458745; padding: 8px; border-radius: 2px;}
+#lightbox-backlog ul{background-color: #FFF; padding: 8px; border-radius: 2px;}
 #lightbox-backlog li{margin-bottom: 15px;}
 #lightbox-backlog li:last-child{margin-bottom: 0;}
 #overlay {display: none; left: 0; position: absolute; top: 0; z-index: 90;}

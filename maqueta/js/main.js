@@ -63,8 +63,8 @@ var backlog_handlers = function() {
     //assign user story to milestone    
     
     var lightbox = $("#lightbox-backlog").lightbox({
-        fadeIn: true,
-        fadeOut: true,                
+        fadeIn: false,
+        fadeOut: false,                
         width: 300
     });
     
