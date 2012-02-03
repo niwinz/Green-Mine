@@ -9,6 +9,8 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
+from greenmine.fields import DictField
+
 import datetime
 
 ROLE_CHOICES = (
@@ -136,6 +138,8 @@ class Project(models.Model):
         null=True, blank=True)
 
     public = models.BooleanField(default=True)
+    meta_category_color = DictField(null=True, default={}, editable=False)
+    meta_categorys_list = ListField(null=True, default=[], editable=False)
 
     objects = ProjectManager()
 
@@ -255,6 +259,7 @@ class Milestone(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
 
+    meta_velocity = DictField(null=True, default={}, editable=False)
     objects = MilestoneManager()
 
     class Meta:
@@ -325,10 +330,12 @@ class UserStory(models.Model):
     project = models.ForeignKey("Project", related_name="user_stories")
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="user_stories")
-    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=2)
+    priority = models.IntegerField(default=1)
     points = models.FloatField(choices=POINTS_CHOICES, default=-1)
     status = models.CharField(max_length=50,
         choices=US_STATUS_CHOICES, db_index=True, default="open")
+
+    category = models.CharField(max_length=200, null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)

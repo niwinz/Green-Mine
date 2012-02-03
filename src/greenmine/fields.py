@@ -1,21 +1,15 @@
-# -*- coding_ utf-8 -*-
 # -*- coding: utf-8 -*-
 # Copyright (c) 2011 Andrei Antoukh <niwi@niwi.be>
 # License: BSD-3 
-# Version: 4
-# Changelog:
-#   * 29-04-2011 Add pickled list field
-#   * 02-05-2011 Add pickled list field
-#   * 03-05-2011 Add cvs field.
-#   * 11-05-2011 Add iproved text field
 
 from django.db import models
 from base64 import b64encode, b64decode
 
-#try:
-#	import cPickle as pickle
-#except ImportError:
-import pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 import logging
 
 logger = logging.getLogger("niwi")
