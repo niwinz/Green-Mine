@@ -665,6 +665,10 @@ class ProjectSettings(GenericView):
     template_path = "config/project.html"
     menu = ['settings', 'notifications']
 
+    def create_category_choices(self, project):
+        return [('', '-----'),] + [(key, key.title()) \
+            for key in project.meta_category_list]
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -673,6 +677,7 @@ class ProjectSettings(GenericView):
         form = forms.ProjectPersonalSettingsForm(instance=pur)
 
         context = {
+            'categorys': self.create_category_choices(project),
             'pur': pur,
             'project': project,
             'form': form,

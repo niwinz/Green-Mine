@@ -139,7 +139,7 @@ class Project(models.Model):
 
     public = models.BooleanField(default=True)
     meta_category_color = DictField(null=True, default={}, editable=False)
-    meta_categorys_list = ListField(null=True, default=[], editable=False)
+    meta_category_list = ListField(null=True, default=[], editable=False)
 
     objects = ProjectManager()
 

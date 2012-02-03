@@ -17,13 +17,15 @@
 
     {% include "messages.html" %}
 
-    <div class="form-legend">
-        <span>{% trans "Email notifications:" %}</span>
-    </div>
 
     <form id="edit-project-settings" method="post" enctype="multipart/form-data"
         action="{{ full_current_url }}" class="inline">
         {% csrf_token %}
+
+
+        <div class="form-legend">
+            <span>{% trans "Email notifications:" %}</span>
+        </div>
         <fieldset>
             <div class="form-field">
                 <label>{{ form.send_email_on_group_message.label }}</label>
@@ -51,11 +53,26 @@
                 {{ form.send_email_on_incoming_question.errors }}
             </div>
 
-            <div class="width100 float-left">
-                <input class="btn01" type="submit" value="Guardar" />
-                <span class="ajax-loader"></span>        
+        </fieldset>
+
+        <div class="form-legend">
+            <span>{% trans "Category colors:" %}</span>
+        </div>
+        <fieldset>
+            <div class="form-field width100">
+                <select name="category">
+                    {% for key, value in categorys %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
             </div>
         </fieldset>
+
+        <div class="width100 float-left">
+            <input class="btn01" type="submit" value="Guardar" />
+            <span class="ajax-loader"></span>        
+        </div>
     </form>
 </div>
 {% endblock %}
