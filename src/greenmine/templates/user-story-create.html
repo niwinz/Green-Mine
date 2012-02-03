@@ -11,44 +11,49 @@
     <div class="form-legend">
         <span>{% trans "Create user story:" %}</span>
     </div>
-    <form method="post" action="{{ project.get_userstory_create_url }}">
+    <form method="post" action="{{ project.get_userstory_create_url }}" class="inline">
         {% csrf_token %}
-        <div class="form-row">
+        <div class="form-field">
             <label>{{ form.subject.label }}</label>
             {{ form.subject.errors }}
             {{ form.subject }}
         </div>
-        <div class="form-row">
+        <div class="form-field">
             <label>{{ form.priority.label }}</label>
             {{ form.priority.errors }}
             {{ form.priority }}
         </div>
-        <div class="form-row">
+        <div class="form-field">
             <label>{{ form.status.label }}</label>
             {{ form.status.errors }}
             {{ form.status }}
         </div>
-        <div class="form-row">
+        <div class="form-field">
             <label>{{ form.description.label }}</label>
             {{ form.description.errors }}
             {{ form.description }}
         </div>
-        <div class="form-row">
-            <label>{{ form.points.label }}</label>
-            {{ form.points.errors }}
-            {{ form.points }}
-        </div>
-        <div class="form-row">
+        <div class="form-field">
             <label>{{ form.finish_date.label }}</label>
             {{ form.finish_date.errors }}
             {{ form.finish_date }}
         </div>
-        <div class="form-row">
+        <div class="form-field">
+            <label>{{ form.points.label }}</label>
+            {{ form.points.errors }}
+            {{ form.points }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.category.label }}</label>
+            {{ form.category.errors }}
+            {{ form.category }}
+        </div>
+        <div class="form-field">
             <label>{{ form.tested.label }}</label>
             {{ form.tested.errors }}
             {{ form.tested }}
         </div>
-        <div class="form-row submit-row">
+        <div class="form-field width100 float-left">
             <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
         </div>
     </form>
