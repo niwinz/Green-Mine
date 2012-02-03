@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
-from greenmine.fields import DictField
+from greenmine.fields import DictField, ListField
 
 import datetime
 
