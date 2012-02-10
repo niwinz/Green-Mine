@@ -19,7 +19,7 @@ hr{border: 2px solid #458745; width: 100%; height: 2px; clear: left; float: left
 body{background-color: #EFEFEF; padding-bottom: 36px;}
 h1, h1 a{color: #FFF; font-size: 28px; font-weight: bold; text-decoration: none;}
 h2{color: #000; font-size: 20px; font-weight: bold; text-decoration: underline; margin-bottom: 15px;}
-a{color: #458745;}
+a{color: #458745; text-decoration: none;}
 legend{font-weight:bold;}
 fieldset{padding: 20px;}
 .fsborder{border: 1px solid #EFEFEF;}
@@ -186,10 +186,13 @@ div.main-menu ul.right-menu li {
 #dashboard .left-block .unassigned-us .un-us-item {
     padding: 5px;
     overflow: hidden;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
+    padding-top: 8px;
 }
+
 #dashboard .left-block .unassigned-us .un-us-item .row {
     float: left;
+    vertical-align: bottom;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.identify {
@@ -198,7 +201,14 @@ div.main-menu ul.right-menu li {
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.title { 
-    width: 365px;
+    width: 430px;
+}
+#dashboard .left-block .unassigned-us .un-us-item .row.title span.category {
+    color: white;
+    font-weight: normal;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 2px;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.priority {

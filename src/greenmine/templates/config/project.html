@@ -63,7 +63,7 @@
                 <h3>{% trans "Current colors:" %}</h3>
                 {% for key, val in pc.iteritems %}
                 <div class="tag-color-item">
-                    <div class="tag-name">{{ key|capfirst }}</div>
+                    <div class="tag-name">{{ key|lower }}</div>
                     <div class="tag-color" val="{{ val }}" style="background-color: {{ val }}"></div>
                     <div class="tag-rm">x</div>
                 </div>

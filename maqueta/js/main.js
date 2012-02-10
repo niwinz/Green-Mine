@@ -5,6 +5,7 @@ var backlog_handlers = function() {
     
     $(".config-us-inline").live('click', function(event) {
         event.preventDefault();
+        console.log(2222);
         var elm = $(this);
         $.get($(this).attr('href'),  function(data) {
             elm.closest('.un-us-item').find('.form-inline').html(data).show();
