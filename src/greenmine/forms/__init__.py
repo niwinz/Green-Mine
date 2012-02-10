@@ -259,6 +259,12 @@ class UserStoryForm(forms.ModelForm):
         model = models.UserStory
         fields = ('priority', 'points', 'status', 'category',
             'tested', 'subject', 'description', 'finish_date')
+            
+class UserStoryFormInline(forms.ModelForm):
+    class Meta:
+        model = models.UserStory
+        fields = ('priority', 'points', 'status', 'category',
+            'tested', 'finish_date')            
 
 
 class CommentForm(Form):

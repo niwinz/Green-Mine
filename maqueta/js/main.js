@@ -2,6 +2,27 @@ var backlog_handlers = function() {
     $(".un-us-item .delete").live('click', function(event) {
         event.preventDefault();
     });
+    
+    $(".config-us-inline").live('click', function(event) {
+        event.preventDefault();
+        var elm = $(this);
+        $.get($(this).attr('href'),  function(data) {
+            elm.closest('.un-us-item').find('.form-inline').html(data).show();
+        }, 'html');
+    });
+    
+    $(".user-story-inline-submit").live('click', function(event) {
+        event.preventDefault();
+        var elm = $(this);
+        $.post($(this).closest('form').attr('action'),  $(this).closest('form').serialize(),function(data) {
+           elm.closest('.un-us-item').find('.form-inline').html(data);
+        }, 'html');        
+    });
+    
+    $(".user-story-inline-cancel").live('click', function(event) {
+        event.preventDefault();
+        $(this).closest('.un-us-item').find('.form-inline').hide();
+    });    
 
     $(".us-item .unassign").live('click', function(event) {
         event.preventDefault();

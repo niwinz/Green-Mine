@@ -583,3 +583,6 @@ ul.errorlist li {
     float: left; 
     display: inline;
 }
+
+.us-form-inline{padding-bottom: 20px; float: left; width: 100%;}
+.us-form-inline p{float: left; width: 100%; margin-bottom: 15px;}

@@ -386,6 +386,11 @@ class UserStory(models.Model):
     def get_edit_url(self):
         return ('web:user-story-edit', (),
             {'pslug': self.project.slug, 'iref': self.ref})
+            
+    @models.permalink
+    def get_edit_inline_url(self):
+        return ('web:user-story-edit-inline', (),
+            {'pslug': self.project.slug, 'iref': self.ref})            
 
     @models.permalink
     def get_delete_url(self):
