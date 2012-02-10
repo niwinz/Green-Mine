@@ -703,3 +703,31 @@ class ProjectSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+        
+class UsFormInline(GenericView):       
+    template_name = 'user_story_form_inline.html'   
+    
+    @login_required
+    def get(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+        form = forms.UserStoryFormInline(instance=user_story)
+        context = {
+            'form': form
+        }
+        return self.render(self.template_name, context)
+
+    
+    @login_required
+    def post(self, request, pslug, iref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        form = forms.UserStoryFormInline(request.POST, instance=user_story)
+        if form.is_valid():
+            user_story = form.save(commit=True)
+            
+        context = {
+            'form': form
+        }            
+        return self.render(self.template_name, context)            

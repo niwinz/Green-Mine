@@ -48,6 +48,9 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit/$',
         main.UserStoryEdit.as_view(), name='user-story-edit'),
+        
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit-inline/$',
+        main.UsFormInline.as_view(), name='user-story-edit-inline'),        
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/delete/$',
         main.UserStoryDeleteView.as_view(), name='user-story-delete'),
