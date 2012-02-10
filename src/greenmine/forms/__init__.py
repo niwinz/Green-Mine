@@ -231,9 +231,9 @@ class ProjectPersonalSettingsForm(forms.ModelForm):
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        if 'colors_hidden' in cleaned_data:
-            data = simplejson.loads(cleaned_data['colors_hidden'])
-            if not self._validate_colors(data):
+        if 'colors_hidden' in cleaned_data and cleaned_data['colors_hidden'].strip():
+            self.colors_data = simplejson.loads(cleaned_data['colors_hidden'])
+            if not self._validate_colors(self.colors_data):
                 self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
                 del cleaned_data['colors_hidden']
 

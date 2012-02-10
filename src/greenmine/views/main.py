@@ -693,6 +693,10 @@ class ProjectSettings(GenericView):
 
         if form.is_valid():
             form.save()
+
+            project.meta_category_color = form.colors_data
+            project.save()
+
             messages.info(request, _(u"Project preferences saved successfull"))
             return self.render_redirect(project.get_settings_url())
 

@@ -57,15 +57,19 @@
         <div class="form-legend">
             <span>{% trans "Category colors:" %}</span>
         </div>
-        <fieldset>
-            <div class="selected-colors">
-                <h3>Current colors:</h3>
+        <fieldset class="colors-form">
+            {% with pc=project.meta_category_color %}
+            <div class="selected-colors" {% if not pc %}style="display: none"{% endif %}>
+                <h3>{% trans "Current colors:" %}</h3>
+                {% for key, val in pc.iteritems %}
                 <div class="tag-color-item">
-                    <div class="tag-name">ExampleColor</div>
-                    <div class="tag-color" val="#434343" style="background-color: #434343"></div>
+                    <div class="tag-name">{{ key|capfirst }}</div>
+                    <div class="tag-color" val="{{ val }}" style="background-color: {{ val }}"></div>
                     <div class="tag-rm">x</div>
                 </div>
+                {% endfor %}
             </div>
+            {% endwith %}
             <div class="form-field width100 category-field">
                 <div class="sub-item-field">
                     <select name="category">
