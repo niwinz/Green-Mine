@@ -10,6 +10,8 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
+from django.utils import simplejson
+
 from greenmine.models import *
 from greenmine import models
 from greenmine.utils import encrypt_password
@@ -208,6 +210,9 @@ class ProjectForm(Form):
 
 
 class ProjectPersonalSettingsForm(forms.ModelForm):
+    colors_hidden = forms.CharField(max_length=5000, required=False,
+        widget=forms.HiddenInput)
+
     class Meta:
         model = ProjectUserRole
         fields = (
@@ -218,6 +223,21 @@ class ProjectPersonalSettingsForm(forms.ModelForm):
             'send_email_on_incoming_question',
             'send_email_on_incoming_question_assigned',
         )
+
+    def _validate_colors(self, data):
+        # TODO
+        return True
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        if 'colors_hidden' in cleaned_data:
+            data = simplejson.loads(cleaned_data['colors_hidden'])
+            if not self._validate_colors(data):
+                self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
+                del cleaned_data['colors_hidden']
+
+        return cleaned_data
 
 
 class FiltersForm(Form):

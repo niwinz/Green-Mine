@@ -1,1 +1,48 @@
+select {
+    height: 30px;
+}
+
+input[type=button] {
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.selected-colors {
+    margin-bottom: 20px;
+}
+.selected-colors h3 {
+    font-weight: bold;
+    padding-bottom: 4px;
+}
+
+.selected-colors .tag-color-item {
+    overflow: hidden;
+    padding-left: 10px;
+}
+.selected-colors .tag-color-item .tag-name,
+.selected-colors .tag-color-item .tag-color,
+.selected-colors .tag-color-item .tag-rm {
+    float: left;
+}
+
+.selected-colors .tag-color-item .tag-name {
+    width: 200px;
+}
+
+.selected-colors .tag-color-item .tag-color {
+    width: 30px;
+    height: 12px;
+}
+
+.selected-colors .tag-color-item .tag-rm {
+    line-height: 12px;
+    vertical-align: middle;
+    padding-left: 15px;
+    padding-right: 5px;
+    font-size:14px;
+    font-weight: bold;
+    cursor: pointer;
+}
 

@@ -17,7 +17,6 @@
 
     {% include "messages.html" %}
 
-
     <form id="edit-project-settings" method="post" enctype="multipart/form-data"
         action="{{ full_current_url }}" class="inline">
         {% csrf_token %}
@@ -59,6 +58,14 @@
             <span>{% trans "Category colors:" %}</span>
         </div>
         <fieldset>
+            <div class="selected-colors">
+                <h3>Current colors:</h3>
+                <div class="tag-color-item">
+                    <div class="tag-name">ExampleColor</div>
+                    <div class="tag-color" val="#434343" style="background-color: #434343"></div>
+                    <div class="tag-rm">x</div>
+                </div>
+            </div>
             <div class="form-field width100 category-field">
                 <div class="sub-item-field">
                     <select name="category">
@@ -71,9 +78,10 @@
                     <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
                 </div>
                 <div class="sub-item-field">
-                    <a href="#" class="add-category-color">{% trans "Add" %}</a>
+                    <input type="button" value="{% trans "Add" %}" />
                 </div>
             </div>
+            {{ form.colors_hidden }}
         </fieldset>
 
         <div class="width100 float-left">
