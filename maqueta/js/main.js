@@ -141,15 +141,13 @@ var settings_handlers = function() {
             .append(color_dom)
             .append(close_dom);
         
-        console.log(tagname);
-
         if (tagname.length > 0) {
             $(".selected-colors").append(new_dom);
             $(".selected-colors").show();
         }
     });
 
-    $(".width100 input[type=submit]").click(function(event) {
+    $("fieldset.colors-form .width100 input[type=submit]").click(function(event) {
         event.preventDefault();
         
         var data = {};

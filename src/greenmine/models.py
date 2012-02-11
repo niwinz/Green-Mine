@@ -20,6 +20,7 @@ ROLE_CHOICES = (
     ('partner', _(u'Partner')),
     ('client', _(u'Client')),
 )
+
 ORG_ROLE_CHOICES = (
     ('owner', _(u'Owner')),
     ('developer', _(u'Developer')),
@@ -204,6 +205,14 @@ class Project(models.Model):
     @models.permalink
     def get_task_create_url(self):
         return ('web:task-create', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_questions_url(self):
+        return ('web:questions', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_questions_create_url(self):
+        return ('web:questions-create', (), {'pslug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -505,16 +514,29 @@ class TaskAttachedFile(models.Model):
 
 class Question(models.Model):
     subject = models.CharField(max_length=150)
-    slug = models.SlugField(unique=True, max_length=200)
+    slug = models.SlugField(unique=True, max_length=250, blank=True)
     content = models.TextField()
     closed = models.BooleanField(default=False)
     attached_file = models.FileField(upload_to="messages/%Y/%m/%d",
         max_length=500, null=True, blank=True)
 
+    project = models.ForeignKey('Project', related_name='questions')
+    milestone = models.ForeignKey('Milestone', related_name='questions',
+        null=True, default=None, blank=True)
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='questions')
+    
+    @models.permalink
+    def get_view_url(self):
+        return ('web:questions-view', (), 
+            {'pslug': self.project.slug, 'qslug': self.slug})
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify_uniquely(self.subject, self.__class__)
+        super(Question, self).save(*args, **kwargs)
 
 class QuestionResponse(models.Model):
     content = models.TextField()

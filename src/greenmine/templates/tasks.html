@@ -16,9 +16,6 @@
     <div class="left-block">
         <div class="unassigned-us">
             <div class="un-us-item head-title">
-                <div class="row identify">
-                    <span>{% trans "Ref." %}</span>
-                </div>
                 <div class="row title">
                     <span>{% trans "Subject" %}</span>
                 </div>
@@ -37,9 +34,6 @@
             </div>
             {% for task in tasks %}
             <div class="un-us-item">
-                <div class="row identify">
-                    <span><a href="{{ task.get_view_url }}">{{ task.ref }}</a></span>
-                </div>
                 <div class="row title">
                     <span><a href="{{ task.get_view_url }}">{{ task.subject|truncatechars:45 }}</a></span>
                 </div>

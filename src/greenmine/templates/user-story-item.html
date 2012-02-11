@@ -1,9 +1,12 @@
 {% load static from staticfiles %}
+{% load greenmine_utils %}
 {% load i18n %}
+
 <div class="un-us-item">
     <div class="row title">
         {% if us.category %}
-        <span class="category" style="background-color: #5F04B4">
+        {% tag_color us.category project as result_color %}
+        <span class="category" style="background-color: {{ result_color }}">
             {{ us.category|capfirst }}
         </span>
         {% endif %}

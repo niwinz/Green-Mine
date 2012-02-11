@@ -513,44 +513,44 @@ ul.errorlist li {
 }
 
 /* User Story View */
-#user-story-module {
+.show-module {
     padding: 5px;
 }
 
-#user-story-module .us-tasks .us-tasks-title {
+.show-module .us-tasks .us-tasks-title {
     font-size: 14px;
     font-weight: bold;
     padding-bottom: 10px;
 }
 
-#user-story-module .us-tasks .us-task-item {
+.show-module .us-tasks .us-task-item {
     padding: 5px;
     overflow: hidden;
     border-bottom: 1px solid #ddd;
 }
-#user-story-module .us-tasks .us-task-item .row {
+.show-module .us-tasks .us-task-item .row {
     float: left;
 }
 
-#user-story-module .us-tasks .us-task-item .row.identify {
+.show-module .us-tasks .us-task-item .row.identify {
     width: 65px;
     font-family: monospace;
 }
 
-#user-story-module .us-tasks .us-task-item .row.title { 
+.show-module .us-tasks .us-task-item .row.title { 
     width: 380px;
 }
 
-#user-story-module .us-tasks .us-task-item .row.priority {
+.show-module .us-tasks .us-task-item .row.priority {
     width: 65px;
 }
-#user-story-module .us-tasks .us-task-item .row.milestone {}
-#user-story-module .us-tasks .us-task-item .row.metaicon {
+.show-module .us-tasks .us-task-item .row.milestone {}
+.show-module .us-tasks .us-task-item .row.metaicon {
     float: right;
 }
-#user-story-module .us-tasks .us-task-item .row.metaicon img,
-#user-story-module .us-tasks .us-task-item .row { cursor: pointer; }
-#user-story-module .inline { overflow: hidden; }
+.show-module .us-tasks .us-task-item .row.metaicon img,
+.show-module .us-tasks .us-task-item .row { cursor: pointer; }
+.show-module .inline { overflow: hidden; }
 
 .responses-list .response {
     background-color: #eee;

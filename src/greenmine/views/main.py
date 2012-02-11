@@ -628,7 +628,8 @@ class TaskEdit(GenericView):
         }
 
         return self.render(self.template_name, context)
-        
+
+
 class AssignUs(GenericView):      
     template_name = 'milestone_item.html'
     
@@ -643,7 +644,8 @@ class AssignUs(GenericView):
         context = {'us': user_story}
         
         return self.render(self.template_name, context)
-        
+
+
 class UnassignUs(GenericView):       
     template_name = 'user_story_item.html'   
     
@@ -655,15 +657,12 @@ class UnassignUs(GenericView):
         user_story.save()        
         
         context = {'us': user_story}
-        
-        return self.render(self.template_name, context)
-        
         return self.render_to_response(self.template_path, context)
 
 
 class ProjectSettings(GenericView):
     template_path = "config/project.html"
-    menu = ['settings', 'notifications']
+    menu = ['settings', 'settings_general']
 
     def create_category_choices(self, project):
         return [('', '-----'),] + [(key, key.title()) \
@@ -707,7 +706,96 @@ class ProjectSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+
+
+class QuestionsListView(GenericView):
+    template_path = 'questions.html'
+    menu = ['questions']
+
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        questions = project.questions.order_by('-created_date')
+
+        context = {
+            'questions': questions,
+            'project': project,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class QuestionsCreateView(GenericView):
+    template_path = 'questions-create.html'
+    menu = ['questions']
+
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.QuestionCreateForm()
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        form = forms.QuestionCreateForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.project = project
+            question.owner = request.user
+            question.save()
+
+            messages.info(request, _(u"Quienstion are created"))
+            return self.render_redirect(question.get_view_url())
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class QuestionsView(GenericView):
+    template_path ='questions-view.html'
+    menu = ['questions']
+
+    def get(self, request, pslug, qslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        question = get_object_or_404(project.questions, slug=qslug)
+        form = forms.QuestionResponseForm()
         
+        context = {
+            'form': form,
+            'project': project,
+            'question': question,
+            'responses': question.responses.order_by('created_date'),
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+    def post(self, request, pslug, qslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        question = get_object_or_404(project.questions, slug=qslug)
+        form = forms.QuestionResponseForm(request.POST)
+        
+
+        if form.is_valid():
+            response = form.save(commit=False)
+            response.owner = request.user
+            response.question = question
+            response.save()
+            return self.render_redirect(question.get_view_url())
+
+        context = {
+            'form': form,
+            'project': project,
+            'question': question,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
 class UsFormInline(GenericView):       
     template_name = 'user_story_form_inline.html'   
     

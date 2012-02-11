@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div id="questions">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{{ project.get_questions_create_url }}">{% trans "New Question" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+
+    <div class="center-block">
+        {% for question in questions %}
+        <a href="{{ question.get_view_url }}">{{ question }}</a><br />
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="delete-milestone-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this question?" %}
+</div>
+
+<div id="overlay"></div>
+{% endblock %}

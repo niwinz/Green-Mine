@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} Questions / Create{% endblock %}
+
+{% block wrapper %}
+<div id="questions" class="questions-create form-container">
+    <div class="context-menu">
+        <ul>
+            <li><a href="{{ project.get_questions_url }}">{% trans "Cancel" %}</a></li>
+        </ul>
+    </div>
+
+    {% include "messages.html" %}
+    <div class="form-legend">
+        <span>{% trans "Create user story:" %}</span>
+    </div>
+
+    <form id="edit-profile-form" method="post" enctype="multipart/form-data"
+        action="" class="inline">
+        {% csrf_token %}
+        <div class="form-field">
+            <label>{{ form.subject.label }}</label>
+            {{ form.subject }}
+            {{ form.subject.errors }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.milestone.label }}</label>
+            {{ form.milestone }}
+            {{ form.milestone.errors }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.closed.label }}</label>
+            {{ form.closed }}
+            {{ form.closed.errors }}
+        </div>
+        <div class="form-field width100">
+            <label>{{ form.content.label }}</label>
+            {{ form.content }}
+            {{ form.content.errors }}
+        </div>    
+
+        <div class="width100 float-left">
+            <input class="btn01" type="submit" value="Guardar" />
+        </div>
+    </form>
+</div>
+{% endblock %}

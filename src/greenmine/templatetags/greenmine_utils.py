@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-
 @register.filter(name="hsize")
 def human_size(value):
     if value / 1024.0**2 < 1:
@@ -16,3 +15,14 @@ def human_size(value):
         response = u"%.1f MB" % (value/1024.0**2)
 
     return mark_safe(response)
+
+
+from greenmine.utils import normalize_tagname
+
+@register.assignment_tag(takes_context=True)
+def tag_color(context, tag, project):
+    ntagname = normalize_tagname(tag)
+    if ntagname in project.meta_category_color:
+        return project.meta_category_color[ntagname]
+
+    return 'black'

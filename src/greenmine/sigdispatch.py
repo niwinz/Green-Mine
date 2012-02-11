@@ -31,6 +31,7 @@ def task_post_save(sender, instance, created, **kwargs):
         instance.user_story.modified_date = datetime.datetime.now()
         instance.user_story.save()
 
+from greenmine.utils import normalize_tagname
 
 @receiver(post_save, sender=UserStory)
 def user_story_post_save(sender, instance, created, **kwargs):
@@ -43,7 +44,7 @@ def user_story_post_save(sender, instance, created, **kwargs):
         return
 
     # TODO: remove accents from category string.
-    category_str = instance.category.lower()
+    category_str = normalize_tagname(instance.category)
     if category_str not in instance.project.meta_category_list:
         instance.project.meta_category_list.append(category_str)
 

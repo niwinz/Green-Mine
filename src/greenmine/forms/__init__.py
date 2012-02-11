@@ -259,12 +259,25 @@ class UserStoryForm(forms.ModelForm):
         model = models.UserStory
         fields = ('priority', 'points', 'status', 'category',
             'tested', 'subject', 'description', 'finish_date')
-            
+
+
 class UserStoryFormInline(forms.ModelForm):
     class Meta:
         model = models.UserStory
         fields = ('priority', 'points', 'status', 'category',
-            'tested', 'finish_date')            
+            'tested', 'finish_date')
+
+
+class QuestionCreateForm(forms.ModelForm):
+    class Meta:
+        model = models.Question
+        exclude = ('project', 'owner', 'slug',)
+
+
+class QuestionResponseForm(forms.ModelForm):
+    class Meta:
+        model = models.QuestionResponse
+        exclude = ('owner', 'question', 'modified_date',)
 
 
 class CommentForm(Form):

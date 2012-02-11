@@ -7,7 +7,7 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
 {% block wrapper %}
-<div id="user-story-module" class="show-module">
+<div class="show-module">
     <div class="context-menu">
         <ul>
             <li><a class="new-milestone" href="{{ task.get_edit_url }}?next={{ current_url }}">
@@ -19,46 +19,58 @@
         </ul>
     </div>
     {% include "messages.html" %}
-    <div class="inline">
-        <div class="form-field">
-            <span class="label">{% trans "Task subject" %}</span>
-            <span>{{ task.subject }}</span>
-        </div>
-        <div class="form-field">
-            <span class="label">{% trans "Status" %}</span>
-            <span>{{ task.get_status_display }}</span>
-        </div> 
-        <div class="form-field">
-            <span class="label">{% trans "Tested" %}</span>
-            <span>{{ user_story.tested|yesno }}</span>
-        </div>
-        {% if task.finish_date %}
-        <div class="form-field">
-            <span class="label">{% trans "Finish date" %}</span>
-            <span>{{ .finish_date|date:"DATE_FORMAT" }}</span>
-        </div>
-        {% endif %}
-        {% if task.description %}
-        <div class="form-field width100">
-            <span class="label">{% trans "Description" %}</span>
-            {{ task.description|linebreaks }}
-        </div>
-        {% endif %}
-        
-        {% with files=task.attached_files.all %}
-            {% if files|length > 0 %}
-            <div class="form-field width100">
-                <span class="label">Ficheros</span>
-                <ul>
-                    <li><a href="">Fichero 1 (1 mb)</a></li>
-                    <li><a href="">Fichero 2 (2 mb)</a></li>
-                    <li><a href="">Fichero 3 (2 mb)</a></li>
-                </ul>
+
+    <div class="question-module">
+        <div class="question-header">
+            <div class="main-header-row">
+                <span class="title">{% trans "Question: " %}</span>
+                <span class="subject">{{ question.subject }}</span>
             </div>
-            {% endif %}
-        {% endwith %}
+            <div class="small-header-row">
+                <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
+                <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
+            </div>
+        </div>
+        <div class="question-body">
+            <div class="content">
+                {{ question.content }}
+            </div>
+        </div>
+
+    </div>
+    <div class="question-responses">
+        {% for response in responses %}
+        <div class="question-response-item">
+            <div class="content">{{ response.content }}</div>
+            <div class="owner">{% trans "By: " %}<span>{{ response.owner.get_full_name }}</span></div>
+            <div class="created-date">{{ response.created_date }}</div>
+        </div>
+        {% endfor %}
     </div>
     
+    <div class="question-responses-form form-container">
+        <form enctype="multipart/form-data" method="post" action="">
+            {% csrf_token %}
+            <div class="form-row">
+                <label>{% trans "Write your comment:" %}</label>
+                {{ form.description.errors }}
+                {{ form.content }}
+            </div>
+            <div class="form-row">
+                {{ form.attached_file.label }}
+                {{ form.attached_file.errors }}
+                {{ form.attached_file }}
+            </div>
+            <div class="form-row submit-row">
+                <input type="submit" class="btn01" value="{% trans "Send comment" %}" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+    {% comment %}
     <div class="user-story-responses">
         <div class="responses-list">
             {% with responses=task.responses.all %}
@@ -122,6 +134,21 @@
                 <input type="submit" class="btn01" value="{% trans "Send comment" %}" />
             </div>
         </form>
+        {% endcomment %}
+
+
+    {% comment %}
+        {% with files=task.attached_files.all %}
+            {% if files|length > 0 %}
+            <div class="form-field width100">
+                <span class="label">Ficheros</span>
+                <ul>
+                    <li><a href="">Fichero 1 (1 mb)</a></li>
+                    <li><a href="">Fichero 2 (2 mb)</a></li>
+                    <li><a href="">Fichero 3 (2 mb)</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
     </div>
-</div>
-{% endblock %}
+    {% endcomment %}

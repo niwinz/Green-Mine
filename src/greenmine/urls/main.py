@@ -39,6 +39,15 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$', 
         main.MilestoneCreateView.as_view(), name='milestone-create'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/$', 
+        main.QuestionsListView.as_view(), name='questions'),
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/create/$', 
+        main.QuestionsCreateView.as_view(), name='questions-create'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/view/$', 
+        main.QuestionsView.as_view(), name='questions-view'),
+
     # User storys
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
         main.UserStoryCreateView.as_view(), name='user-story-create'),

@@ -9,6 +9,7 @@ from django.utils import simplejson
 
 import datetime, hashlib, os.path, os
 import random, string
+import unicodedata
 
 
 class Singleton(type):
@@ -76,3 +77,8 @@ def api_login_required(function):
             return HttpResponse(response_data, mimetype='text/plain')
 
     return _view_wrapper
+
+
+def normalize_tagname(tagname):
+    value = unicodedata.normalize('NFKD', tagname).encode('ascii', 'ignore')
+    return value.lower()
