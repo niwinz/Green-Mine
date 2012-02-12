@@ -108,7 +108,10 @@ div.highlight {
     background-color: white;
     font-size: 12px;
     font-family: monospace;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 div.highlight pre {
     font-family: Monaco, 'MonacoRegular', 'Courier New', monospace;
+    white-space: pre-wrap;
 }
