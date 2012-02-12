@@ -5,9 +5,8 @@ var backlog_handlers = function() {
     
     $(".config-us-inline").live('click', function(event) {
         event.preventDefault();
-        console.log(2222);
         var elm = $(this);
-        $.get($(this).attr('href'),  function(data) {
+        $.get(elm.attr('href'),  function(data) {
             elm.closest('.un-us-item').find('.form-inline').html(data).show();
         }, 'html');
     });
@@ -15,9 +14,27 @@ var backlog_handlers = function() {
     $(".user-story-inline-submit").live('click', function(event) {
         event.preventDefault();
         var elm = $(this);
-        $.post($(this).closest('form').attr('action'),  $(this).closest('form').serialize(),function(data) {
-           elm.closest('.un-us-item').find('.form-inline').html(data);
-        }, 'html');        
+        var form = elm.closest('form');
+        $.post(form.attr('action'),  form.serialize(),function(data) {
+            console.log(data)
+            if(data.valid){
+                usitem = elm.closest('.un-us-item');
+                usitem.find('.form-inline').hide();
+                usitem.replaceWith(data.html);
+            }else{
+                form.find('.errorlist').remove();
+                jQuery.each(data.errors, function(index, value){
+                    var ul = $(document.createElement('ul'))
+                    .attr('class', 'errorlist');
+                    
+                    for(var i=0; i<value.length; i++){
+                        $(document.createElement('li')).html(value[i]).appendTo(ul);
+                    }
+                    
+                    form.find('[name='+index+']').before(ul);
+                })    
+            }
+        }, 'json');        
     });
     
     $(".user-story-inline-cancel").live('click', function(event) {
