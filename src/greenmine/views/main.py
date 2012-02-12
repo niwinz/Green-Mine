@@ -121,7 +121,7 @@ class HomeView(GenericView):
             page = 1
         
         if request.user.is_staff:
-            projects = Project.objects.order_by('name')
+            projects = models.Project.objects.order_by('name')
         else:
             projects = request.user.projects.all()
 
