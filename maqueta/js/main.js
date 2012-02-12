@@ -147,9 +147,8 @@ var settings_handlers = function() {
         }
     });
 
-    $("fieldset.colors-form .width100 input[type=submit]").click(function(event) {
+    $("#edit-project-settings .width100 input[type=submit]").click(function(event) {
         event.preventDefault();
-        
         var data = {};
         if ($('.tag-color-item').length > 0) {
             $('.tag-color-item').each(function() {
