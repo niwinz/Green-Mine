@@ -120,7 +120,11 @@ class HomeView(GenericView):
         except ValueError:
             page = 1
         
-        projects = request.user.projects.all()
+        if request.user.is_staff:
+            projects = Project.objects.order_by('name')
+        else:
+            projects = request.user.projects.all()
+
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
 
@@ -147,12 +151,13 @@ class BacklogView(GenericView):
         
         context = {
             'project': project,
-            'milestones': project.milestones.order_by('-created_date'),
-            'unassigned_us': unassigned,
+            'project_category_colors': project.meta_category_color,
+            'milestones': project.milestones.order_by('-created_date').prefetch_related('project'),
+            'unassigned_us': unassigned.select_related(),
             'form_new_milestone': form_new_milestone,
         }
 
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class TasksView(GenericView):

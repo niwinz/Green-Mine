@@ -20,9 +20,10 @@ def human_size(value):
 from greenmine.utils import normalize_tagname
 
 @register.assignment_tag(takes_context=True)
-def tag_color(context, tag, project):
+def tag_color(context, tag):
+    project_category_colors = context['project_category_colors']
     ntagname = normalize_tagname(tag)
-    if ntagname in project.meta_category_color:
-        return project.meta_category_color[ntagname]
+    if ntagname in project_category_colors:
+        return project_category_colors[ntagname]
 
     return 'black'

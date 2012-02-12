@@ -124,6 +124,12 @@ class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
+    def can_view(self, user):
+        queryset = ProjectUserRole.objects.filter(user=user)\
+            .values_list('project', flat=True)
+        return Project.objects.filter(pk__in=queryset)
+        
+
 
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
