@@ -533,10 +533,16 @@ class Question(models.Model):
         return ('web:questions-view', (), 
             {'pslug': self.project.slug, 'qslug': self.slug})
 
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:questions-edit', (),
+            {'pslug': self.project.slug, 'qslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.subject, self.__class__)
         super(Question, self).save(*args, **kwargs)
+
 
 class QuestionResponse(models.Model):
     content = models.TextField()

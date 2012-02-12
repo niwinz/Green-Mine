@@ -60,6 +60,18 @@ input[type=button] {
     font-size: 18px;
     font-weight: bold;
 }
+
+.questions-list .question-module .question-header .title {
+    font-size: 14px;
+}
+.questions-list fieldset {
+    padding: 10px;
+    border: 1px solid #e4e4e4;
+}
+
+.questions-list .question-module {
+    margin-bottom: 4px;
+}
 .question-module .question-header .small-header-row {
     font-size: 12px;
     padding: 4px;
@@ -75,7 +87,7 @@ input[type=button] {
     margin-top: 20px;
 }
 
-.question-responses-form #id_content { width: 850px; height: 90px; }
+textarea#id_content { width: 945px; height: 190px; }
 .question-responses { overflow: hidden; }
 .question-responses .question-response-item {
     float:right;
@@ -89,4 +101,14 @@ input[type=button] {
     padding-top: 5px;
     font-size: 12px;
     text-align: right;
+}
+
+div.highlight {
+    padding: 10px;
+    background-color: white;
+    font-size: 12px;
+    font-family: monospace;
+}
+div.highlight pre {
+    font-family: Monaco, 'MonacoRegular', 'Courier New', monospace;
 }

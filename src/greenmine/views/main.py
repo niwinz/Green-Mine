@@ -717,7 +717,8 @@ class QuestionsListView(GenericView):
         questions = project.questions.order_by('-created_date')
 
         context = {
-            'questions': questions,
+            'open_questions': questions.filter(closed=False),
+            'closed_questions': questions.filter(closed=True),
             'project': project,
         }
         return self.render_to_response(self.template_path, context)
@@ -753,6 +754,42 @@ class QuestionsCreateView(GenericView):
         context = {
             'form': form,
             'project': project,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class QuestionsEditView(GenericView):
+    template_path = 'questions-edit.html'
+    menu = ['questions']
+
+    def get(self, request, pslug, qslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        question = get_object_or_404(project.questions, slug=qslug)
+        form = forms.QuestionCreateForm(instance=question)
+
+        context = {
+            'form': form,
+            'project': project,
+            'question': question,
+        }
+        return self.render_to_response(self.template_path, context)
+
+    def post(self, request, pslug, qslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        question = get_object_or_404(project.questions, slug=qslug)
+        form = forms.QuestionCreateForm(request.POST, instance=question)
+
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.save()
+
+            messages.info(request, _(u"Quienstion are saved"))
+            return self.render_redirect(question.get_view_url())
+
+        context = {
+            'form': form,
+            'project': project,
+            'question': question,
         }
         return self.render_to_response(self.template_path, context)
 

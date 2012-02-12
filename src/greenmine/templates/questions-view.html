@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load static from staticfiles %}
 {% load greenmine_utils %}
+{% load greenmine_markup %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
@@ -10,11 +11,8 @@
 <div class="show-module">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{{ task.get_edit_url }}?next={{ current_url }}">
-                {% trans "Edit this task" %}</a>
-            </li>
-            <li><a class="new-milestone" href="{{ task.get_delete_url }}">
-                {% trans "Delete this task" %}</a>
+            <li><a class="new-milestone" href="{{ question.get_edit_url }}">
+                {% trans "Edit this question" %}</a>
             </li>
         </ul>
     </div>
@@ -33,7 +31,7 @@
         </div>
         <div class="question-body">
             <div class="content">
-                {{ question.content }}
+                {{ question.content|markdown }}
             </div>
         </div>
 
@@ -41,7 +39,7 @@
     <div class="question-responses">
         {% for response in responses %}
         <div class="question-response-item">
-            <div class="content">{{ response.content }}</div>
+            <div class="content">{{ response.content|markdown }}</div>
             <div class="owner">{% trans "By: " %}<span>{{ response.owner.get_full_name }}</span></div>
             <div class="created-date">{{ response.created_date }}</div>
         </div>

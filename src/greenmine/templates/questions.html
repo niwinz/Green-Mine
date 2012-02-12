@@ -13,12 +13,54 @@
         </ul>
     </div>
     {% include "messages.html" %}
-
-    <div class="center-block">
-        {% for question in questions %}
-        <a href="{{ question.get_view_url }}">{{ question }}</a><br />
-        {% endfor %}
+    
+    {% if open_questions %}
+    <div class="center-block questions-list">
+        <fieldset>
+            <legend>{% trans "Open questions:" %}</legend>
+            {% for question in open_questions %}
+            <div class="question-module">
+                <div class="question-header">
+                    <div class="main-header-row">
+                        <a href="{{ question.get_view_url }}">
+                            <span class="title">{% trans "Question: " %}</span>
+                            <span class="subject">{{ question.subject }}</span>
+                        </a>
+                    </div>
+                    <div class="small-header-row">
+                        <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
+                        <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </fieldset>
     </div>
+    {% endif %}
+
+    {% if closed_questions %}
+    <div class="center-block questions-list">
+        <fieldset>
+            <legend>{% trans "Closed questions:" %}</legend>
+            {% for question in closed_questions %}
+            <div class="question-module">
+                <div class="question-header">
+                    <div class="main-header-row">
+                        <a href="{{ question.get_view_url }}">
+                            <span class="title">{% trans "Question: " %}</span>
+                            <span class="subject">{{ question.subject }}</span>
+                        </a>
+                    </div>
+                    <div class="small-header-row">
+                        <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
+                        <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </fieldset>
+    </div>
+    {% endif %}
 </div>
 
 
