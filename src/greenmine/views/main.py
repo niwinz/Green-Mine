@@ -647,7 +647,7 @@ class AssignUs(GenericView):
 
 
 class UnassignUs(GenericView):       
-    template_name = 'user_story_item.html'   
+    template_name = 'user-story-item.html'   
     
     @login_required
     def post(self, request, pslug, iref):
@@ -657,7 +657,7 @@ class UnassignUs(GenericView):
         user_story.save()        
         
         context = {'us': user_story}
-        return self.render_to_response(self.template_path, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class ProjectSettings(GenericView):
@@ -834,7 +834,8 @@ class QuestionsView(GenericView):
 
 
 class UsFormInline(GenericView):       
-    template_name = 'user_story_form_inline.html'   
+    template_name = 'user_story_form_inline.html'
+    us_template_name = 'user-story-item.html'
     
     @login_required
     def get(self, request, pslug, iref):
@@ -853,10 +854,19 @@ class UsFormInline(GenericView):
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
-        if form.is_valid():
-            user_story = form.save(commit=True)
+        
+        if form.is_valid():            
+            context = {'us': user_story}
+            form.save(commit=True)
             
-        context = {
-            'form': form
-        }            
-        return self.render(self.template_name, context)            
+            response_data = {
+                'valid': True,
+                'html': render_to_string(self.us_template_name, context)            
+            }
+        else:
+            response_data = {
+                'valid': False,
+                'errors': form.errors
+            }        
+        
+        return HttpResponse(simplejson.dumps(response_data), mimetype="application/json")
