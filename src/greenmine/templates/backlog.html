@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="milestone-userstorys">
-                    {% for us in ml.user_stories.all.select_related %}
+                    {% for us in ml.user_stories.select_related %}
                         {% include "milestone-item.html" with us=us %}
                     {% empty %}
                     <div class="us-item-empty us-item">
