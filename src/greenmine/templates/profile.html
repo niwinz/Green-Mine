@@ -14,13 +14,13 @@
             <li><a class="new-milestone" href="{% url 'web:profile-password' %}">{% trans "Change password" %}</a></li>
         </ul>
     </div>
+    {% include "messages.html" %}
     <div class="form-container">
         <div class="form-legend">
             <span>{% trans "Profile:" %}</span>
         </div>
         <form id="edit-profile-form" method="post" enctype="multipart/form-data"
             action="{% url 'web:profile' %}" class="inline">
-            {% include "messages.html" %}
             {% csrf_token %}
             <div class="form-field">
                 <label>{{ form.first_name.label }}</label>
