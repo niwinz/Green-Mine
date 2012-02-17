@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     url(r'^profile/$', 
         main.ProfileView.as_view(), name='profile'),
 
+    url(r'^profile/password/change/$',
+        main.PasswordChangeView.as_view(), name='profile-password'),
+
     #url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
     #        config.AdminProjectExport.as_view(), name="admin-project-export"),
 

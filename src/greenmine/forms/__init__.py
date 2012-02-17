@@ -16,6 +16,7 @@ from greenmine.models import *
 from greenmine import models
 from greenmine.utils import encrypt_password
 
+
 class Form(forms.Form):
     """ Custom form with some jquery validator friendly propertys. """
     @property
@@ -90,6 +91,7 @@ class LoginForm(Form):
                 login(self._request, self._user)
 
         return cleaned_data
+
 
 
 class ForgottenPasswordForm(Form):

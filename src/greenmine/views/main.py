@@ -49,6 +49,33 @@ class LoginView(GenericView):
             {'form': login_form})
 
 
+class PasswordChangeView(GenericView):
+    """
+    Password change view.
+    """
+
+    template_path = 'password.html'
+
+    @login_required    
+    def get(self, request):
+        form = forms.PasswordRecoveryForm()
+        context = {'form': form}
+        return self.render_to_response(self.template_path, context)
+
+
+    @login_required
+    def post(self, request):
+        form = forms.PasswordRecoveryForm(request.POST)
+        if form.is_valid():
+            request.user.set_password(form.cleaned_data['password'])
+            request.user.save()
+            messages.info(request, _(u"Password changed!"))
+            return self.render_redirect(reverse('web:profile'))
+
+        context = {'form': form}
+        return self.render_to_response(self.template_path, context)
+
+
 class ProfileView(GenericView):
     template_name = 'profile.html'
 
@@ -281,7 +308,6 @@ class ProjectCreateView(GenericView):
 class ProjectEditView(ProjectCreateView):
     template_name = 'config/project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
-
     menu = ["settings", "editproject"]
 
     @login_required
