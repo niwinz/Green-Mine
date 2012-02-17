@@ -595,5 +595,9 @@ ul.errorlist li {
     display: inline;
 }
 
-.us-form-inline{padding-bottom: 20px; float: left; width: 100%;}
+.us-form-inline{
+    float: left;
+    padding: 20px;
+    border: 1px solid #DDD;
+}
 .us-form-inline p{float: left; width: 100%; margin-bottom: 15px;}

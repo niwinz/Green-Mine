@@ -887,7 +887,11 @@ class UsFormInline(GenericView):
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
         
         if form.is_valid():            
-            context = {'us': user_story}
+            context = {
+                'us': user_story,
+                'project_category_colors': project.meta_category_color,
+
+            }
             form.save(commit=True)
             
             response_data = {
@@ -900,4 +904,4 @@ class UsFormInline(GenericView):
                 'errors': form.errors
             }        
         
-        return HttpResponse(simplejson.dumps(response_data), mimetype="application/json")
+        return self.render_json(response_data)
