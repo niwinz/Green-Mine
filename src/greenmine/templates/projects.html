@@ -5,6 +5,12 @@
 
 {% block wrapper %}
 <div id="projects">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{% url 'web:project-create' %}">{% trans "Create project" %}</a></li>
+        </ul>
+    </div>
+
     {% include "messages.html" %}
     {% if page.paginator.count > 0 %}
     <table class="table01">
@@ -34,6 +40,5 @@
     {% endif %}
 
     {% include "paginator.html" %}
-    <a href="{% url 'web:project-create' %}" class="btn01 float-right">{% trans "Create project" %}</a>
 </div>
 {% endblock %}
