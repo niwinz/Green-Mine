@@ -54,6 +54,9 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/edit/$', 
         main.QuestionsEditView.as_view(), name='questions-edit'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/delete/$',
+        main.QuestionsDeleteView.as_view(), name='questions-delete'),
+
     # User storys
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
         main.UserStoryCreateView.as_view(), name='user-story-create'),

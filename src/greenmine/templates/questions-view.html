@@ -14,6 +14,9 @@
             <li><a class="new-milestone" href="{{ question.get_edit_url }}">
                 {% trans "Edit this question" %}</a>
             </li>
+            <li><a class="new-milestone" href="{{ question.get_delete_url }}">
+                {% trans "Delete this question" %}</a>
+            </li>
         </ul>
     </div>
     {% include "messages.html" %}

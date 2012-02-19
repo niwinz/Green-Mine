@@ -864,6 +864,31 @@ class QuestionsView(GenericView):
         return self.render_to_response(self.template_path, context)
 
 
+class QuestionsDeleteView(GenericView):
+    template_path = 'questions-delete.html'
+
+    def get_context(self):
+        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+        question = get_object_or_404(project.questions, slug=self.kwargs['qslug'])
+
+        context = {
+            'project': project,
+            'question': question,
+        }
+        return context
+
+    @login_required
+    def get(self, request, **kwargs):
+        context = self.get_context()
+        return self.render_to_response(self.template_path, context)
+    
+    @login_required
+    def post(self, request, **kwargs):
+        context = self.get_context()
+        context['question'].delete()
+        return self.render_redirect(context['project'].get_questions_url())
+
+
 class UsFormInline(GenericView):       
     template_name = 'user_story_form_inline.html'
     us_template_name = 'user-story-item.html'

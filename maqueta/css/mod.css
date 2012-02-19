@@ -115,3 +115,28 @@ div.highlight pre {
     font-family: Monaco, 'MonacoRegular', 'Courier New', monospace;
     white-space: pre-wrap;
 }
+
+
+/* Delete module */
+
+.delete-module {
+    padding: 10px;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+.delete-module .delete-header {
+    font-size: 18px;
+}
+.delete-module .delete-header .title {
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    padding-left:10px;
+}
+
+.delete-module .delete-header .small-header-row {
+    font-size: 12px;
+    padding: 4px;
+    font-style: italic;
+}
+

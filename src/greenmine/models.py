@@ -544,6 +544,11 @@ class Question(models.Model):
         return ('web:questions-edit', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
 
+    @models.permalink
+    def get_delete_url(self):
+        return ('web:questions-delete', (),
+            {'pslug': self.project.slug, 'qslug': self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.subject, self.__class__)
