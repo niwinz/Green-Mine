@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% if is_paginated %}
-<div class="pagination">
+<div class="paginator-block">
     {% if page.has_previous %}
     <a href="{{ current_url }}?page={{ page.previous_page_number }}">{% trans "Previous" %}</a>
     {% endif %}

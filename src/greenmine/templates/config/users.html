@@ -20,7 +20,7 @@
         <div class="user-module">
             <div class="user-header">
                 <div class="main-header-row">
-                    <a href="{{ user.get_view_url }}">
+                    <a href="{% url 'web:users-view' uid=user.id %}">
                         <span class="title">{{ user.get_full_name }}</span>
                     </a>
                 </div>
@@ -32,5 +32,6 @@
         </div>
         {% endfor %}
     </div>
+    {% include "paginator.html" %}
 </div>
 {% endblock %}

@@ -1,3 +1,11 @@
+.paginator-block {
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #e4e4e4;
+    font-size: 12px;
+}
+
+
 select {
     height: 30px;
 }
