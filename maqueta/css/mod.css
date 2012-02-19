@@ -133,10 +133,56 @@ div.highlight pre {
     display: block;
     padding-left:10px;
 }
-
 .delete-module .delete-header .small-header-row {
     font-size: 12px;
     padding: 4px;
     font-style: italic;
 }
 
+
+/* User list */
+
+.user-module {
+    padding: 3px;
+    background-color: #EEE;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.user-module .user-header {
+    font-size: 18px;
+}
+.user-module .user-header .title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.users-list .user-module .user-header .title {
+    font-size: 12px;
+    line-height: 22px;
+}
+.users-list fieldset {
+    padding: 10px;
+    border: 1px solid #e4e4e4;
+}
+
+.users-list .user-module {
+    margin-bottom: 4px;
+}
+.user-module .user-header {
+    overflow: hidden;
+}
+.user-module .user-header .small-header-row {
+    font-size: 12px;
+    padding: 4px;
+    font-style: italic;
+    float: right;
+}
+.user-module .user-header .main-header-row {
+    float:left;
+}
+
+.user-module .user-body .content { 
+    margin-top: 10px;
+    padding: 5px;
+}

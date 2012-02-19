@@ -910,7 +910,7 @@ class UserList(GenericView):
             'page': page,
             'users': users,
         }
-        return self.render(self.template_name, context)
+        return self.render(self.template_path, context)
 
 
 class UserView(GenericView):
