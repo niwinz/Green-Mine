@@ -13,13 +13,26 @@ def login_required(view_func):
     def _wrapper(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             return view_func(self, request, *args, **kwargs)
-        else:
-            if request.is_ajax():
-                response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
-                response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
-                return HttpResponse(response_data, mimetype='text/plain')
-            else:
-                return HttpResponseRedirect(settings.LOGIN_URL)
-
+        
+        if request.is_ajax():
+            response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
+            response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
+            return HttpResponse(response_data, mimetype='text/plain')
+        
+        return HttpResponseRedirect(settings.LOGIN_URL)
     return _wrapper
 
+
+def staff_required(view_func):
+    @wraps(view_func)
+    def _wrapper(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            return view_func(self, request, *args, **kwargs)
+
+        if request.is_ajax():
+            response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
+            response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
+            return HttpResponse(response_data, mimetype='text/plain')
+        
+        return HttpResponseRedirect(settings.LOGIN_URL)
+    return _wrapper

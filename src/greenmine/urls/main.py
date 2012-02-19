@@ -20,6 +20,11 @@ urlpatterns = patterns('',
     url(r'^profile/password/change/$',
         main.PasswordChangeView.as_view(), name='profile-password'),
 
+    url(r'^users/$', main.UserList.as_view(), name='users'),
+    url(r'^users/(?P<uid>\d+)/view/$', main.UserView.as_view(), name='users-view'),
+    url(r'^users/(?P<uid>\d+)/edit/$', main.UserEditView.as_view(), name='users-edit'),
+    url(r'^users/(?P<uid>\d+)/delete/$', main.UserDelete.as_view(), name='users-delete'),
+
     #url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
     #        config.AdminProjectExport.as_view(), name="admin-project-export"),
 

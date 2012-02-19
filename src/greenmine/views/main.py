@@ -20,7 +20,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView, ProjectGenericView
-from greenmine.views.decorators import login_required
+from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms
 
 import re
@@ -887,6 +887,101 @@ class QuestionsDeleteView(GenericView):
         context = self.get_context()
         context['question'].delete()
         return self.render_redirect(context['project'].get_questions_url())
+
+
+class UserList(GenericView):
+    template_path = 'config/users.html'
+    menu = ['users']
+    
+    @login_required
+    @staff_required
+    def get(self, request):
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        
+        users = User.objects.all()
+        paginator = Paginator(users, 20)
+        page = paginator.page(page)
+
+        context = {
+            'is_paginated': True if paginator.count else False,
+            'page': page,
+            'users': users,
+        }
+        return self.render(self.template_name, context)
+
+
+class UserView(GenericView):
+    template_path = 'config/users-view.html'
+    menu = ['users']
+
+    @login_required
+    @staff_required
+    def get(self, request, uid):
+        user = get_object_or_404(User, pk=uid)
+        context = {
+            'user': user,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class UserEditView(GenericView):
+    template_path = 'config/users-edit.html'
+    menu = ['users']
+    
+    @login_required
+    @staff_required
+    def get(self, request, uid):
+        user = get_object_or_404(User, pk=uid)
+        form = forms.UserEditForm(instance=user)
+
+        context = {
+            'user': user,
+            'form': form,
+        }
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    @staff_required
+    def post(self, request, uid):
+        user = get_object_or_404(User, pk=uid)
+        form = forms.UserEditForm(request.POST, instance=user)
+        
+        if form.is_valid():
+            if form.cleaned_data['reset_password']:
+                # send mail
+                pass
+
+            return self.render_redirect()
+
+        contex = {
+            'user': user,
+            'form': form,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class UserDelete(GenericView):
+    template_path = 'config/users-delete.html'
+    menu = ['users']
+
+    def get_context(self):
+        user = get_object_or_404(User, pk=self.kwargs['uid'])
+        return {'user':user}
+
+    @login_required
+    @staff_required
+    def get(self, request, uid):
+        context = self.get_context()
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    @staff_required
+    def post(self, request, uid):
+        context = self.get_context()
+        return self.render_redirect(reverse('web:users'))
 
 
 class UsFormInline(GenericView):       

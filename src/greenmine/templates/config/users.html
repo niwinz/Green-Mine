@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div id="questions">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{{ project.get_questions_create_url }}">{% trans "New Question" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+    
+    <div class="center-block questions-list users-list">
+        {% for question in open_questions %}
+        <div class="user-module">
+            <div class="user-header">
+                <div class="main-header-row">
+                    <a href="{{ question.get_view_url }}">
+                        <span class="title">{% trans "Question: " %}</span>
+                        <span class="subject">{{ question.subject }}</span>
+                    </a>
+                </div>
+                <div class="small-header-row">
+                    <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
+                    <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="delete-milestone-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this question?" %}
+</div>
+
+<div id="overlay"></div>
+{% endblock %}

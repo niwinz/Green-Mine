@@ -131,44 +131,44 @@ class PasswordRecoveryForm(Form):
         return cleaned_data
 
 
-class ProfileForm(Form):
-    username = CharField(max_length=30, min_length=4, 
-        required=True, type='text', label=_(u'Username'))
-    first_name = CharField(max_length=30, min_length=4, 
-        required=True, type='text', label=_(u'First name'))
-    last_name = CharField(max_length=30, min_length=4, 
-        required=True, type='text', label=_(u'Last_name'))
-    email = CharField(max_length=200, min_length=4, 
-        required=True, type='text', label=_(u'E-Mail'))
+class ProfileForm(forms.ModelForm):
     description = forms.CharField(widget=Textarea, required=False,
         label=_(u'Description'))
     photo = forms.ImageField(required=False, label=_(u'Photo'))
 
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'description', 'photo')
+
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance')
-        kwargs['initial'] = {
-            'username': self.instance.username,
-            'first_name': self.instance.first_name,
-            'last_name': self.instance.last_name,
-            'description': self.instance.get_profile().description,
-            'email': self.instance.email,
-        }
-        super(ProfileForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance:
+            kwargs['initial'] = {
+                'description': instance.get_profile().description,
+            }
+        super(ProfileForm, self).__init__(*args,**kwargs)
 
-    def save(self):
-        self.instance.username = self.cleaned_data['username']
-        self.instance.email = self.cleaned_data['email']
-        self.instance.first_name = self.cleaned_data['first_name']
-        self.instance.last_name = self.cleaned_data['last_name']
-        self.instance.save()
-
+    def save(self, *args, **kwargs):
+        instance = super(ProfileForm, self).save(*args, **kwargs)
         profile = self.instance.get_profile()
         profile.description = self.cleaned_data['description']
+
         if self.cleaned_data['photo']:
             profile.photo = self.cleaned_data['photo']
-        profile.save()
 
-        return self.instance
+        profile.save()
+        return instance
+
+
+class UserEditForm(ProfileForm):
+    reset_password = forms.BooleanField(required=False,
+        label = _(u"Reset password and send password recovery mail."))
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'description', 'photo', 'reset_password')
 
 
 class ProjectForm(Form):
