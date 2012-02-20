@@ -1,6 +1,28 @@
 var backlog_handlers = function() {
     $(".un-us-item .delete").live('click', function(event) {
         event.preventDefault();
+        var self = $(this);
+        self.closest('.un-us-item').css('border', '1px solid red');
+        
+        var buttons = {};
+        buttons[gettext('Ok')] = function() {
+            $.post(self.attr('href'), {}, function(data) {
+                
+            });
+                
+            $(this).dialog('close');
+            self.parents('.un-us-item').remove();
+        };
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close');
+            self.closest('.un-us-item').css('border', '');
+        };
+
+        $(".delete-us-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });        
     });
     
     $(".config-us-inline").live('click', function(event) {
