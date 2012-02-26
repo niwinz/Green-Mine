@@ -580,6 +580,11 @@ class WikiPage(models.Model):
         return ('web:wiki-page', (), 
             {'pslug': self.project.slug, 'wslug': self.slug})
 
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:wiki-page-edit', (),
+            {'pslug': self.project.slug, 'wslug': self.slug})
+
 
 class WikiPageAttachment(models.Model):
     wikipage = models.ForeignKey('WikiPage', related_name='attachments')

@@ -14,7 +14,7 @@ caption,th {text-align:left;}
 h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:normal;}
 q:before,q:after {content:'';}
 abbr,acronym {border:0;}
-p{margin-bottom: 4px;}
+pre, p{margin-bottom: 9px;}
 hr{border: 2px solid #458745; width: 100%; height: 2px; clear: left; float: left;}
 .mt5{margin-top: 5px;} .mt10{margin-top: 10px;} .mt15{margin-top: 15px;} .mt20{margin-top: 20px;} .mt25{margin-top: 25px;}
 body{background-color: #EFEFEF; padding-bottom: 36px;}

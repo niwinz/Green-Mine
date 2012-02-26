@@ -29,11 +29,12 @@ class Postprocessor(markdown.postprocessors.Postprocessor):
                 lexer = TextLexer()
             
             escaped_text = pre_elem.text
-            new_text = highlight(escaped_text, lexer, self.formatter)
+            if escaped_text:
+                new_text = highlight(escaped_text, lexer, self.formatter)
 
-            pre_elem.clear()
-            pre_elem.append(lx.fromstring(new_text))
-            pre_elem.tag = 'div'
+                pre_elem.clear()
+                pre_elem.append(lx.fromstring(new_text))
+                pre_elem.tag = 'div'
         
         return et.tostring(doc, pretty_print=True, method="html")
         

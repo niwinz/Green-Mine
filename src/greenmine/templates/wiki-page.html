@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load greenmine_utils %}
+{% load greenmine_markup %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div id="user-story-module" class="show-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-us" href="{{ wikipage.get_edit_url }}">{% trans "Edit" %}</a></li>
+            <li><a class="new-milestone" href="">{% trans "Delete" %}</a></li>
+        </ul>
+    </div>
+    <div class="wiki-content">
+        {{ wikipage.content|markdown }}
+    </div>
+</div>
+{% endblock %}

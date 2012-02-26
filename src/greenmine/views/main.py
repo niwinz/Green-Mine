@@ -1041,6 +1041,7 @@ class WikiPageEditView(GenericView):
 
         context = {
             'form': form,
+            'project': project,
         }
 
         return self.render_to_response(self.template_path, context)
@@ -1059,10 +1060,14 @@ class WikiPageEditView(GenericView):
             if not wikipage.slug:
                 wikipage.slug = models.slugify_uniquely(wslug, wikipage.__class__)
 
+            if not wikipage.project_id:
+                wikipage.project = project
+
             wikipage.save()
             return self.render_redirect(wikipage.get_view_url())
 
         context = {
             'form': form,
+            'project': project,
         }
         return self.render_to_response(self.template_path, context)
