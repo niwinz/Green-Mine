@@ -113,7 +113,7 @@ def ref_uniquely(project, model, field='ref'):
 class Profile(models.Model):
     user = models.ForeignKey("auth.User", unique=True)
     description = models.TextField(blank=True)
-    photo = models.FileField(upload_to="files/msg/%Y/%m/%d",
+    photo = models.FileField(upload_to="files/msg",
         max_length=500, null=True, blank=True)
 
     default_language = models.CharField(max_length=20,
@@ -245,13 +245,8 @@ class ProjectUserRole(models.Model):
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
 
     # email notification settings
-    send_email_on_group_message = models.BooleanField(default=True)
-    send_email_on_us_asignement = models.BooleanField(default=True)
-    send_email_on_new_us = models.BooleanField(default=False)
-    send_email_on_new_us_as_watcher = models.BooleanField(default=True)
-    send_email_on_incoming_question = models.BooleanField(default=False)
-    send_email_on_incoming_question_assigned = \
-                                    models.BooleanField(default=False)
+    email_settings = DictField(null=True, default={}, editable=False)
+
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)
@@ -276,6 +271,7 @@ class Milestone(models.Model):
 
     meta_velocity = DictField(null=True, default={}, editable=False)
     objects = MilestoneManager()
+
 
     class Meta:
         ordering = ['-created_date']
@@ -359,6 +355,9 @@ class UserStory(models.Model):
     subject = models.CharField(max_length=500)
     description = models.TextField()
     finish_date = models.DateTimeField(null=True, blank=True)
+
+    watchers = models.ManyToManyField('auth.User',
+        related_name='us_watch', null=True)
 
     class Meta:
         unique_together = ('ref', 'project')
@@ -458,6 +457,9 @@ class Task(models.Model):
         related_name='user_storys_assigned_to_me',
         blank=True, null=True, default=None)
 
+    watchers = models.ManyToManyField('auth.User',
+        related_name='task_watch', null=True)
+
     class Meta:
         unique_together = ('ref', 'project')
 
@@ -514,7 +516,7 @@ class TaskAttachedFile(models.Model):
     owner = models.ForeignKey("auth.User", related_name="files")
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(upload_to="files/msg/%Y/%m/%d",
+    attached_file = models.FileField(upload_to="files/msg",
         max_length=500, null=True, blank=True)
 
 
@@ -523,7 +525,7 @@ class Question(models.Model):
     slug = models.SlugField(unique=True, max_length=250, blank=True)
     content = models.TextField()
     closed = models.BooleanField(default=False)
-    attached_file = models.FileField(upload_to="messages/%Y/%m/%d",
+    attached_file = models.FileField(upload_to="messages",
         max_length=500, null=True, blank=True)
 
     project = models.ForeignKey('Project', related_name='questions')
@@ -533,7 +535,10 @@ class Question(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='questions')
-    
+
+    watchers = models.ManyToManyField('auth.User',
+        related_name='question_watch', null=True)
+
     @models.permalink
     def get_view_url(self):
         return ('web:questions-view', (), 
@@ -559,12 +564,26 @@ class QuestionResponse(models.Model):
     content = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(upload_to="messages/%Y/%m/%d",
+    attached_file = models.FileField(upload_to="messages",
         max_length=500, null=True, blank=True)
 
     question = models.ForeignKey('Question', related_name='responses')
     owner = models.ForeignKey('auth.User', related_name='questions_responses')
 
+
+class WikiPage(models.Model):
+    project = models.ForeignKey('Project', related_name='wiki_pages')
+    slug = models.SlugField(max_length=500, db_index=True)
+    content = models.TextField(blank=False, null=True)
+
+
+class WikiPageAttachment(models.Model):
+    wikipage = models.ForeignKey('WikiPage', related_name='attachments')
+    owner = models.ForeignKey("auth.User", related_name="wikifiles")
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now_add=True)
+    attached_file = models.FileField(upload_to="files/wiki",
+        max_length=500, null=True, blank=True)
 
 # load signals
 from . import sigdispatch
