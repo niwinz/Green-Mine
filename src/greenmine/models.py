@@ -145,7 +145,6 @@ class Project(models.Model):
         null=True, blank=True)
 
     public = models.BooleanField(default=True)
-    meta_category_color = DictField(null=True, default={}, editable=False)
     meta_category_list = ListField(null=True, default=[], editable=False)
 
     objects = ProjectManager()
@@ -245,8 +244,8 @@ class ProjectUserRole(models.Model):
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
 
     # email notification settings
-    email_settings = DictField(null=True, default={}, editable=False)
-
+    meta_email_settings = DictField(null=True, default={}, editable=False)
+    meta_category_color = DictField(null=True, default={}, editable=False)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)

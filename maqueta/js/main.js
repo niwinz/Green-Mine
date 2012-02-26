@@ -196,8 +196,9 @@ var settings_handlers = function() {
                 data[name] = value;
             });
             $("input[name=colors_hidden]").val($.toJSON(data));
-            $(this).parents('form').submit();
         }
+
+        $(this).parents('form').submit();
     });
 };
 

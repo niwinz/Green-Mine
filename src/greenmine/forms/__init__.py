@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+
+# -*- codins: utf-8 -*-
 from django import forms
 from django.conf import settings
 from django.utils import simplejson
@@ -211,44 +212,72 @@ class ProjectForm(Form):
         return self.project
 
 
-class ProjectPersonalSettingsForm(forms.ModelForm):
+from django.forms.forms import BoundField
+
+
+class ProjectPersonalSettingsForm(forms.Form):
     colors_hidden = forms.CharField(max_length=5000, required=False,
         widget=forms.HiddenInput)
 
-    class Meta:
-        model = ProjectUserRole
-        fields = (
-            'send_email_on_group_message',
-            'send_email_on_us_asignement',
-            'send_email_on_new_us',
-            'send_email_on_new_us_as_watcher',
-            'send_email_on_incoming_question',
-            'send_email_on_incoming_question_assigned',
-        )
+    # email notifications
+    send_email_on_us_created = forms.BooleanField(required=False, initial=True)
+    send_email_on_us_modified = forms.BooleanField(required=False, initial=True)
+    send_email_on_us_assigned = forms.BooleanField(required=False, initial=True)
+    send_email_on_task_created = forms.BooleanField(required=False, initial=True)
+    send_email_on_task_modified = forms.BooleanField(required=False, initial=True)
+    send_email_on_task_assigned = forms.BooleanField(required=False, initial=True)
+    send_email_on_question_created = forms.BooleanField(required=False, initial=True)
+    send_email_on_question_response_created = forms.BooleanField(required=False, initial=True)
+
+    posible_email_settings = [
+        'send_email_on_us_created',
+        'send_email_on_us_modified',
+        'send_email_on_us_assigned',
+        'send_email_on_task_created',
+        'send_email_on_task_modified',
+        'send_email_on_task_assigned',
+        'send_email_on_question_created',
+        'send_email_on_question_response_created',
+    ]
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        if self.instance:
+            initial_data = {}
+            
+            for key in self.posible_email_settings:
+                current_value = self.instance.meta_email_settings.get(key, None)
+                if current_value is not None:
+                    initial_data[key] = current_value
+
+            kwargs['initial'] = initial_data
+        super(ProjectPersonalSettingsForm, self).__init__(*args, **kwargs)
 
     def _validate_colors(self, data):
-        # TODO
         return True
+
+    @property
+    def email_fields_iterator(self):
+        for key in self.posible_email_settings:
+            yield BoundField(self, self.fields[key], key)
 
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        print cleaned_data
+        self.colors_data = {}
         if 'colors_hidden' in cleaned_data and cleaned_data['colors_hidden'].strip():
             self.colors_data = simplejson.loads(cleaned_data['colors_hidden'])
             if not self._validate_colors(self.colors_data):
                 self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
                 del cleaned_data['colors_hidden']
 
+        self.emails_data = {}
+        for key in self.posible_email_settings:
+            clean_value = cleaned_data.get(key, None)
+            if clean_value is not None:
+                self.emails_data[key] = clean_value
+
         return cleaned_data
-
-
-class FiltersForm(Form):
-    priority = forms.ChoiceField(choices=(('', _(u'US priority...'),),) + US_PRIORITY_CHOICES)
-
-    def __init__(self, *args, **kwargs):
-        queryset = kwargs.pop('queryset', None)
-        super(FiltersForm, self).__init__(*args, **kwargs)
 
 
 class MilestoneForm(forms.ModelForm):

@@ -178,7 +178,6 @@ class BacklogView(GenericView):
         
         context = {
             'project': project,
-            'project_category_colors': project.meta_category_color,
             'milestones': project.milestones.order_by('-created_date').prefetch_related('project'),
             'unassigned_us': unassigned.select_related(),
             'form_new_milestone': form_new_milestone,
@@ -706,10 +705,9 @@ class ProjectSettings(GenericView):
         form = forms.ProjectPersonalSettingsForm(request.POST, instance=pur)
 
         if form.is_valid():
-            form.save()
-
-            project.meta_category_color = form.colors_data
-            project.save()
+            pur.meta_email_settings = form.emails_data
+            pur.meta_category_color = form.colors_data
+            pur.save()
 
             messages.info(request, _(u"Project preferences saved successfull"))
             return self.render_redirect(project.get_settings_url())
@@ -994,8 +992,7 @@ class UsFormInline(GenericView):
         if form.is_valid():            
             context = {
                 'us': user_story,
-                'project_category_colors': project.meta_category_color,
-
+                'project': project,
             }
             form.save(commit=True)
             
