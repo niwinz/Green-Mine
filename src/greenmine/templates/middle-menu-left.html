@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <ul class="left-menu menu-item">
-    {% if menu.in_projects == "" %}
+    {% if menu.in_projects == "" and menu.in_users == "" %}
     <li><a href="{{ project.get_backlog_url }}" class="{{ menu.in_backlog }}">{% trans "Backlog" %}</a></li>
     <li><a href="{{ project.get_dashboard_url }}" class="{{ menu.in_dashboard }}">{% trans "Dashboard" %}</a></li>
     <li><a href="{{ project.get_tasks_url }}" class="{{ menu.in_tasks }}">{% trans "Issues/Tasks" %}</a></li>

@@ -6,15 +6,6 @@
 
 {% block wrapper %}
 <div id="my-profile" class="form-container">
-    {% comment %}
-    <div class="context-menu">
-        <ul>
-            <li><a class="new-milestone" href="">
-                {% trans "Change password" %}</a></li>
-        </ul>
-    </div>
-    {% endcomment %}
-
     {% include "messages.html" %}
 
     <form id="edit-project-settings" method="post" enctype="multipart/form-data"
