@@ -33,7 +33,7 @@ class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
         login_form = forms.LoginForm(request=request)
 
-        return self.render(self.template_name, 
+        return self.render_to_response(self.template_name, 
             {'form': login_form})
 
     def post(self, request):
@@ -62,7 +62,6 @@ class PasswordChangeView(GenericView):
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
 
-
     @login_required
     def post(self, request):
         form = forms.PasswordRecoveryForm(request.POST)
@@ -83,7 +82,7 @@ class ProfileView(GenericView):
     def get(self, request):
         form = forms.ProfileForm(instance=request.user)
         context = {'form':form}
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request):
@@ -91,7 +90,7 @@ class ProfileView(GenericView):
         context = {'form':form}
 
         if not form.is_valid():
-            return self.render(self.template_name, context)
+            return self.render_to_response(self.template_name, context)
 
         sem = transaction.savepoint()
         try:
@@ -100,7 +99,7 @@ class ProfileView(GenericView):
             transaction.savepoint_rollback(sem)
             
             messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render(self.template_name, context)
+            return self.render_to_response(self.template_name, context)
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Profile save success!'))
@@ -113,7 +112,7 @@ class PasswordRecoveryView(GenericView):
     def get(self, request, token):
         form = forms.PasswordRecoveryForm()
         context = {'form':form}
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     def post(self, request, token):
         form = forms.PasswordRecoveryForm(request.POST)
@@ -132,7 +131,7 @@ class PasswordRecoveryView(GenericView):
             return self.redirect(reverse('web:login'))
 
         context = {'form':form}
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class HomeView(GenericView):
@@ -160,7 +159,7 @@ class HomeView(GenericView):
             'page': page,
             'projects': projects,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
     
 
 class BacklogView(GenericView):
@@ -211,7 +210,7 @@ class TasksView(GenericView):
             'tasks': tasks,
         }
 
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class DashboardView(GenericView):
@@ -234,7 +233,7 @@ class DashboardView(GenericView):
             'milestone':milestone,
             'project': project,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class ProjectCreateView(GenericView):
@@ -264,14 +263,14 @@ class ProjectCreateView(GenericView):
     def get(self, request):
         form = forms.ProjectForm()
         context = {'form':form, 'roles': models.ROLE_CHOICES}
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     def post(self, request):
         form = forms.ProjectForm(request.POST, request=request)
         context = {'form': form, 'roles': models.ROLE_CHOICES}
         
         if not form.is_valid():
-            return self.render(self.template_name, context)
+            return self.render_to_response(self.template_name, context)
         
         sem = transaction.savepoint()
         try:
@@ -280,7 +279,7 @@ class ProjectCreateView(GenericView):
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
                 messages.error(request, emsg)
-                return self.render(self.template_name, context)
+                return self.render_to_response(self.template_name, context)
             
             project = form.save()
             for userid, role in user_role.iteritems():
@@ -293,7 +292,7 @@ class ProjectCreateView(GenericView):
         except Exception as e:
             transaction.savepoint_rollback(sem)
             messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render(self.template_name, {'form': form})
+            return self.render_to_response(self.template_name, {'form': form})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
@@ -320,7 +319,7 @@ class ProjectEditView(ProjectCreateView):
             'roles': models.ROLE_CHOICES, 
             'project': project
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug):
@@ -329,7 +328,7 @@ class ProjectEditView(ProjectCreateView):
         context = {'form': form, 'roles': models.ROLE_CHOICES, 'project': project}
         
         if not form.is_valid():
-            return self.render(self.template_name, context)
+            return self.render_to_response(self.template_name, context)
         
         sem = transaction.savepoint()
         try:
@@ -338,7 +337,7 @@ class ProjectEditView(ProjectCreateView):
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
                 messages.error(request, emsg)
-                return self.render(self.template_name, context)
+                return self.render_to_response(self.template_name, context)
 
             project = form.save()
             models.ProjectUserRole.objects.filter(project=project).delete()
@@ -352,11 +351,11 @@ class ProjectEditView(ProjectCreateView):
         except Exception as e:
             transaction.savepoint_rollback(sem)
             messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render(self.template_name, {'form': form})
+            return self.render_to_response(self.template_name, {'form': form})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return HttpResponseRedirect(reverse('web:projects'))
+        return HttpResponseRedirect(project.get_edit_url())
 
 
 class MilestoneCreateView(GenericView):
@@ -406,7 +405,7 @@ class UserStoryView(GenericView):
             'milestone':user_story.milestone,
             'project': project,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class UserStoryCreateView(GenericView):
@@ -420,7 +419,7 @@ class UserStoryCreateView(GenericView):
             'form':form, 
             'project':project,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug):
@@ -440,7 +439,7 @@ class UserStoryCreateView(GenericView):
             'form':form, 
             'project':project,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class UserStoryEdit(GenericView):
@@ -457,7 +456,7 @@ class UserStoryEdit(GenericView):
             'user_story': user_story,
             'form': form,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug, iref):
@@ -475,7 +474,7 @@ class UserStoryEdit(GenericView):
             'user_story': user_story,
             'form': form,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class UserStoryDeleteView(GenericView):
@@ -517,7 +516,7 @@ class TaskCreateView(GenericView):
             'project': project,
             'form': form,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug):
@@ -538,7 +537,6 @@ class TaskCreateView(GenericView):
             initial_milestone=milestone, initial_us=us)
 
         next_url = request.GET.get('next', None)
-        print request.GET
 
         if form.is_valid():
             task = form.save(commit=False)
@@ -547,8 +545,6 @@ class TaskCreateView(GenericView):
             task.save()
             
             messages.info(request, _(u"The task has been created with success!"))
-
-            print next_url, type(next_url)
             if next_url:
                 # TODO fix security
                 return self.render_redirect(next_url)
@@ -559,7 +555,7 @@ class TaskCreateView(GenericView):
             'project': project,
             'form': form,
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class TaskView(GenericView):
@@ -579,8 +575,7 @@ class TaskView(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-
-
+    
     @login_required
     def post(self, request, pslug, tref):
         """ Add comments method """
@@ -599,7 +594,7 @@ class TaskView(GenericView):
             'task': task,
             'project': project,
         }
-        return self.render(self.template_path, context)
+        return self.render_to_response(self.template_path, context)
 
 
 class TaskEdit(GenericView):
@@ -641,7 +636,7 @@ class TaskEdit(GenericView):
             'form': form,
         }
 
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class AssignUs(GenericView):      
@@ -657,7 +652,7 @@ class AssignUs(GenericView):
         
         context = {'us': user_story}
         
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
 
 class UnassignUs(GenericView):       
@@ -740,7 +735,8 @@ class QuestionsListView(GenericView):
 class QuestionsCreateView(GenericView):
     template_path = 'questions-create.html'
     menu = ['questions']
-
+    
+    @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.QuestionCreateForm()
@@ -751,7 +747,8 @@ class QuestionsCreateView(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-
+    
+    @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.QuestionCreateForm(request.POST)
@@ -775,6 +772,7 @@ class QuestionsEditView(GenericView):
     template_path = 'questions-edit.html'
     menu = ['questions']
 
+    @login_required
     def get(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
@@ -786,7 +784,8 @@ class QuestionsEditView(GenericView):
             'question': question,
         }
         return self.render_to_response(self.template_path, context)
-
+    
+    @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
@@ -811,6 +810,7 @@ class QuestionsView(GenericView):
     template_path ='questions-view.html'
     menu = ['questions']
 
+    @login_required
     def get(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
@@ -824,7 +824,7 @@ class QuestionsView(GenericView):
         }
         return self.render_to_response(self.template_path, context)
 
-
+    @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
@@ -892,7 +892,7 @@ class UserList(GenericView):
             'page': page,
             'users': users,
         }
-        return self.render(self.template_path, context)
+        return self.render_to_response(self.template_path, context)
 
 
 class UserView(GenericView):
@@ -979,7 +979,7 @@ class UsFormInline(GenericView):
         context = {
             'form': form
         }
-        return self.render(self.template_name, context)
+        return self.render_to_response(self.template_name, context)
 
     
     @login_required
