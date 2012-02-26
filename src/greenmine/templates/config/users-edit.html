@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / Profile edit{% endblock %}
+
+{% block middle %}
+{% endblock %}
+
+{% block wrapper %}
+<div id="my-profile">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
+                {% trans "Edit this user" %}</a>
+            </li>
+            <li><a class="new-milestone" href="{% url 'web:users-delete' uid=uobj.id %}">
+                {% trans "Delete this user" %}</a>
+            </li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+    <div class="form-container">
+        <div class="form-legend">
+            <span>{% trans "Profile:" %} {{ uobj.get_full_name }}</span>
+        </div>
+        <form id="edit-profile-form" method="post" enctype="multipart/form-data"
+            action="{% url 'web:profile' %}" class="inline">
+            {% csrf_token %}
+            <div class="form-field">
+                <label>{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.username.label }}</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.email.label }}</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>    
+            <div class="form-field">
+                <label>{{ form.description.label }}</label>
+                {{ form.description }}
+                {{ form.description.errors }}
+            </div>
+            <div class="form-field">
+                {% if not user.get_profile.photo %}
+                <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                {% else %}
+                <img width="50" src="{{ user.get_profile.photo.url }}" />
+                {% endif %}
+
+                {{ form.photo.label }}
+                {{ form.photo }}
+                {{ form.photo.errors }}
+            </div>
+            <div class="width100 float-left">
+                <input class="btn01" type="submit" value="{% trans "Save" %}" />
+                <a href="" class="btn01">{% trans "Send password recovery mail" %}</a>
+                <span class="ajax-loader"></span>        
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
