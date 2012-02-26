@@ -575,6 +575,11 @@ class WikiPage(models.Model):
     slug = models.SlugField(max_length=500, db_index=True)
     content = models.TextField(blank=False, null=True)
 
+    @models.permalink
+    def get_view_url(self):
+        return ('web:wiki-page', (), 
+            {'pslug': self.project.slug, 'wslug': self.slug})
+
 
 class WikiPageAttachment(models.Model):
     wikipage = models.ForeignKey('WikiPage', related_name='attachments')

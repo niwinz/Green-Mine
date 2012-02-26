@@ -107,7 +107,13 @@ urlpatterns = patterns('',
         main.AssignUs.as_view(), name="assign-us"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',   
-        main.UnassignUs.as_view(), name="unassign-us")        
+        main.UnassignUs.as_view(), name="unassign-us"),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/$',
+        main.WikiPageView.as_view(), name='wiki-page'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/edit/(?P<wslug>[\d\w\-]+)/$',
+        main.WikiPageEditView.as_view(), name='wiki-page-edit'),
 )
 
 urlpatterns += patterns('',

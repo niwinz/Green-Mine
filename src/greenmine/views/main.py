@@ -1001,3 +1001,68 @@ class UsFormInline(GenericView):
             return self.render_to_ok(response_data)
 
         return self.render_to_error(form.errors)
+
+
+class WikiPageView(GenericView):
+    menu = ['wiki']
+    template_path = 'wiki-page.html'
+
+    @login_required
+    def get(self, request, pslug, wslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        
+        try:
+            wikipage = project.wiki_pages.get(slug=wslug)
+        except models.WikiPage.DoesNotExist:
+            return self.render_redirect(reverse('web:wiki-page-edit', 
+                args=[project.slug, wslug]))
+
+        context = {
+            'project': project,
+            'wikipage': wikipage,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class WikiPageEditView(GenericView):
+    menu = ['wiki']
+    template_path = 'wiki-page-edit.html'
+
+    @login_required
+    def get(self, request, pslug, wslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        try:
+            wikipage = project.wiki_pages.get(slug=wslug)
+        except models.WikiPage.DoesNotExist:
+            wikipage = None
+
+        form = forms.WikiPageEditForm(instance=wikipage)
+
+        context = {
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    def post(self, request, pslug, wslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        try:
+            wikipage = project.wiki_pages.get(slug=wslug)
+        except models.WikiPage.DoesNotExist:
+            wikipage = None
+
+        form = forms.WikiPageEditForm(request.POST, instance=wikipage)
+        if form.is_valid():
+            wikipage = form.save(commit=False)
+            if not wikipage.slug:
+                wikipage.slug = models.slugify_uniquely(wslug, wikipage.__class__)
+
+            wikipage.save()
+            return self.render_redirect(wikipage.get_view_url())
+
+        context = {
+            'form': form,
+        }
+        return self.render_to_response(self.template_path, context)

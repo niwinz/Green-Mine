@@ -368,3 +368,8 @@ class DumpUploadForm(forms.Form):
     dumpfile = forms.FileField(required=True, widget=forms.FileInput(attrs={'class':'required'}))
     overwrite = forms.BooleanField(initial=True, required=False)
 
+
+class WikiPageEditForm(forms.ModelForm):
+    class Meta:
+        model = models.WikiPage
+        fields = ('content',)
