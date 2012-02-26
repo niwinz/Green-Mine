@@ -906,7 +906,7 @@ class UserView(GenericView):
     def get(self, request, uid):
         user = get_object_or_404(User, pk=uid)
         context = {
-            'user': user,
+            'uobj': user,
         }
         return self.render_to_response(self.template_path, context)
 
@@ -922,7 +922,7 @@ class UserEditView(GenericView):
         form = forms.UserEditForm(instance=user)
 
         context = {
-            'user': user,
+            'uobj': user,
             'form': form,
         }
         return self.render_to_response(self.template_path, context)
@@ -941,7 +941,7 @@ class UserEditView(GenericView):
             return self.render_redirect()
 
         contex = {
-            'user': user,
+            'uobj': user,
             'form': form,
         }
         return self.render_to_response(self.template_path, context)
@@ -953,7 +953,7 @@ class UserDelete(GenericView):
 
     def get_context(self):
         user = get_object_or_404(User, pk=self.kwargs['uid'])
-        return {'user':user}
+        return {'uobj':user}
 
     @login_required
     @staff_required
@@ -965,6 +965,7 @@ class UserDelete(GenericView):
     @staff_required
     def post(self, request, uid):
         context = self.get_context()
+        context['uobj'].delete()
         return self.render_redirect(reverse('web:users'))
 
 

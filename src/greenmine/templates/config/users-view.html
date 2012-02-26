@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load greenmine_utils %}
+{% load greenmine_markup %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div class="show-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
+                {% trans "Edit this user" %}</a>
+            </li>
+            <li><a class="new-milestone" href="{% url 'web:users-delete' uid=uobj.id %}">
+                {% trans "Delete this user" %}</a>
+            </li>
+        </ul>
+    </div>
+
+    {% include "messages.html" %}
+
+    <div class="user-module" style="padding: 10px">
+        <div class="user-header">
+            <div class="main-header-row">
+                <span class="title">{% trans "User: " %}</span>
+                <span class="subject">{{ uobj.get_full_name }}</span>
+            </div>
+            <div class="small-header-row">
+                <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
+                <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
+            </div>
+        </div>
+        <div class="question-body">
+            <div class="content">
+                <h3>{% trans "Projects owner" %}</h3>
+                <ul>
+                    {% for project in uobj.projects.all %}
+                    <li>{{ project.name }}</li>
+                    {% endfor %}
+                </ul>
+                <p>TODO</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
