@@ -981,7 +981,6 @@ class UsFormInline(GenericView):
         }
         return self.render_to_response(self.template_name, context)
 
-    
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -989,21 +988,16 @@ class UsFormInline(GenericView):
 
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
         
-        if form.is_valid():            
+        if form.is_valid():
+            form.save(commit=True)
             context = {
                 'us': user_story,
                 'project': project,
             }
-            form.save(commit=True)
-            
             response_data = {
-                'valid': True,
-                'html': render_to_string(self.us_template_name, context)            
+                'html': render_to_string(self.us_template_name, context,
+                    context_instance=RequestContext(request))
             }
-        else:
-            response_data = {
-                'valid': False,
-                'errors': form.errors
-            }        
-        
-        return self.render_json(response_data)
+            return self.render_to_ok(response_data)
+
+        return self.render_to_error(form.errors)

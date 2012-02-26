@@ -65,7 +65,7 @@ TASK_STATUS_CHOICES = US_STATUS_CHOICES
 POINTS_CHOICES = (
     (-1, u'?'),
     (0, u'0'),
-    (0.5, u'1/2'),
+    (-2, u'1/2'),
     (1, u'1'),
     (2, u'2'),
     (3, u'3'),
@@ -341,7 +341,7 @@ class UserStory(models.Model):
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="user_stories")
     priority = models.IntegerField(default=1)
-    points = models.FloatField(choices=POINTS_CHOICES, default=-1)
+    points = models.IntegerField(choices=POINTS_CHOICES, default=-1)
     status = models.CharField(max_length=50,
         choices=US_STATUS_CHOICES, db_index=True, default="open")
 

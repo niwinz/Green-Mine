@@ -26,13 +26,15 @@ class GenericView(View):
     def get_context(self):
         return {}
 
-    def render(self, template_name, context={}, **kwargs):
-        return self.render_to_response(template_name, context=context, **kwargs)
-
     def render_to_ok(self, context={}):
         response = {'valid': True, 'errors': []}
         response.update(context)
-        return self.render_json(response)
+        return self.render_json(response, ok=True)
+
+    def render_to_error(self, context):
+        response = {'valid': False, 'errors': []}
+        response.update(context)
+        return self.render_json(response, ok=False)
 
     
 class ProjectGenericView(GenericView):
