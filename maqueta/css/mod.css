@@ -194,6 +194,9 @@ div.highlight pre {
     margin-top: 10px;
     padding: 5px;
 }
+.user-module .user-body .user-body-module {
+    margin-top: 0px;
+}
 
 
 .wiki-page-edit #id_content {

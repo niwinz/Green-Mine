@@ -35,7 +35,7 @@
                 <p>{% trans "Are you sure you want to delete?" %}<p>
                 <div class="form-row submit-row width100" style="overflow:hidden">
                     <input type="submit" class="btn01" value="{% trans "Delete" %}" />
-                    <input type="submit" class="btn01" value="{% trans "Cancel" %}" />
+                    <a href="{% url 'web:users-view' uid=uobj.id %}" class="btn01">{% trans "Cancel" %}</a>
                 </div>
             </form>
         </div>

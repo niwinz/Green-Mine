@@ -909,6 +909,29 @@ class UserView(GenericView):
         return self.render_to_response(self.template_path, context)
 
 
+class UserCreateView(GenericView):
+    template_path = 'config/users-create.html'
+    menu = ['users']
+
+    @login_required
+    @staff_required
+    def get(self, request):
+        form = forms.UserEditForm()
+        context = {'form': form}
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    @staff_required
+    def post(self, request):
+        form = forms.UserEditForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=True)
+            return self.render_redirect(reverse('web:users-view', args=[user.id]))
+
+        context = {'form': form}
+        return self.render_to_response(self.template_path, context)
+
+
 class UserEditView(GenericView):
     template_path = 'config/users-edit.html'
     menu = ['users']
@@ -932,11 +955,9 @@ class UserEditView(GenericView):
         form = forms.UserEditForm(request.POST, instance=user)
         
         if form.is_valid():
-            if form.cleaned_data['reset_password']:
-                # send mail
-                pass
-
-            return self.render_redirect()
+            form.save()
+            messages.info(request, _(u"User saved succesful"))
+            return self.render_redirect(reverse('web:users-edit', args=[user.id]))
 
         contex = {
             'uobj': user,

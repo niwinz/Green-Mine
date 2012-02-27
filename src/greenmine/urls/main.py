@@ -21,6 +21,7 @@ urlpatterns = patterns('',
         main.PasswordChangeView.as_view(), name='profile-password'),
 
     url(r'^users/$', main.UserList.as_view(), name='users'),
+    url(r'^users/create/$', main.UserCreateView.as_view(), name='users-create'),
     url(r'^users/(?P<uid>\d+)/view/$', main.UserView.as_view(), name='users-view'),
     url(r'^users/(?P<uid>\d+)/edit/$', main.UserEditView.as_view(), name='users-edit'),
     url(r'^users/(?P<uid>\d+)/delete/$', main.UserDelete.as_view(), name='users-delete'),

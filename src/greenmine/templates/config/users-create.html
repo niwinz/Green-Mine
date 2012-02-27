@@ -11,14 +11,8 @@
 <div id="my-profile">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{% url 'web:users-view' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'web:users' %}">
                 {% trans "Return" %}</a>
-            </li>
-            <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
-                {% trans "Edit this user" %}</a>
-            </li>
-            <li><a class="new-milestone" href="{% url 'web:users-delete' uid=uobj.id %}">
-                {% trans "Delete this user" %}</a>
             </li>
         </ul>
     </div>
@@ -28,7 +22,7 @@
             <span>{% trans "Profile:" %} {{ uobj.get_full_name }}</span>
         </div>
         <form id="edit-profile-form" method="post" enctype="multipart/form-data"
-            action="{{ current_url }}" class="inline">
+            action="{% url 'web:users-create' %}" class="inline">
             {% csrf_token %}
             <div class="form-field">
                 <label>{{ form.first_name.label }}</label>

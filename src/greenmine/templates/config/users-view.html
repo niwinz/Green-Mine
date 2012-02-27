@@ -11,6 +11,9 @@
 <div class="show-module">
     <div class="context-menu">
         <ul>
+            <li><a class="new-milestone" href="{% url 'web:users' %}">
+                {% trans "Return" %}</a>
+            </li>
             <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
                 {% trans "Edit this user" %}</a>
             </li>
@@ -25,23 +28,24 @@
     <div class="user-module" style="padding: 10px">
         <div class="user-header">
             <div class="main-header-row">
-                <span class="title">{% trans "User: " %}</span>
-                <span class="subject">{{ uobj.get_full_name }}</span>
+                <span class="title">{{ uobj.get_full_name }}</span><br />
+                <span class="subject"> {{ uobj.email }}</span>
             </div>
             <div class="small-header-row">
                 <span>{% trans "Created on: " %} {{ question.created_date }}</span> / 
                 <span>{% trans "Last modified on: " %} {{ question.modified_date }}</span>
             </div>
         </div>
-        <div class="question-body">
+        <div class="user-body">
             <div class="content">
-                <h3>{% trans "Projects owner" %}</h3>
-                <ul>
-                    {% for project in uobj.projects.all %}
-                    <li>{{ project.name }}</li>
-                    {% endfor %}
-                </ul>
-                <p>TODO</p>
+                <div class="user-project-owner user-body-module">
+                    <p><strong>{% trans "Projects owner on:" %}</strong></p>
+                    <ul class="list">
+                        {% for project in uobj.projects.all %}
+                        <li><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
