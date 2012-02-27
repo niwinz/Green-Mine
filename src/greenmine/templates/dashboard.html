@@ -19,7 +19,9 @@
     <div id="milestone-dashboard-title">
         <h2>{{ milestone.name }}</h2>
     </div>
+    {% comment %}
     <div id="progress-bar" rel="{{ milestone.get_stats_api_url }}"></div>
+    {% endcomment %}
     <div id="user-stories-module">
         <div class="user-story-legend">
             <div class="user-story-header hfield">
