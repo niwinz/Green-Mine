@@ -22,6 +22,8 @@ class Postprocessor(markdown.postprocessors.Postprocessor):
 
     def run(self, lines):
         doc = lx.fromstring(lines)
+
+        # Format and higlight code on pre blocks.
         for pre_elem in doc.cssselect('pre'):
             try:
                 lexer = get_lexer_by_name(pre_elem.get('lang', '!'))
@@ -35,14 +37,24 @@ class Postprocessor(markdown.postprocessors.Postprocessor):
                 pre_elem.clear()
                 pre_elem.append(lx.fromstring(new_text))
                 pre_elem.tag = 'div'
+
+        # Intern links implemented with <wlink tag>
+        for wlink_elem in doc.cssselect('wlink'):
+            if wlink_elem.text:
+                wlink_elem.tag = 'a'
+                wlink_elem.set('href', wlink_elem.text)
+                if wlink_elem.get('title', None):
+                    wlink_elem.text = wlink_elem.get('title')
         
-        return et.tostring(doc, pretty_print=True, method="html")
-        
+        return et.tostring(doc, pretty_print=False, method="html")
+
+
 class PygmentsExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         post_processor = Postprocessor()
         md.postprocessors["pygments"] = post_processor
         md.registerExtension(self)
+
 
 engine = markdown.Markdown(extensions=[PygmentsExtension()])
 
