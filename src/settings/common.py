@@ -4,10 +4,16 @@ from django.utils.translation import ugettext_lazy as _
 import os.path, sys, os
 
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
+PROJECT_ROOT = os.path.abspath(PROJECT_ROOT)
+
 LOGS_PATH = os.path.join(PROJECT_ROOT, 'logs')
+BACKUP_PATH = os.path.join(PROJECT_ROOT, 'exports')
 
 if not os.path.exists(LOGS_PATH):
     os.mkdir(LOGS_PATH)
+
+if not os.path.exists(BACKUP_PATH):
+    os.mkdir(BACKUP_PATH)
 
 ADMINS = (
     ('Andrei Antoukh', 'niwi@niwi.be'),

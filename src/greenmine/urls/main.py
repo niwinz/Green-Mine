@@ -35,6 +35,11 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/settings/$', 
         main.ProjectSettings.as_view(), name='project-settings'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/edit/$',
+        main.ProjectEditView.as_view(), name="project-edit"),
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/export/$', 
+        main.ProjectExportView.as_view(), name="project-export"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),
@@ -101,8 +106,6 @@ urlpatterns = patterns('',
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
-    url(r'^(?P<pslug>[\w\d\-]+)/edit/$',
-        main.ProjectEditView.as_view(), name="project-edit"),        
    
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>[\d\w]+)/assign/$',   
         main.AssignUs.as_view(), name="assign-us"),

@@ -195,6 +195,10 @@ class Project(models.Model):
         return ('web:project-edit', (), {'pslug': self.slug})        
 
     @models.permalink
+    def get_export_url(self):
+        return ('web:project-export', (), {'pslug': self.slug})
+        
+    @models.permalink
     def get_default_tasks_url(self):
         return ('web:tasks-view', (), 
             {'pslug': self.slug, 'mid': self.default_milestone.id })
@@ -218,6 +222,7 @@ class Project(models.Model):
     @models.permalink
     def get_questions_create_url(self):
         return ('web:questions-create', (), {'pslug': self.slug})
+
 
     def save(self, *args, **kwargs):
         if not self.slug:

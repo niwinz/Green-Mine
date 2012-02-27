@@ -226,36 +226,5 @@ class AdminProjectExport(GenericView):
         return response
 
 
-class ProfileView(GenericView):
-    template_name = 'config/profile.html'
-
-    def get(self, request):
-        form = forms.ProfileForm(instance=request.user)
-        context = {'form':form, 'csel':'profile'}
-        return self.render(self.template_name, context)
-
-    def post(self, request):
-        form = forms.ProfileForm(request.POST, request.FILES, instance=request.user)
-        context = {'form':form, 'csel':'profile'}
-
-        if not form.is_valid():
-            return self.render(self.template_name, context)
-
-        sem = transaction.savepoint()
-        try:
-            request.user = form.save()
-        except IntegrityError as e:
-            transaction.savepoint_rollback(sem)
-            
-            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render(self.template_name, context)
-        
-        transaction.savepoint_commit(sem)
-
-        messages.info(request, _(u'Profile save success!'))
-        return HttpResponseRedirect(reverse('web:profile'))
-
-    @login_required
-    def dispatch(self, *args, **kwargs):
-        return super(ProfileView, self).dispatch(*args, **kwargs)
-
+class BackupContext(object):
+    pass

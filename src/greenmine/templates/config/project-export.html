@@ -1,0 +1,32 @@
+{% extends "config/base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load greenmine_utils %}
+{% load greenmine_markup %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div class="show-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="{{ question.get_edit_url }}">
+                {% trans "Edit this question" %}</a>
+            </li>
+            <li><a class="new-milestone" href="{{ question.get_delete_url }}">
+                {% trans "Delete this question" %}</a>
+            </li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+
+    <div class="project-module">
+        <ul>
+            {% for path, name, size in flist %}
+            <li>{{ path }} - {{ size|hsize }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

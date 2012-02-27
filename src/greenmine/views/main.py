@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -23,7 +24,9 @@ from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms
 
+import os
 import re
+
 
 class LoginView(GenericView):
     """ Login view """
@@ -356,6 +359,31 @@ class ProjectEditView(ProjectCreateView):
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return HttpResponseRedirect(project.get_edit_url())
+
+
+class ProjectExportView(GenericView):
+    template_path = 'config/project-export.html'
+    menu = ['settings', 'export']
+
+    def backup_path_list(self):
+        for path in os.listdir(settings.BACKUP_PATH):
+            yield os.path.join(settings.BACKUP_PATH, path)
+
+    def backup_file_list(self):
+        for path in self.backup_path_list():
+            yield path, os.path.basename(path), os.path.getsize(path)
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        print list(self.backup_file_list())
+
+        context = {
+            'project': project,
+            'flist': self.backup_file_list()
+        }
+
+        return self.render_to_response(self.template_path, context)
 
 
 class MilestoneCreateView(GenericView):
