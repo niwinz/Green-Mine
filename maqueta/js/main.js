@@ -38,7 +38,6 @@ var backlog_handlers = function() {
         var elm = $(this);
         var form = elm.closest('form');
         $.post(form.attr('action'),  form.serialize(),function(data) {
-            console.log(data)
             if(data.valid){
                 usitem = elm.closest('.un-us-item');
                 usitem.find('.form-inline').hide();

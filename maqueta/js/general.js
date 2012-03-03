@@ -70,9 +70,38 @@ var milestone_dashboard_bindings = function() {
     $('#progress-bar').progressbar();
 }
 
+var djangoPrintError = function (self, field){
+    var error = field.data('error'); 
+    $("#field-"+field.attr('id')).remove();
+    if(error){
+        field.addClass(this.invalidClass);                
+        if(!self.disableInlineErrors){
+            if(self.inlineErrors){
+                $("<ul class='errorlist' id='field-"+field.attr('id')+"'><li>" + 
+                    field.data('error')+"</li></ul>").insertBefore(field);
+            }else{
+                self.printFieldGlobalError(field.data('error'), field.attr('id'));
+            }
+        }
+    }else{
+        field.addClass(self.validClass);    
+    }    
+    self.onPrintError(field);      
+}
+
+var djangoAjaxSuccess = function(self, data){
+    if(data.valid){
+        self.form.submit();
+    }else{
+        jQuery.each(data.errors, function(index, value){
+            field = self.elements.filter("[name="+index+"]");
+            field.data('error', value[0]);
+        })    
+        self.printErrors();
+    }
+}
+
 $(document).ready(function(){
-    $(".validate").validate();
-    
     if ($('#milestone-dashboard').length) {
         milestone_dashboard_bindings();
     }
@@ -80,7 +109,25 @@ $(document).ready(function(){
     if ($('#us-module').length){
         milestone_dashboard_bindings();
     }
+
+    if($("#login-form").length){
+        $("#login-form").validate({
+            errorsMsgs: {
+                username: {username: gettext('Required.')},
+                password: {required: gettext('Required.')}
+            },
+            printError: function(field){
+                djangoPrintError(this, $(field));
+            },
+            ajax: true,
+            ajaxSuccess: function(data){
+                djangoAjaxSuccess(this.self, data);
+            }
+        });        
+    }
     
+    
+    /*
     if($("#login-form").length){
 		$("#id_username").focus();
         formUtils.ajax("#login-form", function(data){
@@ -104,7 +151,7 @@ $(document).ready(function(){
             });
             e.preventDefault();
         });
-    }
+    }*/
 
     if($('#projects').length){
         $('.table01 a.delete').click(function(e){
@@ -353,7 +400,7 @@ function subClass() {
     this.inheritFrom();
     this.subtest = subTest; //attach method subTest
 }
-
+/*
 var formUtils = {
     showLoader:function(form){
         $(form).find(":submit").hide();
@@ -388,4 +435,4 @@ var formUtils = {
             }
         })        
     }
-}
+}*/

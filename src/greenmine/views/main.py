@@ -41,15 +41,22 @@ class LoginView(GenericView):
 
     def post(self, request):
         login_form = forms.LoginForm(request.POST, request=request)
-        if login_form.is_valid():
-            user_profile = login_form._user.get_profile()
-            if user_profile.default_language:
-                request.session['django_language'] = user_profile.default_language
+        if request.is_ajax:
+            if login_form.is_valid():
+                return self.render_to_ok()
+            else:
+                response = {'errors': login_form.errors}
+                return self.render_to_error(response)
+        else:            
+            if login_form.is_valid():
+                user_profile = login_form._user.get_profile()
+                if user_profile.default_language:
+                    request.session['django_language'] = user_profile.default_language
 
-            return self.render_redirect("/")
+                return self.render_redirect("/")
 
-        return self.render_to_response(self.template_name,
-            {'form': login_form})
+            return self.render_to_response(self.template_name,
+                {'form': login_form})
 
 
 class PasswordChangeView(GenericView):

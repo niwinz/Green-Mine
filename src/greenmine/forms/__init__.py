@@ -49,6 +49,7 @@ class CharField(DjangoCharField):
         
         current_clases = attrs['class'].split()
         if self.required:
+            attrs['required'] = 'required'
             if "required" not in current_clases:
                 current_clases.append('required')
         
