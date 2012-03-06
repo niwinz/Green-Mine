@@ -92,8 +92,11 @@ var djangoPrintError = function (self, field){
 var djangoAjaxSuccess = function(self, data){
     if(data.valid){
         self.form.data('ajax-valid', true);
-        self.form.submit();
-        //window.location.href = data.redirect;
+        if(data.redirect_to!=undefined){
+          window.location.href = data.redirect_to;  
+        }else{
+            self.form.submit();
+        }
     }else{
         jQuery.each(data.errors, function(index, value){
             field = self.elements.filter("[name="+index+"]");
@@ -144,32 +147,6 @@ $(document).ready(function(){
             }
         });          
     }
-    
-    /*
-    if($("#login-form").length){
-		$("#id_username").focus();
-        formUtils.ajax("#login-form", function(data){
-            if(data.redirect_to) location.href = data.redirect_to;
-        });
-        
-        formUtils.ajax("#forgotten-password-form", function(data){
-            location.href=data.redirect_to;
-        });        
-        
-        $("#open-forgotten-password-form").click(function(e){
-            $("#login-form").fadeOut("fast", function() {
-                $("#forgotten-password-form").fadeIn("fast");
-            });
-            e.preventDefault();
-        });   
-    
-        $("#close-forgotten-password-form").click(function(e){
-            $("#forgotten-password-form").fadeOut("fast", function() {
-                $("#login-form").fadeIn("fast");
-            });
-            e.preventDefault();
-        });
-    }*/
 
     if($('#projects').length){
         $('.table01 a.delete').click(function(e){
@@ -418,39 +395,3 @@ function subClass() {
     this.inheritFrom();
     this.subtest = subTest; //attach method subTest
 }
-/*
-var formUtils = {
-    showLoader:function(form){
-        $(form).find(":submit").hide();
-        $(form).find(".ajax-loader").addClass("init-loader");        
-    },
-    hideLoader:function(form){
-        $(form).find(".ajax-loader").removeClass("init-loader");
-        $(form).find(":submit").show();        
-    },
-    showErrors:function(validator, errors){
-        for(var i=0; i<errors.length;i++){
-            validator.showErrors(errors[i]);
-        }
-    },
-    getJSON:function(form, validator){
-        return {form: form, validator: validator, url : $(form).attr('action'), type : $(form).attr('method').toUpperCase(), data: $(form).serialize(), dataType: "json"}
-    },
-    ajax:function(selector, success){
-        return $(selector).validate({
-            submitHandler: function(form) {
-                formUtils.showLoader(form);
-                var json = formUtils.getJSON(form, this);
-                json.success = function(data){
-                    if(!data.valid){
-                        formUtils.showErrors(this.validator, data.errors);
-                    } else {
-                        success(data, this.form);
-                    }
-                    formUtils.hideLoader(this.form);
-                };
-                $.ajax(json);
-            }
-        })        
-    }
-}*/
