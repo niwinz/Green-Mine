@@ -109,7 +109,8 @@ class ForgottenPasswordForm(Form):
                     [_(u'The email does not correspond to any registered user.')]
                 )
                 del cleaned_data['email']
-
+                return cleaned_data
+            
         return cleaned_data
 
 
