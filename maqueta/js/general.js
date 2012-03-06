@@ -91,7 +91,9 @@ var djangoPrintError = function (self, field){
 
 var djangoAjaxSuccess = function(self, data){
     if(data.valid){
+        self.form.data('ajax-valid', true);
         self.form.submit();
+        //window.location.href = data.redirect;
     }else{
         jQuery.each(data.errors, function(index, value){
             field = self.elements.filter("[name="+index+"]");

@@ -21,6 +21,7 @@
             ajax: false,
             ajaxSuccess: function(data){
                 if(data.submit){
+                    self.form.data('ajax-valid', true);
                     self.form.submit();
                 } else {
                     var errors = new Array(); 
@@ -90,6 +91,9 @@
                 }
             },
             submit: function(event){
+                if(this.form.data('ajax-valid')){
+                    return true;
+                }
                 valid = this.validate();
                 this.printErrors();
                  
@@ -203,6 +207,7 @@
                 .bind("submit", function(event){ self.submit(event); });
 
             self.form = $(this);
+            self.form.data('ajax-valid', false);
         }
          
         $(this).data('validator', self);
