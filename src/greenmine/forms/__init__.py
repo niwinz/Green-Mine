@@ -97,21 +97,28 @@ class LoginForm(Form):
 class RegisterForm(forms.Form):
     username = forms.CharField(max_length=200, 
         required=True, label=_(u'Username'))
-
-    email = forms.EmailField(max_length=200,
-        required=True, label=_(u"Email"))
-
     first_name = forms.CharField(max_length=200, 
         required=True, label=_(u"First name"))
     last_name = forms.CharField(max_length=200,
         required=True, label=_(u"Last name"))
 
-    #def __init__(self, *args, **kwargs):
-    #    super(LoginForm, self).__init__(*args, **kwargs)
+    email = forms.EmailField(max_length=200,
+        required=True, label=_(u"Email"))
 
     def clean(self):
         cleaned_data = self.cleaned_data
-
+        
+        if "username" in cleaned_data:
+            username = cleaned_data['username']
+            try:
+                self.user = User.objects.get(username=username)
+                msg = _(u"The username is already taken.")
+                self._errors['username'] = self.error_class([msg])
+                del cleaned_data['username']
+            except User.DoesNotExist:
+                pass
+        
+        return cleaned_data
 
 class ForgottenPasswordForm(Form):
     email = CharField(max_length=200, min_length=4, 

@@ -12,7 +12,7 @@ from django.template import RequestContext, loader
 
 
 import datetime, hashlib, os.path, os
-import random, string
+import random, string, uuid
 import unicodedata
 
 
@@ -63,7 +63,11 @@ def send_recovery_email(user):
     recovery mail.
     """
 
-    context = {'user': user, 'token': set_token(user)}
+    context = {
+        'user': user, 
+        'token': set_token(user),
+        'current_host': settings.HOST,
+    }
     email_body = loader.render_to_string("email/forgot.password.html", 
                                                                 context)
     email_message = EmailMessage(

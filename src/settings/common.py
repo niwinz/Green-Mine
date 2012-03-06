@@ -59,7 +59,7 @@ IGNORABLE_404_ENDS = ('.php', '.cgi')
 IGNORABLE_404_STARTS = ('/phpmyadmin/',)
 
 TIME_ZONE = 'Europe/Madrid'
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 USE_I18N = True
 USE_L10N = True
 LOGIN_URL='/login/'

@@ -1,5 +1,6 @@
 {% extends "base_base.html" %}
 {% load url from future %}
+{% load i18n %}
 
 {% block middle-box %}
 <div id="login">
@@ -17,9 +18,14 @@
                 {{ form.password.errors }}
                 {{ form.password }}
             </div>
-            <p class="forgot-pass"><a id="open-forgotten-password-form" href="{% url 'web:remember-password' %}">¿Olvidaste la contraseña?</a></p>
+            
+            <p class="forgot-pass">
+                <a href="{% url 'web:remember-password' %}">{% trans "Forgot your password?" %}</a><br />
+                <a id="open-forgotten-password-form" href="{% url 'web:register' %}">{% trans "Register" %}</a>
+            </p>
+
             <div class="form-field">
-                <input class="btn01" type="submit" value="Entrar" />
+                <input class="btn01" type="submit" value="{% trans "Login" %}" />
                 <span class="ajax-loader"></span>        
             </div>
         </fieldset>

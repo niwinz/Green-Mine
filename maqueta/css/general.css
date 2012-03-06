@@ -36,7 +36,7 @@ label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;
 .form-field{margin-bottom: 20px;}
 form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{width: 284px; clear: left; display: block;}
 .form-field{width: 305px;}
-#login  .forgot-pass{line-height: 33px; float: left;}
+#login  .forgot-pass{line-height: 18px; float: left;}
 #login .btn01{float: right;}
 #login fieldset, #password-recovery fieldset{border: 0;}
 #footer {background-color: #FFF; position: fixed; bottom: 0; left: 0; right: 0px; border-top: 1px solid #458745;}

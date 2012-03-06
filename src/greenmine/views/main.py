@@ -35,6 +35,24 @@ class RegisterView(GenericView):
         context = {'form':form}
         return self.render_to_response(self.template_path, context)
 
+    def post(self, request):
+        form = forms.RegisterForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create(
+                username = form.cleaned_data['username'],
+                first_name = form.cleaned_data['first_name'],
+                last_name = form.cleaned_data['last_name'],
+                email = form.cleaned_data['email'],
+            )
+
+            utils.send_recovery_email(user)
+            messages.info(request, _(u"Validation message was sent successfully."))
+            return self.render_redirect(reverse('web:login'))
+
+        context = {'form': form}
+        return self.render_to_response(self.template_path, context)
+
+
 class LoginView(GenericView):
     """ Login view """
     template_name = 'login.html'
