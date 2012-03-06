@@ -7,7 +7,6 @@
     <form id="register-form" method="post" action=""  >
         {% csrf_token %}
         <h2>{% trans "Register" %}</h2>
-        {{ LANGUAGE_CODE }}
         <fieldset>
             <div class="form-field">
                 <label>{{ form.username.label }}</label>
