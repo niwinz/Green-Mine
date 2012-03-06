@@ -23,6 +23,9 @@ var Messages = function(selector) {
 }
 
 Messages.prototype = {
+    reset: function(){
+        this.msgbox.find('ul.messages').html("");
+    },
     _send: function(type, messagetext) {
         if (! this.active ){
             return null;

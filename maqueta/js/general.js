@@ -90,6 +90,11 @@ var djangoPrintError = function (self, field){
 }
 
 var djangoAjaxSuccess = function(self, data){
+    if(data.messages!=undefined){
+        messages.reset();
+        messages._send(data.messages.type, data.messages.msg);
+    }
+    
     if(data.valid){
         self.form.data('ajax-valid', true);
         if(data.redirect_to!=undefined){
@@ -118,10 +123,6 @@ $(document).ready(function(){
     if($("#login-form").length){
         $("#id_username").focus();
         $("#login-form").validate({
-            errorsMsgs: {
-                username: {username: gettext('Required.')},
-                password: {required: gettext('Required.')}
-            },
             printError: function(field){
                 djangoPrintError(this, $(field));
             },
@@ -147,6 +148,29 @@ $(document).ready(function(){
             }
         });          
     }
+    
+    if($("#new-project-form").length){
+        $("#new-project-form").validate({
+            printError: function(field){
+                djangoPrintError(this, $(field));
+            },
+            ajax: true,
+            ajaxSuccess: function(data){
+                djangoAjaxSuccess(this.self, data);
+            },
+            customVal: {
+                username: function(self, field){
+                    if($(".users-added tr").length>1){
+                        return true;
+                    }else{
+                        messages.reset();
+                        messages._send('error', gettext('You must specify at least one person to the project'));
+                        return false;
+                    }
+                }
+            }           
+        });          
+    }    
 
     if($('#projects').length){
         $('.table01 a.delete').click(function(e){
