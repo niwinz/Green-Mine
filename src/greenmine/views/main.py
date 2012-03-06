@@ -50,21 +50,14 @@ class LoginView(GenericView):
         login_form = forms.LoginForm(request.POST, request=request)
         if request.is_ajax():
             if login_form.is_valid():
-                return self.render_to_ok()
-            else:
-                response = {'errors': login_form.errors}
-                return self.render_to_error(response)
-        else:
-            if login_form.is_valid():
                 user_profile = login_form._user.get_profile()
                 if user_profile.default_language:
                     request.session['django_language'] = user_profile.default_language
-
-                return self.render_redirect("/")
-
-            return self.render_to_response(self.template_name,
-                {'form': login_form})
-     
+                return self.render_to_ok({'redirect_to':'/'})
+            else:
+                response = {'errors': login_form.errors}
+                return self.render_to_error(response)
+ 
 
 class RememberPasswordView(GenericView):
     template_name = 'remember-password.html'
@@ -314,7 +307,8 @@ class ProjectCreateView(GenericView):
         context = {'form': form, 'roles': models.ROLE_CHOICES}
         
         if not form.is_valid():
-            return self.render_to_response(self.template_name, context)
+            response = {'errors': form.errors}
+            return self.render_to_error(response)                
         
         sem = transaction.savepoint()
         try:
@@ -322,9 +316,9 @@ class ProjectCreateView(GenericView):
             if not user_role:
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
-                messages.error(request, emsg)
-                return self.render_to_response(self.template_name, context)
-            
+                response = {'messages': {'type': 'error', 'msg': emsg}}
+                return self.render_to_error(response)                   
+
             project = form.save()
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(
@@ -340,7 +334,7 @@ class ProjectCreateView(GenericView):
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return HttpResponseRedirect(reverse('web:projects'))
+        return self.render_to_ok({'redirect_to':reverse('web:projects')})
 
     @login_required
     def dispatch(self, *args, **kwargs):
@@ -380,8 +374,8 @@ class ProjectEditView(ProjectCreateView):
             if not user_role:
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
-                messages.error(request, emsg)
-                return self.render_to_response(self.template_name, context)
+                response = {'messages': {'type': 'error', 'msg': emsg}}
+                return self.render_to_error(response)     
 
             project = form.save()
             models.ProjectUserRole.objects.filter(project=project).delete()
@@ -399,7 +393,7 @@ class ProjectEditView(ProjectCreateView):
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return HttpResponseRedirect(project.get_edit_url())
+        return self.render_to_ok({'redirect_to':reverse('web:projects')})  
 
 
 class ProjectExportView(GenericView):
