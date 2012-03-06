@@ -15,7 +15,6 @@ from django.utils import simplejson
 
 from greenmine.models import *
 from greenmine import models
-from greenmine.utils import encrypt_password
 
 
 class Form(forms.Form):
