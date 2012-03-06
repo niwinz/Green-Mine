@@ -111,12 +111,16 @@ def ref_uniquely(project, model, field='ref'):
 
 
 class Profile(models.Model):
-    user = models.ForeignKey("auth.User", unique=True)
+    user = models.OneToOneField("auth.User", related_name='profile')
     description = models.TextField(blank=True)
     photo = models.FileField(upload_to="files/msg",
         max_length=500, null=True, blank=True)
 
     default_language = models.CharField(max_length=20,
+        null=True, blank=True, default=None)
+    default_timezone = models.CharField(max_length=20,
+        null=True, blank=True, default=None)
+    token = models.CharField(max_length=200, unique=True,
         null=True, blank=True, default=None)
 
 
@@ -128,7 +132,6 @@ class ProjectManager(models.Manager):
         queryset = ProjectUserRole.objects.filter(user=user)\
             .values_list('project', flat=True)
         return Project.objects.filter(pk__in=queryset)
-        
 
 
 class Project(models.Model):
@@ -223,7 +226,6 @@ class Project(models.Model):
     def get_questions_create_url(self):
         return ('web:questions-create', (), {'pslug': self.slug})
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
@@ -275,7 +277,6 @@ class Milestone(models.Model):
 
     meta_velocity = DictField(null=True, default={}, editable=False)
     objects = MilestoneManager()
-
 
     class Meta:
         ordering = ['-created_date']

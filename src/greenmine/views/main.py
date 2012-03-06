@@ -64,9 +64,15 @@ class RememberPasswordView(GenericView):
                 
 
 
+class SendRecoveryPasswordView(GenericView):
+    @login_required
+    @staff_required
+    def get(self, request, uid):
+        pass
+
 class PasswordChangeView(GenericView):
     """
-    Password change view.
+    Profile password change view.
     """
 
     template_path = 'password.html'
@@ -88,6 +94,34 @@ class PasswordChangeView(GenericView):
 
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
+
+
+class PasswordRecoveryView(GenericView):
+    template_name = "password_recovery.html"
+
+    def get(self, request, token):
+        form = forms.PasswordRecoveryForm()
+        context = {'form':form}
+        return self.render_to_response(self.template_name, context)
+
+    def post(self, request, token):
+        form = forms.PasswordRecoveryForm(request.POST)
+        if form.is_valid():
+            email = cache.get("fp_%s" % token)
+            if not email:
+                messages.error(request, _(u'Token has expired, try again'))
+                return self.redirect(reverse('web:login'))
+
+            user = models.User.objects.get(email=email)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.info(request, _(u'The password has been successfully restored.'))
+
+            cache.delete("fp_%s" % token)
+            return self.redirect(reverse('web:login'))
+
+        context = {'form':form}
+        return self.render_to_response(self.template_name, context)
 
 
 class ProfileView(GenericView):
@@ -119,34 +153,6 @@ class ProfileView(GenericView):
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Profile save success!'))
         return HttpResponseRedirect(reverse('web:profile'))
-
-
-class PasswordRecoveryView(GenericView):
-    template_name = "password_recovery.html"
-
-    def get(self, request, token):
-        form = forms.PasswordRecoveryForm()
-        context = {'form':form}
-        return self.render_to_response(self.template_name, context)
-
-    def post(self, request, token):
-        form = forms.PasswordRecoveryForm(request.POST)
-        if form.is_valid():
-            email = cache.get("fp_%s" % token)
-            if not email:
-                messages.error(request, _(u'Token has expired, try again'))
-                return self.redirect(reverse('web:login'))
-
-            user = models.User.objects.get(email=email)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            messages.info(request, _(u'The password has been successfully restored.'))
-
-            cache.delete("fp_%s" % token)
-            return self.redirect(reverse('web:login'))
-
-        context = {'form':form}
-        return self.render_to_response(self.template_name, context)
 
 
 class HomeView(GenericView):

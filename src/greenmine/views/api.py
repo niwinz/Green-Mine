@@ -24,7 +24,6 @@ logger = logging.getLogger('greenmine')
 
 from greenmine.models import *
 from greenmine import models, forms
-from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 import datetime
@@ -84,26 +83,33 @@ import uuid
 
 class ForgottenPasswordApiView(GenericView):
     """ TODO: send mails asyncronous with celery tasks. """
+
+    def _set_token(self, user):
+        token = unicode(uuid.uuid4())
+        profile = user.get_profile()
+        profile.token = token
+        profile.save()
+        
+        return token
+
+    def _send_recovery_email(self, user):
+        context = {'user': user, 'token': self._set_token(user)}
+        email_body = loader.render_to_string("email/forgot.password.html", 
+                                                                    context)
+        email_message = EmailMessage(
+            body = email_body,
+            to = [user.email],
+            subject = _(u'Greenmine: password recovery.'),
+        )
+        email_message.content_subtype = "html"
+        email_message.send(fail_silently=True)
+
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
-            token = unicode(uuid.uuid4())
-            cache.set("fp_%s" % (token), form.cleaned_data['email'], 120)
-
-            email_body = loader.render_to_string("email/forgot.password.html",
-                {'user': form.user, 'token': token}, 
-                context_instance=RequestContext(request))
-
-            email_message = EmailMessage(
-                body = email_body,
-                to = [form.cleaned_data['email']],
-                subject = _(u'Greenmine: password recovery.'),
-            )
-            email_message.content_subtype = "html"
-            email_message.send(fail_silently=True)
+            self._send_recovery_email(form.user)
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
             return self.render_to_ok({'redirect_to':'/'})
-
 
         response = {'errors': form.errors}
         return self.render_to_error(response)

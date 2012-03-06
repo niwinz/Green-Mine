@@ -11,6 +11,7 @@ def main(request):
         debug = settings.DEBUG,
         current_url = request.META.get('PATH_INFO'),
         previous_url = request.META.get("HTTP_REFERER", u"/"),
+        current_host = settings.HOST,
     )
     
     # Put main_title into context

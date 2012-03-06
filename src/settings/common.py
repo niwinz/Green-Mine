@@ -65,12 +65,13 @@ USE_L10N = True
 LOGIN_URL='/login/'
 
 #SESSION BACKEND
-SESSION_ENGINE='django.contrib.sessions.backends.db'
-#SESSION_ENGINE='django.contrib.sessions.backends.cache'
+#SESSION_ENGINE='django.contrib.sessions.backends.db'
+SESSION_ENGINE='django.contrib.sessions.backends.cache'
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = False
+SESSION_SAVE_EVERY_REQUEST = True
 #SESSION_COOKIE_AGE = 1209600 # (2 weeks)
 
+HOST = 'http://localhost:8000'
 
 # MAIL OPTIONS
 #EMAIL_USE_TLS = False
@@ -86,8 +87,8 @@ SV_CSS_MENU_ACTIVE = 'selected'
 SV_CONTEXT_VARNAME = 'menu'
 
 # Message System
-MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
-#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"

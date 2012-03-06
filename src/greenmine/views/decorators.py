@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
 from functools import wraps
 
-from ..utils import LazyEncoder
+from superview.views import LazyEncoder
 
 def login_required(view_func):
     @wraps(view_func)
