@@ -1,0 +1,39 @@
+{% extends "base_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block middle-box %}
+<div id="login">
+    <form id="register-form" method="post" action=""  >
+        {% csrf_token %}
+        <h2>{% trans "Register" %}</h2>
+        {{ LANGUAGE_CODE }}
+        <fieldset>
+            <div class="form-field">
+                <label>{{ form.username.label }}</label>
+                {{ form.username.errors }}
+                {{ form.username }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.first_name.label }}</label>
+                {{ form.first_name.errors }}
+                {{ form.first_name }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.last_name.label }}</label>
+                {{ form.last_name.errors }}
+                {{ form.last_name }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.email.label }}</label>
+                {{ form.email.errors }}
+                {{ form.email }}
+            </div>
+            <div class="form-field">
+                <input class="btn01" type="submit" value="Entrar" />
+                <span class="ajax-loader"></span>        
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

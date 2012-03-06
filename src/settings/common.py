@@ -65,8 +65,8 @@ USE_L10N = True
 LOGIN_URL='/login/'
 
 #SESSION BACKEND
-#SESSION_ENGINE='django.contrib.sessions.backends.db'
-SESSION_ENGINE='django.contrib.sessions.backends.cache'
+SESSION_ENGINE='django.contrib.sessions.backends.db'
+#SESSION_ENGINE='django.contrib.sessions.backends.cache'
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = True
 #SESSION_COOKIE_AGE = 1209600 # (2 weeks)
@@ -140,6 +140,7 @@ TEMPLATE_LOADERS = [
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

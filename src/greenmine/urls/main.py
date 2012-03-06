@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
     url(r'^remember-password/$', main.RememberPasswordView.as_view(), name='remember-password'),
 
+    url(r'^register/$', main.RegisterView.as_view(), name='register'),
+
     url(r'^profile/$', 
         main.ProfileView.as_view(), name='profile'),
 
@@ -26,9 +28,6 @@ urlpatterns = patterns('',
     url(r'^users/(?P<uid>\d+)/view/$', main.UserView.as_view(), name='users-view'),
     url(r'^users/(?P<uid>\d+)/edit/$', main.UserEditView.as_view(), name='users-edit'),
     url(r'^users/(?P<uid>\d+)/delete/$', main.UserDelete.as_view(), name='users-delete'),
-
-    #url(r'^config/projects/(?P<pslug>[\w\d\-]+)/export/$',
-    #        config.AdminProjectExport.as_view(), name="admin-project-export"),
 
     url(r'^project/create/$', 
         main.ProjectCreateView.as_view(), name='project-create'),
@@ -107,7 +106,6 @@ urlpatterns = patterns('',
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
-   
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>[\d\w]+)/assign/$',   
         main.AssignUs.as_view(), name="assign-us"),
 

@@ -94,6 +94,24 @@ class LoginForm(Form):
         return cleaned_data
 
 
+class RegisterForm(forms.Form):
+    username = forms.CharField(max_length=200, 
+        required=True, label=_(u'Username'))
+
+    email = forms.EmailField(max_length=200,
+        required=True, label=_(u"Email"))
+
+    first_name = forms.CharField(max_length=200, 
+        required=True, label=_(u"First name"))
+    last_name = forms.CharField(max_length=200,
+        required=True, label=_(u"Last name"))
+
+    #def __init__(self, *args, **kwargs):
+    #    super(LoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
 
 class ForgottenPasswordForm(Form):
     email = CharField(max_length=200, min_length=4, 

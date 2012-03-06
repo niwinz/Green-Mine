@@ -22,11 +22,18 @@ from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView, ProjectGenericView
 from greenmine.views.decorators import login_required, staff_required
-from greenmine import models, forms
+from greenmine import models, forms, utils
 
 import os
 import re
 
+class RegisterView(GenericView):
+    template_path = 'register.html'
+
+    def get(self, request):
+        form = forms.RegisterForm()
+        context = {'form':form}
+        return self.render_to_response(self.template_path, context)
 
 class LoginView(GenericView):
     """ Login view """
@@ -57,7 +64,8 @@ class LoginView(GenericView):
 
             return self.render_to_response(self.template_name,
                 {'form': login_form})
-                
+     
+
 class RememberPasswordView(GenericView):
     template_name = 'remember-password.html'
     
@@ -67,14 +75,23 @@ class RememberPasswordView(GenericView):
 
         return self.render_to_response(self.template_name, 
             {'form': form})
-                
 
 
 class SendRecoveryPasswordView(GenericView):
+    """
+    Staff's method for send recovery password.
+    """
+
     @login_required
     @staff_required
     def get(self, request, uid):
-        pass
+        user = get_object_or_404(User, pk=uid)
+        utils.send_recovery_email(user)
+
+        messages.info(request, _(u"Recovery password email are sended"))
+        referer = request.META.get('HTTP_REFERER', reverse('web:user-edit', args=[uid]))
+        return self.render_redirect(referer)
+
 
 class PasswordChangeView(GenericView):
     """
