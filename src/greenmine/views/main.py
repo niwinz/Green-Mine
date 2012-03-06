@@ -57,6 +57,17 @@ class LoginView(GenericView):
 
             return self.render_to_response(self.template_name,
                 {'form': login_form})
+                
+class RememberPasswordView(GenericView):
+    template_name = 'remember-password.html'
+    
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request, *args, **kwargs):
+        form = forms.ForgottenPasswordForm()
+
+        return self.render_to_response(self.template_name, 
+            {'form': form})
+                
 
 
 class SendRecoveryPasswordView(GenericView):

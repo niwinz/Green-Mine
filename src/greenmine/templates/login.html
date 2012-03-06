@@ -16,27 +16,12 @@
                 {{ form.password.errors }}
                 {{ form.password }}
             </div>
-            <p class="forgot-pass"><a id="open-forgotten-password-form" href="">¿Olvidaste la contraseña?</a></p>
+            <p class="forgot-pass"><a id="open-forgotten-password-form" href="{% url 'web:remember-password' %}">¿Olvidaste la contraseña?</a></p>
             <div class="form-field">
                 <input class="btn01" type="submit" value="Entrar" />
                 <span class="ajax-loader"></span>        
             </div>
         </fieldset>
     </form>
-    {% comment %}
-    <form id="forgotten-password-form" method="post" action="{% url 'api:password-forgotten' %}">
-        <fieldset>
-            <div class="form-field">
-                <label>{{ form2.email.label }}</label>
-                {{ form2.email }}
-            </div>
-            <div class="form-field">
-                <span class="ajax-loader"></span>
-                <input class="btn01" type="submit" value="Recordar" />
-                <a id="close-forgotten-password-form" class="btn01" href="">Cancelar</a>
-            </div>
-        </fieldset>
-    </form>
-    {% endcomment %}
 </div>
 {% endblock %}

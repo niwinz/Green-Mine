@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^$', main.HomeView.as_view(), name='projects'),
     url(r'^login/$', main.LoginView.as_view(), name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
+    url(r'^remember-password/$', main.RememberPasswordView.as_view(), name='remember-password'),
 
     url(r'^profile/$', 
         main.ProfileView.as_view(), name='profile'),
