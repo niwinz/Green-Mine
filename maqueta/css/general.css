@@ -41,7 +41,6 @@ form input[type="text"], form input[type="password"], form textarea, form input[
 #login fieldset, #password-recovery fieldset{border: 0;}
 #footer {background-color: #FFF; position: fixed; bottom: 0; left: 0; right: 0px; border-top: 1px solid #458745;}
 #footer p {text-align: right; font-weight: bold; padding: 2px; font-size:11px;}
-#forgotten-password-form{display:none;}
 #forgotten-password-form input.btn01{margin-left: 10px;}
 .ajax-loader{background: url("../imgs/ajax-loader.gif") no-repeat top left; display: block; float: right; margin-right: 5px;}
 .init-loader{width: 32px; height: 32px;}

@@ -104,7 +104,9 @@ class ForgottenPasswordApiView(GenericView):
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
             return self.render_to_ok({'redirect_to':'/'})
 
-        return self.render_to_error(form.jquery_errors)
+
+        response = {'errors': form.errors}
+        return self.render_to_error(response)
 
 
 class TaskAlterApiView(GenericView):

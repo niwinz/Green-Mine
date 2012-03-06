@@ -111,6 +111,7 @@ $(document).ready(function(){
     }
 
     if($("#login-form").length){
+        $("#id_username").focus();
         $("#login-form").validate({
             errorsMsgs: {
                 username: {username: gettext('Required.')},
@@ -123,9 +124,24 @@ $(document).ready(function(){
             ajaxSuccess: function(data){
                 djangoAjaxSuccess(this.self, data);
             }
-        });        
+        });   
     }
     
+    if($("#forgotten-password-form").length){
+        $("#id_email").focus();
+        $("#forgotten-password-form").validate({
+            errorsMsgs: {
+                email: {username: gettext('Required.')}
+            },
+            printError: function(field){
+                djangoPrintError(this, $(field));
+            },
+            ajax: true,
+            ajaxSuccess: function(data){
+                djangoAjaxSuccess(this.self, data);
+            }
+        });          
+    }
     
     /*
     if($("#login-form").length){
