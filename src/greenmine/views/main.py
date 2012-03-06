@@ -41,13 +41,13 @@ class LoginView(GenericView):
 
     def post(self, request):
         login_form = forms.LoginForm(request.POST, request=request)
-        if request.is_ajax:
+        if request.is_ajax():
             if login_form.is_valid():
                 return self.render_to_ok()
             else:
                 response = {'errors': login_form.errors}
                 return self.render_to_error(response)
-        else:            
+        else:
             if login_form.is_valid():
                 user_profile = login_form._user.get_profile()
                 if user_profile.default_language:
