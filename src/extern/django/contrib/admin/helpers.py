@@ -11,6 +11,7 @@ from django.utils.encoding import force_unicode, smart_unicode
 from django.utils.html import escape, conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 
 ACTION_CHECKBOX_NAME = '_selected_action'
@@ -75,7 +76,10 @@ class Fieldset(object):
 
     def _media(self):
         if 'collapse' in self.classes:
-            js = ['jquery.min.js', 'jquery.init.js', 'collapse.min.js']
+            extra = '' if settings.DEBUG else '.min'
+            js = ['jquery%s.js' % extra,
+                  'jquery.init.js',
+                  'collapse%s.js' % extra]
             return forms.Media(js=[static('admin/js/%s' % url) for url in js])
         return forms.Media()
     media = property(_media)
@@ -115,17 +119,17 @@ class AdminField(object):
 
     def label_tag(self):
         classes = []
+        contents = conditional_escape(force_unicode(self.field.label))
         if self.is_checkbox:
             classes.append(u'vCheckboxLabel')
-            contents = force_unicode(escape(self.field.label))
         else:
-            contents = force_unicode(escape(self.field.label)) + u':'
+            contents += u':'
         if self.field.field.required:
             classes.append(u'required')
         if not self.is_first:
             classes.append(u'inline')
         attrs = classes and {'class': u' '.join(classes)} or {}
-        return self.field.label_tag(contents=contents, attrs=attrs)
+        return self.field.label_tag(contents=mark_safe(contents), attrs=attrs)
 
     def errors(self):
         return mark_safe(self.field.errors.as_ul())

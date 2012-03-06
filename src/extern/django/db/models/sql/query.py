@@ -575,10 +575,7 @@ class Query(object):
             return
         orig_opts = self.model._meta
         seen = {}
-        if orig_opts.proxy:
-            must_include = {orig_opts.proxy_for_model: set([orig_opts.pk])}
-        else:
-            must_include = {self.model: set([orig_opts.pk])}
+        must_include = {orig_opts.concrete_model: set([orig_opts.pk])}
         for field_name in field_names:
             parts = field_name.split(LOOKUP_SEP)
             cur_model = self.model
@@ -586,7 +583,7 @@ class Query(object):
             for name in parts[:-1]:
                 old_model = cur_model
                 source = opts.get_field_by_name(name)[0]
-                cur_model = opts.get_field_by_name(name)[0].rel.to
+                cur_model = source.rel.to
                 opts = cur_model._meta
                 # Even if we're "just passing through" this model, we must add
                 # both the current model's pk and the related reference field
@@ -946,7 +943,7 @@ class Query(object):
         seen = {None: root_alias}
 
         # Skip all proxy to the root proxied model
-        proxied_model = get_proxied_model(opts)
+        proxied_model = opts.concrete_model
 
         for field, model in opts.get_fields_with_model():
             if model not in seen:
@@ -1061,11 +1058,31 @@ class Query(object):
         if not parts:
             raise FieldError("Cannot parse keyword query %r" % arg)
 
-        # Work out the lookup type and remove it from 'parts', if necessary.
-        if len(parts) == 1 or parts[-1] not in self.query_terms:
-            lookup_type = 'exact'
-        else:
-            lookup_type = parts.pop()
+        # Work out the lookup type and remove it from the end of 'parts',
+        # if necessary.
+        lookup_type = 'exact' # Default lookup type
+        num_parts = len(parts)
+        if (len(parts) > 1 and parts[-1] in self.query_terms
+            and arg not in self.aggregates):
+            # Traverse the lookup query to distinguish related fields from
+            # lookup types.
+            lookup_model = self.model
+            for counter, field_name in enumerate(parts):
+                try:
+                    lookup_field = lookup_model._meta.get_field(field_name)
+                except FieldDoesNotExist:
+                    # Not a field. Bail out.
+                    lookup_type = parts.pop()
+                    break
+                # Unless we're at the end of the list of lookups, let's attempt
+                # to continue traversing relations.
+                if (counter + 1) < num_parts:
+                    try:
+                        lookup_model = lookup_field.rel.to
+                    except AttributeError:
+                        # Not a related field. Bail out.
+                        lookup_type = parts.pop()
+                        break
 
         # By default, this is a WHERE clause. If an aggregate is referenced
         # in the value, the filter will be promoted to a HAVING
@@ -1305,7 +1322,7 @@ class Query(object):
             if model:
                 # The field lives on a base class of the current model.
                 # Skip the chain of proxy to the concrete proxied model
-                proxied_model = get_proxied_model(opts)
+                proxied_model = opts.concrete_model
 
                 for int_model in opts.get_base_chain(model):
                     if int_model is proxied_model:
@@ -1970,11 +1987,3 @@ def add_to_dict(data, key, value):
         data[key].add(value)
     else:
         data[key] = set([value])
-
-def get_proxied_model(opts):
-    int_opts = opts
-    proxied_model = None
-    while int_opts.proxy:
-        proxied_model = int_opts.proxy_for_model
-        int_opts = proxied_model._meta
-    return proxied_model

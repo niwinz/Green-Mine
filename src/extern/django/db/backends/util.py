@@ -16,9 +16,12 @@ class CursorWrapper(object):
         self.cursor = cursor
         self.db = db
 
-    def __getattr__(self, attr):
+    def set_dirty(self):
         if self.db.is_managed():
             self.db.set_dirty()
+
+    def __getattr__(self, attr):
+        self.set_dirty()
         if attr in self.__dict__:
             return self.__dict__[attr]
         else:
@@ -31,6 +34,7 @@ class CursorWrapper(object):
 class CursorDebugWrapper(CursorWrapper):
 
     def execute(self, sql, params=()):
+        self.set_dirty()
         start = time()
         try:
             return self.cursor.execute(sql, params)
@@ -43,22 +47,27 @@ class CursorDebugWrapper(CursorWrapper):
                 'time': "%.3f" % duration,
             })
             logger.debug('(%.3f) %s; args=%s' % (duration, sql, params),
-                extra={'duration':duration, 'sql':sql, 'params':params}
+                extra={'duration': duration, 'sql': sql, 'params': params}
             )
 
     def executemany(self, sql, param_list):
+        self.set_dirty()
         start = time()
         try:
             return self.cursor.executemany(sql, param_list)
         finally:
             stop = time()
             duration = stop - start
+            try:
+                times = len(param_list)
+            except TypeError:           # param_list could be an iterator
+                times = '?'
             self.db.queries.append({
-                'sql': '%s times: %s' % (len(param_list), sql),
+                'sql': '%s times: %s' % (times, sql),
                 'time': "%.3f" % duration,
             })
             logger.debug('(%.3f) %s; args=%s' % (duration, sql, param_list),
-                extra={'duration':duration, 'sql':sql, 'params':param_list}
+                extra={'duration': duration, 'sql': sql, 'params': param_list}
             )
 
 

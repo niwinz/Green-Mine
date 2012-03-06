@@ -19,7 +19,7 @@ from django.db.backends.sqlite3.creation import DatabaseCreation
 from django.db.backends.sqlite3.introspection import DatabaseIntrospection
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.safestring import SafeString
-from django.utils.timezone import is_aware, is_naive, utc
+from django.utils import timezone
 
 try:
     try:
@@ -37,9 +37,21 @@ IntegrityError = Database.IntegrityError
 def parse_datetime_with_timezone_support(value):
     dt = parse_datetime(value)
     # Confirm that dt is naive before overwriting its tzinfo.
-    if dt is not None and settings.USE_TZ and is_naive(dt):
-        dt = dt.replace(tzinfo=utc)
+    if dt is not None and settings.USE_TZ and timezone.is_naive(dt):
+        dt = dt.replace(tzinfo=timezone.utc)
     return dt
+
+def adapt_datetime_with_timezone_support(value):
+    # Equivalent to DateTimeField.get_db_prep_value. Used only by raw SQL.
+    if settings.USE_TZ:
+        if timezone.is_naive(value):
+            warnings.warn(u"SQLite received a naive datetime (%s)"
+                          u" while time zone support is active." % value,
+                          RuntimeWarning)
+            default_timezone = timezone.get_default_timezone()
+            value = timezone.make_aware(value, default_timezone)
+        value = value.astimezone(timezone.utc).replace(tzinfo=None)
+    return value.isoformat(" ")
 
 Database.register_converter("bool", lambda s: str(s) == '1')
 Database.register_converter("time", parse_time)
@@ -48,13 +60,14 @@ Database.register_converter("datetime", parse_datetime_with_timezone_support)
 Database.register_converter("timestamp", parse_datetime_with_timezone_support)
 Database.register_converter("TIMESTAMP", parse_datetime_with_timezone_support)
 Database.register_converter("decimal", util.typecast_decimal)
+Database.register_adapter(datetime.datetime, adapt_datetime_with_timezone_support)
 Database.register_adapter(decimal.Decimal, util.rev_typecast_decimal)
 if Database.version_info >= (2, 4, 1):
     # Starting in 2.4.1, the str type is not accepted anymore, therefore,
     # we convert all str objects to Unicode
     # As registering a adapter for a primitive type causes a small
     # slow-down, this adapter is only registered for sqlite3 versions
-    # needing it.
+    # needing it (Python 2.6 and up).
     Database.register_adapter(str, lambda s: s.decode('utf-8'))
     Database.register_adapter(SafeString, lambda s: s.decode('utf-8'))
 
@@ -147,9 +160,9 @@ class DatabaseOperations(BaseDatabaseOperations):
             return None
 
         # SQLite doesn't support tz-aware datetimes
-        if is_aware(value):
+        if timezone.is_aware(value):
             if settings.USE_TZ:
-                value = value.astimezone(utc).replace(tzinfo=None)
+                value = value.astimezone(timezone.utc).replace(tzinfo=None)
             else:
                 raise ValueError("SQLite backend does not support timezone-aware datetimes when USE_TZ is False.")
 
@@ -160,7 +173,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return None
 
         # SQLite doesn't support tz-aware datetimes
-        if is_aware(value):
+        if timezone.is_aware(value):
             raise ValueError("SQLite backend does not support timezone-aware times.")
 
         return unicode(value)
@@ -230,39 +243,42 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         self.introspection = DatabaseIntrospection(self)
         self.validation = BaseDatabaseValidation(self)
 
+    def _sqlite_create_connection(self):
+        settings_dict = self.settings_dict
+        if not settings_dict['NAME']:
+            from django.core.exceptions import ImproperlyConfigured
+            raise ImproperlyConfigured("Please fill out the database NAME in the settings module before using the database.")
+        kwargs = {
+            'database': settings_dict['NAME'],
+            'detect_types': Database.PARSE_DECLTYPES | Database.PARSE_COLNAMES,
+        }
+        kwargs.update(settings_dict['OPTIONS'])
+        # Always allow the underlying SQLite connection to be shareable
+        # between multiple threads. The safe-guarding will be handled at a
+        # higher level by the `BaseDatabaseWrapper.allow_thread_sharing`
+        # property. This is necessary as the shareability is disabled by
+        # default in pysqlite and it cannot be changed once a connection is
+        # opened.
+        if 'check_same_thread' in kwargs and kwargs['check_same_thread']:
+            warnings.warn(
+                'The `check_same_thread` option was provided and set to '
+                'True. It will be overriden with False. Use the '
+                '`DatabaseWrapper.allow_thread_sharing` property instead '
+                'for controlling thread shareability.',
+                RuntimeWarning
+            )
+        kwargs.update({'check_same_thread': False})
+        self.connection = Database.connect(**kwargs)
+        # Register extract, date_trunc, and regexp functions.
+        self.connection.create_function("django_extract", 2, _sqlite_extract)
+        self.connection.create_function("django_date_trunc", 2, _sqlite_date_trunc)
+        self.connection.create_function("regexp", 2, _sqlite_regexp)
+        self.connection.create_function("django_format_dtdelta", 5, _sqlite_format_dtdelta)
+        connection_created.send(sender=self.__class__, connection=self)
+
     def _cursor(self):
         if self.connection is None:
-            settings_dict = self.settings_dict
-            if not settings_dict['NAME']:
-                from django.core.exceptions import ImproperlyConfigured
-                raise ImproperlyConfigured("Please fill out the database NAME in the settings module before using the database.")
-            kwargs = {
-                'database': settings_dict['NAME'],
-                'detect_types': Database.PARSE_DECLTYPES | Database.PARSE_COLNAMES,
-            }
-            kwargs.update(settings_dict['OPTIONS'])
-            # Always allow the underlying SQLite connection to be shareable
-            # between multiple threads. The safe-guarding will be handled at a
-            # higher level by the `BaseDatabaseWrapper.allow_thread_sharing`
-            # property. This is necessary as the shareability is disabled by
-            # default in pysqlite and it cannot be changed once a connection is
-            # opened.
-            if 'check_same_thread' in kwargs and kwargs['check_same_thread']:
-                warnings.warn(
-                    'The `check_same_thread` option was provided and set to '
-                    'True. It will be overriden with False. Use the '
-                    '`DatabaseWrapper.allow_thread_sharing` property instead '
-                    'for controlling thread shareability.',
-                    RuntimeWarning
-                )
-            kwargs.update({'check_same_thread': False})
-            self.connection = Database.connect(**kwargs)
-            # Register extract, date_trunc, and regexp functions.
-            self.connection.create_function("django_extract", 2, _sqlite_extract)
-            self.connection.create_function("django_date_trunc", 2, _sqlite_date_trunc)
-            self.connection.create_function("regexp", 2, _sqlite_regexp)
-            self.connection.create_function("django_format_dtdelta", 5, _sqlite_format_dtdelta)
-            connection_created.send(sender=self.__class__, connection=self)
+            self._sqlite_create_connection()
         return self.connection.cursor(factory=SQLiteCursorWrapper)
 
     def check_constraints(self, table_names=None):

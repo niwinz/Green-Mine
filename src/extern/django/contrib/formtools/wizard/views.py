@@ -385,11 +385,13 @@ class WizardView(TemplateView):
             'initial': self.get_form_initial(step),
         })
         if issubclass(self.form_list[step], forms.ModelForm):
-            # If the form is based on ModelForm, add instance if available.
-            kwargs.update({'instance': self.get_form_instance(step)})
+            # If the form is based on ModelForm, add instance if available
+            # and not previously set.
+            kwargs.setdefault('instance', self.get_form_instance(step))
         elif issubclass(self.form_list[step], forms.models.BaseModelFormSet):
-            # If the form is based on ModelFormSet, add queryset if available.
-            kwargs.update({'queryset': self.get_form_instance(step)})
+            # If the form is based on ModelFormSet, add queryset if available
+            # and not previous set.
+            kwargs.setdefault('queryset', self.get_form_instance(step))
         return self.form_list[step](**kwargs)
 
     def process_step(self, form):
@@ -624,14 +626,14 @@ class NamedUrlWizardView(WizardView):
             # URL step name and storage step name are equal, render!
             return self.render(self.get_form(
                 data=self.storage.current_step_data,
-                files=self.storage.current_step_data,
+                files=self.storage.current_step_files,
             ), **kwargs)
 
         elif step_url in self.get_form_list():
             self.storage.current_step = step_url
             return self.render(self.get_form(
                 data=self.storage.current_step_data,
-                files=self.storage.current_step_data,
+                files=self.storage.current_step_files,
             ), **kwargs)
 
         # invalid step name, reset to first and redirect.

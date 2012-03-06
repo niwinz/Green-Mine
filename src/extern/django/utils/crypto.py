@@ -7,11 +7,24 @@ import struct
 import hashlib
 import binascii
 import operator
+import time
+
+# Use the system PRNG if possible
+import random
+try:
+    random = random.SystemRandom()
+    using_sysrandom = True
+except NotImplementedError:
+    import warnings
+    warnings.warn('A secure pseudo-random number generator is not available '
+                  'on your system. Falling back to Mersenne Twister.')
+    using_sysrandom = False
+
 from django.conf import settings
 
 
-trans_5c = "".join([chr(x ^ 0x5C) for x in xrange(256)])
-trans_36 = "".join([chr(x ^ 0x36) for x in xrange(256)])
+_trans_5c = "".join([chr(x ^ 0x5C) for x in xrange(256)])
+_trans_36 = "".join([chr(x ^ 0x36) for x in xrange(256)])
 
 
 def salted_hmac(key_salt, value, secret=None):
@@ -36,19 +49,29 @@ def salted_hmac(key_salt, value, secret=None):
     return hmac.new(key, msg=value, digestmod=hashlib.sha1)
 
 
-def get_random_string(length=12, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+def get_random_string(length=12,
+                      allowed_chars='abcdefghijklmnopqrstuvwxyz'
+                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
     """
-    Returns a random string of length characters from the set of a-z, A-Z, 0-9
-    for use as a salt.
+    Returns a securely generated random string.
 
     The default length of 12 with the a-z, A-Z, 0-9 character set returns
-    a 71-bit salt. log_2((26+26+10)^12) =~ 71 bits
+    a 71-bit value. log_2((26+26+10)^12) =~ 71 bits
     """
-    import random
-    try:
-        random = random.SystemRandom()
-    except NotImplementedError:
-        pass
+    if not using_sysrandom:
+        # This is ugly, and a hack, but it makes things better than
+        # the alternative of predictability. This re-seeds the PRNG
+        # using a value that is hard for an attacker to predict, every
+        # time a random string is required. This may change the
+        # properties of the chosen random sequence slightly, but this
+        # is better than absolute predictability.
+        random.seed(
+            hashlib.sha256(
+                "%s%s%s" % (
+                    random.getstate(),
+                    time.time(),
+                    settings.SECRET_KEY)
+                ).digest())
     return ''.join([random.choice(allowed_chars) for i in range(length)])
 
 
@@ -66,7 +89,7 @@ def constant_time_compare(val1, val2):
     return result == 0
 
 
-def bin_to_long(x):
+def _bin_to_long(x):
     """
     Convert a binary string into a long integer
 
@@ -75,17 +98,15 @@ def bin_to_long(x):
     return long(x.encode('hex'), 16)
 
 
-def long_to_bin(x):
+def _long_to_bin(x, hex_format_string):
     """
-    Convert a long integer into a binary string
+    Convert a long integer into a binary string.
+    hex_format_string is like "%020x" for padding 10 characters.
     """
-    hex = "%x" % (x)
-    if len(hex) % 2 == 1:
-        hex = '0' + hex
-    return binascii.unhexlify(hex)
+    return binascii.unhexlify(hex_format_string % x)
 
 
-def fast_hmac(key, msg, digest):
+def _fast_hmac(key, msg, digest):
     """
     A trimmed down version of Python's HMAC implementation
     """
@@ -93,9 +114,9 @@ def fast_hmac(key, msg, digest):
     if len(key) > dig1.block_size:
         key = digest(key).digest()
     key += chr(0) * (dig1.block_size - len(key))
-    dig1.update(key.translate(trans_36))
+    dig1.update(key.translate(_trans_36))
     dig1.update(msg)
-    dig2.update(key.translate(trans_5c))
+    dig2.update(key.translate(_trans_5c))
     dig2.update(dig1.digest())
     return dig2
 
@@ -123,13 +144,15 @@ def pbkdf2(password, salt, iterations, dklen=0, digest=None):
     l = -(-dklen // hlen)
     r = dklen - (l - 1) * hlen
 
+    hex_format_string = "%%0%ix" % (hlen * 2)
+
     def F(i):
         def U():
             u = salt + struct.pack('>I', i)
             for j in xrange(int(iterations)):
-                u = fast_hmac(password, u, digest).digest()
-                yield bin_to_long(u)
-        return long_to_bin(reduce(operator.xor, U()))
+                u = _fast_hmac(password, u, digest).digest()
+                yield _bin_to_long(u)
+        return _long_to_bin(reduce(operator.xor, U()), hex_format_string)
 
     T = [F(x) for x in range(1, l + 1)]
     return ''.join(T[:-1]) + T[-1][:r]

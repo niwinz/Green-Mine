@@ -86,6 +86,13 @@ class Permission(models.Model):
     natural_key.dependencies = ['contenttypes.contenttype']
 
 
+class GroupManager(models.Manager):
+    """
+    The manager for the auth's Group model.
+    """
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 class Group(models.Model):
     """
     Groups are a generic way of categorizing users to apply permissions, or
@@ -107,6 +114,8 @@ class Group(models.Model):
     permissions = models.ManyToManyField(Permission,
         verbose_name=_('permissions'), blank=True)
 
+    objects = GroupManager()
+
     class Meta:
         verbose_name = _('group')
         verbose_name_plural = _('groups')
@@ -114,27 +123,38 @@ class Group(models.Model):
     def __unicode__(self):
         return self.name
 
+    def natural_key(self):
+        return (self.name,)
+
 
 class UserManager(models.Manager):
+
+    @classmethod
+    def normalize_email(cls, email):
+        """
+        Normalize the address by lowercasing the domain part of the email
+        address.
+        """
+        email = email or ''
+        try:
+            email_name, domain_part = email.strip().rsplit('@', 1)
+        except ValueError:
+            pass
+        else:
+            email = '@'.join([email_name, domain_part.lower()])
+        return email
+
     def create_user(self, username, email=None, password=None):
         """
         Creates and saves a User with the given username, email and password.
         """
         now = timezone.now()
-
-        # Normalize the address by lowercasing the domain part of the email
-        # address.
-        email = email or ''
-        try:
-            email_name, domain_part = email.strip().split('@', 1)
-        except ValueError:
-            pass
-        else:
-            email = '@'.join([email_name, domain_part.lower()])
-
-        user = self.model(username=username, email=email, is_staff=False,
-                         is_active=True, is_superuser=False, last_login=now,
-                         date_joined=now)
+        if not username:
+            raise ValueError('The given username must be set')
+        email = UserManager.normalize_email(email)
+        user = self.model(username=username, email=email,
+                          is_staff=False, is_active=True, is_superuser=False,
+                          last_login=now, date_joined=now)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -159,6 +179,9 @@ class UserManager(models.Manager):
         avoid confusion.
         """
         return get_random_string(length, allowed_chars)
+
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
 
 
 # A few helper functions for common logic between User and AnonymousUser.
@@ -239,6 +262,9 @@ class User(models.Model):
 
     def __unicode__(self):
         return self.username
+
+    def natural_key(self):
+        return (self.username,)
 
     def get_absolute_url(self):
         return "/users/%s/" % urllib.quote(smart_str(self.username))

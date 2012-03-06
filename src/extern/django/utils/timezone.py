@@ -17,7 +17,7 @@ from django.conf import settings
 __all__ = [
     'utc', 'get_default_timezone', 'get_current_timezone',
     'activate', 'deactivate', 'override',
-    'localtime', 'is_naive', 'is_aware', 'make_aware', 'make_naive',
+    'is_naive', 'is_aware', 'make_aware', 'make_naive',
 ]
 
 
@@ -31,6 +31,9 @@ class UTC(tzinfo):
 
     Used only when pytz isn't available.
     """
+
+    def __repr__(self):
+        return "<UTC>"
 
     def utcoffset(self, dt):
         return ZERO
@@ -59,6 +62,9 @@ class LocalTimezone(tzinfo):
             self.DSTOFFSET = self.STDOFFSET
         self.DSTDIFF = self.DSTOFFSET - self.STDOFFSET
         tzinfo.__init__(self)
+
+    def __repr__(self):
+        return "<LocalTimezone>"
 
     def utcoffset(self, dt):
         if self._isdst(dt):
@@ -198,7 +204,7 @@ class override(object):
             del _active.value
 
 
-# Utilities
+# Templates
 
 def localtime(value, use_tz=None):
     """
@@ -206,6 +212,8 @@ def localtime(value, use_tz=None):
 
     If use_tz is provided and is not None, that will force the value to
     be converted (or not), overriding the value of settings.USE_TZ.
+
+    This function is designed for use by the template engine.
     """
     if (isinstance(value, datetime)
         and (settings.USE_TZ if use_tz is None else use_tz)
@@ -217,6 +225,9 @@ def localtime(value, use_tz=None):
             # available for pytz time zones
             value = timezone.normalize(value)
     return value
+
+
+# Utilities
 
 def now():
     """

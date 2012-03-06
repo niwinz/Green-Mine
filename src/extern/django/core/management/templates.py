@@ -1,5 +1,6 @@
 from __future__ import with_statement
 import cgi
+import errno
 import mimetypes
 import os
 import posixpath
@@ -44,9 +45,14 @@ class TemplateCommand(BaseCommand):
                     help='The dotted import path to load the template from.'),
         make_option('--extension', '-e', dest='extensions',
                     action='append', default=['py'],
-                    help='The file extension(s) to render (default: "py") '
+                    help='The file extension(s) to render (default: "py"). '
                          'Separate multiple extensions with commas, or use '
                          '-e multiple times.'),
+        make_option('--name', '-n', dest='files',
+                    action='append', default=[],
+                    help='The file name(s) to render. '
+                         'Separate multiple extensions with commas, or use '
+                         '-n multiple times.')
         )
     requires_model_validation = False
     # Can't import settings during this command, because they haven't
@@ -77,17 +83,27 @@ class TemplateCommand(BaseCommand):
             try:
                 os.makedirs(top_dir)
             except OSError, e:
-                raise CommandError(e)
+                if e.errno == errno.EEXIST:
+                    message = "'%s' already exists" % top_dir
+                else:
+                    message = e
+                raise CommandError(message)
         else:
             top_dir = path.expanduser(target)
 
 
         extensions = tuple(
             handle_extensions(options.get('extensions'), ignored=()))
+        extra_files = []
+        for file in options.get('files'):
+            extra_files.extend(map(lambda x: x.strip(), file.split(',')))
         if self.verbosity >= 2:
             self.stdout.write("Rendering %s template files with "
                               "extensions: %s\n" %
                               (app_or_project, ', '.join(extensions)))
+            self.stdout.write("Rendering %s template files with "
+                              "filenames: %s\n" %
+                              (app_or_project, ', '.join(extra_files)))
 
         base_name = '%s_name' % app_or_project
         base_subdir = '%s_template' % app_or_project
@@ -137,7 +153,7 @@ class TemplateCommand(BaseCommand):
                 # accidentally render Django templates files
                 with open(old_path, 'r') as template_file:
                     content = template_file.read()
-                if filename.endswith(extensions):
+                if filename.endswith(extensions) or filename in extra_files:
                     template = Template(content)
                     content = template.render(context)
                 with open(new_path, 'w') as new_file:

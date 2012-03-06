@@ -41,7 +41,6 @@ class DatabaseCreation(BaseDatabaseCreation):
     }
 
     def __init__(self, connection):
-        self.remember = {}
         super(DatabaseCreation, self).__init__(connection)
 
     def _create_test_db(self, verbosity=1, autoclobber=False):
@@ -58,9 +57,6 @@ class DatabaseCreation(BaseDatabaseCreation):
             'tblspace': TEST_TBLSPACE,
             'tblspace_temp': TEST_TBLSPACE_TMP,
         }
-
-        self.remember['user'] = self.connection.settings_dict['USER']
-        self.remember['passwd'] = self.connection.settings_dict['PASSWORD']
 
         cursor = self.connection.cursor()
         if self._test_database_create():
@@ -107,8 +103,10 @@ class DatabaseCreation(BaseDatabaseCreation):
                     print "Tests cancelled."
                     sys.exit(1)
 
-        self.connection.settings_dict['TEST_USER'] = self.connection.settings_dict["USER"] = TEST_USER
-        self.connection.settings_dict["PASSWORD"] = TEST_PASSWD
+        self.connection.settings_dict['SAVED_USER'] = self.connection.settings_dict['USER']
+        self.connection.settings_dict['SAVED_PASSWORD'] = self.connection.settings_dict['PASSWORD']
+        self.connection.settings_dict['TEST_USER'] = self.connection.settings_dict['USER'] = TEST_USER
+        self.connection.settings_dict['PASSWORD'] = TEST_PASSWD
 
         return self.connection.settings_dict['NAME']
 
@@ -123,8 +121,8 @@ class DatabaseCreation(BaseDatabaseCreation):
         TEST_TBLSPACE = self._test_database_tblspace()
         TEST_TBLSPACE_TMP = self._test_database_tblspace_tmp()
 
-        self.connection.settings_dict["USER"] = self.remember['user']
-        self.connection.settings_dict["PASSWORD"] = self.remember['passwd']
+        self.connection.settings_dict['USER'] = self.connection.settings_dict['SAVED_USER']
+        self.connection.settings_dict['PASSWORD'] = self.connection.settings_dict['SAVED_PASSWORD']
 
         parameters = {
             'dbname': TEST_NAME,

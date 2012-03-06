@@ -98,9 +98,6 @@ class F(ExpressionNode):
     """
     An expression representing the value of the given field.
     """
-
-    _invert = False
-
     def __init__(self, name):
         super(F, self).__init__(None, None, False)
         self.name = name
@@ -110,19 +107,11 @@ class F(ExpressionNode):
         obj.name = self.name
         return obj
 
-    def __invert__(self):
-        self._invert = True
-        return self
-
     def prepare(self, evaluator, query, allow_joins):
         return evaluator.prepare_leaf(self, query, allow_joins)
 
     def evaluate(self, evaluator, qn, connection):
-        evresult = list(evaluator.evaluate_leaf(self, qn, connection))
-        if self._invert:
-            evresult[0] = "NOT %s" % evresult[0]
-        return tuple(evresult)
-
+        return evaluator.evaluate_leaf(self, qn, connection)
 
 class DateModifierNode(ExpressionNode):
     """

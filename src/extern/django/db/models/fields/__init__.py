@@ -509,6 +509,7 @@ class AutoField(Field):
     default_error_messages = {
         'invalid': _(u"'%s' value must be an integer."),
     }
+
     def __init__(self, *args, **kwargs):
         assert kwargs.get('primary_key', False) is True, \
                "%ss must have primary_key=True." % self.__class__.__name__
@@ -551,6 +552,7 @@ class BooleanField(Field):
         'invalid': _(u"'%s' value must be either True or False."),
     }
     description = _("Boolean (Either True or False)")
+
     def __init__(self, *args, **kwargs):
         kwargs['blank'] = True
         if 'default' not in kwargs and not kwargs.get('null'):
@@ -748,7 +750,18 @@ class DateTimeField(DateField):
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, datetime.date):
-            return datetime.datetime(value.year, value.month, value.day)
+            value = datetime.datetime(value.year, value.month, value.day)
+            if settings.USE_TZ:
+                # For backwards compatibility, interpret naive datetimes in
+                # local time. This won't work during DST change, but we can't
+                # do much about it, so we let the exceptions percolate up the
+                # call stack.
+                warnings.warn(u"DateTimeField received a naive datetime (%s)"
+                              u" while time zone support is active." % value,
+                              RuntimeWarning)
+                default_timezone = timezone.get_default_timezone()
+                value = timezone.make_aware(value, default_timezone)
+            return value
 
         value = smart_str(value)
 
@@ -1100,7 +1113,7 @@ class NullBooleanField(Field):
         return super(NullBooleanField, self).formfield(**defaults)
 
 class PositiveIntegerField(IntegerField):
-    description = _("Integer")
+    description = _("Positive integer")
 
     def get_internal_type(self):
         return "PositiveIntegerField"
@@ -1111,7 +1124,8 @@ class PositiveIntegerField(IntegerField):
         return super(PositiveIntegerField, self).formfield(**defaults)
 
 class PositiveSmallIntegerField(IntegerField):
-    description = _("Integer")
+    description = _("Positive small integer")
+
     def get_internal_type(self):
         return "PositiveSmallIntegerField"
 
@@ -1121,7 +1135,8 @@ class PositiveSmallIntegerField(IntegerField):
         return super(PositiveSmallIntegerField, self).formfield(**defaults)
 
 class SlugField(CharField):
-    description = _("String (up to %(max_length)s)")
+    description = _("Slug (up to %(max_length)s)")
+
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = kwargs.get('max_length', 50)
         # Set db_index=True unless it's been set manually.
@@ -1138,7 +1153,7 @@ class SlugField(CharField):
         return super(SlugField, self).formfield(**defaults)
 
 class SmallIntegerField(IntegerField):
-    description = _("Integer")
+    description = _("Small integer")
 
     def get_internal_type(self):
         return "SmallIntegerField"

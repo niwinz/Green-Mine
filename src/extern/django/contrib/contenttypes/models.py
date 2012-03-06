@@ -13,14 +13,11 @@ class ContentTypeManager(models.Manager):
             ct = self.__class__._cache[self.db][(app_label, model)]
         except KeyError:
             ct = self.get(app_label=app_label, model=model)
+            self._add_to_cache(self.db, ct)
         return ct
 
     def _get_opts(self, model):
-        opts = model._meta
-        while opts.proxy:
-            model = opts.proxy_for_model
-            opts = model._meta
-        return opts
+        return model._meta.concrete_model._meta
 
     def _get_from_cache(self, opts):
         key = (opts.app_label, opts.object_name.lower())
