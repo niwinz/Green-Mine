@@ -358,8 +358,8 @@ class ProjectEditView(ProjectCreateView):
             if not user_role:
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
-                messages.error(request, emsg)
-                return self.render_to_response(self.template_name, context)
+                response = {'messages': {'type': 'error', 'msg': emsg}}
+                return self.render_to_error(response)     
 
             project = form.save()
             models.ProjectUserRole.objects.filter(project=project).delete()
@@ -377,7 +377,7 @@ class ProjectEditView(ProjectCreateView):
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return HttpResponseRedirect(project.get_edit_url())
+        return self.render_to_ok({'redirect_to':reverse('web:projects')})  
 
 
 class ProjectExportView(GenericView):

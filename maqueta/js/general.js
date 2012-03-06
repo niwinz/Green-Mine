@@ -149,8 +149,8 @@ $(document).ready(function(){
         });          
     }
     
-    if($("#new-project-form").length){
-        $("#new-project-form").validate({
+    if($("#new-project-form, #edit-project-form").length){
+        $("#new-project-form, #edit-project-form").validate({
             printError: function(field){
                 djangoPrintError(this, $(field));
             },
