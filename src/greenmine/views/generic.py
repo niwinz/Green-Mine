@@ -15,9 +15,6 @@ from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 
-from django.utils import simplejson
-from ..utils import LazyEncoder
-
 from superview.views import SuperView as View
 
 class GenericView(View):
