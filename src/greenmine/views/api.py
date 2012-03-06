@@ -24,7 +24,6 @@ logger = logging.getLogger('greenmine')
 
 from greenmine.models import *
 from greenmine import models, forms
-from greenmine.utils import encrypt_password
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 import datetime
