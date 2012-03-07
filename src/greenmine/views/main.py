@@ -20,7 +20,7 @@ from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.cache import cache_page
 
-from greenmine.views.generic import GenericView, ProjectGenericView
+from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms, utils
 
