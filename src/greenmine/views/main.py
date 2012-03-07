@@ -141,7 +141,8 @@ class PasswordRecoveryView(GenericView):
     def post(self, request, token):
         form = forms.PasswordRecoveryForm(request.POST)
         if form.is_valid():
-            profile_queryset = Profile.objects.filter(token=token)
+            profile_queryset = models.Profile.objects.filter(token=token)
+            print token, profile_queryset
             if not profile_queryset:
                 messages.error(request, _(u'Token has expired, try again'))
                 return self.render_redirect(reverse('web:login'))
@@ -150,8 +151,10 @@ class PasswordRecoveryView(GenericView):
             user = profile.user
             user.set_password(form.cleaned_data['password'])
             user.save()
+            profile.token = None
+            profile.save()
             messages.info(request, _(u'The password has been successfully restored.'))
-            return self.redirect(reverse('web:login'))
+            return self.render_redirect(reverse('web:login'))
 
         context = {'form':form}
         return self.render_to_response(self.template_name, context)
