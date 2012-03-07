@@ -18,7 +18,7 @@ pre, p{margin-bottom: 9px;}
 hr{border: 2px solid #458745; width: 100%; height: 2px; clear: left; float: left;}
 .mt5{margin-top: 5px;} .mt10{margin-top: 10px;} .mt15{margin-top: 15px;} .mt20{margin-top: 20px;} .mt25{margin-top: 25px;}
 body{background-color: #EFEFEF; padding-bottom: 36px;}
-h1, h1 a{color: #FFF; font-size: 28px; font-weight: bold; text-decoration: none;}
+#head h1, #head h1 a{color: #FFF; font-size: 28px; font-weight: bold; text-decoration: none; margin: 0px !important;}
 h2{color: #000; font-size: 20px; font-weight: bold; text-decoration: underline; margin-bottom: 15px; margin-top: 7px;}
 h3{color: #000; font-size: 16px; font-weight: bold; margin-bottom: 10px; margin-top: 7px;}
 h4{color: #000; font-size: 14px; font-weight: bold; margin-bottom: 10px; margin-top: 7px;}

@@ -2,6 +2,12 @@
 {% load url from future %}
 {% load i18n %}
 
+{% block middle %}
+<ul class="left-menu menu-item settings"></ul>
+<ul class="right-menu menu-item settings">
+    <li><a href="{% url 'web:projects' %}" class="">{% trans "Return to projects" %}</a></li>
+</ul>
+{% endblock %}
 
 {% block title %}{{ block.super }} / {% trans "Edit" %}{% endblock %}
 
@@ -26,9 +32,9 @@
                     <table class="table01">
                         <tbody>
                             <tr>
-                                <th class="th1">Propietario</th>
-                                <th class="th2">Rol</th>
-                                <th class="th3">Opciones</th>
+                                <th class="th1">{% trans "Owner" %}</th>
+                                <th class="th2">{% trans "Role" %}</th>
+                                <th class="th3">{% trans "Options" %}</th>
                             </tr>
                             {% for user_role in project.user_roles.all %}
                             <tr>
@@ -36,7 +42,7 @@
                                     <img width="30" src="/static/auxiliar/imgs/gravatar.jpg">{{user_role.user.first_name}}
                                 </td>
                                 <td>{{user_role.role}}</td>
-                                <td><a href="" rel="{{user_role.user.id}}" class="delete">Borrar</a></td>
+                                <td><a href="" rel="{{user_role.user.id}}" class="delete">{% trans "Delete" %}</a></td>
                                 <input type="hidden" value="manager" name="user_{{user_role.user.id}}">
                             </tr>
                             {% endfor %}
@@ -45,12 +51,12 @@
                 </div>
                 <div class="users-roles">
                     <fieldset class="fsborder">
-                        <legend>Usuarios</legend>
+                        <legend>{% trans "Users" %}</legend>
                         <input type="text" name="username" class="user-autocomplete" link="{% url "api:user-list" %}" />
                         <input type="hidden" class="user-currentvalue" value="" />
                     </fieldset>
                     <fieldset class="fsborder">
-                        <legend>Roles</legend>
+                        <legend>{% trans "Roles" %}</legend>
                         <ul class="roles">
                             {% for rolid, rolname in roles %}
                             <li><input name="rol-aux" type="radio" rolname="{{ rolname }}" value="{{ rolid }}" />{{ rolname }}</li>
@@ -61,8 +67,8 @@
                 </div>
             </div>
             <div class="width100 float-left">
-                <input class="btn01" type="submit" value="Guardar" />
-                <a href="{% url 'web:projects' %}" class="btn01">Volver</a>
+                <input class="btn01" type="submit" value="{% trans "Save" %}" />
+                <a href="{% url 'web:projects' %}" class="btn01">{% trans "Return" %}</a>
                 <span class="ajax-loader"></span>
             </div>
         </fieldset>

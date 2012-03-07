@@ -28,18 +28,20 @@ urlpatterns = patterns('',
     url(r'^users/(?P<uid>\d+)/view/$', main.UserView.as_view(), name='users-view'),
     url(r'^users/(?P<uid>\d+)/edit/$', main.UserEditView.as_view(), name='users-edit'),
     url(r'^users/(?P<uid>\d+)/delete/$', main.UserDelete.as_view(), name='users-delete'),
+    url(r'^users/(?P<uid>\d+)/send/recovery/password/',
+        main.SendRecoveryPasswordView.as_view(), name='users-recovery-password'),
 
     url(r'^project/create/$', 
         main.ProjectCreateView.as_view(), name='project-create'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/settings/$', 
-        main.ProjectSettings.as_view(), name='project-settings'),
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/personal/$', 
+        main.ProjectSettings.as_view(), name='project-personal-settings'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/edit/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/edit/$',
         main.ProjectEditView.as_view(), name="project-edit"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/export/$', 
-        main.ProjectExportView.as_view(), name="project-export"),
+        main.ProjectExportView.as_view(), name="project-export-settings"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),

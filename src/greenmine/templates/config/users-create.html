@@ -19,7 +19,7 @@
     {% include "messages.html" %}
     <div class="form-container">
         <div class="form-legend">
-            <span>{% trans "Profile:" %} {{ uobj.get_full_name }}</span>
+            <span>{% trans "Create user:" %}</span>
         </div>
         <form id="edit-profile-form" method="post" enctype="multipart/form-data"
             action="{% url 'web:users-create' %}" class="inline">
@@ -35,20 +35,34 @@
                 {{ form.last_name.errors }}
             </div>
             <div class="form-field">
-                <label>{{ form.username.label }}</label>
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-            <div class="form-field">
                 <label>{{ form.email.label }}</label>
                 {{ form.email }}
                 {{ form.email.errors }}
             </div>    
             <div class="form-field">
+                <label>{{ form.username.label }}</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>    
+            <div class="form-field">
+                <label>{{ form.is_active.label }}</label>
+                {{ form.is_active }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.is_staff.label }}</label>
+                {{ form.is_staff }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.is_superuser.label }}</label>
+                {{ form.is_superuser }}
+            </div>
+
+            <div class="form-field width100">
                 <label>{{ form.description.label }}</label>
                 {{ form.description }}
                 {{ form.description.errors }}
             </div>
+
             <div class="form-field">
                 {% if not user.get_profile.photo %}
                 <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
@@ -62,8 +76,6 @@
             </div>
             <div class="width100 float-left">
                 <input class="btn01" type="submit" value="{% trans "Save" %}" />
-                <a href="" class="btn01">{% trans "Send password recovery mail" %}</a>
-                <span class="ajax-loader"></span>        
             </div>
         </form>
     </div>

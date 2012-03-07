@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-06 23:13+0100\n"
+"POT-Creation-Date: 2012-03-07 22:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,9 +110,13 @@ msgstr "Bug"
 msgid "Task"
 msgstr "Tarea"
 
-#: utils.py:72
-msgid "Greenmine: password recovery."
+#: utils.py:76
+msgid "Greenmine: password revovery."
 msgstr "Greenmine: recuperación de la contraseña."
+
+#: utils.py:90
+msgid "Greenmine: Welcome to Greenmine."
+msgstr "Greenmine: Bienvenido!"
 
 #: forms/__init__.py:64 forms/__init__.py:99
 msgid "Username"
@@ -130,62 +134,65 @@ msgstr "Nombre de usuario no existe o contraseña incorrecta"
 msgid "Username is deactivated"
 msgstr "Nombre de usuario está desactivada"
 
-#: forms/__init__.py:102
-msgid "Email"
-msgstr ""
-
-#: forms/__init__.py:105
-#, fuzzy
+#: forms/__init__.py:101
 msgid "First name"
-msgstr "Nombre de proyecto"
+msgstr "Nombre"
 
-#: forms/__init__.py:107
+#: forms/__init__.py:103
 msgid "Last name"
-msgstr ""
+msgstr "Apellido"
 
-#: forms/__init__.py:118
+#: forms/__init__.py:106
+msgid "Email"
+msgstr "E-Mail"
+
+#: forms/__init__.py:115
+msgid "The username is already taken."
+msgstr "Nombre de proyecto ya esta ocupado."
+
+#: forms/__init__.py:125
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: forms/__init__.py:127
+#: forms/__init__.py:134
 msgid "The email does not correspond to any registered user."
 msgstr "El email no corresponde a ningun usuario registrado."
 
-#: forms/__init__.py:137
+#: forms/__init__.py:144
 msgid "Enter your new password"
 msgstr "Escriba su nueva contraseña"
 
-#: forms/__init__.py:139
+#: forms/__init__.py:146
 msgid "Retype the password"
 msgstr "Vuelva a escribir la contraseña"
 
-#: forms/__init__.py:146
+#: forms/__init__.py:153
 msgid "Passwords do not match"
 msgstr "Las contraseñas no coinciden"
 
-#: forms/__init__.py:156 forms/__init__.py:197 templates/task-view.html:43
+#: forms/__init__.py:163 forms/__init__.py:204 templates/task-view.html:43
 #: templates/user-story-view.html:49
 msgid "Description"
 msgstr "Descripcion"
 
-#: forms/__init__.py:157
+#: forms/__init__.py:164
 msgid "Photo"
 msgstr "Foto"
 
-#: forms/__init__.py:186
+#: forms/__init__.py:193
 #, fuzzy
 msgid "Reset password and send password recovery mail."
-msgstr "Greenmine: recuperación de la contraseña."
+msgstr ""
 
-#: forms/__init__.py:196 templates/projects.html:18
+#: forms/__init__.py:203 templates/projects.html:18
 msgid "Project name"
 msgstr "Nombre de proyecto"
 
-#: forms/__init__.py:215
+#: forms/__init__.py:222
 msgid "Project name is already occupied."
 msgstr "Nombre de proyecto ya esta ocupado."
 
-#: forms/__init__.py:290
+#: forms/__init__.py:297
 #, fuzzy
 msgid "Invalid data"
 msgstr "Inválido"
@@ -238,6 +245,19 @@ msgstr "Sin asignar"
 #: templates/base.html:18
 msgid "Logout"
 msgstr "Cerrar sesión"
+
+#: templates/login.html:23
+#, fuzzy
+msgid "Forgot your password?"
+msgstr "Escriba su nueva contraseña"
+
+#: templates/login.html:24 templates/register.html:9
+msgid "Register"
+msgstr ""
+
+#: templates/login.html:28
+msgid "Login"
+msgstr ""
 
 #: templates/middle-menu-left.html:6
 msgid "Backlog"
@@ -410,8 +430,8 @@ msgstr ""
 msgid "Are you sure you want to delete this question?"
 msgstr ""
 
-#: templates/register.html:9
-msgid "Register"
+#: templates/register.html:32
+msgid "Register now"
 msgstr ""
 
 #: templates/task-create.html:12
@@ -605,11 +625,29 @@ msgstr "El director del proyecto"
 msgid "New user"
 msgstr "Nueva UserStory"
 
+#: templates/email/forgot.password.html:4 templates/email/new.user.html:4
+#, fuzzy
+msgid "Hi"
+msgstr "Alto"
+
+#: templates/email/forgot.password.html:5
+msgid "To reset your password, go to this link:"
+msgstr ""
+
+#: templates/email/forgot.password.html:9 templates/email/new.user.html:9
+msgid "Greenmine Team"
+msgstr ""
+
+#: templates/email/new.user.html:5
+msgid ""
+"Thanks for signing in Greenmine! To set your new password, follow this link:"
+msgstr ""
+
 #: templates/modules/user-story-dashboard.html:14
 msgid "Points:"
 msgstr "Puntos"
 
-#: views/api.py:92
+#: views/api.py:91
 msgid "He has sent an email with the link to retrieve your password"
 msgstr "Se ha enviado un un email con el enlace para recuperar la contraseña"
 
@@ -638,72 +676,80 @@ msgstr "Backup restaurado con exito."
 msgid "Permission denied."
 msgstr "Permision denied."
 
-#: views/main.py:92
+#: views/main.py:49
+msgid "Validation message was sent successfully."
+msgstr ""
+
+#: views/main.py:102
 msgid "Recovery password email are sended"
 msgstr ""
 
-#: views/main.py:116
+#: views/main.py:126
 #, fuzzy
 msgid "Password changed!"
 msgstr "Contraseña"
 
-#: views/main.py:136
+#: views/main.py:147
 msgid "Token has expired, try again"
 msgstr "Token ha expirado, vuelva a intentarlo"
 
-#: views/main.py:142
+#: views/main.py:156
 msgid "The password has been successfully restored."
 msgstr "La contraseña se ha reestablecido con exito."
 
-#: views/main.py:174 views/main.py:339 views/main.py:398
+#: views/main.py:186 views/main.py:360 views/main.py:419
 #, python-format
 msgid "Integrity error: %(e)s"
 msgstr "Error de integridad: %(e)s"
 
-#: views/main.py:178
+#: views/main.py:190
 msgid "Profile save success!"
 msgstr "Guardar perfil éxito!"
 
-#: views/main.py:325 views/main.py:383
+#: views/main.py:261 views/main.py:289
+msgid "No milestones found"
+msgstr ""
+
+#: views/main.py:346 views/main.py:404
 msgid "You must specify at least one person to the project"
 msgstr "Debe especificar al menos una persona al proyecto"
 
-#: views/main.py:343 views/main.py:402
+#: views/main.py:364 views/main.py:423
 #, python-format
 msgid "Project %(pname)s is successful saved."
 msgstr "Proyecto %(pname)s tiene éxito salvo."
 
-#: views/main.py:505
+#: views/main.py:526
 msgid "The user story was created correctly"
 msgstr "La user story se ha creado correctamente"
 
-#: views/main.py:539
+#: views/main.py:560
 msgid "The user story has been successfully saved"
 msgstr "La user story se ha guardado correctamente"
 
-#: views/main.py:617
+#: views/main.py:638
 msgid "The task has been created with success!"
 msgstr "La tarea ha sido creada con exito!"
 
-#: views/main.py:697
+#: views/main.py:718
 #, fuzzy
 msgid "The task has been saved!"
 msgstr "La tarea ha sido creada con exito!"
 
-#: views/main.py:777
+#: views/main.py:798
 #, fuzzy
 msgid "Project preferences saved successfull"
 msgstr "Proyecto %(pname)s tiene éxito salvo."
 
-#: views/main.py:831
+#: views/main.py:852
 msgid "Quienstion are created"
 msgstr ""
 
-#: views/main.py:868
+#: views/main.py:889
 msgid "Quienstion are saved"
 msgstr ""
 
-#: views/main.py:1029
+#: views/main.py:1050
 #, fuzzy
 msgid "User saved succesful"
 msgstr "Guardar perfil éxito!"

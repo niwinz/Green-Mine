@@ -6,7 +6,7 @@
     {% if user.is_staff %}
     <li><a href="{% url 'web:users' %}" class="{{ menu.in_users }}">{% trans "Users" %}</a></li>
     {% endif %}
-    {% if menu.in_projects == "" and menu.in_users == "" %}
+    {% if menu.in_projects == "" and menu.in_users == "" and project.owner == user %}
     <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
     {% endif %}
 </ul>

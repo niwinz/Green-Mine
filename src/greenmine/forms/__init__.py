@@ -189,13 +189,15 @@ class ProfileForm(forms.ModelForm):
 
 
 class UserEditForm(ProfileForm):
-    reset_password = forms.BooleanField(required=False,
-        label = _(u"Reset password and send password recovery mail."))
+    """
+    Administration form for create or edit user.
+    """
 
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name',
-                  'email', 'description', 'photo', 'reset_password')
+                  'email', 'description', 'photo',
+                  'is_active', 'is_staff', 'is_superuser')
 
 
 class ProjectForm(Form):
