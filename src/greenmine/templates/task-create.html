@@ -35,6 +35,11 @@
             {{ form.milestone }}
         </div>
         <div class="form-field">
+            <label>{{ form.user_story.label }}</label>
+            {{ form.user_story.errors }}
+            {{ form.user_story }}
+        </div>
+        <div class="form-field">
             <label>{{ form.type.label }}</label>
             {{ form.type.errors }}
             {{ form.type}}

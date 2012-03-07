@@ -13,13 +13,21 @@ from greenmine.fields import DictField, ListField
 
 import datetime
 
+ROLE_OBSERVER = 'observer'
+ROLE_DEVELOPER = 'developer'
+ROLE_MANAGER = 'manager'
+ROLE_PARTNER = 'partner'
+ROLE_CLIENT = 'client'
+
 ROLE_CHOICES = (
-    ('observer', _(u'Observer')),
-    ('developer', _(u'Developer')),
-    ('manager', _(u'Project manager')),
-    ('partner', _(u'Partner')),
-    ('client', _(u'Client')),
+    (ROLE_OBSERVER, _(u'Observer')),
+    (ROLE_DEVELOPER, _(u'Developer')),
+    (ROLE_MANAGER, _(u'Project manager')),
+    (ROLE_PARTNER, _(u'Partner')),
+    (ROLE_CLIENT, _(u'Client')),
 )
+
+
 
 ORG_ROLE_CHOICES = (
     ('owner', _(u'Owner')),

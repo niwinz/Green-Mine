@@ -5,18 +5,61 @@
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
-{% block wrapper %}
-<div id="user-story-module">
-    <div class="user-story-create" class="form-container">
-        <div class="form-legend">
-            <span>{% trans "Edit task:" %}</span>
-        </div>
 
-        <form action="{{ current_url }}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" class="btn01" value="{% trans "Save" %}" />
-        </form>
+{% block wrapper %}
+<div class="user-story-create form-container">
+    <div class="form-legend">
+        <span>{% trans "Task edit:" %}</span>
     </div>
+
+    <form action="{{ full_current_url }}" method="post" class="inline">
+        {% csrf_token %}
+        <div class="form-field">
+            <label>{{ form.subject.label }}</label>
+            {{ form.subject.errors }}
+            {{ form.subject }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.status.label }}</label>
+            {{ form.status.errors }}
+            {{ form.status }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.priority.label }}</label>
+            {{ form.priority.errors }}
+            {{ form.priority }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.milestone.label }}</label>
+            {{ form.milestone.errors }}
+            {{ form.milestone }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.user_story.label }}</label>
+            {{ form.user_story.errors }}
+            {{ form.user_story }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.type.label }}</label>
+            {{ form.type.errors }}
+            {{ form.type}}
+        </div>
+        <div class="form-field">
+            <label>{{ form.assigned_to.label }}</label>
+            {{ form.assigned_to.errors }}
+            {{ form.assigned_to }}
+        </div>
+        <div class="form-field width100">
+            <label>{{ form.description.label }}</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        <div class="form-field width100 float-left">
+           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+           {% comment %}
+           <input type="submit" value="{% trans "Save & create other" %}" class="btn01"></input>
+           {% endcomment %}
+        </div>
+    </form>
 </div>
 {% endblock %}
