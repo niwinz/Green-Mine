@@ -16,32 +16,44 @@
         {% csrf_token %}
         <div class="form-field">
             <label>{{ form.subject.label }}</label>
-            {{ form.subject }}
             {{ form.subject.errors }}
+            {{ form.subject }}
         </div>
         <div class="form-field">
             <label>{{ form.status.label }}</label>
-            {{ form.status }}
             {{ form.status.errors }}
+            {{ form.status }}
         </div>
         <div class="form-field">
             <label>{{ form.priority.label }}</label>
-            {{ form.priority }}
             {{ form.priority.errors }}
+            {{ form.priority }}
         </div>
         <div class="form-field">
+            <label>{{ form.milestone.label }}</label>
+            {{ form.milestone.errors }}
+            {{ form.milestone }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.type.label }}</label>
+            {{ form.type.errors }}
+            {{ form.type}}
+        </div>
+        <div class="form-field">
+            <label>{{ form.assigned_to.label }}</label>
+            {{ form.assigned_to.errors }}
+            {{ form.assigned_to }}
+        </div>
+        <div class="form-field width100">
             <label>{{ form.description.label }}</label>
             {{ form.description }}
             {{ form.description.errors }}
         </div>
-        <div class="form-field">
-            <label>{{ form.milestone.label }}</label>
-            {{ form.milestone }}
-            {{ form.milestone.errors }}
-        </div>
         <div class="form-field width100 float-left">
            <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+           {% comment %}
            <input type="submit" value="{% trans "Save & create other" %}" class="btn01"></input>
+           {% endcomment %}
         </div>
     </form>
 </div>
