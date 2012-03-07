@@ -144,7 +144,7 @@ class PasswordRecoveryView(GenericView):
             email = cache.get("fp_%s" % token)
             if not email:
                 messages.error(request, _(u'Token has expired, try again'))
-                return self.redirect(reverse('web:login'))
+                return self.render_redirect(reverse('web:login'))
 
             user = models.User.objects.get(email=email)
             user.set_password(form.cleaned_data['password'])
