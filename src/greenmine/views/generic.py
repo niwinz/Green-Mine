@@ -20,8 +20,14 @@ from superview.views import SuperView as View
 class GenericView(View):
     """ Generic view with some util methods. """
 
-    def get_context(self):
-        return {}
+    def required_role(self, project, user, roles):
+        try:
+            purobj = ProjectUserRole.objects.get(
+                user = user,
+                project = project,
+            )
+        except ProjectUserRole.DoesNotExist:
+            pass
 
     def render_to_ok(self, context={}):
         response = {'valid': True, 'errors': []}
@@ -32,21 +38,3 @@ class GenericView(View):
         response = {'valid': False, 'errors': []}
         response.update(context)
         return self.render_json(response, ok=False)
-
-    
-class ProjectGenericView(GenericView):
-    """ Generic View Template for all views relationed with projects. """
-
-    def get_context(self):
-        context = super(ProjectGenericView, self).get_context()
-        context['project'] = self.project
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.project = Project.objects.get(pk=kwargs['projectid'])
-        except Project.DoesNotExist:
-            raise Http404('project does not exist')
-
-        return super(ProjectGenericView, self).dispatch(request, *args, **kwargs)
-
