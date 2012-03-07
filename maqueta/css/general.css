@@ -208,7 +208,11 @@ div.main-menu ul.right-menu li {
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.title { 
-    width: 430px;
+    width: 330px;
+}
+
+#dashboard .left-block .unassigned-us .un-us-item .row.type { 
+    width: 70px;
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.title span.category {
     color: white;

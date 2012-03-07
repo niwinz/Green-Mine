@@ -19,6 +19,9 @@
                 <div class="row title">
                     <span>{% trans "Subject" %}</span>
                 </div>
+                <div class="row type">
+                    <span>{% trans "Type" %}</span>
+                </div>
                 <div class="row us">
                     <span>{% trans "US" %}</span>
                 </div>
@@ -36,6 +39,9 @@
             <div class="un-us-item">
                 <div class="row title">
                     <span><a href="{{ task.get_view_url }}">{{ task.subject|truncatechars:45 }}</a></span>
+                </div>
+                <div class="row type">
+                    <span>{{ task.get_type_display }}</span>
                 </div>
                 <div class="row us">
                     <span><a href="">{{ task.user_story.ref|default:"Null" }}</a></span>
