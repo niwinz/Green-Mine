@@ -255,7 +255,11 @@ class TasksView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
 
         if mid is None:
-            return self.render_redirect(project.get_default_tasks_url())
+            try:
+                return self.render_redirect(project.get_default_tasks_url())
+            except IndexError:
+                messages.error(request, _("No milestones found"))
+                return self.render_redirect(project.get_backlog_url())
 
         milestone = get_object_or_404(project.milestones, pk=mid)
         tasks = milestone.tasks.all()
