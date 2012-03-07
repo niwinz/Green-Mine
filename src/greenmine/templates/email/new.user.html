@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <p>{% trans "Hi" %} {{ user.get_full_name }}.</p>
-<p>{% trans "To reset your password, go to this link:" %}<br />
+<p>{% trans "Thanks for signing in Greenmine! To set your new password, follow this link:" %}<br />
     <a href="{{ current_host }}{% url 'web:password-recovery' token %}">{{ current_host }}{% url 'web:password-recovery' token %}</a></p>
 
 <p><br />
