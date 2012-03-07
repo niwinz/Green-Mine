@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-07 22:06+0100\n"
+"POT-Creation-Date: 2012-03-07 23:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,8 @@ msgstr "Socio"
 msgid "Client"
 msgstr "Cliente"
 
-#: models.py:25 templates/projects.html:19
+#: models.py:25 templates/projects.html:22
+#: templates/config/project-edit.html:35
 msgid "Owner"
 msgstr "Dueño"
 
@@ -170,7 +171,7 @@ msgstr "Vuelva a escribir la contraseña"
 msgid "Passwords do not match"
 msgstr "Las contraseñas no coinciden"
 
-#: forms/__init__.py:163 forms/__init__.py:204 templates/task-view.html:43
+#: forms/__init__.py:163 forms/__init__.py:206 templates/task-view.html:43
 #: templates/user-story-view.html:49
 msgid "Description"
 msgstr "Descripcion"
@@ -179,20 +180,15 @@ msgstr "Descripcion"
 msgid "Photo"
 msgstr "Foto"
 
-#: forms/__init__.py:193
-#, fuzzy
-msgid "Reset password and send password recovery mail."
-msgstr ""
-
-#: forms/__init__.py:203 templates/projects.html:18
+#: forms/__init__.py:205 templates/projects.html:21
 msgid "Project name"
 msgstr "Nombre de proyecto"
 
-#: forms/__init__.py:222
+#: forms/__init__.py:224
 msgid "Project name is already occupied."
 msgstr "Nombre de proyecto ya esta ocupado."
 
-#: forms/__init__.py:297
+#: forms/__init__.py:299
 #, fuzzy
 msgid "Invalid data"
 msgstr "Inválido"
@@ -215,20 +211,20 @@ msgstr ""
 msgid "No user storys"
 msgstr "Nueva UserStory"
 
-#: templates/backlog.html:53 templates/tasks.html:73
+#: templates/backlog.html:53 templates/tasks.html:79
 msgid "What do you do?"
 msgstr ""
 
-#: templates/backlog.html:55 templates/tasks.html:75
+#: templates/backlog.html:55 templates/tasks.html:81
 msgid "Choose the appropriate option."
 msgstr ""
 
 #: templates/backlog.html:62 templates/backlog.html.py:66
-#: templates/questions.html:67 templates/tasks.html:82
+#: templates/questions.html:67 templates/tasks.html:88
 msgid "Are you sure?"
 msgstr ""
 
-#: templates/backlog.html:63 templates/tasks.html:83
+#: templates/backlog.html:63 templates/tasks.html:89
 msgid "Are you sure you want to delete this milestone?"
 msgstr ""
 
@@ -236,8 +232,8 @@ msgstr ""
 msgid "Are you sure you want to delete this US?"
 msgstr ""
 
-#: templates/backlog.html:97 templates/tasks.html:50
-#: templates/tasks.html.py:114 templates/user-story-item.html:22
+#: templates/backlog.html:97 templates/tasks.html:56
+#: templates/tasks.html.py:120 templates/user-story-item.html:22
 #: templates/modules/task-user-story.html:10
 msgid "Unassigned"
 msgstr "Sin asignar"
@@ -286,6 +282,7 @@ msgid "Projects"
 msgstr "Proyectos"
 
 #: templates/middle-menu-right.html:7 templates/config/menu.html:7
+#: templates/config/project-edit.html:54
 msgid "Users"
 msgstr "Usuarios"
 
@@ -299,11 +296,11 @@ msgid "Create new milestone:"
 msgstr ""
 
 #: templates/milestone-create.html:25 templates/password.html:36
-#: templates/profile.html:62 templates/task-create.html:43
+#: templates/profile.html:62 templates/task-create.html:53
 #: templates/task-edit.html:18 templates/user-story-create.html:57
 #: templates/user-story-edit.html:26 templates/user_story_form_inline.html:6
-#: templates/wiki-page-edit.html:20 templates/config/users-create.html:64
-#: templates/config/users-edit.html:70
+#: templates/wiki-page-edit.html:20 templates/config/project-edit.html:70
+#: templates/config/users-create.html:78 templates/config/users-edit.html:70
 msgid "Save"
 msgstr "Guardar"
 
@@ -328,8 +325,7 @@ msgstr ""
 msgid "Change password"
 msgstr "Vuelva a escribir la contraseña"
 
-#: templates/profile.html:20 templates/config/users-create.html:22
-#: templates/config/users-edit.html:28
+#: templates/profile.html:20 templates/config/users-edit.html:28
 #, fuzzy
 msgid "Profile:"
 msgstr "Mi perfil"
@@ -338,48 +334,54 @@ msgstr "Mi perfil"
 msgid "Create project"
 msgstr ""
 
-#: templates/projects.html:20
+#: templates/projects.html:16
+#, fuzzy
+msgid "My projects:"
+msgstr "Proyectos"
+
+#: templates/projects.html:23
 msgid "Opctions"
 msgstr ""
 
-#: templates/projects.html:32
+#: templates/projects.html:35
 msgid "Modify"
-msgstr ""
+msgstr "Editar"
 
-#: templates/projects.html:33 templates/questions-delete.html:37
-#: templates/wiki-page.html:15 templates/config/users-delete.html:37
+#: templates/projects.html:36 templates/questions-delete.html:37
+#: templates/wiki-page.html:15 templates/config/project-edit.html:45
+#: templates/config/users-delete.html:37
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
 #: templates/questions-create.html:11 templates/questions-delete.html:38
 #: templates/questions-edit.html:11 templates/user_story_form_inline.html:7
 #: templates/config/users-delete.html:38
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: templates/questions-create.html:19
 msgid "New question"
-msgstr ""
+msgstr "Nueva question"
 
 #: templates/questions-delete.html:15 templates/questions-view.html:15
 #: templates/config/project-export.html:15
 #: templates/config/users-delete.html:15
 msgid "Edit this question"
-msgstr ""
+msgstr "Editar esta question"
 
 #: templates/questions-delete.html:18 templates/questions-view.html:18
 #: templates/config/project-export.html:18
 #: templates/config/users-delete.html:18
 msgid "Delete this question"
-msgstr ""
+msgstr "Eliminar esta question"
 
 #: templates/questions-delete.html:28
 msgid "Will delete this question: "
-msgstr ""
+msgstr "¿Esta seguro que quiere eliminar esta question?:"
 
 #: templates/questions-delete.html:35 templates/config/users-delete.html:35
 msgid "Are you sure you want to delete?"
-msgstr ""
+msgstr "¿Esta seguro que quiere eliminar?"
 
 #: templates/questions-edit.html:19
 msgid "Edit question"
@@ -394,37 +396,37 @@ msgstr ""
 #: templates/questions.html.py:55 templates/config/users-view.html:35
 #: templates/config/users.html:28
 msgid "Created on: "
-msgstr ""
+msgstr "Creada: "
 
 #: templates/questions-view.html:32 templates/questions.html:32
 #: templates/questions.html.py:56 templates/config/users-view.html:36
 #: templates/config/users.html:29
 msgid "Last modified on: "
-msgstr ""
+msgstr "Ultima fecha de modificación: "
 
 #: templates/questions-view.html:46
 msgid "By: "
-msgstr ""
+msgstr "Por: "
 
 #: templates/questions-view.html:56 templates/task-view.html:112
 msgid "Write your comment:"
-msgstr ""
+msgstr "Escribe su comentario:"
 
 #: templates/questions-view.html:66 templates/task-view.html:122
 msgid "Send comment"
-msgstr ""
+msgstr "Enviar comentario"
 
 #: templates/questions.html:12
 msgid "New Question"
-msgstr ""
+msgstr "Nueva question"
 
 #: templates/questions.html:20
 msgid "Open questions:"
-msgstr ""
+msgstr "Questions abiertas:"
 
 #: templates/questions.html:44
 msgid "Closed questions:"
-msgstr ""
+msgstr "Questions cerradas:"
 
 #: templates/questions.html:68
 msgid "Are you sure you want to delete this question?"
@@ -432,36 +434,31 @@ msgstr ""
 
 #: templates/register.html:32
 msgid "Register now"
-msgstr ""
+msgstr "Reguistrarse!"
 
 #: templates/task-create.html:12
 msgid "Task Create:"
-msgstr ""
-
-#: templates/task-create.html:44
-msgid "Save & create other"
-msgstr ""
+msgstr "Crear tarea:"
 
 #: templates/task-edit.html:12
 msgid "Edit task:"
-msgstr ""
+msgstr "Editar tarea:"
 
 #: templates/task-view.html:14
 msgid "Edit this task"
-msgstr ""
+msgstr "Editar tarea"
 
 #: templates/task-view.html:17
 msgid "Delete this task"
-msgstr ""
+msgstr "Eliminar tarea"
 
 #: templates/task-view.html:24
-#, fuzzy
 msgid "Task subject"
 msgstr "Tema"
 
-#: templates/task-view.html:28 templates/tasks.html:26
+#: templates/task-view.html:28 templates/tasks.html:29
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: templates/task-view.html:32 templates/user-story-view.html:36
 msgid "Tested"
@@ -473,27 +470,29 @@ msgstr "Fecha de finalización"
 
 #: templates/task-view.html:67
 msgid "Responses:"
-msgstr ""
+msgstr "Respuestas:"
 
 #: templates/tasks.html:13
-#, fuzzy
-msgid "Create new task"
-msgstr "Nueva tarea"
+msgid "Create new task/bug"
+msgstr "Nueva tarea / bug"
 
 #: templates/tasks.html:20
 msgid "Subject"
 msgstr "Tema"
 
 #: templates/tasks.html:23
+msgid "Type"
+msgstr "Tipo"
+
+#: templates/tasks.html:26
 msgid "US"
 msgstr ""
 
-#: templates/tasks.html:29
-#, fuzzy
+#: templates/tasks.html:32
 msgid "Assinged to"
 msgstr "Asignado a:"
 
-#: templates/tasks.html:32
+#: templates/tasks.html:35
 msgid "Acctions"
 msgstr ""
 
@@ -501,8 +500,9 @@ msgstr ""
 msgid "Create user story:"
 msgstr ""
 
-#: templates/user-story-edit.html:14 templates/config/users-create.html:15
-#: templates/config/users-edit.html:15 templates/config/users-view.html:15
+#: templates/user-story-edit.html:14 templates/config/project-edit.html:71
+#: templates/config/users-create.html:15 templates/config/users-edit.html:15
+#: templates/config/users-view.html:15
 msgid "Return"
 msgstr "Volver"
 
@@ -547,7 +547,7 @@ msgstr "Nueva tarea"
 msgid "Create/Edit wikipage"
 msgstr ""
 
-#: templates/wiki-page.html:14 templates/config/project-edit.html:6
+#: templates/wiki-page.html:14 templates/config/project-edit.html:12
 msgid "Edit"
 msgstr "Editar"
 
@@ -560,17 +560,25 @@ msgstr "Mi perfil"
 msgid "General configuration"
 msgstr "Configuracion"
 
-#: templates/config/middle-menu-left.html:6
-#, fuzzy
-msgid "Project data"
-msgstr "Nombre de proyecto"
-
-#: templates/config/middle-menu-left.html:7
-msgid "Export"
-msgstr ""
-
 #: templates/config/middle-menu-right.html:5
 msgid "Return to backlog"
+msgstr ""
+
+#: templates/config/project-edit.html:8
+msgid "Return to projects"
+msgstr ""
+
+#: templates/config/project-edit.html:36
+msgid "Role"
+msgstr ""
+
+#: templates/config/project-edit.html:37
+#, fuzzy
+msgid "Options"
+msgstr "Descripcion"
+
+#: templates/config/project-edit.html:59
+msgid "Roles"
 msgstr ""
 
 #: templates/config/project.html:5
@@ -598,10 +606,10 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: templates/config/users-create.html:65 templates/config/users-edit.html:71
+#: templates/config/users-create.html:22
 #, fuzzy
-msgid "Send password recovery mail"
-msgstr "Greenmine: recuperación de la contraseña."
+msgid "Create user:"
+msgstr "Nueva tarea"
 
 #: templates/config/users-delete.html:28
 msgid "Will delete this user: "
@@ -614,6 +622,11 @@ msgstr ""
 #: templates/config/users-edit.html:21 templates/config/users-view.html:21
 msgid "Delete this user"
 msgstr ""
+
+#: templates/config/users-edit.html:71
+#, fuzzy
+msgid "Send password recovery mail"
+msgstr "Greenmine: recuperación de la contraseña."
 
 #: templates/config/users-view.html:42
 #, fuzzy
@@ -753,6 +766,10 @@ msgstr ""
 #, fuzzy
 msgid "User saved succesful"
 msgstr "Guardar perfil éxito!"
+
+#, fuzzy
+#~ msgid "Project data"
+#~ msgstr "Nombre de proyecto"
 
 #~ msgid "You have to start session to proceed"
 #~ msgstr "Tiene que iniciar session para proceder"
