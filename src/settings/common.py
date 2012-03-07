@@ -175,7 +175,7 @@ INSTALLED_APPS = [
     'html5forms',
 ]
 
-WSGI_APPLICATION = 'greenmine.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 LOGGING = {
     'version': 1,

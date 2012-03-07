@@ -52,8 +52,11 @@ def set_token(user):
     token = unicode(uuid.uuid4())
     profile = user.get_profile()
     profile.token = token
-    profile.save()
+
+    user.set_unusable_password()
     
+    user.save()
+    profile.save()
     return token
 
 
