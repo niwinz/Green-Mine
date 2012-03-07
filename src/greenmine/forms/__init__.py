@@ -95,7 +95,7 @@ class LoginForm(Form):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(max_length=200, min_length=4
+    username = forms.CharField(max_length=200, min_length=4,
         required=True, label=_(u'Username'))
     first_name = forms.CharField(max_length=200, 
         required=True, label=_(u"First name"))
