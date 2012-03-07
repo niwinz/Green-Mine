@@ -45,7 +45,7 @@ class RegisterView(GenericView):
                 email = form.cleaned_data['email'],
             )
 
-            utils.send_recovery_email(user)
+            utils.send_new_registered_email(user)
             messages.info(request, _(u"Validation message was sent successfully."))
             return self.render_redirect(reverse('web:login'))
 

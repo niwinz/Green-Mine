@@ -95,7 +95,7 @@ class LoginForm(Form):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(max_length=200, 
+    username = forms.CharField(max_length=200, min_length=4
         required=True, label=_(u'Username'))
     first_name = forms.CharField(max_length=200, 
         required=True, label=_(u"First name"))
@@ -165,7 +165,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name',
+        fields = ('first_name', 'last_name',
                   'email', 'description', 'photo')
 
     def __init__(self, *args, **kwargs):

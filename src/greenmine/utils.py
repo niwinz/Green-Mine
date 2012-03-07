@@ -73,10 +73,28 @@ def send_recovery_email(user):
     }
     email_body = loader.render_to_string("email/forgot.password.html", 
                                                                 context)
+    send_email(user.email, email_body, _(u"Greenmine: password revovery."))
+
+
+def send_new_registered_email(user):
+    """ Set token for user and send
+    first registration email.
+    """
+
+    context = {
+        'user': user, 
+        'token': set_token(user),
+        'current_host': settings.HOST,
+    }
+    email_body = loader.render_to_string("email/new.user.html", context)
+    send_email(user.email, email_body, _(u"Greenmine: Welcome to Greenmine."))
+
+
+def send_email(email, body, subject, content_subtype='html'):
     email_message = EmailMessage(
-        body = email_body,
-        to = [user.email],
-        subject = _(u'Greenmine: password recovery.'),
+        body = body,
+        to = [email],
+        subject = subject
     )
-    email_message.content_subtype = "html"
+    email_message.content_subtype = content_subtype
     email_message.send(fail_silently=True)
