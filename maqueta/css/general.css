@@ -1,9 +1,10 @@
-body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {margin:0; padding:0; font-family: Arial, Helvetica; font-size: 14px;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,p,blockquote,th,td {margin:0; padding:0; font-family: Arial, Helvetica; font-size: 14px;}
 body { padding-top: 50px; }
 select, input, textarea {border: 1px solid #D9D9D9;}
 select:hover, input:hover, textarea:hover{border: 1px solid #B9B9B9;}
 select:focus, input:focus, textarea:focus{border: 1px solid #458745;}
 input, textarea{ text-align: left; color: black; cursor: text; }
+input[type="radio"] { cursor: pointer; }
 textarea, input[type="text"], input[type="password"] {padding: 2px 10px 0 6px;  font-size: 17px;  vertical-align: top; height: 26px;}
 textarea { height: 126px; }
 table {border-collapse:collapse; border-spacing:0;}
@@ -26,15 +27,24 @@ a{color: #458745; text-decoration: none;}
 legend{font-weight:bold;}
 fieldset{padding: 20px;}
 .fsborder{border: 1px solid #EFEFEF;}
-.btn01{background-color:#458745; 
-padding: 7px 15px; font-size: 15px; color: #FFF; font-weight:bold; text-decoration: none;
-cursor: pointer; margin-right: 5px; border-radius: 8px; border: 0; line-height: 20px; float: left;}
+.btn01{
+    background-color:#458745; 
+    padding: 7px 15px; font-size: 15px; color: #FFF; font-weight:bold; text-decoration: none;
+    cursor: pointer; margin-right: 5px; border-radius: 8px; border: 0; line-height: 20px; float: left;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
 .btn01:hover{border: 0; box-shadow: 1px 1px 2px #888;}
 label.error{color: red;}
 #login, #password-recovery{margin: 0 auto; background-color: #FFF; padding: 30px 90px; width: 335px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
 .form-field{margin-bottom: 20px;}
-form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{width: 284px; clear: left; display: block;}
+form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{
+    width: 284px; clear: left; display: block;
+    padding: 5px; font-size: 14px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
 .form-field{width: 305px;}
 #login  .forgot-pass{line-height: 18px; float: left;}
 #login .btn01{float: right;}

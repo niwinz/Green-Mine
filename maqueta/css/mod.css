@@ -97,7 +97,7 @@ input[type=button] {
 }
 
 textarea#id_description,
-textarea#id_content { width: 945px; height: 190px; }
+textarea#id_content { width: 930px; height: 190px; }
 .question-responses { overflow: hidden; }
 .question-responses .question-response-item {
     float:right;
