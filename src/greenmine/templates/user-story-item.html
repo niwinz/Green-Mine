@@ -16,10 +16,10 @@
         <span>{{ us.get_points_display }}</span>
     </div>
     <div class="row priority">
-        <span priprity="{{ us.priority }}">{{ us.get_priority_display }}</span>
+        <span priority="{{ us.priority }}">{{ us.priority }}</span>
     </div>
     <div class="row milestone">
-        <span><a rel="{{ us.ref }}" href="">{% trans "Unassigned" %}</a></span>
+        <span><a rel="{{ us.ref }}" href=""></a></span>
     </div>
     <div class="row metaicon">
         <a class="config-us-inline" href="{{ us.get_edit_inline_url }}">
