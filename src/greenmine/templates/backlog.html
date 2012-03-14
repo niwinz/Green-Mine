@@ -26,9 +26,8 @@
             {% for ml in milestones %}
             <div id="milestone-{{ml.id}}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
                 <div class="milestone-title">
-                    <div class="text">{{ ml.name|capfirst }}</div>
+                    <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
                     <div class="meta">
-                        <a href="{{ ml.get_dashboard_url }}">{% trans "(Dashboard)" %}</a>
                         <a href="" class="delete">
                             <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img>
                         </a>
