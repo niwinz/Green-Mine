@@ -179,6 +179,16 @@ class Project(models.Model):
     def __repr__(self):
         return u"<Project %s>" % (self.slug)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify_uniquely(self.name, self.__class__)
+        else:
+            self.modified_date = datetime.datetime.now()
+
+        super(Project, self).save(*args, **kwargs)
+
+    """ Permalinks """
+
     @models.permalink
     def get_dashboard_url(self):
         return ('web:dashboard', (), {'pslug': self.slug})
@@ -233,14 +243,6 @@ class Project(models.Model):
     @models.permalink
     def get_questions_create_url(self):
         return ('web:questions-create', (), {'pslug': self.slug})
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.name, self.__class__)
-        else:
-            self.modified_date = datetime.datetime.now()
-
-        super(Project, self).save(*args, **kwargs)
 
 
 class Team(models.Model):

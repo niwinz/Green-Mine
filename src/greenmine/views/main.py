@@ -301,11 +301,7 @@ class DashboardView(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
-class ProjectCreateView(GenericView):
-    template_name = 'project-create.html'
-    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
-    menu = ['projects']
-
+class UserRoleMixIn(object):
     def parse_roles(self):
         user_role = {}
 
@@ -324,6 +320,11 @@ class ProjectCreateView(GenericView):
                 break
             
         return {} if invalid_role else user_role
+
+class ProjectCreateView(UserRoleMixIn, GenericView):
+    template_name = 'project-create.html'
+    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+    menu = ['projects']
 
     def get(self, request):
         form = forms.ProjectForm()
@@ -369,7 +370,7 @@ class ProjectCreateView(GenericView):
         return super(ProjectCreateView, self).dispatch(*args, **kwargs)
 
 
-class ProjectEditView(ProjectCreateView):
+class ProjectEditView(UserRoleMixIn, GenericView):
     template_name = 'config/project-edit.html'
     user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
     menu = ["settings", "editproject"]
@@ -377,9 +378,12 @@ class ProjectEditView(ProjectCreateView):
     @login_required
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
+        
+        if not self.check_role_manager(project):
+            return self.redirect_referer(_(u"You are not authorized to access here!"))
+        
         form = forms.ProjectForm(instance=project)
         
-        print project.user_roles.all()
         context = {
             'form':form, 
             'roles': models.ROLE_CHOICES, 
@@ -390,6 +394,10 @@ class ProjectEditView(ProjectCreateView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        if not self.check_role_manager(project):
+            return self.redirect_referer(_(u"You are not authorized to access here!"))
+
         form = forms.ProjectForm(request.POST, request=request, instance=project)
         context = {'form': form, 'roles': models.ROLE_CHOICES, 'project': project}
         
