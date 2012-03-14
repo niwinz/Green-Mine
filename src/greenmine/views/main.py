@@ -769,7 +769,7 @@ class UnassignUs(GenericView):
 
 
 class ProjectSettings(GenericView):
-    template_path = "config/project.html"
+    template_path = "config/project-personal.html"
     menu = ['settings', 'settings_general']
 
     def create_category_choices(self, project):

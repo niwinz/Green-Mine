@@ -1,9 +1,0 @@
-{% load url from future %}
-{% load i18n %}
-
-<ul class="right-menu menu-item settings">
-    <li><a href="{{ project.get_backlog_url }}" class="">{% trans "Return to backlog" %}</a></li>
-    {% if menu.in_projects == "" and project.owner == user %}
-    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
-    {% endif %}
-</ul>
