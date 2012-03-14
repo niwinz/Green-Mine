@@ -9,6 +9,7 @@
 select {
     height: 30px;
     max-width: 250px;
+    padding: 0px 5px 0px 5px;
 }
 
 input[type=button] {

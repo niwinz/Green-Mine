@@ -56,7 +56,7 @@ class Command(BaseCommand):
             
             # add random participants to project
             participants = []
-            for t in xrange(random.randint(2, 5)):
+            for t in xrange(random.randint(1, 2)):
                 participant = create_user(users_counter)
                 participants.append(participant)
                 ProjectUserRole.objects.create(
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                         milestone = milestone,
                     )
             # created unassociated uss.
-            for y in xrange(100):
+            for y in xrange(10):
                 us = UserStory.objects.create(
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
                     priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
