@@ -37,6 +37,9 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/settings/personal/$', 
         main.ProjectSettings.as_view(), name='project-personal-settings'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/general/$',
+        main.ProjectGeneralSettings.as_view(), name='project-general-settings'),
+
     url(r'^(?P<pslug>[\w\d\-]+)/settings/edit/$',
         main.ProjectEditView.as_view(), name="project-edit"),
     

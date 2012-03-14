@@ -27,5 +27,3 @@ def check_role(project, role, user):
         return True
     
     return False
-
-

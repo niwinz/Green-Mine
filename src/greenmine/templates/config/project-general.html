@@ -1,0 +1,61 @@
+{% extends "config/base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block middle %}
+    {% include "config/middle-menu.html" %}
+{% endblock %}
+
+{% block title %}{{ block.super }} / {% trans "Notifications" %}{% endblock %}
+
+{% block wrapper %}
+<div id="my-profile" class="form-container">
+    {% include "messages.html" %}
+
+    <form id="edit-project-settings" method="post"
+        action="{{ full_current_url }}" class="inline">
+        {% csrf_token %}
+
+
+        <div class="form-legend">
+            <span>{% trans "Category colors:" %}</span>
+        </div>
+
+        <fieldset class="colors-form">
+            {% with pc=project.meta_category_color %}
+            <div class="selected-colors" {% if not pc %}style="display: none"{% endif %}>
+                <h3>{% trans "Current colors:" %}</h3>
+                {% for key, val in pc.iteritems %}
+                <div class="tag-color-item">
+                    <div class="tag-name">{{ key|lower }}</div>
+                    <div class="tag-color" val="{{ val }}" style="background-color: {{ val }}"></div>
+                    <div class="tag-rm">x</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endwith %}
+            <div class="form-field width100 category-field">
+                <div class="sub-item-field">
+                    <select name="category">
+                        {% for key, value in categorys %}
+                        <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="sub-item-field">
+                    <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
+                </div>
+                <div class="sub-item-field">
+                    <input type="button" value="{% trans "Add" %}" />
+                </div>
+            </div>
+            {{ form.colors_hidden }}
+        </fieldset>
+
+        <div class="width100 float-left">
+            <input class="btn01" type="submit" value="Guardar" />
+            <span class="ajax-loader"></span>        
+        </div>
+    </form>
+</div>
+{% endblock %}

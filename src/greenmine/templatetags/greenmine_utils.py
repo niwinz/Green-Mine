@@ -22,8 +22,7 @@ from greenmine.utils import normalize_tagname
 @register.assignment_tag(takes_context=True)
 def tag_color(context, tag):
     project = context['project']
-    pur = project.user_roles.get(user=context['user'])
-    project_category_colors = pur.meta_category_color
+    project_category_colors = project.meta_category_color
 
     ntagname = normalize_tagname(tag)
     if ntagname in project_category_colors:

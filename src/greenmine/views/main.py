@@ -381,7 +381,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         
         if not self.check_role_manager(project):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
-        
+
         form = forms.ProjectForm(instance=project)
         
         context = {
@@ -770,7 +770,7 @@ class UnassignUs(GenericView):
 
 class ProjectSettings(GenericView):
     template_path = "config/project-personal.html"
-    menu = ['settings', 'settings_general']
+    menu = ['settings', 'settings_personal']
 
     def create_category_choices(self, project):
         return [('', '-----'),] + [(key, key.title()) \
@@ -800,13 +800,57 @@ class ProjectSettings(GenericView):
 
         if form.is_valid():
             pur.meta_email_settings = form.emails_data
-            pur.meta_category_color = form.colors_data
             pur.save()
 
             messages.info(request, _(u"Project preferences saved successfull"))
             return self.render_redirect(project.get_settings_url())
 
         context = {
+            'pur': pur,
+            'project': project,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+
+class ProjectGeneralSettings(GenericView):
+    template_path = "config/project-general.html"
+    menu = ["settings", "settings_general"]
+
+    def create_category_choices(self, project):
+        return [('', '-----'),] + [(key, key.title()) \
+            for key in project.meta_category_list]
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        pur = get_object_or_404(project.user_roles, user=request.user)
+        form = forms.ProjectGeneralSettingsForm()
+
+        context = {
+            'categorys': self.create_category_choices(project),
+            'pur': pur,
+            'project': project,
+            'form': form,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        pur = get_object_or_404(project.user_roles, user=request.user)
+        form = forms.ProjectGeneralSettingsForm(request.POST)
+        if form.is_valid():
+            project.meta_category_color = form.colors_data
+            project.save()
+
+            messages.info(request, _(u"Project preferences saved successfull"))
+            return self.render_redirect(project.get_general_settings_url())
+
+        context = {
+            'categorys': self.create_category_choices(project),
             'pur': pur,
             'project': project,
             'form': form,

@@ -27,8 +27,6 @@ ROLE_CHOICES = (
     (ROLE_CLIENT, _(u'Client')),
 )
 
-
-
 ORG_ROLE_CHOICES = (
     ('owner', _(u'Owner')),
     ('developer', _(u'Developer')),
@@ -156,7 +154,10 @@ class Project(models.Model):
         null=True, blank=True)
 
     public = models.BooleanField(default=True)
+
+    fixed_story_points = models.IntegerField(default=0, null=True)
     meta_category_list = ListField(null=True, default=[], editable=False)
+    meta_category_color = DictField(null=True, default={}, editable=False)
 
     objects = ProjectManager()
 
@@ -233,6 +234,10 @@ class Project(models.Model):
         return ('web:project-personal-settings', (), {'pslug': self.slug})
 
     @models.permalink
+    def get_general_settings_url(self):
+        return ('web:project-general-settings', (), {'pslug': self.slug})
+
+    @models.permalink
     def get_task_create_url(self):
         return ('web:task-create', (), {'pslug': self.slug})
 
@@ -262,7 +267,6 @@ class ProjectUserRole(models.Model):
 
     # email notification settings
     meta_email_settings = DictField(null=True, default={}, editable=False)
-    meta_category_color = DictField(null=True, default={}, editable=False)
 
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)

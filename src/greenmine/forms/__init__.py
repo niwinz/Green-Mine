@@ -244,9 +244,6 @@ from django.forms.forms import BoundField
 
 
 class ProjectPersonalSettingsForm(forms.Form):
-    colors_hidden = forms.CharField(max_length=5000, required=False,
-        widget=forms.HiddenInput)
-
     # email notifications
     send_email_on_us_created = forms.BooleanField(required=False, initial=True)
     send_email_on_us_modified = forms.BooleanField(required=False, initial=True)
@@ -279,15 +276,32 @@ class ProjectPersonalSettingsForm(forms.Form):
                     initial_data[key] = current_value
 
             kwargs['initial'] = initial_data
-        super(ProjectPersonalSettingsForm, self).__init__(*args, **kwargs)
 
-    def _validate_colors(self, data):
-        return True
+        super(ProjectPersonalSettingsForm, self).__init__(*args, **kwargs)
 
     @property
     def email_fields_iterator(self):
         for key in self.posible_email_settings:
             yield BoundField(self, self.fields[key], key)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        
+        self.emails_data = {}
+        for key in self.posible_email_settings:
+            clean_value = cleaned_data.get(key, None)
+            if clean_value is not None:
+                self.emails_data[key] = clean_value
+
+        return cleaned_data
+
+
+class ProjectGeneralSettingsForm(forms.Form):
+    colors_hidden = forms.CharField(max_length=5000, required=False,
+        widget=forms.HiddenInput)
+
+    def _validate_colors(self, data):
+        return True
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -298,12 +312,6 @@ class ProjectPersonalSettingsForm(forms.Form):
             if not self._validate_colors(self.colors_data):
                 self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
                 del cleaned_data['colors_hidden']
-
-        self.emails_data = {}
-        for key in self.posible_email_settings:
-            clean_value = cleaned_data.get(key, None)
-            if clean_value is not None:
-                self.emails_data[key] = clean_value
 
         return cleaned_data
 
