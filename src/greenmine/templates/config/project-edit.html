@@ -2,11 +2,9 @@
 {% load url from future %}
 {% load i18n %}
 
+
 {% block middle %}
-<ul class="left-menu menu-item settings"></ul>
-<ul class="right-menu menu-item settings">
-    <li><a href="{% url 'web:projects' %}" class="">{% trans "Return to projects" %}</a></li>
-</ul>
+    {% include "config/middle-menu.html" %}
 {% endblock %}
 
 {% block title %}{{ block.super }} / {% trans "Edit" %}{% endblock %}

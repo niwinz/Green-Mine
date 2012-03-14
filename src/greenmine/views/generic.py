@@ -19,6 +19,8 @@ from superview.views import SuperView as View
 from greenmine.models import ROLE_OBSERVER, ROLE_DEVELOPER, ROLE_MANAGER
 from greenmine.models import ROLE_PARTNER, ROLE_CLIENT
 
+from greenmine.utils.permission import check_role
+
 class GenericView(View):
     """ Generic view with some util methods. """
 
@@ -42,24 +44,10 @@ class GenericView(View):
     """ Permission check methods. """
 
     def check_role(self, project, role):
-        if project.owner == self.request.user:
-            return True
-
-        try:
-            user_role_object = ProjectUserRole.objects\
-                .get(user=self.request.user, project=project)
-        except ProjectUserRole.DoesNotExist:
-            return False
-
-        if isinstance(role, (list,tuple)) and user_role_object.role in role:
-            return True
-        elif isinstance(role, int) and user_role_object.role == role:
-            return True
-        
-        return False
+        return check_role(project, role, self.request.user)
 
     def check_role_manager(self, project):
-        return self.check_role(project, ROLE_MANAGER)
+        return check_role(project, ROLE_MANAGER, self.request.user)
 
     def check_role_developer(self, project):
-        return self.check_role(project, ROLE_DEVELOPER)
+        return check_role(project, ROLE_DEVELOPER, self.request.user)

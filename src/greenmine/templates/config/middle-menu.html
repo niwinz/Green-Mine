@@ -1,17 +1,24 @@
 {% load url from future %}
+{% load greenmine_permissions %}
 {% load i18n %}
 
+{% check_role_manager as check_role_result %}
+{% check_has_project_role as user_role_permission %}
+
 <ul class="left-menu menu-item settings">
-    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings_general }}">{% trans "General configuration" %}</a></li>
-    {% comment %}
+    {% if user_role_permission %}
+    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings_general }}">{% trans "My project settings" %}</a></li>
+    {% endif %}
+
+    {% if check_role_result %}
     <li><a href="{{ project.get_edit_url }}" class="{{ menu.in_editproject }}">{% trans "Project data" %}</a></li>
+    {% endif %}
+
+    {% if user.is_superuser %}
     <li><a href="{{ project.get_export_url }}" class="{{ menu.in_export }}">{% trans "Export" %}</a></li>
-    {% endcomment %}
+    {% endif %}
 </ul>
 
 <ul class="right-menu menu-item settings">
     <li><a href="{{ project.get_backlog_url }}" class="">{% trans "Return to backlog" %}</a></li>
-    {% if menu.in_projects == "" and project.owner == user %}
-    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings }}">{% trans "Settings" %}</a></li>
-    {% endif %}
 </ul>
