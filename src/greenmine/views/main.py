@@ -825,12 +825,10 @@ class ProjectGeneralSettings(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        pur = get_object_or_404(project.user_roles, user=request.user)
         form = forms.ProjectGeneralSettingsForm()
 
         context = {
             'categorys': self.create_category_choices(project),
-            'pur': pur,
             'project': project,
             'form': form,
         }
@@ -840,8 +838,8 @@ class ProjectGeneralSettings(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        pur = get_object_or_404(project.user_roles, user=request.user)
         form = forms.ProjectGeneralSettingsForm(request.POST)
+
         if form.is_valid():
             project.meta_category_color = form.colors_data
             project.save()
@@ -851,7 +849,6 @@ class ProjectGeneralSettings(GenericView):
 
         context = {
             'categorys': self.create_category_choices(project),
-            'pur': pur,
             'project': project,
             'form': form,
         }
