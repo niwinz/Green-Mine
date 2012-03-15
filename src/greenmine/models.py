@@ -218,7 +218,11 @@ class Project(models.Model):
 
     @models.permalink
     def get_export_url(self):
-        return ('web:project-export', (), {'pslug': self.slug})
+        return ('web:project-export-settings', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_export_now_url(self):
+        return ('web:project-export-settings-now', (), {'pslug': self.slug})
         
     @models.permalink
     def get_default_tasks_url(self):

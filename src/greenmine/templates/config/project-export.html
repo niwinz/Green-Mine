@@ -11,11 +11,8 @@
 <div class="show-module">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{{ question.get_edit_url }}">
-                {% trans "Edit this question" %}</a>
-            </li>
-            <li><a class="new-milestone" href="{{ question.get_delete_url }}">
-                {% trans "Delete this question" %}</a>
+            <li><a class="new-milestone" href="{{ project.get_export_now_url }}">
+                {% trans "Export now" %}</a>
             </li>
         </ul>
     </div>
