@@ -3,6 +3,20 @@
 {% load i18n %}
 
 <div class="un-us-item">
+    {% comment %}
+    <div class="row cat">
+        {% if us.category %}
+        {% tag_color us.category as result_color %}
+        <span class="category" style="background-color: {{ result_color }}">
+            {{ us.category|capfirst }}
+        </span>
+        {% else %}
+        <span class="category" style="background-color: black;">
+            {% trans "No cat." %}
+        </span>
+        {% endif %}
+    </div>
+    {% endcomment %}
     <div class="row title">
         {% if us.category %}
         {% tag_color us.category as result_color %}

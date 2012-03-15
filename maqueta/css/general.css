@@ -217,6 +217,20 @@ div.main-menu ul.right-menu li {
     font-family: monospace;
 }
 
+#dashboard .left-block .unassigned-us .head-title a {
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+}
+
+#dashboard.backlog .left-block .unassigned-us .un-us-item .row.title {
+    width: 450px;
+}
+
+#dashboard.backlog .left-block .unassigned-us .un-us-item .row.cat {
+    width: 60px;
+}
+
 #dashboard .left-block .unassigned-us .un-us-item .row.title { 
     width: 330px;
 }
@@ -236,7 +250,7 @@ div.main-menu ul.right-menu li {
     width: 60px;
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.points {
-    width: 35px;
+    width: 50px;
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.us {
     width: 75px;

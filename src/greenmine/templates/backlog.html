@@ -6,7 +6,7 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}">
+<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}" class="backlog">
     <div class="context-menu">
         <ul>
             <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>
@@ -16,8 +16,20 @@
     {% include "messages.html" %}
     <div class="left-block">
         <div class="unassigned-us">
+            <div class="un-us-item head-title">
+                <div class="row title">
+                    <span><a href="">{% trans "Category" %}</a> / <a href="">{% trans "Subject" %}</a></span>
+                </div>
+                <div class="row points">
+                    <span><a href="">{% trans "Points" %}</a></span>
+                </div>
+                <div class="row priority">
+                    <span><a href="">{% trans "Priority" %}</a></span>
+                </div>
+                <div class="row metaicon"></div>
+            </div>
             {% for us in unassigned_us %}
-                {% include "user-story-item.html" with us=us %}
+            {% include "user-story-item.html" with us=us %}
             {% endfor %}
         </div>
     </div>       
