@@ -9,7 +9,7 @@ import datetime
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
     """Create void user profile if instance is a new user. """
-    if created:
+    if created and not Profile.objects.filter(user=instance).exists():
         Profile.objects.create(user=instance)
 
 
