@@ -97,6 +97,4 @@ def send_email(email, body, subject, content_subtype='html'):
         subject = subject
     )
     email_message.content_subtype = content_subtype
-    from greenmine.utils.mail import send_mail as sm
-    sm(email_message)
-    #email_message.send(fail_silently=True)
+    email_message.send(fail_silently=True)
