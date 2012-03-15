@@ -5,3 +5,6 @@
     Project:
         + meta_category_color -> text
         + fixed_story_points -> integer
+
+    UserStory:
+        + client_requirement -> bool

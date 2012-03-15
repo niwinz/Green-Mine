@@ -41,6 +41,15 @@ class DictField(models.Field):
     def get_internal_type(self): 
         return 'TextField'
 
+    def value_to_string(self, obj):
+        if not obj: 
+            return ""
+
+        value = getattr(obj, self.attname)
+        assert isinstance(value, dict)
+        return self.__prefix__ + b64encode(pickle.dumps(value, protocol=self.__pickleproto__))
+        return self.token.join(map(unicode, value))
+
     def south_field_triple(self):
         from south.modelsinspector import introspector
         field_class = "django.db.models.fields.TextField"
@@ -75,6 +84,15 @@ class ListField(models.Field):
 
     def get_internal_type(self):
         return 'TextField'
+
+    def value_to_string(self, obj):
+        if not obj: 
+            return ""
+
+        value = getattr(obj, self.attname)
+        assert isinstance(value, dict)
+        return self.__prefix__ + b64encode(pickle.dumps(value, protocol=self.__pickleproto__))
+        return self.token.join(map(unicode, value))
 
     def south_field_triple(self):
         from south.modelsinspector import introspector
