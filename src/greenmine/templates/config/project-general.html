@@ -2,10 +2,6 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block middle %}
-    {% include "config/middle-menu.html" %}
-{% endblock %}
-
 {% block title %}{{ block.super }} / {% trans "Notifications" %}{% endblock %}
 
 {% block wrapper %}
