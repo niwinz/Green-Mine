@@ -67,7 +67,7 @@ class CachedFilesMixin(object):
 
     def hashed_name(self, name, content=None):
         parsed_name = urlsplit(unquote(name))
-        clean_name = parsed_name.path
+        clean_name = parsed_name.path.strip()
         if content is None:
             if not self.exists(clean_name):
                 raise ValueError("The file '%s' could not be found with %r." %
@@ -95,7 +95,7 @@ class CachedFilesMixin(object):
         return urlunsplit(unparsed_name)
 
     def cache_key(self, name):
-        return u'staticfiles:cache:%s' % name
+        return u'staticfiles:%s' % hashlib.md5(smart_str(name)).hexdigest()
 
     def url(self, name, force=False):
         """
@@ -165,9 +165,11 @@ class CachedFilesMixin(object):
                     start, end = 1, sub_level - 1
             joined_result = '/'.join(name_parts[:-start] + url_parts[end:])
             hashed_url = self.url(unquote(joined_result), force=True)
+            file_name = hashed_url.split('/')[-1:]
+            relative_url = '/'.join(url.split('/')[:-1] + file_name)
 
-            # Return the hashed and normalized version to the file
-            return 'url("%s")' % unquote(hashed_url)
+            # Return the hashed version to the file
+            return 'url("%s")' % unquote(relative_url)
         return converter
 
     def post_process(self, paths, dry_run=False, **options):

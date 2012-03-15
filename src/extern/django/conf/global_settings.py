@@ -58,6 +58,7 @@ LANGUAGES = (
     ('el', gettext_noop('Greek')),
     ('en', gettext_noop('English')),
     ('en-gb', gettext_noop('British English')),
+    ('eo', gettext_noop('Esperanto')),
     ('es', gettext_noop('Spanish')),
     ('es-ar', gettext_noop('Argentinian Spanish')),
     ('es-mx', gettext_noop('Mexican Spanish')),
@@ -79,6 +80,7 @@ LANGUAGES = (
     ('it', gettext_noop('Italian')),
     ('ja', gettext_noop('Japanese')),
     ('ka', gettext_noop('Georgian')),
+    ('kk', gettext_noop('Kazakh')),
     ('km', gettext_noop('Khmer')),
     ('kn', gettext_noop('Kannada')),
     ('ko', gettext_noop('Korean')),
@@ -87,8 +89,9 @@ LANGUAGES = (
     ('mk', gettext_noop('Macedonian')),
     ('ml', gettext_noop('Malayalam')),
     ('mn', gettext_noop('Mongolian')),
-    ('nl', gettext_noop('Dutch')),
     ('nb', gettext_noop('Norwegian Bokmal')),
+    ('ne', gettext_noop('Nepali')),
+    ('nl', gettext_noop('Dutch')),
     ('nn', gettext_noop('Norwegian Nynorsk')),
     ('pa', gettext_noop('Punjabi')),
     ('pl', gettext_noop('Polish')),
@@ -102,10 +105,12 @@ LANGUAGES = (
     ('sr', gettext_noop('Serbian')),
     ('sr-latn', gettext_noop('Serbian Latin')),
     ('sv', gettext_noop('Swedish')),
+    ('sw', gettext_noop('Swahili')),
     ('ta', gettext_noop('Tamil')),
     ('te', gettext_noop('Telugu')),
     ('th', gettext_noop('Thai')),
     ('tr', gettext_noop('Turkish')),
+    ('tt', gettext_noop('Tatar')),
     ('uk', gettext_noop('Ukrainian')),
     ('ur', gettext_noop('Urdu')),
     ('vi', gettext_noop('Vietnamese')),
@@ -401,7 +406,7 @@ TRANSACTIONS_MANAGED = False
 # The User-Agent string to use when checking for URL validity through the
 # isExistingURL validator.
 from django import get_version
-URL_VALIDATOR_USER_AGENT = "Django/%s (http://www.djangoproject.com)" % get_version()
+URL_VALIDATOR_USER_AGENT = "Django/%s (https://www.djangoproject.com)" % get_version()
 
 # The tablespaces to use for each model when not specified otherwise.
 DEFAULT_TABLESPACE = ''
