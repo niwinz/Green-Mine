@@ -16,6 +16,9 @@ def check_role(project, role, user):
     if project.owner == user:
         return True
 
+    if user.is_superuser or user.is_staff:
+        return True
+
     user_role_object = has_project_role(project, user)
     if not user_role_object:
         return False
