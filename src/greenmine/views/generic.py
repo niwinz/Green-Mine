@@ -36,7 +36,7 @@ class GenericView(View):
 
     def redirect_referer(self, msg=None):
         if msg is not None:
-            message.info(self.request, msg)
+            messages.info(self.request, msg)
 
         referer = self.request.META.get('HTTP_REFERER', '/')
         return self.render_redirect(referer)
