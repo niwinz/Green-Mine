@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import patterns, include, url
-from greenmine.views import main, config
+from greenmine.views import main, config, export
 from django.conf import settings
 
 
@@ -44,10 +44,10 @@ urlpatterns = patterns('',
         main.ProjectEditView.as_view(), name="project-edit"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/$', 
-        main.ProjectExportView.as_view(), name="project-export-settings"),
+        export.ProjectExportView.as_view(), name="project-export-settings"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/now/$', 
-        main.ProjectExportNow.as_view(), name="project-export-settings-now"),
+        export.ProjectExportNow.as_view(), name="project-export-settings-now"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),

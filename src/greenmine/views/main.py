@@ -431,6 +431,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return self.render_to_ok({'redirect_to':reverse('web:projects')})  
 
+
 import shutil, io, pickle, copy
 
 class ProjectExportView(GenericView):
