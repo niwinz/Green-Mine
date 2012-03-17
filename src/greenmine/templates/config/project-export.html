@@ -11,17 +11,16 @@
 <div class="show-module">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{{ project.get_export_now_url }}">
-                {% trans "Export now" %}</a>
-            </li>
+            <li><a class="new-milestone" href="{{ project.get_export_now_url }}">{% trans "Export now" %}</a></li>
+            <li><a class="new-milestone" href="{{ project.get_export_rehash_url }}">{% trans "Rehash" %}</a></li>
         </ul>
     </div>
     {% include "messages.html" %}
 
     <div class="project-module">
         <ul>
-            {% for path, name, size in flist %}
-            <li>{{ path }} - {{ size|hsize }}</li>
+            {% for fileobj in flist %}
+            <li>{{ fileobj.path }} - {{ fileobj.size|hsize }}</li>
             {% endfor %}
         </ul>
     </div>

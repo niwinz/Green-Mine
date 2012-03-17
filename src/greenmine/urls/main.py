@@ -48,6 +48,9 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/now/$', 
         export.ProjectExportNow.as_view(), name="project-export-settings-now"),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/export/rehash/',
+        export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
     
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),

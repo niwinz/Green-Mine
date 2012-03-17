@@ -223,6 +223,10 @@ class Project(models.Model):
     @models.permalink
     def get_export_now_url(self):
         return ('web:project-export-settings-now', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_export_rehash_url(self):
+        return ('web:project-export-settings-rehash', (), {'pslug': self.slug})
         
     @models.permalink
     def get_default_tasks_url(self):
@@ -622,6 +626,14 @@ class WikiPageAttachment(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     attached_file = models.FileField(upload_to="files/wiki",
         max_length=500, null=True, blank=True)
+
+
+class ExportDirectoryCache(models.Model):
+    path = models.CharField(max_length=500)
+    size = models.IntegerField(null=True)
+
+
+
 
 # load signals
 from . import sigdispatch
