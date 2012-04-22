@@ -51,7 +51,7 @@ var backlog_handlers = function() {
                     var milestone = $("#milestone-" + ml_id);
                     
                     // hide empty entries.
-                    milestone.find(".us-item-empty").hide()
+                    milestone.find(".us-item-empty").remove()
                     milestone.find(".milestone-userstorys").append(data.html);
                     usitem.remove();
                 }
@@ -76,16 +76,18 @@ var backlog_handlers = function() {
         event.preventDefault();
         $(this).closest('.un-us-item').find('.form-inline').hide();
     });    
-
-    $(".us-item .unassign").live('click', function(event) {
+    
+    $(".milestones").on("click", ".us-item .unassign", function(event) {
         event.preventDefault();
+
         var self = $(this);
         var pself = self.parents('.us-item');
 
         var buttons = {};
+
         buttons[gettext("Unassign")] = function() {            
             $.post(pself.attr('unassignurl'), {}, function(data) {
-                $(".unassigned-us").prepend(data);
+                $(".unassigned-us .head-title").after(data);
                 
                 var milestone_item_dom = self.parents('.milestone-item');
                 if (milestone_item_dom.find('.milestone-userstorys .us-item').length == 1) {
