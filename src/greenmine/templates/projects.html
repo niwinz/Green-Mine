@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load static from staticfiles %}
 {% load i18n %}
+{% load gravatar %}
 
 {% block wrapper %}
 <div id="projects">
@@ -27,9 +28,9 @@
             <td><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></td>
             <td>
                 {% if project.owner.get_profile.photo %}
-                <img width="30" src="{{ project.owner.get_profile.photo.url }}" />{{ project.owner.get_full_name }}
+                    <img width="30" src="{{ project.owner.get_profile.photo.url }}" />{{ project.owner.get_full_name }}
                 {% else %}
-                <img width="30" src="{% static "auxiliar/imgs/gravatar.jpg" %}" />{{ project.owner.get_full_name }}
+                    {% gravatar project.owner.email 30 %}
                 {% endif %}
             </td>
             <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | 
