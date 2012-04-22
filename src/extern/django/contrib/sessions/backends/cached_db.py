@@ -8,6 +8,7 @@ from django.core.cache import cache
 
 KEY_PREFIX = "django.contrib.sessions.cached_db"
 
+
 class SessionStore(DBStore):
     """
     Implements cached, database backed sessions.
@@ -21,7 +22,12 @@ class SessionStore(DBStore):
         return KEY_PREFIX + self._get_or_create_session_key()
 
     def load(self):
-        data = cache.get(self.cache_key, None)
+        try:
+            data = cache.get(self.cache_key, None)
+        except Exception:
+            # Some backends (e.g. memcache) raise an exception on invalid
+            # cache keys. If this happens, reset the session. See #17810.
+            data = None
         if data is None:
             data = super(SessionStore, self).load()
             cache.set(self.cache_key, data, settings.SESSION_COOKIE_AGE)

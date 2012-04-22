@@ -3,6 +3,7 @@ from django.core.cache import cache
 
 KEY_PREFIX = "django.contrib.sessions.cache"
 
+
 class SessionStore(SessionBase):
     """
     A cache-based session store.
@@ -16,7 +17,12 @@ class SessionStore(SessionBase):
         return KEY_PREFIX + self._get_or_create_session_key()
 
     def load(self):
-        session_data = self._cache.get(self.cache_key)
+        try:
+            session_data = self._cache.get(self.cache_key, None)
+        except Exception:
+            # Some backends (e.g. memcache) raise an exception on invalid
+            # cache keys. If this happens, reset the session. See #17810.
+            session_data = None
         if session_data is not None:
             return session_data
         self.create()
