@@ -38,8 +38,23 @@ class UserListApiView(GenericView):
         users = models.User.objects.filter(
             Q(username__istartswith=term) | Q(first_name__istartswith=term)
         )
-        context = {'list': [{'id':x.id, 'label':x.first_name, 'value':x.first_name,
-            'gravatar':'/static/auxiliar/imgs/gravatar.jpg'} for x in users]}
+        users_list = []
+
+        for user in users:
+            users_list_item = {}
+            users_list_item['id'] = user.id
+            full_name = user.get_full_name()
+            if full_name:
+                users_list_item['label'] = full_name
+                users_list_item['value'] = full_name
+            else:
+                users_list_item['label'] = user.username
+                users_list_item['value'] = user.username
+
+            users_list_item['gravatar'] = '/static/auxiliar/imgs/gravatar.jpg'
+            users_list.append(users_list_item)
+
+        context = {'list': users_list}
         return self.render_to_ok(context)
 
 
