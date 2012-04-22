@@ -304,10 +304,10 @@ class Milestone(models.Model):
         ordering = ['-created_date']
         unique_together = ('name', 'project')
 
-    @models.permalink
-    def get_assign_url(self):
-        return ('web:assign-us', (),
-            {'pslug': self.project.slug, 'mid': self.id})
+    #@models.permalink
+    #def get_assign_url(self):
+    #    return ('web:assign-us', (),
+    #        {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_dashboard_url(self):

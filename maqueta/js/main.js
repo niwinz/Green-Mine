@@ -43,12 +43,17 @@ var backlog_handlers = function() {
             if(data.valid) {
                 var usitem = elm.closest('.un-us-item');
                 usitem.find('.form-inline').hide();
-
-                if (form.find("id_milestone").val() == "") {
+                
+                if (data.action == 'save') {
                     usitem.replaceWith(data.html);
                 } else {
-                    // TODO
-
+                    var ml_id = form.find("#id_milestone").val();
+                    var milestone = $("#milestone-" + ml_id);
+                    
+                    // hide empty entries.
+                    milestone.find(".us-item-empty").hide()
+                    milestone.find(".milestone-userstorys").append(data.html);
+                    usitem.remove();
                 }
             } else {
                 /* Print form errors */

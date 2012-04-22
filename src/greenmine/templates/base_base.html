@@ -25,12 +25,21 @@
         </p>
     </div>
     <script type="text/javascript" src="{% url "web:jsi18n" %}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui-1.8.16.custom.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.json-2.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.django.patch.js' %}"></script>
+
     <script type="text/javascript" src="{% static 'js/kaleidos.form.validator.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/kaleidos.lightbox.js' %}"></script>
+    
+    {% comment %}
+    <!-- future refactor -->
+    <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+    {% endcomment %}
+    
     <script type="text/javascript" src="{% static 'js/general.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/messages.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>

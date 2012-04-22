@@ -1175,7 +1175,8 @@ class UsFormInline(GenericView):
     """
 
     template_name = 'user-story-form-inline.html'
-    us_template_name = 'user-story-item.html'
+    us_template_name0 = 'user-story-item.html'
+    us_template_name1 = 'milestone-item.html'
     
     @login_required
     def get(self, request, pslug, iref):
@@ -1194,15 +1195,22 @@ class UsFormInline(GenericView):
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
         
         if form.is_valid():
-            form.save(commit=True)
+            us = form.save(commit=True)
             context = {
                 'us': user_story,
                 'project': project,
             }
-            response_data = {
-                'html': render_to_string(self.us_template_name, context,
+            
+            response_data = {}
+            if us.milestone is not None:
+                response_data['action'] = 'assign'
+                response_data['html'] = render_to_string(self.us_template_name1, context,
                     context_instance=RequestContext(request))
-            }
+
+            else:
+                response_data['action'] = 'save'
+                response_data['html'] = render_to_string(self.us_template_name, context,
+                    context_instance=RequestContext(request))
             return self.render_to_ok(response_data)
 
         return self.render_to_error(form.errors)

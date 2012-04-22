@@ -117,8 +117,8 @@ urlpatterns = patterns('',
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>[\d\w]+)/assign/$',   
-        main.AssignUs.as_view(), name="assign-us"),
+    #url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>[\d\w]+)/assign/$',   
+    #    main.AssignUs.as_view(), name="assign-us"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',   
         main.UnassignUs.as_view(), name="unassign-us"),

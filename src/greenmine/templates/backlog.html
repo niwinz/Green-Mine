@@ -40,7 +40,8 @@
     <div class="right-block">
         <div class="milestones">
             {% for ml in milestones %}
-            <div id="milestone-{{ml.id}}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
+            <div id="milestone-{{ml.id}}" class="milestone-item {% if ml == milestone %}selected{% endif %}"
+                    assign_url="{{ ml.get_assign_url }}">
                 <div class="milestone-title">
                     <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
                     <div class="meta">
