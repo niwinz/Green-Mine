@@ -18,6 +18,7 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, RedirectView, View
 from django.db.models import Q
+from django_gravatar.helpers import get_gravatar_url, has_gravatar
 
 import logging, re
 logger = logging.getLogger('greenmine')
@@ -51,7 +52,11 @@ class UserListApiView(GenericView):
                 users_list_item['label'] = user.username
                 users_list_item['value'] = user.username
 
-            users_list_item['gravatar'] = '/static/auxiliar/imgs/gravatar.jpg'
+            if user.get_profile().photo:
+                users_list_item['gravatar'] = user.get_profile().photo.url
+            else:
+                users_list_item['gravatar'] = get_gravatar_url(user.email, size=30)
+
             users_list.append(users_list_item)
 
         context = {'list': users_list}
