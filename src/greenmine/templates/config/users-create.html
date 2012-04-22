@@ -64,11 +64,7 @@
             </div>
 
             <div class="form-field">
-                {% if not user.get_profile.photo %}
                 <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
-                {% else %}
-                <img width="50" src="{{ user.get_profile.photo.url }}" />
-                {% endif %}
 
                 {{ form.photo.label }}
                 {{ form.photo }}

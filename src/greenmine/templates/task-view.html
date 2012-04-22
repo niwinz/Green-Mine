@@ -3,6 +3,7 @@
 {% load static from staticfiles %}
 {% load greenmine_utils %}
 {% load i18n %}
+{% load gravatar %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
@@ -71,9 +72,9 @@
                     <div class="col">
                         <div class="icon">
                             {% if response.owner.get_profile.photo %}
-                            <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
+                                <img width="30" src="{{ response.owner.get_profile.photo.url }}" />
                             {% else %}
-                            <img width="30" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                                {% gravatar response.owner.email 30 %}
                             {% endif %}
                         </div>
                     </div>
