@@ -80,6 +80,18 @@ POINTS_CHOICES = (
     (10, u'10'),
 )
 
+TASK_COMMENT = 1
+TASK_STATUS_CHANGE = 2
+TASK_PRIORITY_CHANGE = 3
+TASK_ASSIGNATION_CHANGE = 4
+
+TASK_CHANGE_CHOICES = (
+    (TASK_COMMENT, _(u"Task comment")),
+    (TASK_STATUS_CHANGE, _(u"Task change")),
+    (TASK_PRIORITY_CHANGE, _(u"Task prioriy change")),
+    (TASK_ASSIGNATION_CHANGE, _(u"Task assignation change")),
+)
+
 
 def slugify_uniquely(value, model, slugfield="slug"):
     """
@@ -304,11 +316,6 @@ class Milestone(models.Model):
         ordering = ['-created_date']
         unique_together = ('name', 'project')
 
-    #@models.permalink
-    #def get_assign_url(self):
-    #    return ('web:assign-us', (),
-    #        {'pslug': self.project.slug, 'mid': self.id})
-
     @models.permalink
     def get_dashboard_url(self):
         return ('web:dashboard', (),
@@ -460,6 +467,29 @@ class UserStory(models.Model):
         return self.tasks.filter(status__in=['closed', 'completed'])
 
 
+class Change(models.Model):
+    change_type = models.IntegerField(choices=TASK_CHANGE_CHOICES)
+    owner = models.ForeignKey('auth.User', related_name='changes')
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    project = models.ForeignKey("Project", related_name="changes")
+    
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    data = DictField()
+
+
+class ChangeAttachment(models.Model):
+    change = models.ForeignKey("Change", related_name="attachments")
+    owner = models.ForeignKey("auth.User", related_name="change_attachments")
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    attached_file = models.FileField(upload_to="files/msg",
+        max_length=500, null=True, blank=True)
+
+
 class Task(models.Model):
     user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
     ref = models.CharField(max_length=200, unique=True,
@@ -488,6 +518,8 @@ class Task(models.Model):
 
     watchers = models.ManyToManyField('auth.User',
         related_name='task_watch', null=True)
+
+    changes = generic.GenericRelation(Change)
 
     class Meta:
         unique_together = ('ref', 'project')
@@ -528,26 +560,27 @@ class Task(models.Model):
         super(Task, self).save(*args, **kwargs)
 
 
-class TaskResponse(models.Model):
-    owner = models.ForeignKey('auth.User', related_name='responses')
-    task = models.ForeignKey('Task', related_name='responses')
 
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    content = models.TextField()
-
-
-class TaskAttachedFile(models.Model):
-    response = models.ForeignKey('TaskResponse',
-        related_name='attached_files', null=True, blank=True)
-    task = models.ForeignKey('Task', related_name='attached_files')
-
-    owner = models.ForeignKey("auth.User", related_name="files")
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-    attached_file = models.FileField(upload_to="files/msg",
-        max_length=500, null=True, blank=True)
-
+#class TaskResponse(models.Model):
+#    owner = models.ForeignKey('auth.User', related_name='responses')
+#    task = models.ForeignKey('Task', related_name='responses')
+#
+#    created_date = models.DateTimeField(auto_now_add=True)
+#    modified_date = models.DateTimeField(auto_now_add=True)
+#    content = models.TextField()
+#
+#
+#class TaskAttachedFile(models.Model):
+#    response = models.ForeignKey('TaskResponse',
+#        related_name='attached_files', null=True, blank=True)
+#    task = models.ForeignKey('Task', related_name='attached_files')
+#
+#    owner = models.ForeignKey("auth.User", related_name="files")
+#    created_date = models.DateTimeField(auto_now_add=True)
+#    modified_date = models.DateTimeField(auto_now_add=True)
+#    attached_file = models.FileField(upload_to="files/msg",
+#        max_length=500, null=True, blank=True)
+#
 
 class Question(models.Model):
     subject = models.CharField(max_length=150)

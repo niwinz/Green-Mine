@@ -108,18 +108,17 @@ urlpatterns = patterns('',
      url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
         main.TaskView.as_view(), name='task-view'),
     
+    # tasks/bugs view
     url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
     
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
     
+
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
-    #url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>[\d\w]+)/assign/$',   
-    #    main.AssignUs.as_view(), name="assign-us"),
-
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',   
         main.UnassignUs.as_view(), name="unassign-us"),
 
