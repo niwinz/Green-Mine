@@ -170,6 +170,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_gravatar',
     'greenmine',
     'greenmine_mobile',
     'html5forms',

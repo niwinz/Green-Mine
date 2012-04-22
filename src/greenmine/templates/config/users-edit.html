@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load i18n %}
+{% load gravatar %}
 
 {% block title %}{{ block.super }} / Profile edit{% endblock %}
 
@@ -56,10 +57,10 @@
                 {{ form.description.errors }}
             </div>
             <div class="form-field">
-                {% if not user.get_profile.photo %}
-                <img width="50" src="{{ STATIC_URL }}auxiliar/imgs/gravatar.jpg" />
+                {% if not uobj.get_profile.photo %}
+                    {% gravatar uobj.email 50 %}
                 {% else %}
-                <img width="50" src="{{ user.get_profile.photo.url }}" />
+                    <img width="50" src="{{ uobj.get_profile.photo.url }}" />
                 {% endif %}
 
                 {{ form.photo.label }}

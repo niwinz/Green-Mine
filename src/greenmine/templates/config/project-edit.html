@@ -1,6 +1,7 @@
 {% extends "config/base.html" %}
 {% load url from future %}
 {% load i18n %}
+{% load gravatar %}
 
 
 {% block middle %}
@@ -37,7 +38,11 @@
                             {% for user_role in project.user_roles.all %}
                             <tr>
                                 <td>
-                                    <img width="30" src="/static/auxiliar/imgs/gravatar.jpg">
+                                    {% if user_role.user.get_profile.photo %}
+                                        <img width="30" src="{{ user_role.user.get_profile.photo.url }}">
+                                    {% else %}
+                                        {% gravatar user_role.user.email 30 %}
+                                    {% endif %}
                                     {% if user_role.user.get_full_name %}
                                         {{ user_role.user.get_full_name }}
                                     {% else %}
