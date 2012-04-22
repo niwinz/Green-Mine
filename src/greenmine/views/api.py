@@ -36,7 +36,7 @@ class UserListApiView(GenericView):
         
         term = request.GET['term']
         users = models.User.objects.filter(
-            Q(username__istartswith=term) | Q(first_name__istartswith=term)
+            Q(username__istartswith=term) | Q(first_name__istartswith=term) | Q(last_name__istartswith=term)
         )
         users_list = []
 
