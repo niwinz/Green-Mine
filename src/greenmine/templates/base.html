@@ -14,7 +14,15 @@
 <!-- Global menu -->
 <div id="menu">
     <ul>
-        <li><a href="{% url "web:profile" %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+        <li>
+            <a href="{% url "web:profile" %}">
+                {% if user.get_full_name %}
+                    {{ user.get_full_name }}
+                {% else %}
+                    {{ user.username }}
+                {% endif %}
+            </a>
+        </li>
         <li><a href="{% url "web:auth_logout" %}">{% trans "Logout" %}</a></li>
     </ul>
 </div>
