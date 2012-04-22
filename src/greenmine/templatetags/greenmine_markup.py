@@ -42,7 +42,7 @@ class Postprocessor(markdown.postprocessors.Postprocessor):
         for wlink_elem in doc.cssselect('wlink'):
             if wlink_elem.text:
                 wlink_elem.tag = 'a'
-                wlink_elem.set('href', wlink_elem.text)
+                wlink_elem.set('href', "../" + wlink_elem.text)
                 if wlink_elem.get('title', None):
                     wlink_elem.text = wlink_elem.get('title')
         
