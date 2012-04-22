@@ -938,7 +938,7 @@ class QuestionsCreateView(GenericView):
             question.owner = request.user
             question.save()
 
-            messages.info(request, _(u"Quienstion are created"))
+            messages.info(request, _(u"Question are created"))
             return self.render_redirect(question.get_view_url())
 
         context = {
