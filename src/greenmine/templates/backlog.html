@@ -13,7 +13,9 @@
             <li><a class="new-milestone" href="{{ project.get_milestone_create_url }}">{% trans "Add new milestone" %}</a></li>
         </ul>
     </div>
+
     {% include "messages.html" %}
+
     <div class="left-block">
         <div class="unassigned-us">
             <div class="un-us-item head-title">
@@ -32,7 +34,9 @@
             {% include "user-story-item.html" with us=us %}
             {% endfor %}
         </div>
-    </div>       
+    </div>
+
+    <!-- Milestone block -->
     <div class="right-block">
         <div class="milestones">
             {% for ml in milestones %}
@@ -80,14 +84,10 @@
 
 <div id="examples" style="display: none">
     <div class="us-item">
-        <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
+        <div class="us-title"></div>
         <div class="us-meta">
             <div class="meta-data" style="display: none"
-                viewurl=""
-                ref=""
-                priorityid=""
-                priority=""
-                points=""></div>
+                viewurl="" ref="" priorityid="" priority="" points=""></div>
             <a href="" class="unassign"><img src="{% static 'imgs/close-icon.png' %}"></img></a>
         </div>
     </div>
@@ -113,6 +113,8 @@
     </div>
 </div>
 
+<!-- it seems deprecated -->
+{% comment %}
 <div id="lightbox-backlog" style="display: none">
     <ul>
         {% for ml in milestones %}
@@ -121,4 +123,5 @@
     </ul>
 </div>
 <div id="overlay"></div>
+{% endcomment %}
 {% endblock %}

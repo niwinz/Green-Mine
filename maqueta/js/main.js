@@ -25,7 +25,7 @@ var backlog_handlers = function() {
         });        
     });
     
-    $(".config-us-inline").live('click', function(event) {
+    $(".unassigned-us").on("click", ".config-us-inline", function(event) {
         event.preventDefault();
         var elm = $(this);
         $.get(elm.attr('href'),  function(data) {
@@ -33,20 +33,29 @@ var backlog_handlers = function() {
         }, 'html');
     });
     
-    $(".user-story-inline-submit").live('click', function(event) {
+    $(".unassigned-us").on('click', '.user-story-inline-submit', function(event) {
         event.preventDefault();
+
         var elm = $(this);
         var form = elm.closest('form');
-        $.post(form.attr('action'),  form.serialize(),function(data) {
-            if(data.valid){
-                usitem = elm.closest('.un-us-item');
+
+        $.post(form.attr('action'), form.serialize(), function(data) {
+            if(data.valid) {
+                var usitem = elm.closest('.un-us-item');
                 usitem.find('.form-inline').hide();
-                usitem.replaceWith(data.html);
-            }else{
+
+                if (form.find("id_milestone").val() == "") {
+                    usitem.replaceWith(data.html);
+                } else {
+                    // TODO
+
+                }
+            } else {
+                /* Print form errors */
                 form.find('.errorlist').remove();
                 jQuery.each(data.errors, function(index, value){
                     var ul = $(document.createElement('ul'))
-                    .attr('class', 'errorlist');
+                        .attr('class', 'errorlist');
                     
                     for(var i=0; i<value.length; i++){
                         $(document.createElement('li')).html(value[i]).appendTo(ul);
@@ -58,7 +67,7 @@ var backlog_handlers = function() {
         }, 'json');        
     });
     
-    $(".user-story-inline-cancel").live('click', function(event) {
+    $(".unassigned-us").on('click', '.user-story-inline-cancel', function(event) {
         event.preventDefault();
         $(this).closest('.un-us-item').find('.form-inline').hide();
     });    
@@ -204,5 +213,4 @@ var settings_handlers = function() {
 $(document).ready(function() {
     backlog_handlers();
     settings_handlers();
-    //$(".submit-row input").button()
 });

@@ -1,0 +1,39 @@
+{% load i18n %}
+
+<form class="us-form-inline" action="{{ current_url }}" method="post">
+    {% csrf_token %}
+    <div class="form-field">
+        <div class="subfield">
+            <label>{{ form.priority.label }}</label>
+            {{ form.priority }}
+        </div>
+
+        <div class="subfield">
+            <label>{{ form.points.label }}</label>
+            {{ form.points }}
+        </div>
+        <div class="subfield">
+            <label>{{ form.status.label }}</label>
+            {{ form.status }}
+        </div>
+        <div class="subfield">
+            <label>{{ form.milestone.label }}</label>
+            {{ form.milestone }}
+        </div>
+    </div>
+    <div class="form-field">
+        <label>{{ form.category.label }}</label>
+        {{ form.category }}
+    </div>
+    <div class="form-field">
+        <label>{{ form.tested.label }}</label>
+        {{ form.tested }}
+    </div>
+    <div class="form-field">
+        <label>{{ form.finished_date.label }}</label>
+        {{ form.finished_date }}
+    </div>
+    
+    <input type="submit" class="btn01 user-story-inline-submit" value="{% trans "Save" %}" />
+    <a href="" class="btn01 user-story-inline-cancel">{% trans "Cancel" %}</a>
+</form>

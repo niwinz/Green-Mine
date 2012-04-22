@@ -1168,18 +1168,22 @@ class UserDelete(GenericView):
         return self.render_redirect(reverse('web:users'))
 
 
-class UsFormInline(GenericView):       
-    template_name = 'user_story_form_inline.html'
+class UsFormInline(GenericView):
+    """
+    Is a inline edit module of user story.
+    Main location is in a backlog.
+    """
+
+    template_name = 'user-story-form-inline.html'
     us_template_name = 'user-story-item.html'
     
     @login_required
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
+
         form = forms.UserStoryFormInline(instance=user_story)
-        context = {
-            'form': form
-        }
+        context = {'form': form}
         return self.render_to_response(self.template_name, context)
 
     @login_required

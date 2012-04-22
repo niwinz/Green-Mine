@@ -1,8 +1,0 @@
-{% load i18n %}
-
-<form class="us-form-inline" action="{{ current_url }}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn01 user-story-inline-submit" value="{% trans "Save" %}" />
-    <a href="" class="btn01 user-story-inline-cancel">{% trans "Cancel" %}</a>
-</form>

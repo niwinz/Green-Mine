@@ -5,7 +5,7 @@ select:hover, input:hover, textarea:hover{border: 1px solid #B9B9B9;}
 select:focus, input:focus, textarea:focus{border: 1px solid #458745;}
 input, textarea{ text-align: left; color: black; cursor: text; }
 input[type="radio"], input[type="checkbox"] { cursor: pointer; }
-textarea, input[type="text"], input[type="password"] {padding: 2px 10px 0 6px;  font-size: 17px;  vertical-align: top; height: 26px;}
+textarea, input[type="text"], input[type="password"] {padding: 2px 10px 0 6px;  font-size: 17px;  vertical-align: top; height: 27px;}
 textarea { height: 126px; }
 table {border-collapse:collapse; border-spacing:0;}
 fieldset,img {border:0;}
@@ -39,11 +39,13 @@ label.error{color: red;}
 #login, #password-recovery{margin: 0 auto; background-color: #FFF; padding: 30px 90px; width: 335px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
 .form-field{margin-bottom: 20px;}
+
 form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{
-    width: 284px; clear: left; display: block;
-    padding: 5px; font-size: 14px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    width: 284px; 
+    clear: left; 
+    display: block;
+    padding: 2px; 
+    font-size: 14px;
 }
 .form-field{width: 305px;}
 #login  .forgot-pass{line-height: 18px; float: left;}
@@ -628,7 +630,6 @@ ul.errorlist li {
     float: left; 
     display: inline;
 }
-
 .us-form-inline{
     float: left;
     padding: 20px;
@@ -637,4 +638,17 @@ ul.errorlist li {
     margin-right: 15px;
     margin-bottom: 15px;
 }
-.us-form-inline p{float: left; width: 100%; margin-bottom: 15px;}
+.us-form-inline div.form-field{
+    float: left; 
+    width: 100%; 
+    margin-bottom: 13px;
+}
+
+.us-form-inline div.form-field div.subfield {
+    float: left;
+    margin-right: 10px;
+}
+
+.us-form-inline #id_priority {
+    width: 90px
+}
