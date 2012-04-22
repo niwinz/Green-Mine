@@ -1,5 +1,5 @@
 (function($){
-    $( ".datepicker, #id_finish_date" ).datepicker({
+    $( ".datepicker, #id_finish_date, #id_estimated_finish" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat: "mm/dd/yy"
