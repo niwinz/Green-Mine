@@ -206,7 +206,7 @@ class HomeView(GenericView):
         if request.user.is_staff:
             projects = models.Project.objects.order_by('name')
         else:
-            projects = request.user.projects.all()
+            projects = request.user.projects.all() | request.user.projects_participant.all()
 
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
