@@ -79,7 +79,11 @@
                     </div>
                     <div class="col second-col">
                         <div class="name">
-                            {{ response.owner.first_name }} {{ response.owner.last_name }}
+                            {% if response.owner.get_full_name %}
+                                {{ response.owner.get_full_name }}
+                            {% else %}
+                                {{ response.owner.username }}
+                            {% endif %}
                         </div>
                         <div class="content">
                             {{ response.content|linebreaks }}

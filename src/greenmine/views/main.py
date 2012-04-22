@@ -206,7 +206,7 @@ class HomeView(GenericView):
         if request.user.is_staff:
             projects = models.Project.objects.order_by('name')
         else:
-            projects = request.user.projects.all()
+            projects = request.user.projects.all() | request.user.projects_participant.all()
 
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
@@ -938,7 +938,7 @@ class QuestionsCreateView(GenericView):
             question.owner = request.user
             question.save()
 
-            messages.info(request, _(u"Quienstion are created"))
+            messages.info(request, _(u"Question are created"))
             return self.render_redirect(question.get_view_url())
 
         context = {

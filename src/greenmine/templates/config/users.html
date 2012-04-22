@@ -21,7 +21,11 @@
             <div class="user-header">
                 <div class="main-header-row">
                     <a href="{% url 'web:users-view' uid=user.id %}">
-                        <span class="title">{{ user.get_full_name }}</span>
+                        {% if user.get_full_name %}
+                            <span class="title">{{ user.get_full_name }}</span>
+                        {% else %}
+                            <span class="title">{{ user.username }}</span>
+                        {% endif %}
                     </a>
                 </div>
                 <div class="small-header-row">
