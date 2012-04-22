@@ -220,3 +220,22 @@ h3 {
 h1 { font-size: 22px; }
 h2 { font-size: 18px; }
 h3 { font-size: 16px; }
+
+
+
+.changes-list .change-item .change-title {
+    font-size: 12px;
+    color: #aaa;
+    border-bottom: 1px solid #aaa;
+}
+.changes-list .change-item .change-content {
+    padding: 3px;
+}
+
+.changes-list .change-item .change-content .comment {
+    padding: 5px;
+    padding-left: 10px;
+}
+.changes-list .change-item .change-content .comment-attachments {
+    padding-left: 10px;
+}

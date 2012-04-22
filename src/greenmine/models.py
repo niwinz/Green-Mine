@@ -471,6 +471,8 @@ class Change(models.Model):
     change_type = models.IntegerField(choices=TASK_CHANGE_CHOICES)
     owner = models.ForeignKey('auth.User', related_name='changes')
     created_date = models.DateTimeField(auto_now_add=True)
+
+    project = models.ForeignKey("Project", related_name="changes")
     
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -479,7 +481,7 @@ class Change(models.Model):
     data = DictField()
 
 
-class ChangeAttachment(models.Model)
+class ChangeAttachment(models.Model):
     change = models.ForeignKey("Change", related_name="attachments")
     owner = models.ForeignKey("auth.User", related_name="change_attachments")
 

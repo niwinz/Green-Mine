@@ -243,8 +243,8 @@ class BacklogView(GenericView):
 
 
 class TasksView(GenericView):
-    """ 
-    General dasboard view,  with all milestones and all tasks. 
+    """
+    Tasks/Bugs view.
     """
 
     template_name = 'tasks.html'
@@ -320,6 +320,7 @@ class UserRoleMixIn(object):
                 break
             
         return {} if invalid_role else user_role
+
 
 class ProjectCreateView(UserRoleMixIn, GenericView):
     template_name = 'project-create.html'
@@ -705,7 +706,7 @@ class TaskView(GenericView):
     def get(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
-        form = forms.CommentForm(task=task, request=request)
+        form = forms.CommentForm()
         
         context = {
             'form': form,
@@ -717,15 +718,16 @@ class TaskView(GenericView):
     
     @login_required
     def post(self, request, pslug, tref):
-        """ Add comments method """
+        """ 
+        Add comments method.
+        """
+
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
-
-        form = forms.CommentForm(request.POST, \
-                    request.FILES, task=task, request=request)
+        form = forms.CommentForm(request.POST, request.FILES)
         
         if form.is_valid():
-            form.save()
+            self.create_task_comment(request.user, project, task, form.cleaned_data)
             return self.render_redirect(task.get_view_url())
 
         context = {
@@ -734,7 +736,27 @@ class TaskView(GenericView):
             'project': project,
         }
         return self.render_to_response(self.template_path, context)
+    
+    @transaction.commit_on_success
+    def create_task_comment(self, owner, project, task, cleaned_data):
+        change_instance = models.Change(
+            change_type = models.TASK_COMMENT,
+            owner = owner,
+            content_object = task,
+            project = project,
+            data = {'comment': cleaned_data['description']},
+        )
 
+        change_instance.save()
+        
+        if "attached_file" in cleaned_data:
+            change_attachment = models.ChangeAttachment(
+                owner = owner,
+                change = change_instance,
+                attached_file = cleaned_data['attached_file']
+            )
+            change_attachment.save()
+    
 
 class TaskEdit(GenericView):
     template_path = 'task-edit.html'
@@ -778,23 +800,11 @@ class TaskEdit(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
-class AssignUs(GenericView):      
-    template_name = 'milestone-item.html'
-    
-    @login_required
-    def post(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
-        user_story = get_object_or_404(project.user_stories, ref=request.POST.get('iref'))
-        milestone = get_object_or_404(models.Milestone, id=mid)
-        user_story.milestone = milestone
-        user_story.save()
-        
-        context = {'us': user_story}
-        
-        return self.render_to_response(self.template_name, context)
+class UnassignUs(GenericView):
+    """
+    Unassign callback on backlog.
+    """
 
-
-class UnassignUs(GenericView):       
     template_name = 'user-story-item.html'   
     
     @login_required

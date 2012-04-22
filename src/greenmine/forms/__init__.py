@@ -353,25 +353,8 @@ class CommentForm(Form):
     attached_file = forms.FileField(required=False)
     
     def __init__(self, *args, **kwargs):
-        self._task = kwargs.pop('task', None)
-        self._request = kwargs.pop('request', None)
         super(CommentForm, self).__init__(*args, **kwargs)
     
-    def save(self):
-        self._instance = models.TaskResponse.objects.create(
-            owner = self._request.user,
-            task = self._task,
-            content = self.cleaned_data['description'],
-        )
-
-        if self.cleaned_data['attached_file']:
-            instance_file = models.TaskAttachedFile.objects.create(
-                response = self._instance,
-                owner = self._request.user,
-                task = self._task,
-                attached_file = self.cleaned_data['attached_file']
-            )
-
 
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
