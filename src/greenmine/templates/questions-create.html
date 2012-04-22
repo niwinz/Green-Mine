@@ -32,6 +32,11 @@
                 {{ form.milestone.errors }}
             </div>
             <div class="form-field">
+                <label>{{ form.watchers.label }}</label>
+                {{ form.watchers }}
+                {{ form.watchers.errors }}
+            </div>
+            <div class="form-field">
                 <label>{{ form.closed.label }}</label>
                 {{ form.closed }}
                 {{ form.closed.errors }}

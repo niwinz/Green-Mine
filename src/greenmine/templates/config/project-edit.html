@@ -37,7 +37,12 @@
                             {% for user_role in project.user_roles.all %}
                             <tr>
                                 <td>
-                                    <img width="30" src="/static/auxiliar/imgs/gravatar.jpg">{{user_role.user.first_name}}
+                                    <img width="30" src="/static/auxiliar/imgs/gravatar.jpg">
+                                    {% if user_role.user.get_full_name %}
+                                        {{ user_role.user.get_full_name }}
+                                    {% else %}
+                                        {{ user_role.user.username }}
+                                    {% endif %}
                                 </td>
                                 <td>{{user_role.role}}</td>
                                 <td><a href="" rel="{{user_role.user.id}}" class="delete">{% trans "Delete" %}</a></td>
