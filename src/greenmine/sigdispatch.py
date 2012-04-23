@@ -31,6 +31,7 @@ def task_post_save(sender, instance, created, **kwargs):
         instance.user_story.modified_date = datetime.datetime.now()
         instance.user_story.save()
 
+
 from greenmine.utils import normalize_tagname
 
 @receiver(post_save, sender=UserStory)
