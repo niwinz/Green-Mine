@@ -32,17 +32,17 @@
                 </div>
                 <div class="users-roles">
                     <fieldset class="fsborder">
-                        <legend>Usuarios</legend>
+                        <legend>{% trans "Users" %}:</legend>
                         <input type="text" name="username" class="user-autocomplete" link="{% url "api:user-list" %}" />
                         <input type="hidden" class="user-currentvalue" value="" />
                     </fieldset>
                     <fieldset class="fsborder">
-                        <legend>Roles</legend>
-                        <ul class="roles">
-                            {% for rolid, rolname in roles %}
-                            <li><input name="rol-aux" type="radio" rolname="{{ rolname }}" value="{{ rolid }}" />{{ rolname }}</li>
+                        <legend>{% trans "Role" %}:</legend>
+                        <select name="rol-aux">
+                            {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.name }}</option>
                             {% endfor %}
-                        </ul>
+                        </select>
                     </fieldset>
                     <input id="btn-usr-project" type="button" value="Añadir" class="btn01" />
                 </div>

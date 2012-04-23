@@ -1,0 +1,56 @@
+[
+    {
+        "pk": 1,
+        "model": "greenmine.role",
+        "fields": {
+            "name": "Developer",
+            "slug": "developer",
+            "project_view": true,
+            "project_edit": false,
+            "userstory_view": true,
+            "userstory_edit": true,
+            "task_view": true,
+            "task_edit": true,
+            "wiki_view": true,
+            "wiki_edit": true,
+            "question_view": true,
+            "question_edit": true
+        }
+    },
+    {
+        "pk": 2,
+        "model": "greenmine.role",
+        "fields": {
+            "name": "Product Owner",
+            "slug": "product-owner",
+            "project_view": true,
+            "project_edit": false,
+            "userstory_view": true,
+            "userstory_edit": true,
+            "task_view": true,
+            "task_edit": false,
+            "wiki_view": true,
+            "wiki_edit": true,
+            "question_view": true,
+            "question_edit": true
+        }
+    },
+    {
+        "pk": 3,
+        "model": "greenmine.role",
+        "fields": {
+            "name": "Observer",
+            "slug": "observer",
+            "project_view": true,
+            "project_edit": false,
+            "userstory_view": true,
+            "userstory_edit": false,
+            "task_view": true,
+            "task_edit": false,
+            "wiki_view": true,
+            "wiki_edit": false,
+            "question_view": true,
+            "question_edit": false
+        }
+    }
+]

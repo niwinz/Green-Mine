@@ -49,9 +49,9 @@
                                         {{ user_role.user.username }}
                                     {% endif %}
                                 </td>
-                                <td>{{user_role.role}}</td>
+                                <td>{{ user_role.role.name }}</td>
                                 <td><a href="" rel="{{user_role.user.id}}" class="delete">{% trans "Delete" %}</a></td>
-                                <input type="hidden" value="manager" name="user_{{user_role.user.id}}">
+                                <input type="hidden" value="manager" name="user_{{ user_role.user.id }}">
                             </tr>
                             {% endfor %}
                         </tbody>

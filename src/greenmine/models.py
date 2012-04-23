@@ -152,6 +152,22 @@ class ProjectManager(models.Manager):
         return Project.objects.filter(pk__in=queryset)
 
 
+class Role(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
+
+    project_view = models.BooleanField(default=True)
+    project_edit = models.BooleanField(default=False)
+    userstory_view = models.BooleanField(default=True)
+    userstory_edit = models.BooleanField(default=False)
+    task_view = models.BooleanField(default=True)
+    task_edit = models.BooleanField(default=False)
+    wiki_view = models.BooleanField(default=True)
+    wiki_edit = models.BooleanField(default=False)
+    question_view = models.BooleanField(default=True)
+    question_edit = models.BooleanField(default=True)
+
+
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
@@ -283,7 +299,7 @@ class Team(models.Model):
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project", related_name="user_roles")
     user = models.ForeignKey("auth.User", related_name="user_roles")
-    role = models.CharField(max_length=100, choices=ROLE_CHOICES)
+    role = models.ForeignKey("Role", related_name="user_roles")
 
     # email notification settings
     meta_email_settings = DictField(null=True, default={}, editable=False)

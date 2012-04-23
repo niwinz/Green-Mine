@@ -206,8 +206,8 @@ $(document).ready(function(){
         });
         
         $("#btn-usr-project").click(function(e){
-            var roles = $(".users-roles [name='rol-aux']:checked");
-            if (roles.length == 0){
+            var role = $(".users-roles [name='rol-aux']");
+            if (role.val().length == 0){
                 alert("Selecciona un rol");
             } else {
                 var user = $("input.user-autocomplete").parent().find("input.user-currentvalue");
@@ -215,9 +215,9 @@ $(document).ready(function(){
                     if($("#user-project tbody").find('input[name="user_' + user.val() + '"]').length < 1){
                         var html = "<tr>" +
                             '<td><img width="30" src="'+ user.attr('gravatar') +'">' + user.attr('name') + '</td>' +
-                            '<td>'+$(roles[0]).attr('rolname')+'</td>' +
+                            '<td>'+role.find('option:selected').html()+'</td>' +
                             '<td><a class="delete" rel="' + user.val() + '" href="">Borrar</a></td>' +
-                            '<input type="hidden" name="user_' + user.val() + '" value="' + $(roles[0]).val() + '" /></tr>';
+                            '<input type="hidden" name="user_' + user.val() + '" value="' + role.val() + '" /></tr>';
                         $("#user-project tbody").append(html);
                         $("input.user-autocomplete").val("");
                     }

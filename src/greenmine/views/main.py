@@ -75,7 +75,7 @@ class LoginView(GenericView):
             else:
                 response = {'errors': login_form.errors}
                 return self.render_to_error(response)
- 
+
 
 class RememberPasswordView(GenericView):
     template_name = 'remember-password.html'
@@ -192,7 +192,10 @@ class ProfileView(GenericView):
 
 
 class HomeView(GenericView):
-    """ General user projects view """
+    """
+    General user projects view. This is a home page.
+    """
+
     template_name = 'projects.html'
     menu = ['projects']
 
@@ -220,7 +223,10 @@ class HomeView(GenericView):
     
 
 class BacklogView(GenericView):
-    """ General dasboard view,  with all milestones and all tasks. """
+    """ 
+    General dasboard view,  with all milestones and all tasks. 
+    """
+
     template_name = 'backlog.html'
     menu = ['backlog']
 
@@ -302,6 +308,8 @@ class DashboardView(GenericView):
 
 
 class UserRoleMixIn(object):
+    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
+
     def parse_roles(self):
         user_role = {}
 
@@ -311,11 +319,14 @@ class UserRoleMixIn(object):
                 continue
 
             user_role[user_rx_pos.group('userid')] = self.request.POST[post_key]
-
+        
         role_values = dict(models.ROLE_CHOICES).keys()
+
         invalid_role = False
-        for role in user_role.values():
-            if role not in role_values:
+        for role in user_role.values(): 
+            try:
+                models.Role.objects.get(pk=role)
+            except models.Role.DoesNotExist:
                 invalid_role = True
                 break
             
@@ -324,17 +335,19 @@ class UserRoleMixIn(object):
 
 class ProjectCreateView(UserRoleMixIn, GenericView):
     template_name = 'project-create.html'
-    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
     menu = ['projects']
 
     def get(self, request):
         form = forms.ProjectForm()
-        context = {'form':form, 'roles': models.ROLE_CHOICES}
+        context = {'form':form, 'roles': models.Role.objects.all()}
         return self.render_to_response(self.template_name, context)
 
     def post(self, request):
         form = forms.ProjectForm(request.POST, request=request)
-        context = {'form': form, 'roles': models.ROLE_CHOICES}
+        context = {
+            'form': form, 
+            'roles': models.Role.objects.all(),
+        }
         
         if not form.is_valid():
             response = {'errors': form.errors}
@@ -354,7 +367,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
                 models.ProjectUserRole.objects.create(
                     project = project,
                     user = models.User.objects.get(pk=userid),
-                    role = role
+                    role = models.Role.objects.get(pk=role),
                 )
 
         except Exception as e:
@@ -373,7 +386,6 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
 class ProjectEditView(UserRoleMixIn, GenericView):
     template_name = 'config/project-edit.html'
-    user_rx = re.compile(r'^user_(?P<userid>\d+)$', flags=re.U)
     menu = ["settings", "editproject"]
 
     @login_required
