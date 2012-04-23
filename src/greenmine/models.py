@@ -370,7 +370,7 @@ class Milestone(models.Model):
 class UserStory(models.Model):
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
-    milestone = models.ForeignKey("Milestone",
+    milestone = models.ForeignKey("Milestone", blank=True,
         related_name="user_stories", null=True, default=None)
     project = models.ForeignKey("Project", related_name="user_stories")
     owner = models.ForeignKey("auth.User", null=True,

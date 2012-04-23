@@ -1219,7 +1219,7 @@ class UsFormInline(GenericView):
 
             else:
                 response_data['action'] = 'save'
-                response_data['html'] = render_to_string(self.us_template_name, context,
+                response_data['html'] = render_to_string(self.us_template_name0, context,
                     context_instance=RequestContext(request))
             return self.render_to_ok(response_data)
 
