@@ -42,12 +42,15 @@ class ProjectRelatedTests(TestCase):
         post_params = {
             'projectname': 'test-project',
             'description': 'description',
+            'user_{0}'.format(self.user.id): '1',
         }
 
         project_create_url = reverse('web:project-create')
         response = self.client.post(project_create_url, post_params, follow=True)
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        jdata = json.loads(response.content)
+        self.assertTrue(jdata['valid'])
 
     def test_normal_user_projects(self):
         """
@@ -73,3 +76,35 @@ class ProjectRelatedTests(TestCase):
         response = self.client.get(home_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['projects'].count(), 2)
+
+    def test_project_edit(self):
+        project = Project(name='test1', description='test1', owner=self.user, slug='test1')
+        project.save()
+
+        pur = ProjectUserRole.objects.create(
+            user = self.user,
+            project = project,
+            role = Role.objects.get(pk=1),
+        )
+
+        post_params = {
+            'projectname': 'test-project2',
+            'description': project.description,
+            'user_{0}'.format(self.user.id): '2',
+        }
+
+        project_edit_url = reverse('web:project-edit', args=[project.slug])
+        response = self.client.post(project_edit_url, post_params)
+        self.assertEqual(response.status_code, 200)
+
+        jdata = json.loads(response)
+        self.assertTrue(jdata['valid'])
+        self.assertIn("redirect_to", jdata)
+
+        qs = ProjectUserRole.objects.filter(
+            user = self.user,
+            project = project,
+            role__pk = 2,
+        )
+        self.assertEqual(qs.count(), 1)
+
