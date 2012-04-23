@@ -411,6 +411,11 @@ class UserStory(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
+    
+    @models.permalink
+    def get_assign_url(self):
+        return ('web:assign-us', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_unassign_url(self):

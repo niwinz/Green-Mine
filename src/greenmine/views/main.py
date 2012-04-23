@@ -800,7 +800,36 @@ class TaskEdit(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
-class UnassignUs(GenericView):
+class AssignUserStory(GenericView):
+    """
+    Assign user story callback.
+    """
+
+    template_name  = "milestone-item.html"
+
+    @login_required
+    def post(self, request, pslug, iref):
+        if "mid" not in request.POST:
+            return self.render_to_error()
+
+        project = get_object_or_404(models.Project, slug=pslug)
+        user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        milestone_id = request.POST['mid']
+        milestone = get_object_or_404(project.milestones, pk=milestone_id)
+
+        user_story.milestone = milestone
+        user_story.save()
+        
+        context = {
+            'us': user_story,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_name, context)
+
+
+class UnassignUserStory(GenericView):
     """
     Unassign callback on backlog.
     """

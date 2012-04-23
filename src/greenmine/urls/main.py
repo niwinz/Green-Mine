@@ -120,7 +120,10 @@ urlpatterns = patterns('',
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',   
-        main.UnassignUs.as_view(), name="unassign-us"),
+        main.UnassignUserStory.as_view(), name="unassign-us"),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/assign/$',
+        main.AssignUserStory.as_view(), name="assign-us"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/$',
         main.WikiPageView.as_view(), name='wiki-page'),

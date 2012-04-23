@@ -29,7 +29,7 @@ class GenericView(View):
         response.update(context)
         return self.render_json(response, ok=True)
 
-    def render_to_error(self, context):
+    def render_to_error(self, context={}):
         response = {'valid': False, 'errors': []}
         response.update(context)
         return self.render_json(response, ok=False)

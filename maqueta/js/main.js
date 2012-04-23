@@ -33,10 +33,7 @@ var backlog_handlers = function() {
         console.log(e);
     });
 
-    $(".unassigned-us").on("drag", ".un-us-item", function(e) {});
-    $(".unassigned-us").on("dragend", ".un-us-item", function(e) {});
-
-    $(".milestones").on("dragover", ".milestone-item .milestone-userstorys", function(e) {
+    $(".milestones").on("dragover", ".milestone-item", function(e) {
         e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = 'copy';
 
@@ -47,7 +44,7 @@ var backlog_handlers = function() {
         return false;
     });
 
-    $(".milestones").on("dragleave", ".milestone-item .milestone-userstorys", function(e) {
+    $(".milestones").on("dragleave", ".milestone-item", function(e) {
         var target = $(e.currentTarget);
         if (target.hasClass('drag-over')) {
             target.removeClass('drag-over');
@@ -55,13 +52,57 @@ var backlog_handlers = function() {
         return false;
     });
 
-    $(".milestones").on("drop", ".milestone-item .milestone-userstorys", function(e) {
+    $(".milestones").on("drop", ".milestone-item", function(e) {
         var target = $(e.currentTarget);
         if (target.hasClass('drag-over')) {
             target.removeClass('drag-over');
         }
         var source_id = e.originalEvent.dataTransfer.getData('source_id');
-        $("#" + source_id).remove();
+        var source = $("#" + source_id);
+
+        var assign_url = source.attr('assignurl');
+        var milestone_id = target.attr('ref');
+
+        $.post(assign_url, {mid: milestone_id}, function(data) {
+            var data_object = $(data);
+
+            target.find(".us-item-empty").remove()
+            target.find(".milestone-userstorys").append(data_object);
+            source.remove()
+        }, 'html');
+    });
+
+    // Unassign drag and drop
+    $(".milestones").on("dragstart", ".us-item", function(e) {
+        e.originalEvent.dataTransfer.effectAllowed = 'copy';
+        e.originalEvent.dataTransfer.setData('source_id', $(this).attr('id'));
+    });
+
+    $(".left-block").on("dragover", ".unassigned-us", function(e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'copy';
+        var target = $(e.currentTarget);
+        return false;
+    });
+
+    $(".left-block").on("drop", ".unassigned-us", function(e) {
+        var target = $(e.currentTarget);
+        var source_id = e.originalEvent.dataTransfer.getData('source_id');
+        var source = $("#" + source_id);
+
+        var unassign_url = source.attr('unassignurl');
+        $.post(unassign_url, {}, function(data) {
+            target.append(data);
+            if(source.parent().find(".us-item").length == 1) {
+                source.find(".us-meta").remove()
+                source.find(".us-title").html(gettext("No user storys"));
+                source.addClass('us-item-empty');
+                source.attr('draggable', 'false');
+                source.attr('unassignurl', '');
+            } else {
+                source.remove();
+            }
+        }, 'html');
     });
 
     /* End backlog drag and drop */
