@@ -200,6 +200,7 @@ div.main-menu ul.right-menu li {
 
 #dashboard .left-block .unassigned-us {
     padding: 5px;
+    min-height: 200px;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item {
@@ -653,5 +654,5 @@ ul.errorlist li {
     width: 90px
 }
 .drag-over {
-    border:1px solid red;
+    border:1px solid #F6CED8;
 }

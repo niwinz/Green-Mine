@@ -34,14 +34,13 @@ var backlog_handlers = function() {
     });
 
     $(".milestones").on("dragover", ".milestone-item", function(e) {
-        e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = 'copy';
 
         var target = $(e.currentTarget);
         if (!target.hasClass("drag-over")) {
             target.addClass("drag-over");
         }
-        return false;
+        e.preventDefault();
     });
 
     $(".milestones").on("dragleave", ".milestone-item", function(e) {
@@ -49,7 +48,7 @@ var backlog_handlers = function() {
         if (target.hasClass('drag-over')) {
             target.removeClass('drag-over');
         }
-        return false;
+        e.preventDefault();
     });
 
     $(".milestones").on("drop", ".milestone-item", function(e) {
@@ -79,14 +78,27 @@ var backlog_handlers = function() {
     });
 
     $(".left-block").on("dragover", ".unassigned-us", function(e) {
-        e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = 'copy';
+
         var target = $(e.currentTarget);
-        return false;
+        e.preventDefault();
+    });
+
+    $(".left-block").on("dragleave", ".unassigned-us", function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
+        }
+        e.preventDefault();
     });
 
     $(".left-block").on("drop", ".unassigned-us", function(e) {
         var target = $(e.currentTarget);
+
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
+        }
+
         var source_id = e.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
 
