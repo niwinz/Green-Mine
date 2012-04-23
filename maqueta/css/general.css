@@ -652,3 +652,6 @@ ul.errorlist li {
 .us-form-inline #id_priority {
     width: 90px
 }
+.drag-over {
+    border:1px solid red;
+}

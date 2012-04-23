@@ -24,7 +24,48 @@ var backlog_handlers = function() {
             buttons: buttons
         });        
     });
-    
+
+    /* Backlog drag and drop */
+
+    $(".unassigned-us").on("dragstart", ".un-us-item", function(e) {
+        e.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+        e.originalEvent.dataTransfer.setData('source_id', $(this).attr('id')); // required otherwise doesn't work
+        console.log(e);
+    });
+
+    $(".unassigned-us").on("drag", ".un-us-item", function(e) {});
+    $(".unassigned-us").on("dragend", ".un-us-item", function(e) {});
+
+    $(".milestones").on("dragover", ".milestone-item .milestone-userstorys", function(e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'copy';
+
+        var target = $(e.currentTarget);
+        if (!target.hasClass("drag-over")) {
+            target.addClass("drag-over");
+        }
+        return false;
+    });
+
+    $(".milestones").on("dragleave", ".milestone-item .milestone-userstorys", function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
+        }
+        return false;
+    });
+
+    $(".milestones").on("drop", ".milestone-item .milestone-userstorys", function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
+        }
+        var source_id = e.originalEvent.dataTransfer.getData('source_id');
+        $("#" + source_id).remove();
+    });
+
+    /* End backlog drag and drop */
+
     $(".unassigned-us").on("click", ".config-us-inline", function(event) {
         event.preventDefault();
         var elm = $(this);

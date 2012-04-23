@@ -13,10 +13,10 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
+
 import os
 import sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "niwi.settings")
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings.local'
 
 current_dir = os.path.dirname(os.path.realpath(__file__))

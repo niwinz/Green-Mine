@@ -2,7 +2,7 @@
 {% load greenmine_utils %}
 {% load i18n %}
 
-<div class="un-us-item">
+<div class="un-us-item" draggable="true" id="un-us-item-{{ us.id }}">
     <div class="row title">
         {% if us.category %}
         {% tag_color us.category as result_color %}
