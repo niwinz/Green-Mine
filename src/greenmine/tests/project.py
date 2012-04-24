@@ -97,7 +97,7 @@ class ProjectRelatedTests(TestCase):
         response = self.client.post(project_edit_url, post_params)
         self.assertEqual(response.status_code, 200)
 
-        jdata = json.loads(response)
+        jdata = json.loads(response.content)
         self.assertTrue(jdata['valid'])
         self.assertIn("redirect_to", jdata)
 

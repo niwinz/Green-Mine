@@ -369,8 +369,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
         except Exception as e:
             transaction.savepoint_rollback(sem)
-            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render_to_response(self.template_name, {'form': form})
+            return self.render_to_error({'e': unicode(e)})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
@@ -429,13 +428,12 @@ class ProjectEditView(UserRoleMixIn, GenericView):
                 models.ProjectUserRole.objects.create(
                     project = project,
                     user = User.objects.get(pk=userid),
-                    role = role
+                    role = models.Role.objects.get(pk=role)
                 )
 
         except Exception as e:
             transaction.savepoint_rollback(sem)
-            messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
-            return self.render_to_response(self.template_name, {'form': form})
+            return self.render_to_error({'e': unicode(e)})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
