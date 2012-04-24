@@ -54,7 +54,6 @@ class RegisterView(GenericView):
 
 
 class LoginView(GenericView):
-    """ Login view """
     template_name = 'login.html'
     
     @method_decorator(ensure_csrf_cookie)
@@ -317,8 +316,6 @@ class UserRoleMixIn(object):
 
             user_role[user_rx_pos.group('userid')] = self.request.POST[post_key]
         
-        role_values = dict(models.ROLE_CHOICES).keys()
-
         invalid_role = False
         for role in user_role.values(): 
             try:
@@ -333,12 +330,14 @@ class UserRoleMixIn(object):
 class ProjectCreateView(UserRoleMixIn, GenericView):
     template_name = 'project-create.html'
     menu = ['projects']
-
+    
+    @login_required
     def get(self, request):
         form = forms.ProjectForm()
         context = {'form':form, 'roles': models.Role.objects.all()}
         return self.render_to_response(self.template_name, context)
-
+    
+    @login_required
     def post(self, request):
         form = forms.ProjectForm(request.POST, request=request)
         context = {
@@ -438,71 +437,6 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return self.render_to_ok({'redirect_to':reverse('web:projects')})  
-
-
-import shutil, io, pickle, copy
-
-class ProjectExportView(GenericView):
-    template_path = 'config/project-export.html'
-    menu = ['settings', 'export']
-
-    def backup_path_list(self):
-        for path in os.listdir(settings.BACKUP_PATH):
-            if os.path.splitext(path)[1] != '.xz':
-                continue
-
-            yield os.path.join(settings.BACKUP_PATH, path)
-
-    def backup_file_list(self):
-        for path in self.backup_path_list():
-            yield path, os.path.basename(path), os.path.getsize(path)
-
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        
-        context = {
-            'project': project,
-            'flist': self.backup_file_list()
-        }
-
-        return self.render_to_response(self.template_path, context)
-
-
-class ProjectExportNow(ProjectExportView):
-    def create_tempdir_for_project(self, project):
-        dirname = u"{0}_backup".format(project.slug)
-
-        self.path = os.path.join(settings.BACKUP_PATH, dirname)
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
-        os.mkdir(self.path)
-
-    def _backup_project_data(self, project):
-        filename = "project-data.data"
-        filepath = os.path.join(self.path, filename)
-        with io.open(filepath, 'w+b') as f:
-            obj = copy.deepcopy(project.__dict__)
-            if "_state" in obj:
-                del obj["_state"]
-            pickle.dump(obj, f, -1)
-        
-        filename = 'project-owner.data'
-        filepath = os.path.join(self.path, filename)
-
-        with io.open(filepath, 'w+b') as f:
-            obj = copy.deepcopy(project.owner.__dict__)
-            if "_state" in obj:
-                del obj["_state"]
-            pickle.dump(obj, f, -1)
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-        self.create_tempdir_for_project(project)
-        self._backup_project_data(project)
-        return self.redirect_referer("Now exported")
 
 
 class MilestoneCreateView(GenericView):

@@ -577,7 +577,6 @@ class Task(models.Model):
         return ('web:task-delete', (),
             {'pslug':self.project.slug, 'tref': self.ref})
 
-
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
