@@ -236,13 +236,10 @@ class BacklogView(GenericView):
         unassigned = project.user_stories.filter(milestone__isnull=True)\
             .order_by('-priority')
 
-        form_new_milestone = forms.MilestoneForm()
-        
         context = {
             'project': project,
             'milestones': project.milestones.order_by('-created_date').prefetch_related('project'),
             'unassigned_us': unassigned.select_related(),
-            'form_new_milestone': form_new_milestone,
         }
 
         return self.render_to_response(self.template_name, context)
@@ -259,7 +256,7 @@ class TasksView(GenericView):
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-
+        
         if mid is None:
             try:
                 return self.render_redirect(project.get_default_tasks_url())
@@ -533,6 +530,7 @@ class MilestoneCreateView(GenericView):
         if form.is_valid():
             milestone = form.save(commit=False)
             milestone.project = project
+            milestone.owner = request.user
             milestone.save()
             return self.render_redirect(project.get_backlog_url())
 
@@ -832,6 +830,8 @@ class AssignUserStory(GenericView):
 
         user_story.milestone = milestone
         user_story.save()
+
+        user_story.tasks.update(milestone=milestone)
         
         context = {
             'us': user_story,
@@ -853,7 +853,8 @@ class UnassignUserStory(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
         user_story.milestone = None
-        user_story.save()        
+        user_story.save()
+        user_story.tasks.update(milestone=None)
         
         context = {'us': user_story}
         return self.render_to_response(self.template_name, context)

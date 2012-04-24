@@ -318,6 +318,7 @@ class MilestoneManager(models.Manager):
 
 class Milestone(models.Model):
     name = models.CharField(max_length=200, db_index=True)
+    owner = models.ForeignKey('auth.User', related_name="milestones")
     project = models.ForeignKey('Project', related_name="milestones")
     estimated_finish = models.DateField(null=True, default=None)
 
