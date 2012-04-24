@@ -57,6 +57,23 @@
                 <span>{% trans "Tasks/Bugs on this user story:" %}</span>
             </div>
             <div class="us-tasks-list">
+                <div class="us-task-item head-title">
+                    <div class="row identify">
+                        <span>{% trans 'Id' %}</span>
+                    </div>
+                    <div class="row title">
+                        <span>{% trans 'Subject' %}</span>
+                    </div>
+                    <div class="row priority">
+                        <span>{% trans 'Priority' %}</span>
+                    </div>
+                    <div class="row assignation">
+                        <span>{% trans 'Assigned to' %}</span>
+                    </div>
+                    <div class="row metaicon">
+                        <span>{% trans 'Actions' %}</span>
+                    </div>
+                </div>
                 {% for st in subtasks %}
                 <div class="us-task-item">
                     <div class="row identify">
@@ -72,7 +89,8 @@
                         <span><a href="">{{ st.assigned_to|default:"Unassigned" }}</a></span>
                     </div>
                     <div class="row metaicon">
-                        <img src="{% static 'imgs/close-icon.png' %}"></img>
+                        <img class="delete" src="{% static 'imgs/close-icon.png' %}"
+                            deleteurl="{{ st.get_delete_url }}"></img>
                     </div>
                 </div>
                 {% empty %}
@@ -89,5 +107,9 @@
                 class="btn01 float-right">{% trans "Create task" %}</a>
         </div>
     </div>
+</div>
+
+<div class="delete-task-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this task?" %}
 </div>
 {% endblock %}

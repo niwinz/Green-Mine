@@ -554,6 +554,7 @@ ul.errorlist li {
 .show-module {
     padding: 5px;
 }
+.show-module .inline { overflow: hidden; }
 
 .show-module .us-tasks .us-tasks-title {
     font-size: 14px;
@@ -583,12 +584,17 @@ ul.errorlist li {
     width: 65px;
 }
 .show-module .us-tasks .us-task-item .row.milestone {}
+
 .show-module .us-tasks .us-task-item .row.metaicon {
     float: right;
 }
+
 .show-module .us-tasks .us-task-item .row.metaicon img,
 .show-module .us-tasks .us-task-item .row { cursor: pointer; }
-.show-module .inline { overflow: hidden; }
+
+.show-module .us-tasks .us-task-item.head-title span {
+    color: #777;
+}
 
 .responses-list .response {
     background-color: #eee;

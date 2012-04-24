@@ -1,11 +1,11 @@
 var backlog_handlers = function() {
-    $(".un-us-item .delete").live('click', function(event) {
+    $(".unassigned-us").on('click', ".un-us-item .delete", function(event) {
         event.preventDefault();
         var self = $(this);
-        self.closest('.un-us-item').css('border', '1px solid red');
+        //self.closest('.un-us-item').css('border', '1px solid red');
         
         var buttons = {};
-        buttons[gettext('Ok')] = function() {
+        buttons[gettext('Delete')] = function() {
             $.post(self.attr('href'), {}, function(data) {
                 
             });
@@ -15,7 +15,7 @@ var backlog_handlers = function() {
         };
         buttons[gettext('Cancel')] = function() {
             $(this).dialog('close');
-            self.closest('.un-us-item').css('border', '');
+            //self.closest('.un-us-item').css('border', '');
         };
 
         $(".delete-us-dialog").dialog({
@@ -26,7 +26,6 @@ var backlog_handlers = function() {
     });
 
     /* Backlog drag and drop */
-
     $(".unassigned-us").on("dragstart", ".un-us-item", function(e) {
         e.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
         e.originalEvent.dataTransfer.setData('source_id', $(this).attr('id')); // required otherwise doesn't work
@@ -171,33 +170,37 @@ var backlog_handlers = function() {
         $(this).closest('.un-us-item').find('.form-inline').hide();
     });    
     
+    // Milestone item (user story) delete callback
     $(".milestones").on("click", ".us-item .unassign", function(event) {
         event.preventDefault();
-
         var self = $(this);
         var pself = self.parents('.us-item');
 
         var buttons = {};
 
-        buttons[gettext("Unassign")] = function() {            
-            $.post(pself.attr('unassignurl'), {}, function(data) {
-                $(".unassigned-us .head-title").after(data);
-                
-                var milestone_item_dom = self.parents('.milestone-item');
-                if (milestone_item_dom.find('.milestone-userstorys .us-item').length == 1) {
-                    pself.find('.us-meta').remove()
-                    pself.find('.us-title').html(gettext("No user storys"));
-                    pself.addClass('us-item-empty');
-                } else {
-                    pself.remove();
-                }
-            }, 'html');
+        //buttons[gettext("Unassign")] = function() {            
+        //    $.post(pself.attr('unassignurl'), {}, function(data) {
+        //        $(".unassigned-us .head-title").after(data);
+        //        
+        //        var milestone_item_dom = self.parents('.milestone-item');
+        //        if (milestone_item_dom.find('.milestone-userstorys .us-item').length == 1) {
+        //            pself.find('.us-meta').remove()
+        //            pself.find('.us-title').html(gettext("No user storys"));
+        //            pself.addClass('us-item-empty');
+        //        } else {
+        //            pself.remove();
+        //        }
+        //    }, 'html');
+        //    $(this).dialog('close');
+        //};
 
+        buttons[gettext("Delete")] = function() {   
+            // TODO: ajax call
+            self.parents('.us-item').remove();
             $(this).dialog('close');
         };
 
-        buttons[gettext("Delete")] = function() {
-            self.parents('.us-item').remove();
+        buttons[gettext("Cancel")] = function() {
             $(this).dialog('close');
         };
 
@@ -209,13 +212,14 @@ var backlog_handlers = function() {
         });
     });
     
+    // Milestone delete callback
     $(".milestone-item .milestone-title  a.delete").live('click', function(event){
         event.preventDefault();
         var self = $(this);
-        // TODO: ajax call
         
         var buttons = {};
-        buttons[gettext('Ok')] = function() {
+        buttons[gettext('Delete')] = function() {
+            // TODO: ajax call
             $(this).dialog('close');
             self.parents('.milestone-item').remove();
         };
@@ -229,38 +233,6 @@ var backlog_handlers = function() {
             buttons: buttons
         });
     });
-    
-    //assign user story to milestone    
-    
-    var lightbox = $("#lightbox-backlog").lightbox({
-        fadeIn: false,
-        fadeOut: false,                
-        width: 300
-    });
-    
-    var us = {};
-    $(".milestone a").live('click', function(e) {
-        us = $(this);
-        e.preventDefault();
-        lightbox.open();
-    });       
-    
-    $("#lightbox-backlog a").click(function(e){            
-        e.preventDefault();
-        var ml = $(this).attr('rel');
-        
-        $.post($(this).attr('href'), {'iref': us.attr('rel')}, function(data) {
-            var milestone = $("#milestone-"+ml);
-            if($(milestone).find('.us-item-empty').length > 0){
-                $(milestone).find('.milestone-userstorys').html(data);
-            }else{   
-                $(milestone).find('.milestone-userstorys').append(data);
-            }
-        }, 'html');                
-        
-        us.closest('.un-us-item').remove();
-        lightbox.close();
-    });    
 };
 
 var settings_handlers = function() {
@@ -311,7 +283,65 @@ var settings_handlers = function() {
     });
 };
 
+var tasks_issues_handlers = function() {
+    $(".unassigned-us").on('click', '.un-us-item img.delete', function(event) {
+        var self = $(this);
+        var buttons = {};
+
+        buttons[gettext('Delete')] = function() {
+            var delete_url = self.attr('deleteurl');
+            $.post(delete_url, {}, function(data) {
+                if(data.valid) { 
+                    self.parents('.un-us-item').remove();
+                }
+            }, 'json');
+            $(this).dialog('close');
+        };
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close');
+        };
+
+        $(".delete-milestone-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });
+        event.preventDefault();
+    });
+};
+
+var user_story_handlers = function() {
+    console.log(1);
+    $(".us-tasks-list").on("click", ".us-task-item img.delete", function(event) {
+        console.log(2);
+        var self = $(this);
+        var buttons = {};
+
+        buttons[gettext('Delete')] = function() {
+            var delete_url = self.attr('deleteurl');
+            $.post(delete_url, {}, function(data) {
+                if(data.valid) { 
+                    self.parents('.us-task-item').remove();
+                }
+            }, 'json');
+            $(this).dialog('close');
+        };
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close');
+        };
+
+        $(".delete-task-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });
+        event.preventDefault();
+    });
+};
+
 $(document).ready(function() {
     backlog_handlers();
     settings_handlers();
+    tasks_issues_handlers();
+    user_story_handlers();
 });

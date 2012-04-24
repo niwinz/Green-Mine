@@ -808,6 +808,17 @@ class TaskEdit(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
+class TaskDelete(GenericView):
+    @login_required
+    def post(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        task = get_object_or_404(project.tasks, ref=tref)
+
+        # TODO: permission check
+        task.delete()
+        return self.render_to_ok({})
+
+
 class AssignUserStory(GenericView):
     """
     Assign user story callback.

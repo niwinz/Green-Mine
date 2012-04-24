@@ -105,8 +105,11 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
         main.TaskEdit.as_view(), name='task-edit'),
 
-     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
         main.TaskView.as_view(), name='task-view'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/delete/$',
+        main.TaskDelete.as_view(), name='task-delete'),
     
     # tasks/bugs view
     url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
