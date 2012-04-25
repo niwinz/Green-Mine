@@ -16,7 +16,7 @@
         </ul>
     </div>
     <div class="wiki-content">
-        {{ wikipage.content|markdown }}
+        {{ wikipage.content|markdown:project.slug }}
     </div>
 </div>
 {% endblock %}
