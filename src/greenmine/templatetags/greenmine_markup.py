@@ -17,6 +17,8 @@ from pygments.lexers import get_lexer_by_name, TextLexer
 import lxml.html as lx
 import lxml.etree as et
 
+from django.core.urlresolvers import reverse
+
 class Postprocessor(markdown.postprocessors.Postprocessor):
     formatter = HtmlFormatter(noclasses=False, style="friendly")
 
@@ -38,14 +40,6 @@ class Postprocessor(markdown.postprocessors.Postprocessor):
                 pre_elem.append(lx.fromstring(new_text))
                 pre_elem.tag = 'div'
 
-        # Intern links implemented with <wlink tag>
-        for wlink_elem in doc.cssselect('wlink'):
-            if wlink_elem.text:
-                wlink_elem.tag = 'a'
-                wlink_elem.set('href', "../" + wlink_elem.text)
-                if wlink_elem.get('title', None):
-                    wlink_elem.text = wlink_elem.get('title')
-        
         return et.tostring(doc, pretty_print=False, method="html")
 
 
@@ -56,10 +50,16 @@ class PygmentsExtension(markdown.Extension):
         md.registerExtension(self)
 
 
-engine = markdown.Markdown(extensions=[PygmentsExtension()])
-
-
 @register.filter(name="markdown")
-def markdown(value):
-    res =  mark_safe(engine.convert(value))
+def markdown_filter(value, project):
+    res = markdown.markdown(
+        value,
+        extensions = ['wikilinks', PygmentsExtension()], 
+        extension_configs = {'wikilinks': [
+                                    ('base_url', '/'+project+'/wiki/'), 
+                                    ('end_url', ''),
+                                    ('html_class', '') ]},
+        safe_mode = True
+    )
+    res = mark_safe(res)
     return res
