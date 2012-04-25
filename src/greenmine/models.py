@@ -572,6 +572,11 @@ class Task(models.Model):
         return ('web:task-view', (), 
             {'pslug':self.project.slug, 'tref': self.ref})
 
+    @models.permalink
+    def get_delete_url(self):
+        return ('web:task-delete', (),
+            {'pslug':self.project.slug, 'tref': self.ref})
+
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = datetime.datetime.now()
@@ -581,28 +586,6 @@ class Task(models.Model):
 
         super(Task, self).save(*args, **kwargs)
 
-
-
-#class TaskResponse(models.Model):
-#    owner = models.ForeignKey('auth.User', related_name='responses')
-#    task = models.ForeignKey('Task', related_name='responses')
-#
-#    created_date = models.DateTimeField(auto_now_add=True)
-#    modified_date = models.DateTimeField(auto_now_add=True)
-#    content = models.TextField()
-#
-#
-#class TaskAttachedFile(models.Model):
-#    response = models.ForeignKey('TaskResponse',
-#        related_name='attached_files', null=True, blank=True)
-#    task = models.ForeignKey('Task', related_name='attached_files')
-#
-#    owner = models.ForeignKey("auth.User", related_name="files")
-#    created_date = models.DateTimeField(auto_now_add=True)
-#    modified_date = models.DateTimeField(auto_now_add=True)
-#    attached_file = models.FileField(upload_to="files/msg",
-#        max_length=500, null=True, blank=True)
-#
 
 class Question(models.Model):
     subject = models.CharField(max_length=150)

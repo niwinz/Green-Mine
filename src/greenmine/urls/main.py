@@ -42,7 +42,8 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/edit/$',
         main.ProjectEditView.as_view(), name="project-edit"),
-    
+        
+    # export
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/$', 
         export.ProjectExportView.as_view(), name="project-export-settings"),
 
@@ -51,7 +52,8 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/rehash/',
         export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
-    
+        
+    # web
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),
 
@@ -105,8 +107,11 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
         main.TaskEdit.as_view(), name='task-edit'),
 
-     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
         main.TaskView.as_view(), name='task-view'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/delete/$',
+        main.TaskDelete.as_view(), name='task-delete'),
     
     # tasks/bugs view
     url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
@@ -114,7 +119,6 @@ urlpatterns = patterns('',
     
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
-    
 
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),

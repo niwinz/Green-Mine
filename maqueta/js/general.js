@@ -225,10 +225,10 @@ $(document).ready(function(){
             }
             e.preventDefault();
         });
-		$("#user-project").delegate('a.delete', 'click', function(event){
-			$(this).parents('tr').remove();
-			event.preventDefault();
-		});        
+        $("#user-project").delegate('a.delete', 'click', function(event){
+            $(this).parents('tr').remove();
+            event.preventDefault();
+        });        
     }
     
     if($("#issue").length){

@@ -58,7 +58,8 @@
                     {% endif %}
                 </div>
                 <div class="row metaicon">
-                    <img class="delete" src="{% static 'imgs/close-icon.png' %}"></img>
+                    <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
+                        deleteurl="{{ task.get_delete_url }}"></img>
                 </div>
             </div>
             {% endfor %}

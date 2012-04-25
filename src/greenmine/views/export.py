@@ -202,28 +202,28 @@ class ProjectExportNow(GenericView):
             with BinaryFile(filepath) as f:
                 pickle.dump(obj, f, -1)
 
-        for response in models.TaskResponse.objects.filter(task__in=project.tasks.all()):
-            obj = self._clean_copy(response.__dict__)
-            obj['watchers'] = [o.id for o in task.watchers.all()]
+        #for response in models.TaskResponse.objects.filter(task__in=project.tasks.all()):
+        #    obj = self._clean_copy(response.__dict__)
+        #    obj['watchers'] = [o.id for o in task.watchers.all()]
 
-            filename = "response_{0}_{1}.data".format(response.id, project.id)
-            filepath = os.path.join(path, filename)
+        #    filename = "response_{0}_{1}.data".format(response.id, project.id)
+        #    filepath = os.path.join(path, filename)
 
-            with BinaryFile(filepath) as f:
-                pickle.dump(obj, f, -1)
-        
-        for res_file in models.TaskAttachedFile.objects.filter(task__in=project.tasks.all()):
-            obj = self._clean_copy(res_file.__dict__)
-            raw_file_data = res_file.attached_file.read()
-            raw_file_data = zlib.compress(raw_file_data, 9)
-            raw_file_data = base64.b64encode(raw_file_data)
-            obj['__raw_file_data'] = raw_file_data
+        #    with BinaryFile(filepath) as f:
+        #        pickle.dump(obj, f, -1)
+        #
+        #for res_file in models.TaskAttachedFile.objects.filter(task__in=project.tasks.all()):
+        #    obj = self._clean_copy(res_file.__dict__)
+        #    raw_file_data = res_file.attached_file.read()
+        #    raw_file_data = zlib.compress(raw_file_data, 9)
+        #    raw_file_data = base64.b64encode(raw_file_data)
+        #    obj['__raw_file_data'] = raw_file_data
 
-            filename = "file_response_{0}_{1}.data".format(res_file.id, project.id)
-            filepath = os.path.join(path, filename)
+        #    filename = "file_response_{0}_{1}.data".format(res_file.id, project.id)
+        #    filepath = os.path.join(path, filename)
 
-            with BinaryFile(filepath) as f:
-                pickle.dump(obj, f, -1)
+        #    with BinaryFile(filepath) as f:
+        #        pickle.dump(obj, f, -1)
 
     def _backup_questions(self, project):
         directory_pathname = "questions"
