@@ -34,7 +34,7 @@
         </div>
         <div class="question-body">
             <div class="content">
-                {{ question.content|markdown }}
+                {{ question.content|markdown:project.slug }}
             </div>
         </div>
 
@@ -42,7 +42,7 @@
     <div class="question-responses">
         {% for response in responses %}
         <div class="question-response-item">
-            <div class="content">{{ response.content|markdown }}</div>
+            <div class="content">{{ response.content|markdown:project.slug }}</div>
             <div class="owner">{% trans "By: " %}<span>{{ response.owner.get_full_name }}</span></div>
             <div class="created-date">{{ response.created_date }}</div>
         </div>
