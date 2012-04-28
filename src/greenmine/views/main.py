@@ -407,20 +407,27 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         
         context = {
             'form':form, 
-            'roles': models.ROLE_CHOICES, 
+            'roles': models.Role.objects.all(),
             'project': project
         }
         return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug):
+        # FIXME:  this need litle refactor on project save.
+        # Actually this raise unexpected exception.
         project = get_object_or_404(models.Project, slug=pslug)
 
-        if not self.check_role_manager(project):
-            return self.redirect_referer(_(u"You are not authorized to access here!"))
+        # TODO
+        #if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+        #    return self.redirect_referer(_(u"You are not authorized to access here!"))
 
         form = forms.ProjectForm(request.POST, request=request, instance=project)
-        context = {'form': form, 'roles': models.ROLE_CHOICES, 'project': project}
+        context = {
+            'form': form, 
+            'roles': models.Role.objects.all(),
+            'project': project,
+        }
         
         if not form.is_valid():
             return self.render_to_response(self.template_name, context)
@@ -436,6 +443,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
             project = form.save()
             models.ProjectUserRole.objects.filter(project=project).delete()
+
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(
                     project = project,
