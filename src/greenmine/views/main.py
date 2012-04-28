@@ -221,7 +221,8 @@ class HomeView(GenericView):
             'projects': projects,
         }
         return self.render_to_response(self.template_name, context)
-    
+ 
+
 from greenmine.middleware import PermissionDeniedException
 
 
@@ -233,20 +234,15 @@ class BacklogView(GenericView):
     template_name = 'backlog.html'
     menu = ['backlog']
 
-    def permission_check(self, project, user):
-        perms_ok = perms.has_perms(user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
-        if not perms_ok:
-            raise PermissionDeniedException()
-
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        #self.permission_check(project, request.user)
+
+        #self.check_role(request.user, project, [
+        #    ('project', 'view'),
+        #    ('milestone', 'view'),
+        #    ('userstory', 'view'),
+        #])
 
         unassigned = project.user_stories.filter(milestone__isnull=True)\
             .order_by('-priority')
@@ -402,9 +398,10 @@ class ProjectEditView(UserRoleMixIn, GenericView):
     @login_required
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
-        
-        if not self.check_role_manager(project):
-            return self.redirect_referer(_(u"You are not authorized to access here!"))
+
+        # TODO
+        #if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+        #    return self.redirect_referer(_(u"You are not authorized to access here!"))
 
         form = forms.ProjectForm(instance=project)
         

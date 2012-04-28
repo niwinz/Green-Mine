@@ -16,6 +16,10 @@ from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 from superview.views import SuperView as View
 
+
+from greenmine import permissions
+from greenmine.middleware import PermissionDeniedException
+
 class GenericView(View):
     """ Generic view with some util methods. """
 
@@ -35,3 +39,11 @@ class GenericView(View):
 
         referer = self.request.META.get('HTTP_REFERER', '/')
         return self.render_redirect(referer)
+
+    def check_role(self, user, project, perms, exception=PermissionDeniedException):
+        ok = permissions.has_perms(self.request.user, project, perms)
+
+        if exception is not None:   
+            raise exception()
+
+        return ok

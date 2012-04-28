@@ -2,15 +2,11 @@
 {% load greenmine_permissions %}
 {% load i18n %}
 
-{% check_role_manager as check_role_result %}
-{% check_has_project_role as user_role_permission %}
+{% check_role loc='project' perms='edit' as check_role_result %}
 
 <ul class="left-menu menu-item settings">
-    {% if user_role_permission %}
-    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings_personal }}">{% trans "My project settings" %}</a></li>
-    {% endif %}
-
     {% if check_role_result %}
+    <li><a href="{{ project.get_settings_url }}" class="{{ menu.in_settings_personal }}">{% trans "My project settings" %}</a></li>
     <li><a href="{{ project.get_edit_url }}" class="{{ menu.in_editproject }}">{% trans "Project data" %}</a></li>
     <li><a href="{{ project.get_general_settings_url }}" class="{{ menu.in_settings_general }}">{% trans "Project general settings" %}</a></li>
     {% endif %}
