@@ -1,8 +1,8 @@
-django-celery==2.4.2
-django-superview==0.2
+django-celery>=2.4.2
+django-superview>=0.2
 python-dateutil==1.5
-py-bcrypt==0.2
-lxml==2.3.3
-Markdown==2.1.1
-PIL==1.1.7
-django-gravatar2==1.0.1
+py-bcrypt>=0.2
+lxml>=2.3.3
+Markdown>=2.1.1
+PIL>=1.1.7
+django-gravatar2>=1.0.1
