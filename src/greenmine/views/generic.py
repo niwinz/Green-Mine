@@ -16,11 +16,6 @@ from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 from superview.views import SuperView as View
 
-from greenmine.models import ROLE_OBSERVER, ROLE_DEVELOPER, ROLE_MANAGER
-from greenmine.models import ROLE_PARTNER, ROLE_CLIENT
-
-from greenmine.utils.permission import check_role
-
 class GenericView(View):
     """ Generic view with some util methods. """
 
@@ -40,14 +35,3 @@ class GenericView(View):
 
         referer = self.request.META.get('HTTP_REFERER', '/')
         return self.render_redirect(referer)
-
-    """ Permission check methods. """
-
-    def check_role(self, project, role):
-        return check_role(project, role, self.request.user)
-
-    def check_role_manager(self, project):
-        return check_role(project, ROLE_MANAGER, self.request.user)
-
-    def check_role_developer(self, project):
-        return check_role(project, ROLE_DEVELOPER, self.request.user)
