@@ -146,6 +146,8 @@ class Role(models.Model):
     project_edit = models.BooleanField(default=False)
     userstory_view = models.BooleanField(default=True)
     userstory_edit = models.BooleanField(default=False)
+    milestone_view = models.BooleanField(default=True)
+    milestone_edit = models.BooleanField(default=False)
     task_view = models.BooleanField(default=True)
     task_edit = models.BooleanField(default=False)
     wiki_view = models.BooleanField(default=True)

@@ -23,6 +23,7 @@ from django.views.decorators.cache import cache_page
 from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms, utils
+from greenmine import permissions as perms
 
 import os
 import re
@@ -105,7 +106,7 @@ class SendRecoveryPasswordView(GenericView):
 
 class PasswordChangeView(GenericView):
     """
-    Profile password change view.
+    User profile - password change view.
     """
 
     template_path = 'password.html'
@@ -208,7 +209,8 @@ class HomeView(GenericView):
         if request.user.is_staff:
             projects = models.Project.objects.order_by('name')
         else:
-            projects = request.user.projects.all() | request.user.projects_participant.all()
+            projects = request.user.projects.all() | \
+                request.user.projects_participant.all()
 
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
@@ -220,6 +222,8 @@ class HomeView(GenericView):
         }
         return self.render_to_response(self.template_name, context)
     
+from greenmine.middleware import PermissionDeniedException
+
 
 class BacklogView(GenericView):
     """ 
@@ -229,9 +233,21 @@ class BacklogView(GenericView):
     template_name = 'backlog.html'
     menu = ['backlog']
 
+    def permission_check(self, project, user):
+        perms_ok = perms.has_perms(user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        if not perms_ok:
+            raise PermissionDeniedException()
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+        #self.permission_check(project, request.user)
+
         unassigned = project.user_stories.filter(milestone__isnull=True)\
             .order_by('-priority')
 
