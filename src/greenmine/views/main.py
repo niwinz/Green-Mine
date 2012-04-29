@@ -351,7 +351,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
     
     @login_required
     def post(self, request):
-        form = forms.ProjectForm(request.POST, request=request)
+        form = forms.ProjectForm(request.POST)
         context = {
             'form': form, 
             'roles': models.Role.objects.all(),
@@ -370,7 +370,10 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
                 response = {'messages': {'type': 'error', 'msg': emsg}}
                 return self.render_to_error(response)                   
 
-            project = form.save()
+            project = form.save(commit=False)
+            project.owner = request.user
+            project.save()
+
             for userid, role in user_role.iteritems():
                 models.ProjectUserRole.objects.create(
                     project = project,
@@ -421,8 +424,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         # TODO
         #if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
         #    return self.redirect_referer(_(u"You are not authorized to access here!"))
-
-        form = forms.ProjectForm(request.POST, request=request, instance=project)
+        form = forms.ProjectForm(request.POST, instance=project)
         context = {
             'form': form, 
             'roles': models.Role.objects.all(),
@@ -430,7 +432,8 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         }
         
         if not form.is_valid():
-            return self.render_to_response(self.template_name, context)
+            response = {'errors': form.errors}
+            return self.render_to_error(response)                
         
         sem = transaction.savepoint()
         try:

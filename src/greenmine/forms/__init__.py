@@ -1,5 +1,5 @@
-
 # -*- codins: utf-8 -*-
+
 from django import forms
 from django.conf import settings
 from django.utils import simplejson
@@ -200,44 +200,20 @@ class UserEditForm(ProfileForm):
                   'is_active', 'is_staff', 'is_superuser')
 
 
-class ProjectForm(Form):
-    projectname = CharField(max_length=200, min_length=4,
-        required=True, type='text', label=_(u'Project name'))
-    description = CharField(widget=Textarea(), label=_(u'Description'))
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = models.Project
+        fields = ('name', 'description')
 
-    def __init__(self, *args, **kwargs):
-        self._request = kwargs.pop('request', None)
-        self.project = kwargs.pop('instance', None)
-        if self.project:
-            kwargs['initial'] = {
-                'projectname': self.project.name,
-                'description': self.project.description,
-            }
-        super(ProjectForm, self).__init__(*args, **kwargs)
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if self.instance is None:
+            projectqs = models.Project.objects.filter(name=name)
 
-    def clean(self):
-        cleaned_data = self.cleaned_data        
-        if self.project is None:
-            if "projectname" in cleaned_data and Project.objects\
-                .filter(name=cleaned_data['projectname']).count() > 0:
+            if projectqs.count() > 0:
+                raise forms.ValidationError("Project name is already taken.")
 
-                messages.error(self._request, _(u'Project name is already occupied.'))
-                raise forms.ValidationError(u'Project name is already occupied.')
-
-        return cleaned_data
-
-    def save(self):
-        if self.project:
-            self.project.name = self.cleaned_data['projectname']
-            self.project.description = self.cleaned_data['description']
-            self.project.save()
-        else:
-            self.project = Project.objects.create(
-                name = self.cleaned_data['projectname'],
-                description = self.cleaned_data['description'],
-                owner = self._request.user,
-            )
-        return self.project
+        return name
 
 
 from django.forms.forms import BoundField

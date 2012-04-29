@@ -40,7 +40,7 @@ class ProjectRelatedTests(TestCase):
 
     def test_create_project(self):
         post_params = {
-            'projectname': 'test-project',
+            'name': 'test-project',
             'description': 'description',
             'user_{0}'.format(self.user.id): '1',
         }
@@ -52,9 +52,26 @@ class ProjectRelatedTests(TestCase):
         jdata = json.loads(response.content)
         self.assertTrue(jdata['valid'])
 
+    def test_create_duplicate_project(self):
+        self.test_create_project()
+
+        post_params = {
+            'name': 'test-project',
+            'description': 'description',
+            'user_{0}'.format(self.user.id): '1',
+        }
+
+        project_create_url = reverse('web:project-create')
+        response = self.client.post(project_create_url, post_params, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        jdata = json.loads(response.content)
+        self.assertFalse(jdata['valid'])
+
     def test_normal_user_projects(self):
         """
-        Permission tests, normal user only show owned projects and participant.
+        Permission tests, normal user only show 
+        owned projects and participant.
         """
 
         user1 = User.objects.create(
@@ -74,6 +91,7 @@ class ProjectRelatedTests(TestCase):
 
         home_url = reverse('web:projects')
         response = self.client.get(home_url)
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['projects'].count(), 2)
 
@@ -88,7 +106,7 @@ class ProjectRelatedTests(TestCase):
         )
 
         post_params = {
-            'projectname': 'test-project2',
+            'name': 'test-project2',
             'description': project.description,
             'user_{0}'.format(self.user.id): '2',
         }

@@ -9,9 +9,9 @@
         {% include "messages.html" %}
         <fieldset>
             <div class="form-field">
-                <label>{{ form.projectname.label }}</label>
-                {{ form.projectname }}
-                {{ form.projectname.errors }}
+                <label>{{ form.name.label }}</label>
+                {{ form.name }}
+                {{ form.name.errors }}
             </div>
             <div class="form-field width100">
                 <label>{{ form.description.label }}</label>
@@ -23,9 +23,9 @@
                     <table class="table01">
                         <tbody>
                             <tr>
-                                <th class="th1">Propietario</th>
-                                <th class="th2">Rol</th>
-                                <th class="th3">Opciones</th>
+                                <th class="th1">{% trans "Owner" %}</th>
+                                <th class="th2">{% trans "Role" %}</th>
+                                <th class="th3">{% trans "Options" %}</th>
                             </tr>
                         </tbody>
                     </table>
@@ -44,12 +44,12 @@
                             {% endfor %}
                         </select>
                     </fieldset>
-                    <input id="btn-usr-project" type="button" value="Añadir" class="btn01" />
+                    <input id="btn-usr-project" type="button" value="{% trans "Add" %}" class="btn01" />
                 </div>
             </div>
             <div class="width100 float-left">
                 <input class="btn01" type="submit" value="Guardar" />
-                <a href="{% url 'web:projects' %}" class="btn01">Volver</a>
+                <a href="{% url 'web:projects' %}" class="btn01">{% trans "Volver" %}</a>
                 <span class="ajax-loader"></span>
             </div>
         </fieldset>
