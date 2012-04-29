@@ -41,9 +41,7 @@ class GenericView(View):
         return self.render_redirect(referer)
 
     def check_role(self, user, project, perms, exception=PermissionDeniedException):
-        ok = permissions.has_perms(self.request.user, project, perms)
-
-        if exception is not None:   
+        ok = permissions.has_perms(user, project, perms)
+        if exception is not None and not ok:
             raise exception()
-
         return ok
