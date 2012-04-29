@@ -29,7 +29,6 @@ var backlog_handlers = function() {
     $(".unassigned-us").on("dragstart", ".un-us-item", function(e) {
         e.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
         e.originalEvent.dataTransfer.setData('source_id', $(this).attr('id')); // required otherwise doesn't work
-        console.log(e);
     });
 
     $(".milestones").on("dragover", ".milestone-item", function(e) {
@@ -311,9 +310,7 @@ var tasks_issues_handlers = function() {
 };
 
 var user_story_handlers = function() {
-    console.log(1);
     $(".us-tasks-list").on("click", ".us-task-item img.delete", function(event) {
-        console.log(2);
         var self = $(this);
         var buttons = {};
 

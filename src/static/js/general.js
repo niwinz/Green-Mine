@@ -70,39 +70,48 @@ var milestone_dashboard_bindings = function() {
     $('#progress-bar').progressbar();
 }
 
+
+/*
+ * Print errors like django forms.
+*/
+
 var djangoPrintError = function (self, field){
     var error = field.data('error'); 
-    $("#field-"+field.attr('id')).remove();
-    if(error){
+    $("#field-" + field.attr('id')).remove();
+    if (error) {
         field.addClass(this.invalidClass);                
-        if(!self.disableInlineErrors){
-            if(self.inlineErrors){
+        if(!self.disableInlineErrors) {
+            if(self.inlineErrors) {
                 $("<ul class='errorlist' id='field-"+field.attr('id')+"'><li>" + 
-                    field.data('error')+"</li></ul>").insertBefore(field);
-            }else{
+                    field.data('error') + "</li></ul>").insertBefore(field);
+            } else {
                 self.printFieldGlobalError(field.data('error'), field.attr('id'));
             }
         }
-    }else{
+    } else {
         field.addClass(self.validClass);    
     }    
     self.onPrintError(field);      
 }
 
-var djangoAjaxSuccess = function(self, data){
-    if(data.messages!=undefined){
+
+/*
+ * On submit succes, print error messages or redirect.
+*/
+
+var djangoAjaxSuccess = function(self, data) {
+    if (data.messages !== undefined){
         messages.reset();
         messages._send(data.messages.type, data.messages.msg);
     }
     
-    if(data.valid){
+    if (data.valid) {
         self.form.data('ajax-valid', true);
-        if(data.redirect_to!=undefined){
-          window.location.href = data.redirect_to;  
-        }else{
-            self.form.submit();
-        }
-    }else{
+
+        if (data.redirect_to !== undefined){
+            window.location.href = data.redirect_to;  
+        } 
+    } else {
         jQuery.each(data.errors, function(index, value){
             field = self.elements.filter("[name="+index+"]");
             field.data('error', value[0]);
@@ -120,49 +129,49 @@ $(document).ready(function(){
         milestone_dashboard_bindings();
     }
 
-    if($("#login-form").length){
+    if ($("#login-form").length) {
         $("#id_username").focus();
         $("#login-form").validate({
-            printError: function(field){
+            printFieldError: function(field) {
                 djangoPrintError(this, $(field));
             },
             ajax: true,
-            ajaxSuccess: function(data){
+            ajaxSuccess: function(data) {
                 djangoAjaxSuccess(this.self, data);
             }
-        });   
+        });
     }
     
-    if($("#forgotten-password-form").length){
+    if ($("#forgotten-password-form").length) {
         $("#id_email").focus();
         $("#forgotten-password-form").validate({
             errorsMsgs: {
                 email: {username: gettext('Required.')}
             },
-            printError: function(field){
+            printFieldError: function(field) {
                 djangoPrintError(this, $(field));
             },
             ajax: true,
-            ajaxSuccess: function(data){
+            ajaxSuccess: function(data) {
                 djangoAjaxSuccess(this.self, data);
             }
-        });          
+        });
     }
     
-    if($("#new-project-form, #edit-project-form").length){
+    if ($("#new-project-form, #edit-project-form").length) {
         $("#new-project-form, #edit-project-form").validate({
-            printError: function(field){
+            printFieldError: function(field) {
                 djangoPrintError(this, $(field));
             },
             ajax: true,
-            ajaxSuccess: function(data){
+            ajaxSuccess: function(data) {
                 djangoAjaxSuccess(this.self, data);
             },
-            customVal: {
-                username: function(self, field){
-                    if($(".users-added tr").length>1){
+            customValidation: {
+                username: function(self, field) {
+                    if ($(".users-added tr").length>1) {
                         return true;
-                    }else{
+                    } else {
                         messages.reset();
                         messages._send('error', gettext('You must specify at least one person to the project'));
                         return false;
