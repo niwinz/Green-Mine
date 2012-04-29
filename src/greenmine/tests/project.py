@@ -8,6 +8,7 @@ from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from ..models import *
 
+from greenmine import permissions as perms
 
 class ProjectRelatedTests(TestCase):
     def setUp(self):
@@ -20,10 +21,10 @@ class ProjectRelatedTests(TestCase):
         )
         self.user.set_password('test')
         self.user.save()
-
         self.client.login(username='test', password='test')
 
     def tearDown(self):
+        ProjectUserRole.objects.all().delete()
         Project.objects.all().delete()
         User.objects.all().delete()
         self.client.logout()
@@ -125,4 +126,89 @@ class ProjectRelatedTests(TestCase):
             role__pk = 2,
         )
         self.assertEqual(qs.count(), 1)
+
+    def test_get_project_edit_page_without_permision(self):
+        """
+        Test make GET request on a project edit form with
+        some user with developer role, but without ownership of project.
+        FIXME: this is unfinished test. Project edit/create form need big refactor.
+        """
+
+        user1 = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
+            is_active = True,
+            is_staff = True,
+            is_superuser = True,
+            password = self.user.password,
+        )
+
+        project = Project(name='test1', description='test1', owner=user1, slug='test1')
+        project.save()
+        
+        pur = ProjectUserRole.objects.create(
+            project = project,
+            user = self.user,
+            role = perms.get_role('developer'),
+        )
+        
+        response = self.client.get(reverse('web:project-edit', args=[project.id]), follow=True)
+        #print response.redirect_chain
+        #self.assertEqual(response.redirect_chain, [('http://testserver/profile/', 302)])
+
+
+class SimplePermissionMethodsTest(TestCase):
+    def test_has_permission(self):
+        user = User.objects.create(
+            username = 'test',
+            email = 'test@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
+        role = perms.get_role('developer')
+
+        pur = ProjectUserRole.objects.create(
+            project = project,
+            user = user,
+            role = role,
+        )
+
+        self.assertTrue(perms.has_perm(user, project, "project", "view"))
+        self.assertTrue(perms.has_perm(user, project, "task", "edit"))
+
+        project.delete()
+        user.delete()
+        pur.delete()
+
+    def test_has_multiple_permissions(self):
+        user = User.objects.create(
+            username = 'test',
+            email = 'test@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
+        role = perms.get_role('developer')
+
+        pur = ProjectUserRole.objects.create(
+            project = project,
+            user = user,
+            role = role,
+        )
+        
+        self.assertTrue(perms.has_perms(user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ]))
+    
+    def tearDown(self):
+        ProjectUserRole.objects.all().delete()
+        Project.objects.all().delete()
+        User.objects.all().delete()
 

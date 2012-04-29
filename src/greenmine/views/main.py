@@ -403,8 +403,8 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
 
         # TODO
-        #if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
-        #    return self.redirect_referer(_(u"You are not authorized to access here!"))
+        if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+            return self.redirect_referer(_(u"You are not authorized to access here!"))
 
         form = forms.ProjectForm(instance=project)
         
