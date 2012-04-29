@@ -3,7 +3,12 @@
 from .models import Role, ProjectUserRole
 
 def get_role(name):
+    """
+    Helper method for a get role object 
+    finding by name.
+    """
     return Role.objects.get(slug=name)
+
 
 def has_perm(user, project, loc, perm, pur=None):
     """
@@ -19,6 +24,9 @@ def has_perm(user, project, loc, perm, pur=None):
 
 
 def has_perms(user, project, perms=[]):
+    """
+    Check a group of permissions in a single call.
+    """
 
     if user.is_superuser:
         return True
@@ -26,8 +34,9 @@ def has_perms(user, project, perms=[]):
     if project.owner == user:
         return True
 
-    pur = ProjectUserRole.objects.get(project=project, user=user)
-    valid = True
+    pur, valid = ProjectUserRole.objects\
+        .get(project=project, user=user), True
+
     for pitem in perms:
         if len(pitem) != 2:
             continue
@@ -36,8 +45,8 @@ def has_perms(user, project, perms=[]):
         if not isinstance(locperms, (list, tuple)):
             locperms = [locperms]
         
-        for locperm in locperms:    
-            valid = has_perm(user, project, loc, locperm, pur=pur)
+        valid = False not in [has_perm(user, project, loc, locperm, pur=pur)\
+            for locperm in locperms]
             
         if not valid:
             break
