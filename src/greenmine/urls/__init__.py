@@ -7,7 +7,7 @@ from django.conf import settings
 urlpatterns = patterns('',
     url(r'^api/', include('greenmine.urls.api', namespace='api')),
     url(r'^', include('greenmine.urls.main', namespace='web')),
-    url(r'^redis/status/', include('redis_cache.stats.urls', namespace='redis_cache')),
+    #url(r'^redis/status/', include('redis_cache.stats.urls', namespace='redis_cache')),
 )
 
 urlpatterns += staticfiles_urlpatterns()
