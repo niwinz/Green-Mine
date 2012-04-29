@@ -14,7 +14,7 @@ def has_perm(user, project, loc, perm, pur=None):
     if not pur:
         pur = ProjectUserRole.objects.get(project=project, user=user)
 
-    return getattr(project_user.role, \
+    return getattr(pur.role, \
             '%s_%s' % (loc.lower(), perm.lower()), False)
 
 

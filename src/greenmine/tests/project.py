@@ -152,9 +152,13 @@ class ProjectRelatedTests(TestCase):
             role = perms.get_role('developer'),
         )
         
-        response = self.client.get(reverse('web:project-edit', args=[project.id]), follow=True)
-        #print response.redirect_chain
-        #self.assertEqual(response.redirect_chain, [('http://testserver/profile/', 302)])
+        response = self.client.get(reverse('web:project-edit', args=[project.slug]), follow=True)
+
+        # expected one message
+        self.assertEqual(len(response.context['messages']), 1)
+        
+        # expected redirect
+        self.assertEqual(response.redirect_chain, [('http://testserver/', 302)])
 
 
 class SimplePermissionMethodsTest(TestCase):
