@@ -267,6 +267,13 @@ class TasksView(GenericView):
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', 'view'),
+        ])
         
         if mid is None:
             try:
@@ -404,7 +411,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
 
-        if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+        if not self.check_role(request.user, project, [('project',('view', 'edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
 
         form = forms.ProjectForm(instance=project)
@@ -420,7 +427,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
 
-        if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+        if not self.check_role(request.user, project, [('project', ('view','edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
         
         form = forms.ProjectForm(request.POST, instance=project)
@@ -475,7 +482,7 @@ class MilestoneCreateView(GenericView):
 
         self.check_role(request.user, project, [
             ('project', 'view'),
-            ('milestone', ('view', 'edit')),
+            ('milestone', ('view', 'edit', 'create')),
         ])
 
         form = forms.MilestoneForm()
@@ -492,7 +499,7 @@ class MilestoneCreateView(GenericView):
 
         self.check_role(request.user, project, [
             ('project', 'view'),
-            ('milestone', ('view', 'edit')),
+            ('milestone', ('view', 'create')),
         ])
         
         form = forms.MilestoneForm(request.POST)
@@ -519,7 +526,7 @@ class MilestoneDeleteView(GenericView):
 
         self.check_role(request.user, project, [
             ('project', 'view'),
-            ('milestone', ('view', 'edit')),
+            ('milestone', ('view', 'delete')),
         ])
         
         # update all user stories, set milestone to None
@@ -566,7 +573,7 @@ class UserStoryCreateView(GenericView):
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', ('view', 'edit')),
-            ('userstory', ('view', 'edit')),
+            ('userstory', ('view', 'create')),
         ])
 
         if mid is not None:
@@ -588,7 +595,7 @@ class UserStoryCreateView(GenericView):
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', ('view', 'edit')),
-            ('userstory', ('view', 'edit')),
+            ('userstory', ('view', 'create')),
         ])
 
         if mid is not None:
@@ -672,7 +679,7 @@ class UserStoryDeleteView(GenericView):
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', ('view', 'edit')),
-            ('userstory', ('view', 'edit')),
+            ('userstory', ('view', 'edit', 'delete')),
         ])
 
         user_story.delete()
