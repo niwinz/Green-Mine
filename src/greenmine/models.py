@@ -130,6 +130,35 @@ class Profile(models.Model):
         null=True, blank=True, default=None)
 
 
+class Role(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
+
+    project_view = models.BooleanField(default=True)
+    project_edit = models.BooleanField(default=False)
+    project_delete = models.BooleanField(default=False)
+    userstory_view = models.BooleanField(default=True)
+    userstory_create = models.BooleanField(default=False)
+    userstory_edit = models.BooleanField(default=False)
+    userstory_delete = models.BooleanField(default=False)
+    milestone_view = models.BooleanField(default=True)
+    milestone_create = models.BooleanField(default=False)
+    milestone_edit = models.BooleanField(default=False)
+    milestone_delete = models.BooleanField(default=False)
+    task_view = models.BooleanField(default=True)
+    task_create = models.BooleanField(default=False)
+    task_edit = models.BooleanField(default=False)
+    task_delete = models.BooleanField(default=False)
+    wiki_view = models.BooleanField(default=True)
+    wiki_create = models.BooleanField(default=False)
+    wiki_edit = models.BooleanField(default=False)
+    wiki_delete = models.BooleanField(default=False)
+    question_view = models.BooleanField(default=True)
+    question_create = models.BooleanField(default=True)
+    question_edit = models.BooleanField(default=True)
+    question_delete = models.BooleanField(default=False)
+
+
 class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
@@ -138,24 +167,6 @@ class ProjectManager(models.Manager):
         queryset = ProjectUserRole.objects.filter(user=user)\
             .values_list('project', flat=True)
         return Project.objects.filter(pk__in=queryset)
-
-
-class Role(models.Model):
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=250, unique=True, blank=True)
-
-    project_view = models.BooleanField(default=True)
-    project_edit = models.BooleanField(default=False)
-    userstory_view = models.BooleanField(default=True)
-    userstory_edit = models.BooleanField(default=False)
-    milestone_view = models.BooleanField(default=True)
-    milestone_edit = models.BooleanField(default=False)
-    task_view = models.BooleanField(default=True)
-    task_edit = models.BooleanField(default=False)
-    wiki_view = models.BooleanField(default=True)
-    wiki_edit = models.BooleanField(default=False)
-    question_view = models.BooleanField(default=True)
-    question_edit = models.BooleanField(default=True)
 
 
 class Project(models.Model):
