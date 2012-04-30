@@ -352,6 +352,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
     @login_required
     def post(self, request):
         form = forms.ProjectForm(request.POST)
+        
         context = {
             'form': form, 
             'roles': models.Role.objects.all(),
@@ -367,8 +368,9 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
             if not user_role:
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
-                response = {'messages': {'type': 'error', 'msg': emsg}}
-                return self.render_to_error(response)                   
+                return self.render_to_error({
+                    'messages': {'type': 'error', 'msg': emsg}
+                })
 
             project = form.save(commit=False)
             project.owner = request.user
@@ -383,7 +385,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
         except Exception as e:
             transaction.savepoint_rollback(sem)
-            return self.render_to_error({'e': unicode(e)})
+            return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
@@ -402,7 +404,6 @@ class ProjectEditView(UserRoleMixIn, GenericView):
     def get(self, request, pslug):		
         project = get_object_or_404(models.Project, slug=pslug)
 
-        # TODO
         if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
 
@@ -417,14 +418,13 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
     @login_required
     def post(self, request, pslug):
-        # FIXME:  this need litle refactor on project save.
-        # Actually this raise unexpected exception.
         project = get_object_or_404(models.Project, slug=pslug)
 
-        # TODO
-        #if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
-        #    return self.redirect_referer(_(u"You are not authorized to access here!"))
+        if not self.check_role(request.user, project, [('project', 'edit')], exception=None):
+            return self.redirect_referer(_(u"You are not authorized to access here!"))
+        
         form = forms.ProjectForm(request.POST, instance=project)
+        
         context = {
             'form': form, 
             'roles': models.Role.objects.all(),
@@ -436,13 +436,15 @@ class ProjectEditView(UserRoleMixIn, GenericView):
             return self.render_to_error(response)                
         
         sem = transaction.savepoint()
+
         try:
             user_role = self.parse_roles()
             if not user_role:
                 transaction.savepoint_rollback(sem)
                 emsg = _(u'You must specify at least one person to the project')
-                response = {'messages': {'type': 'error', 'msg': emsg}}
-                return self.render_to_error(response)     
+                return self.render_to_error({
+                    'messages': {'type': 'error', 'msg': emsg}
+                })
 
             project = form.save()
             models.ProjectUserRole.objects.filter(project=project).delete()
@@ -456,7 +458,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
         except Exception as e:
             transaction.savepoint_rollback(sem)
-            return self.render_to_error({'e': unicode(e)})
+            return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
         
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
@@ -470,8 +472,13 @@ class MilestoneCreateView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.MilestoneForm()
 
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+        ])
+
+        form = forms.MilestoneForm()
         context = {
             'form': form,
             'project': project,
@@ -482,12 +489,20 @@ class MilestoneCreateView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+        ])
+
         form = forms.MilestoneForm(request.POST)
+
         if form.is_valid():
             milestone = form.save(commit=False)
             milestone.project = project
             milestone.owner = request.user
             milestone.save()
+
             return self.render_redirect(project.get_backlog_url())
 
         context = {

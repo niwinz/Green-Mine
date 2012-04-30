@@ -100,11 +100,7 @@ class ProjectRelatedTests(TestCase):
         project = Project(name='test1', description='test1', owner=self.user, slug='test1')
         project.save()
 
-        pur = ProjectUserRole.objects.create(
-            user = self.user,
-            project = project,
-            role = Role.objects.get(pk=1),
-        )
+        project.add_user(self.user, 'developer')
 
         post_params = {
             'name': 'test-project2',
@@ -145,12 +141,8 @@ class ProjectRelatedTests(TestCase):
 
         project = Project(name='test1', description='test1', owner=user1, slug='test1')
         project.save()
-        
-        pur = ProjectUserRole.objects.create(
-            project = project,
-            user = self.user,
-            role = perms.get_role('developer'),
-        )
+
+        project.add_user(self.user, 'developer')
         
         response = self.client.get(reverse('web:project-edit', args=[project.slug]), follow=True)
 
@@ -159,6 +151,43 @@ class ProjectRelatedTests(TestCase):
         
         # expected redirect
         self.assertEqual(response.redirect_chain, [('http://testserver/', 302)])
+
+
+class MilestoneTests(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create(
+            username = 'test1',
+            email = 'test1@test.com',
+            is_active = True,
+            is_staff = True,
+            is_superuser = True,
+        )
+
+        self.user2 = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        self.user1.set_password("test")
+        self.user2.set_password("test")
+
+        self.project1 = Project.objects\
+            .create(name='test1', description='test1', owner=self.user1, slug='test1')
+
+        self.project2 = Project.objects\
+            .create(name='test2', description='test2', owner=self.user2, slug='test2')
+
+        self.project1.add_user(self.user1, 'developer')
+        self.project2.add_user(self.user2, 'developer')
+
+    def tearDown(self):
+        self.project1.delete()
+        self.project2.delete()
+        self.user2.delete()
+        self.user1.delete()
 
 
 class SimplePermissionMethodsTest(TestCase):
