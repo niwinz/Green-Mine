@@ -291,6 +291,7 @@ class MilestoneTests(TestCase):
 class UserStoriesTests(TestCase):
     def setUp(self):
         self.now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+
         self.user1 = User.objects.create(
             username = 'test1',
             email = 'test1@test.com',
@@ -364,7 +365,7 @@ class UserStoriesTests(TestCase):
         response  = self.client.get(self.milestone1.get_user_story_create_url())
         self.assertEqual(response.status_code, 403)
 
-    def test_user_story_create(self):
+    def test_user_story_create_with_milestone(self):
         self.client.login(username="test2", password="test")
 
         post_params = {
@@ -382,6 +383,33 @@ class UserStoriesTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [('http://testserver/test2/backlog/', 302)])
+
+        self.assertEqual(self.milestone2.user_stories.count(), 1)
+        self.assertEqual(self.project2.user_stories.count(), 1)
+        self.assertEqual(self.project2.tasks.count(), 1)
+
+    def test_user_story_create(self):
+        self.client.login(username="test2", password="test")
+
+        post_params = {
+            'priority': 3,
+            'points': '10',
+            'status': 'open',
+            'category': '',
+            'tested': False,
+            'subject': 'test us',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+
+        response = self.client.post(self.project2.get_userstory_create_url(), post_params, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/test2/backlog/', 302)])
+
+        self.assertEqual(self.milestone2.user_stories.count(), 0)
+        self.assertEqual(self.project2.user_stories.count(), 1)
+        self.assertEqual(self.project2.tasks.count(), 1)
 
 
     def test_user_story_create_bad_status(self):
@@ -421,6 +449,27 @@ class UserStoriesTests(TestCase):
         
         response = self.client.post(self.milestone1.get_user_story_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 403)
+
+    def test_user_story_view(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = self.milestone2,
+        )
+
+        response = self.client.get(user_story.get_view_url())
+        self.assertEqual(response.status_code, 200)
+        #self.assertIn("tasks", response.context)
+        #self.assertEqual(len(response.context['tasks']), 1)
 
 
 class SimplePermissionMethodsTest(TestCase):

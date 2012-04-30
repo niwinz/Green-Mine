@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from greenmine.models import Profile, UserStory, Task
+from django.utils import timezone
 import datetime
 
 @receiver(post_save, sender=User)
@@ -25,10 +26,11 @@ def us_post_save(sender, instance, created, **kwargs):
             user_story = instance,
         )
 
+
 @receiver(post_save, sender=Task)
 def task_post_save(sender, instance, created, **kwargs):
     if instance.user_story:
-        instance.user_story.modified_date = datetime.datetime.now()
+        instance.user_story.modified_date = timezone.now()
         instance.user_story.save()
 
 

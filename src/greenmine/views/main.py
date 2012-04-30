@@ -569,13 +569,12 @@ class UserStoryCreateView(GenericView):
             ('userstory', ('view', 'edit')),
         ])
 
-        form_initial = {}
-        
         if mid is not None:
             milestone = get_object_or_404(project.milestones, pk=mid)
-            form_initial['milestone'] = milestone
-
-        form = forms.UserStoryForm(initial=form_initial)
+        else:
+            milestone = None
+        
+        form = forms.UserStoryForm(initial={'milestone': milestone})
         context = {
             'form':form, 
             'project':project,
@@ -592,17 +591,16 @@ class UserStoryCreateView(GenericView):
             ('userstory', ('view', 'edit')),
         ])
 
-        form_initial = {}
-        
         if mid is not None:
             milestone = get_object_or_404(project.milestones, pk=mid)
-            form_initial['milestone'] = milestone
+        else:
+            milestone = None
 
-        form = forms.UserStoryForm(request.POST, initial=form_initial)
+        form = forms.UserStoryForm(request.POST, initial={'milestone': milestone})
 
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.milestone = None
+            instance.milestone = milestone
             instance.owner = request.user
             instance.project = project
             instance.save()

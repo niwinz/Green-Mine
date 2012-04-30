@@ -63,6 +63,7 @@ LANGUAGE_CODE = 'en'
 USE_I18N = True
 USE_L10N = True
 LOGIN_URL='/login/'
+USE_TZ = True
 
 #SESSION BACKEND
 SESSION_ENGINE='django.contrib.sessions.backends.db'

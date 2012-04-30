@@ -11,6 +11,7 @@ from django.contrib.auth.models import UserManager
 
 from greenmine.fields import DictField, ListField
 
+from django.utils import timezone
 import datetime
 
 ORG_ROLE_CHOICES = (
@@ -201,7 +202,7 @@ class Project(models.Model):
         if not self.slug:
             self.slug = slugify_uniquely(self.name, self.__class__)
         else:
-            self.modified_date = datetime.datetime.now()
+            self.modified_date = timezone.now()
 
         super(Project, self).save(*args, **kwargs)
 
@@ -382,7 +383,7 @@ class Milestone(models.Model):
 
     def save(self, *args, **kwargs):
         if self.id:
-            self.modified_date = datetime.datetime.now()
+            self.modified_date = timezone.now()
 
         super(Milestone, self).save(*args, **kwargs)
 
@@ -426,7 +427,7 @@ class UserStory(models.Model):
 
     def save(self, *args, **kwargs):
         if self.id:
-            self.modified_date = datetime.datetime.now()
+            self.modified_date = timezone.now()
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
 
@@ -444,11 +445,13 @@ class UserStory(models.Model):
 
     @models.permalink
     def get_asoiciate_api_url(self):
+        # TODO: check if this url is used.
         return ('api:user-story-asociate', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_drop_api_url(self):
+        # TODO: check if this url is used.
         return ('api:user-story-drop', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
@@ -582,7 +585,7 @@ class Task(models.Model):
 
     def save(self, *args, **kwargs):
         if self.id:
-            self.modified_date = datetime.datetime.now()
+            self.modified_date = timezone.now()
             
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
