@@ -104,7 +104,10 @@ urlpatterns = patterns('',
         main.UserStoryView.as_view(), name='user-story'),
     
     # Task
-    url(r'^(?P<pslug>[\w\d\-]+)/task/create/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
+        main.TaskCreateView.as_view(), name='task-create'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user_story/(?P<usref>[\w\d]+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',

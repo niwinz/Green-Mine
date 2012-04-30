@@ -12,6 +12,63 @@ from greenmine import permissions as perms
 from django.utils import timezone
 import datetime
 
+
+class SimplePermissionMethodsTest(TestCase):
+    def test_has_permission(self):
+        user = User.objects.create(
+            username = 'test',
+            email = 'test@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
+        role = perms.get_role('developer')
+
+        pur = ProjectUserRole.objects.create(
+            project = project,
+            user = user,
+            role = role,
+        )
+
+        self.assertTrue(perms.has_perm(user, project, "project", "view"))
+        self.assertTrue(perms.has_perm(user, project, "task", "edit"))
+
+        project.delete()
+        user.delete()
+        pur.delete()
+
+    def test_has_multiple_permissions(self):
+        user = User.objects.create(
+            username = 'test',
+            email = 'test@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
+        role = perms.get_role('developer')
+
+        pur = ProjectUserRole.objects.create(
+            project = project,
+            user = user,
+            role = role,
+        )
+        
+        self.assertTrue(perms.has_perms(user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ]))
+    
+    def tearDown(self):
+        ProjectUserRole.objects.all().delete()
+        Project.objects.all().delete()
+        User.objects.all().delete()
+
+
 class ProjectRelatedTests(TestCase):
     def setUp(self):
         self.user = User.objects.create(
@@ -557,58 +614,88 @@ class UserStoriesTests(TestCase):
         self.assertTrue(jdata['valid'])
 
 
-class SimplePermissionMethodsTest(TestCase):
-    def test_has_permission(self):
-        user = User.objects.create(
-            username = 'test',
-            email = 'test@test.com',
+class TasksTests(TestCase):
+    def setUp(self):
+        self.now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+
+        self.user1 = User.objects.create(
+            username = 'test1',
+            email = 'test1@test.com',
+            is_active = True,
+            is_staff = True,
+            is_superuser = True,
+        )
+
+        self.user2 = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
             is_active = True,
             is_staff = False,
             is_superuser = False,
         )
 
-        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
-        role = perms.get_role('developer')
+        self.user1.set_password("test")
+        self.user2.set_password("test")
 
-        pur = ProjectUserRole.objects.create(
-            project = project,
-            user = user,
-            role = role,
+        self.user1.save()
+        self.user2.save()
+
+        self.project1 = Project.objects\
+            .create(name='test1', description='test1', owner=self.user1, slug='test1')
+
+        self.project2 = Project.objects\
+            .create(name='test2', description='test2', owner=self.user2, slug='test2')
+
+        self.project1.add_user(self.user1, 'developer')
+        self.project2.add_user(self.user2, 'developer')
+
+        self.milestone1 = Milestone.objects.create(
+            project = self.project1,
+            owner = self.user1,
+            name = 'test1 milestone',
+            estimated_finish = self.now_date + datetime.timedelta(20),
         )
 
-        self.assertTrue(perms.has_perm(user, project, "project", "view"))
-        self.assertTrue(perms.has_perm(user, project, "task", "edit"))
-
-        project.delete()
-        user.delete()
-        pur.delete()
-
-    def test_has_multiple_permissions(self):
-        user = User.objects.create(
-            username = 'test',
-            email = 'test@test.com',
-            is_active = True,
-            is_staff = False,
-            is_superuser = False,
+        self.milestone2 = Milestone.objects.create(
+            project = self.project2,
+            owner = self.user2,
+            name = 'test2 milestone',
+            estimated_finish = self.now_date + datetime.timedelta(20),
         )
 
-        project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
-        role = perms.get_role('developer')
-
-        pur = ProjectUserRole.objects.create(
-            project = project,
-            user = user,
-            role = role,
+        self.user_story1 = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user1,
+            project = self.project1,
+            milestone = self.milestone1,
         )
-        
-        self.assertTrue(perms.has_perms(user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ]))
-    
+
+        self.user_story2 = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = self.milestone2,
+        )
+
     def tearDown(self):
-        ProjectUserRole.objects.all().delete()
-        Project.objects.all().delete()
-        User.objects.all().delete()
+        self.user_story1.delete()
+        self.user_story2.delete()
+        self.milestone1.delete()
+        self.milestone2.delete()
+        self.project1.delete()
+        self.project2.delete()
+        self.user2.delete()
+        self.user1.delete()
 

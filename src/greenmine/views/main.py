@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
@@ -24,6 +24,8 @@ from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms, utils
 from greenmine import permissions as perms
+
+from greenmine.middleware import PermissionDeniedException
 
 import os
 import re
@@ -223,7 +225,6 @@ class HomeView(GenericView):
         return self.render_to_response(self.template_name, context)
  
 
-from greenmine.middleware import PermissionDeniedException
 
 
 class BacklogView(GenericView):
@@ -692,22 +693,23 @@ class TaskCreateView(GenericView):
     menu = ["tasks"]
 
     @login_required
-    def get(self, request, pslug):
+    def get(self, request, pslug, usref=None, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = us = None
 
-        mid = request.GET.get('milestone', None)
-        if mid is not None:
-            milestoneqs = project.milestones.filter(pk=mid)
-            milestone = milestoneqs and milestoneqs.get() or None
-
-        us = request.GET.get('us', None)
-        if us is not None:
-            usqs = project.user_stories.filter(pk=us)
-            us = usqs and usqs.get() or None
+        if usref is not None and mid is not None:
+            return HttpResponseBadRequest()
+        
+        if usref is not None:
+            user_story = get_object_or_404(project.user_stories, ref=usref)
+            milestone = user_story.milestone
+        elif mid is not None:
+            user_story = None
+            milestone = get_object_or_404(project.milestones, pk=mid)
+        else:
+            return HttpResponseBadRequest()
 
         form = forms.TaskForm(project=project, 
-            initial_milestone=milestone, initial_us=us)
+            initial={'milestone':milestone, 'user_story': user_story})
 
         context = {
             'project': project,
@@ -716,22 +718,23 @@ class TaskCreateView(GenericView):
         return self.render_to_response(self.template_name, context)
 
     @login_required
-    def post(self, request, pslug):
+    def post(self, request, pslug, usref=None, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        milestone = us = None
 
-        mid = request.GET.get('milestone', None)
-        if mid is not None:
-            milestoneqs = project.milestones.filter(pk=mid)
-            milestone = milestoneqs and milestoneqs.get() or None
+        if usref is None and mid is None:
+            return HttpResponseBadRequest()
 
-        us = request.GET.get('us', None)
-        if us is not None:
-            usqs = project.user_stories.filter(pk=us)
-            us = usqs and usqs.get() or None
+        if usref is not None:
+            user_story = get_object_or_404(project.user_stories, ref=usref)
+            milestone = user_story.milestone
+        elif mid is not None:
+            user_story = None
+            milestone = get_object_or_404(project.milestones, pk=mid)
+        else:
+            return HttpResponseBadRequest()
 
-        form = forms.TaskForm(request.POST, project=project, 
-            initial_milestone=milestone, initial_us=us)
+        form = forms.TaskForm(request.POST, project=project,
+            initial={'milestone':milestone, 'user_story': user_story})
 
         next_url = request.GET.get('next', None)
 

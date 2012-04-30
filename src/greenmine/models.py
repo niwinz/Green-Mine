@@ -283,9 +283,6 @@ class Project(models.Model):
     def get_general_settings_url(self):
         return ('web:project-general-settings', (), {'pslug': self.slug})
 
-    @models.permalink
-    def get_task_create_url(self):
-        return ('web:task-create', (), {'pslug': self.slug})
 
     @models.permalink
     def get_questions_url(self):
@@ -376,6 +373,11 @@ class Milestone(models.Model):
     @models.permalink
     def get_tasks_url(self):
         return ('web:tasks-view', (), 
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
+    def get_task_create_url(self):
+        return ('web:task-create', (), 
             {'pslug': self.project.slug, 'mid': self.id})
 
     class Meta(object):
@@ -540,7 +542,7 @@ class Task(models.Model):
 
     priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=3)
     milestone = models.ForeignKey('Milestone', related_name='tasks',
-        null=True, default=None)
+        null=True, default=None, blank=True)
 
     project = models.ForeignKey('Project', related_name='tasks')
     type = models.CharField(max_length=10,

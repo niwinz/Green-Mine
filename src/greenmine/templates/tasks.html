@@ -9,7 +9,7 @@
 <div id="dashboard" class="tasks-ds" rel="{{ project.get_milestones_list_api_url }}">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{{ project.get_task_create_url }}?milestone={{ milestone.id }}">
+            <li><a class="new-milestone" href="{{ milestone.get_task_create_url }}">
                 {% trans "Create new task/bug" %}</a></li>
         </ul>
     </div>

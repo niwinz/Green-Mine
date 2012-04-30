@@ -335,28 +335,37 @@ class CommentForm(Form):
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.project = kwargs.pop('project', None)
-        self.initial_milestone = kwargs.pop('initial_milestone', None)
-        self.initial_us = kwargs.pop('initial_us', None)
+        #self.initial_milestone = kwargs.pop('initial_milestone', None)
+        #self.initial_us = kwargs.pop('initial_us', None)
 
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['user_story'].queryset = self.project.user_stories.all()
         self.fields['assigned_to'].queryset = self.project.all_participants
         self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
 
-        if self.initial_milestone:
-            self.fields['milestone'].initial = self.initial_milestone
-        else:
-            self.fields['milestone'].initial = self.project.default_milestone
+        #if self.initial_milestone:
+        #    self.fields['milestone'].initial = self.initial_milestone
+        #else:
+        #    self.fields['milestone'].initial = self.project.default_milestone
 
-        if self.initial_us:
-            self.fields['user_story'].initial = self.initial_us
+        #if self.initial_us:
+        #    self.fields['user_story'].initial = self.initial_us
 
-        self.fields['milestone'].empty_label = None
+        #self.fields['milestone'].empty_label = None
 
     class Meta:
         fields = ('status', 'priority', 'subject','milestone',
             'description', 'assigned_to','type', 'user_story')
         model = models.Task
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        if "milestone" not in cleaned_data and "user_story" not in cleaned_data:
+            self._errors['milestone'] = self.error_class([_(u"You need select one milestone or user story")])
+            self._errors['user_story'] = self.error_class([_(u"You need select one milestone or user story")])
+
+        return cleaned_data
 
 
 class WikiPageEditForm(forms.ModelForm):
