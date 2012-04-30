@@ -17,7 +17,10 @@ def has_perm(user, project, loc, perm, pur=None):
     """
     
     if not pur:
-        pur = ProjectUserRole.objects.get(project=project, user=user)
+        try:
+            pur = ProjectUserRole.objects.get(project=project, user=user)
+        except ProjectUserRole.DoesNotExist:
+            return False
 
     return getattr(pur.role, \
             '%s_%s' % (loc.lower(), perm.lower()), False)
@@ -26,6 +29,7 @@ def has_perm(user, project, loc, perm, pur=None):
 def has_perms(user, project, perms=[]):
     """
     Check a group of permissions in a single call.
+    TODO: correct handling public projects.
     """
 
     if user.is_superuser:
@@ -33,9 +37,12 @@ def has_perms(user, project, perms=[]):
 
     if project.owner == user:
         return True
-
-    pur, valid = ProjectUserRole.objects\
-        .get(project=project, user=user), True
+    
+    try:
+        pur, valid = ProjectUserRole.objects\
+            .get(project=project, user=user), True
+    except ProjectUserRole.DoesNotExist:
+        return False
 
     for pitem in perms:
         if len(pitem) != 2:

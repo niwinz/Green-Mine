@@ -205,11 +205,11 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
     def add_user(self, user, role):
-        from greenmine import permissions as perms
+        from greenmine import permissions
         return ProjectUserRole.objects.create(
             project = self,
             user = user,
-            role = perms.get_role(role),
+            role = permissions.get_role(role),
         )
         
 

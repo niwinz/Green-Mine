@@ -238,11 +238,11 @@ class BacklogView(GenericView):
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
 
-        #self.check_role(request.user, project, [
-        #    ('project', 'view'),
-        #    ('milestone', 'view'),
-        #    ('userstory', 'view'),
-        #])
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
 
         unassigned = project.user_stories.filter(milestone__isnull=True)\
             .order_by('-priority')
@@ -494,7 +494,7 @@ class MilestoneCreateView(GenericView):
             ('project', 'view'),
             ('milestone', ('view', 'edit')),
         ])
-
+        
         form = forms.MilestoneForm(request.POST)
 
         if form.is_valid():

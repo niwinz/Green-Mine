@@ -7,7 +7,7 @@ class PermissionDeniedException(Exception):
 
 class PermissionMiddleware(object):
     def process_exception(self, request, exception):
-        if not isinstance(exception, PermissionDenied):
+        if not isinstance(exception, PermissionDeniedException):
             return None
 
         return HttpResponseForbidden("Permission denied for %s" % (request.path))
