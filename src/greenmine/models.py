@@ -331,6 +331,11 @@ class Milestone(models.Model):
         unique_together = ('name', 'project')
 
     @models.permalink
+    def get_delete_url(self):
+        return ('web:milestone-delete', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
     def get_dashboard_url(self):
         return ('web:dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})

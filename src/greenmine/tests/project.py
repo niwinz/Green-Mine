@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from ..models import *
 
 from greenmine import permissions as perms
+from django.utils import timezone
+import datetime
 
 class ProjectRelatedTests(TestCase):
     def setUp(self):
@@ -235,6 +237,55 @@ class MilestoneTests(TestCase):
         self.assertEqual(response.redirect_chain,  [('http://testserver/test2/backlog/', 302)])
         self.assertEqual(len(response.context['messages']), 0)
 
+    def test_delete_milestone(self):
+        now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+
+        milestone = Milestone.objects.create(
+            project = self.project1,
+            owner = self.user1,
+            name = 'test milestone',
+            estimated_finish = now_date + datetime.timedelta(20),
+        )
+
+        self.client.login(username='test1', password='test')
+        response = self.client.post(milestone.get_delete_url(), {})
+        self.assertEqual(response.status_code, 200)
+
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+    def test_delete_milestone_without_permissions_superuser(self):
+        now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+
+        milestone = Milestone.objects.create(
+            project = self.project2,
+            owner = self.user2,
+            name = 'test milestone',
+            estimated_finish = now_date + datetime.timedelta(20),
+        )
+
+        self.client.login(username='test1', password='test')
+        response = self.client.post(milestone.get_delete_url(), {})
+        self.assertEqual(response.status_code, 200)
+
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+    def test_delete_milestone_without_permissions(self):
+        now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+
+        milestone = Milestone.objects.create(
+            project = self.project1,
+            owner = self.user1,
+            name = 'test milestone',
+            estimated_finish = now_date + datetime.timedelta(20),
+        )
+
+        self.client.login(username='test2', password='test')
+        response = self.client.post(milestone.get_delete_url(), {})
+        self.assertEqual(response.status_code, 403)
 
 class SimplePermissionMethodsTest(TestCase):
     def test_has_permission(self):

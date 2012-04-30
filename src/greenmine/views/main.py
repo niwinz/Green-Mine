@@ -512,6 +512,27 @@ class MilestoneCreateView(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
+class MilestoneDeleteView(GenericView):
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+        ])
+        
+        # update all user stories, set milestone to None
+        milestone.user_stories.all().update(milestone=None)
+
+        # update all tasks with user story, set milestone to None
+        milestone.tasks.filter(user_story__isnull=False).update(milestone=None)
+
+        # delete all tasks without user story
+        milestone.tasks.filter(user_story__isnull=True).delete()
+        return self.render_to_ok()
+        
+
 class UserStoryView(GenericView):
     template_name = "user-story-view.html"
 
