@@ -468,8 +468,93 @@ class UserStoriesTests(TestCase):
 
         response = self.client.get(user_story.get_view_url())
         self.assertEqual(response.status_code, 200)
-        #self.assertIn("tasks", response.context)
-        #self.assertEqual(len(response.context['tasks']), 1)
+
+    def test_user_story_edit(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = self.milestone2,
+        )
+
+        post_params = {
+            'priority': 6,
+            'points': '10',
+            'status': 'progress',
+            'category': '',
+            'tested': False,
+            'subject': 'test us foo',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+        
+        response = self.client.post(user_story.get_edit_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        user_story = UserStory.objects.get(pk=user_story.pk)
+        self.assertEqual(user_story.subject, 'test us foo')
+        self.assertEqual(user_story.status, 'progress')
+
+    def test_user_story_edit_without_permission(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user1,
+            project = self.project1,
+            milestone = self.milestone1,
+        )
+
+        post_params = {
+            'priority': 6,
+            'points': '10',
+            'status': 'progress',
+            'category': '',
+            'tested': False,
+            'subject': 'test us foo',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+        
+        response = self.client.post(user_story.get_edit_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_story_delete(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = self.milestone2,
+        )
+
+        response = self.client.post(user_story.get_delete_url(), {})
+        self.assertEqual(response.status_code, 200)
+
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
 
 
 class SimplePermissionMethodsTest(TestCase):

@@ -622,6 +622,12 @@ class UserStoryEdit(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+            ('userstory', ('view', 'edit')),
+        ])
+
         form = forms.UserStoryForm(instance=user_story)
         context = {
             'project': project,
@@ -634,6 +640,12 @@ class UserStoryEdit(GenericView):
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+            ('userstory', ('view', 'edit')),
+        ])
 
         form = forms.UserStoryForm(request.POST, instance=user_story)
         if form.is_valid():
@@ -656,9 +668,15 @@ class UserStoryDeleteView(GenericView):
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
+        
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+            ('userstory', ('view', 'edit')),
+        ])
 
         user_story.delete()
-        return response
+        return self.render_to_ok()
 
 
 class TaskCreateView(GenericView):
