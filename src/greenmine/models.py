@@ -24,14 +24,21 @@ MARKUP_TYPE = (
     ('rest', _('Restructured Text')),
 )
 
+#US_STATUS_CHOICES = (
+#    ('new', _(u'New')),
+#    ('accepted', _(u'In progress')),
+#    ('fixed', _(u'Fixed')),
+#    ('invalid', _(u'Invalid')),
+#    ('wontfix', _(u'Wontfix')),
+#    ('workaround', _(u'Workaround')),
+#    ('duplicate', _(u'Duplicated')),
+#)
+
 US_STATUS_CHOICES = (
-    ('new', _(u'New')),
-    ('accepted', _(u'In progress')),
-    ('fixed', _(u'Fixed')),
-    ('invalid', _(u'Invalid')),
-    ('wontfix', _(u'Wontfix')),
-    ('workaround', _(u'Workaround')),
-    ('duplicate', _(u'Duplicated')),
+    ('open', _(u'Open/New')),
+    ('progress', _(u'In progress')),
+    ('completed', _(u'Completed')),
+    ('closed', _(u'Closed')),
 )
 
 US_PRIORITY_CHOICES = (
@@ -40,12 +47,6 @@ US_PRIORITY_CHOICES = (
     (5, _(u'High')),
 )
 
-US_STATUS_CHOICES = (
-    ('open', _(u'Open/New')),
-    ('progress', _(u'In progress')),
-    ('completed', _(u'Completed')),
-    ('closed', _(u'Closed')),
-)
 
 TASK_TYPE_CHOICES = (
     ('bug', _(u'Bug')),

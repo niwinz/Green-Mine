@@ -541,6 +541,12 @@ class UserStoryView(GenericView):
         """ View US Detail """
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
         
         context = {
             'user_story':user_story,
@@ -554,9 +560,22 @@ class UserStoryCreateView(GenericView):
     template_name = "user-story-create.html"
 
     @login_required
-    def get(self, request, pslug):
+    def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.UserStoryForm()
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+            ('userstory', ('view', 'edit')),
+        ])
+
+        form_initial = {}
+        
+        if mid is not None:
+            milestone = get_object_or_404(project.milestones, pk=mid)
+            form_initial['milestone'] = milestone
+
+        form = forms.UserStoryForm(initial=form_initial)
         context = {
             'form':form, 
             'project':project,
@@ -564,9 +583,22 @@ class UserStoryCreateView(GenericView):
         return self.render_to_response(self.template_name, context)
 
     @login_required
-    def post(self, request, pslug):
+    def post(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.UserStoryForm(request.POST)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit')),
+            ('userstory', ('view', 'edit')),
+        ])
+
+        form_initial = {}
+        
+        if mid is not None:
+            milestone = get_object_or_404(project.milestones, pk=mid)
+            form_initial['milestone'] = milestone
+
+        form = forms.UserStoryForm(request.POST, initial=form_initial)
 
         if form.is_valid():
             instance = form.save(commit=False)

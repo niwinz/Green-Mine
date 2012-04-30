@@ -287,6 +287,142 @@ class MilestoneTests(TestCase):
         response = self.client.post(milestone.get_delete_url(), {})
         self.assertEqual(response.status_code, 403)
 
+
+class UserStoriesTests(TestCase):
+    def setUp(self):
+        self.now_date = datetime.datetime.now(tz=timezone.get_default_timezone())
+        self.user1 = User.objects.create(
+            username = 'test1',
+            email = 'test1@test.com',
+            is_active = True,
+            is_staff = True,
+            is_superuser = True,
+        )
+
+        self.user2 = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        self.user1.set_password("test")
+        self.user2.set_password("test")
+
+        self.user1.save()
+        self.user2.save()
+
+        self.project1 = Project.objects\
+            .create(name='test1', description='test1', owner=self.user1, slug='test1')
+
+        self.project2 = Project.objects\
+            .create(name='test2', description='test2', owner=self.user2, slug='test2')
+
+        self.project1.add_user(self.user1, 'developer')
+        self.project2.add_user(self.user2, 'developer')
+
+        self.milestone1 = Milestone.objects.create(
+            project = self.project1,
+            owner = self.user1,
+            name = 'test1 milestone',
+            estimated_finish = self.now_date + datetime.timedelta(20),
+        )
+
+        self.milestone2 = Milestone.objects.create(
+            project = self.project2,
+            owner = self.user2,
+            name = 'test2 milestone',
+            estimated_finish = self.now_date + datetime.timedelta(20),
+        )
+
+    def tearDown(self):
+        self.milestone1.delete()
+        self.milestone2.delete()
+        self.project1.delete()
+        self.project2.delete()
+        self.user2.delete()
+        self.user1.delete()
+
+    def test_backlog_simple_view(self):
+        self.client.login(username="test2", password="test")
+        response = self.client.get(self.project2.get_backlog_url())
+        self.assertEqual(response.status_code, 200)
+    
+    def test_backlog_simple_view_without_permissions(self):
+        self.client.login(username="test2", password="test")
+        response = self.client.get(self.project1.get_backlog_url())
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_story_create_view_page(self):
+        self.client.login(username="test2", password="test")
+        response  = self.client.get(self.milestone2.get_user_story_create_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_story_create_view_page_without_permissions(self):
+        self.client.login(username="test2", password="test")
+        response  = self.client.get(self.milestone1.get_user_story_create_url())
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_story_create(self):
+        self.client.login(username="test2", password="test")
+
+        post_params = {
+            'priority': 3,
+            'points': '10',
+            'status': 'open',
+            'category': '',
+            'tested': False,
+            'subject': 'test us',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+
+        response = self.client.post(self.milestone2.get_user_story_create_url(), post_params, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/test2/backlog/', 302)])
+
+
+    def test_user_story_create_bad_status(self):
+        self.client.login(username="test2", password="test")
+
+        post_params = {
+            'priority': 6,
+            'points': '10',
+            'status': 'foo',
+            'category': '',
+            'tested': False,
+            'subject': 'test us',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+
+        response = self.client.post(self.milestone2.get_user_story_create_url(), post_params, follow=True)
+        self.assertIn("form", response.context)
+        
+        form_errors = dict(response.context['form'].errors)
+        self.assertIn('status', form_errors)
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_story_create_without_permissions(self):
+        self.client.login(username="test2", password="test")
+
+        post_params = {
+            'priority': 6,
+            'points': '10',
+            'status': 'foo',
+            'category': '',
+            'tested': False,
+            'subject': 'test us',
+            'description': 'test desc us',
+            'finish_date': '02/02/2012',
+        }
+        
+        response = self.client.post(self.milestone1.get_user_story_create_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 403)
+
+
 class SimplePermissionMethodsTest(TestCase):
     def test_has_permission(self):
         user = User.objects.create(
