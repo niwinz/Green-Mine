@@ -921,6 +921,13 @@ class AssignUserStory(GenericView):
             return self.render_to_error()
 
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', ('view', 'edit')),
+        ])
+
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         milestone_id = request.POST['mid']
@@ -949,6 +956,13 @@ class UnassignUserStory(GenericView):
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', ('view', 'edit')),
+        ])
+
         user_story = get_object_or_404(project.user_stories, ref=iref)
         user_story.milestone = None
         user_story.save()

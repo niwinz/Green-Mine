@@ -590,6 +590,96 @@ class UserStoriesTests(TestCase):
         response = self.client.post(user_story.get_edit_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 403)
 
+    def test_assign_user_story(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = None,
+        )
+
+        response = self.client.post(user_story.get_assign_url(), {'mid': self.milestone2.id})
+        self.assertEqual(response.status_code, 200)
+
+        user_story = UserStory.objects.get(pk=user_story.pk)
+        self.assertEqual(user_story.milestone, self.milestone2)
+
+    def test_unassign_user_story(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user2,
+            project = self.project2,
+            milestone = self.milestone2,
+        )
+
+        response = self.client.post(user_story.get_unassign_url(), {})
+        self.assertEqual(response.status_code, 200)
+
+        user_story = UserStory.objects.get(pk=user_story.pk)
+        self.assertEqual(user_story.milestone, None)
+
+    def test_assign_user_story_without_permissions(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user1,
+            project = self.project1,
+            milestone = None,
+        )
+
+        response = self.client.post(user_story.get_assign_url(), {'mid': self.milestone2.id})
+        self.assertEqual(response.status_code, 403)
+
+        user_story = UserStory.objects.get(pk=user_story.pk)
+        self.assertEqual(user_story.milestone, None)
+
+
+    def test_unassign_user_story_without_permissions(self):
+        self.client.login(username="test2", password="test")
+
+        user_story = UserStory.objects.create(
+            priority = '6',
+            status = 'open',
+            category = '',
+            tested = False,
+            finish_date = self.now_date,
+            subject = 'test us',
+            description = 'test desc us',
+            owner = self.user1,
+            project = self.project1,
+            milestone = self.milestone1,
+        )
+
+        response = self.client.post(user_story.get_unassign_url(), {})
+        self.assertEqual(response.status_code, 403)
+
+        user_story = UserStory.objects.get(pk=user_story.pk)
+        self.assertEqual(user_story.milestone, self.milestone1)
+        
+
     def test_user_story_delete(self):
         self.client.login(username="test2", password="test")
 
@@ -788,3 +878,45 @@ class TasksTests(TestCase):
         mod_task = Task.objects.get(pk=task.pk)
         self.assertEqual(task.priority, mod_task.priority)
         self.assertEqual(mod_task.subject, 'test task')
+
+    def test_task_delete(self):
+        self.client.login(username="test2", password="test")
+
+        task = Task.objects.create(
+            status = 'open',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+
+        response  = self.client.post(task.get_delete_url(), {})
+        self.assertEqual(response.status_code, 200)
+
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata["valid"])
+
+    def test_task_delete_without_permissions(self):
+        self.client.login(username="test2", password="test")
+
+        task = Task.objects.create(
+            status = 'open',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone1,
+            owner = self.user1,
+            project = self.project1,
+        )
+
+        response  = self.client.post(task.get_delete_url(), {})
+        self.assertEqual(response.status_code, 403)
