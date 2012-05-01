@@ -8,6 +8,7 @@ Currently there is no stable version, but the project is already usable. All con
 Features:
 ---------
 
+* Multi project.
 * Backlog view. (with user stories assignation drag & drop)
 * Dashboard view. (with tasks drag & drop)
 * Tasks / Bugs separate view.
@@ -17,6 +18,7 @@ Features:
 Todo / Under development:
 -------------------------
 
+* Permission sistem based on simple roles (partialy implemented).
 * Project export / import.
 * RestructuredText for wiki.
 * Product map grouped by categories (SCRUM)
