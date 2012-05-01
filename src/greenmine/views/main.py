@@ -1038,6 +1038,11 @@ class ProjectGeneralSettings(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', ('view', 'edit')),
+        ])
+
         form = forms.ProjectGeneralSettingsForm()
 
         context = {
@@ -1051,6 +1056,11 @@ class ProjectGeneralSettings(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', ('view', 'edit')),
+        ])
+
         form = forms.ProjectGeneralSettingsForm(request.POST)
 
         if form.is_valid():

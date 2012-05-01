@@ -286,7 +286,6 @@ class Project(models.Model):
     def get_general_settings_url(self):
         return ('web:project-general-settings', (), {'pslug': self.slug})
 
-
     @models.permalink
     def get_questions_url(self):
         return ('web:questions', (), {'pslug': self.slug})

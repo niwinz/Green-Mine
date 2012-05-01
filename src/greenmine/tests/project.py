@@ -88,6 +88,30 @@ class ProjectRelatedTests(TestCase):
         User.objects.all().delete()
         self.client.logout()
 
+    def test_permission_on_general_settings(self):
+        superuser = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
+            is_active = True,
+            is_superuser = True,
+        )
+
+        project1 = Project(name='test1', description='test1', owner=self.user, slug='test1')
+        project1.save()
+
+        project2 = Project(name='test2', description='test2', owner=superuser, slug='test2')
+        project2.save()
+
+        project1.add_user(self.user, 'developer')
+        project2.add_user(superuser, 'developer')
+
+        response = self.client.get(project1.get_general_settings_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(project2.get_general_settings_url())
+        self.assertEqual(response.status_code, 403)
+
+
     def test_home_projects_view(self):
         home_url = reverse('web:projects')
         response = self.client.get(home_url)
