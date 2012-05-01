@@ -754,3 +754,37 @@ class TasksTests(TestCase):
 
         form_errors = dict(response.context['form'].errors)
         self.assertIn("milestone", form_errors)
+
+    def test_task_edit(self):
+        self.client.login(username="test2", password="test")
+
+        task = Task.objects.create(
+            status = 'open',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+
+        post_params = {
+            'status': 'open',
+            'priority': 3,
+            'subject': 'test task',
+            'description': 'test desc task',
+            'assigned_to': '',
+            'type': 'task',
+            'user_story': '',
+            'milestone': self.milestone2.id,
+        }
+
+        response = self.client.post(task.get_edit_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        mod_task = Task.objects.get(pk=task.pk)
+        self.assertEqual(task.priority, mod_task.priority)
+        self.assertEqual(mod_task.subject, 'test task')

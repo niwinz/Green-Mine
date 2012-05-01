@@ -838,6 +838,14 @@ class TaskEdit(GenericView):
     @login_required
     def get(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'edit')),
+        ])
+
         task = get_object_or_404(project.tasks, ref=tref)
         form = forms.TaskForm(instance=task, project=project)
 
@@ -852,6 +860,14 @@ class TaskEdit(GenericView):
     @login_required
     def post(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'edit')),
+        ])
+
         task = get_object_or_404(project.tasks, ref=tref)
         form = forms.TaskForm(request.POST, instance=task, project=project)
 
@@ -870,18 +886,25 @@ class TaskEdit(GenericView):
             'task': task,
             'form': form,
         }
-
-        return self.render_to_response(self.template_name, context)
+        
+        return self.render_to_response(self.template_path, context)
 
 
 class TaskDelete(GenericView):
     @login_required
     def post(self, request, pslug, tref):
         project = get_object_or_404(models.Project, slug=pslug)
-        task = get_object_or_404(project.tasks, ref=tref)
 
-        # TODO: permission check
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'edit', 'delete')),
+        ])
+        
+        task = get_object_or_404(project.tasks, ref=tref)
         task.delete()
+        
         return self.render_to_ok({})
 
 
