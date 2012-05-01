@@ -964,3 +964,45 @@ class TasksTests(TestCase):
         self.assertEqual(tasks[0].status, 'open')
         self.assertEqual(tasks[1].status, 'open')
         self.assertEqual(tasks[2].status, 'progress')
+
+    def test_tasks_filter_by(self):
+        self.client.login(username="test2", password="test")
+
+        task1 = Task.objects.create(
+            status = 'progress',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+        
+        task2 = Task.objects.create(
+            status = 'open',
+            priority = 1,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'bug',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+
+        response = self.client.get(self.milestone2.get_tasks_url_filter_by_task())
+        self.assertEqual(response.status_code, 200)
+
+        tasks = response.context['tasks']
+        self.assertEqual(tasks.count(), 2)
+        
+        response = self.client.get(self.milestone2.get_tasks_url_filter_by_bug())
+        self.assertEqual(response.status_code, 200)
+
+        tasks = response.context['tasks']
+        self.assertEqual(tasks.count(), 1)
+

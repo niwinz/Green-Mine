@@ -379,6 +379,16 @@ class Milestone(models.Model):
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
+    def get_tasks_url_filter_by_task(self):
+        return ('web:tasks-view', (), 
+            {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'task'})
+
+    @models.permalink
+    def get_tasks_url_filter_by_bug(self):
+        return ('web:tasks-view', (), 
+            {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'bug'})
+
+    @models.permalink
     def get_task_create_url(self):
         return ('web:task-create', (), 
             {'pslug': self.project.slug, 'mid': self.id})

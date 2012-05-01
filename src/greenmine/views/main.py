@@ -266,7 +266,7 @@ class TasksView(GenericView):
     menu = ['tasks']
 
     @login_required
-    def get(self, request, pslug, mid=None):
+    def get(self, request, pslug, mid=None, filter_by=None):
         project = get_object_or_404(models.Project, slug=pslug)
 
         self.check_role(request.user, project, [
@@ -285,6 +285,12 @@ class TasksView(GenericView):
 
         milestone = get_object_or_404(project.milestones, pk=mid)
         tasks = milestone.tasks.all()
+
+        if filter_by is not None:
+            if filter_by == "task":
+                tasks = tasks.filter(type="task")
+            elif filter_by == 'bug':
+                tasks = tasks.filter(type="bug")
 
         if "order_by" in request.GET:
             tasks = tasks.order_by(request.GET['order_by'])

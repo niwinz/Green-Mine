@@ -126,6 +126,9 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/filter-by/(?P<filter_by>\w+)/$',
+        main.TasksView.as_view(), name='tasks-view'),
+
     url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
         
