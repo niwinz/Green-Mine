@@ -7,21 +7,12 @@
 
 {% block wrapper %}
 <div id="milestone-dashboard" rel="{{ milestone.id }}">
-    {% comment %}
-    <div class="context-menu">
-        <ul>
-            <li><a class="new-milestone" href="{{ project.get_task_create_url }}?milestone={{ milestone.id }}">
-                {% trans "Create new task" %}</a></li>
-        </ul>
-    </div>
-    {% endcomment %}
     {% include "messages.html" %}
     <div id="milestone-dashboard-title">
-        <h2>{{ milestone.name }}</h2>
+        <h1>Milestone: «{{ milestone.name }}»</h1>
+        <br />
     </div>
-    {% comment %}
-    <div id="progress-bar" rel="{{ milestone.get_stats_api_url }}"></div>
-    {% endcomment %}
+
     <div id="user-stories-module">
         <div class="user-story-legend">
             <div class="user-story-header hfield">

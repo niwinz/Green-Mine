@@ -397,7 +397,7 @@ div.fieldset div.field-inline {
     float: left;
     min-height: 100px;
     margin-right: 4px;
-    border-top: 1px solid #CCC;
+    border-top: 1px solid #EEE;
 }
 
 #milestone-dashboard .user-story .user-story-header {
@@ -407,7 +407,8 @@ div.fieldset div.field-inline {
     padding: 6px;
     font-size: 11px;
     position: relative;
-    border: 1px solid #999;
+    border: 1px solid #BBB;
+    border-radius: 5px;
 }
 #milestone-dashboard .user-story .user-story-header a.add-task {
     position: absolute;
@@ -430,7 +431,8 @@ div.fieldset div.field-inline {
 #milestone-dashboard .user-story .user-story-task {
     min-height: 85px;
     background-color: #eee;
-    border: 1px solid #999;
+    border: 1px solid #BBB;
+    border-radius: 5px;
     padding: 5px;
     width: 226px;
     margin-bottom: 3px;
