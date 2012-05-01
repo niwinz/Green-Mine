@@ -698,6 +698,13 @@ class TaskCreateView(GenericView):
 
         if usref is not None and mid is not None:
             return HttpResponseBadRequest()
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'create')),
+        ])
         
         if usref is not None:
             user_story = get_object_or_404(project.user_stories, ref=usref)
@@ -723,6 +730,13 @@ class TaskCreateView(GenericView):
 
         if usref is None and mid is None:
             return HttpResponseBadRequest()
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'create')),
+        ])
 
         if usref is not None:
             user_story = get_object_or_404(project.user_stories, ref=usref)

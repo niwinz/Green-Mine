@@ -698,4 +698,59 @@ class TasksTests(TestCase):
         self.project2.delete()
         self.user2.delete()
         self.user1.delete()
+    
+    def test_task_create(self):
+        self.client.login(username="test2", password="test")
+        
+        post_params = {
+            'status': 'open',
+            'priority': 3,
+            'subject': 'test task',
+            'description': 'test desc task',
+            'assigned_to': '',
+            'type': 'task',
+            'user_story': '',
+            'milestone': self.milestone2.id,
+        }
 
+        response = self.client.post(self.milestone2.get_task_create_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/test2/milestone/2/task/list/', 302)])
+
+    def test_task_create_without_permissions_1(self):
+        self.client.login(username="test2", password="test")
+        
+        post_params = {
+            'status': 'open',
+            'priority': 3,
+            'subject': 'test task',
+            'description': 'test desc task',
+            'assigned_to': '',
+            'type': 'task',
+            'user_story': '',
+            'milestone': self.milestone2.id,
+        }
+
+        response = self.client.post(self.milestone1.get_task_create_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 403)
+
+
+    def test_task_create_without_permissions_2(self):
+        self.client.login(username="test2", password="test")
+        
+        post_params = {
+            'status': 'open',
+            'priority': 3,
+            'subject': 'test task',
+            'description': 'test desc task',
+            'assigned_to': '',
+            'type': 'task',
+            'user_story': '',
+            'milestone': self.milestone1.id,
+        }
+
+        response = self.client.post(self.milestone2.get_task_create_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        form_errors = dict(response.context['form'].errors)
+        self.assertIn("milestone", form_errors)

@@ -42,7 +42,7 @@ US_STATUS_CHOICES = (
     ('closed', _(u'Closed')),
 )
 
-US_PRIORITY_CHOICES = (
+TASK_PRIORITY_CHOICES = (
     (1, _(u'Low')),
     (3, _(u'Normal')),
     (5, _(u'High')),
@@ -105,6 +105,9 @@ def ref_uniquely(project, model, field='ref'):
 
     import time
     import baseconv
+
+    # this prevents concurrent and inconsistent references.
+    time.sleep(0.1)
     
     new_timestamp = lambda: int("".join(str(time.time()).split(".")))
     while True:
@@ -540,7 +543,7 @@ class Task(models.Model):
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="tasks")
 
-    priority = models.IntegerField(choices=US_PRIORITY_CHOICES, default=3)
+    priority = models.IntegerField(choices=TASK_PRIORITY_CHOICES, default=3)
     milestone = models.ForeignKey('Milestone', related_name='tasks',
         null=True, default=None, blank=True)
 
