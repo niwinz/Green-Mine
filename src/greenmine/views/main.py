@@ -245,12 +245,17 @@ class BacklogView(GenericView):
             ('userstory', 'view'),
         ])
 
-        unassigned = project.user_stories.filter(milestone__isnull=True)\
+        unassigned = project.user_stories\
+            .filter(milestone__isnull=True)\
             .order_by('-priority')
+
+        if "order_by" in request.GET:
+            unassigned = unassigned.order_by(request.GET['order_by'])
 
         context = {
             'project': project,
-            'milestones': project.milestones.order_by('-created_date').prefetch_related('project'),
+            'milestones': project.milestones.order_by('-created_date')\
+                                            .prefetch_related('project'),
             'unassigned_us': unassigned.select_related(),
         }
 
