@@ -656,7 +656,6 @@ class UserStoriesTests(TestCase):
         user_story = UserStory.objects.get(pk=user_story.pk)
         self.assertEqual(user_story.milestone, None)
 
-
     def test_unassign_user_story_without_permissions(self):
         self.client.login(username="test2", password="test")
 
@@ -678,7 +677,6 @@ class UserStoriesTests(TestCase):
 
         user_story = UserStory.objects.get(pk=user_story.pk)
         self.assertEqual(user_story.milestone, self.milestone1)
-        
 
     def test_user_story_delete(self):
         self.client.login(username="test2", password="test")
@@ -780,15 +778,12 @@ class TasksTests(TestCase):
         )
 
     def tearDown(self):
-        self.user_story1.delete()
-        self.user_story2.delete()
-        self.milestone1.delete()
-        self.milestone2.delete()
-        self.project1.delete()
-        self.project2.delete()
-        self.user2.delete()
-        self.user1.delete()
-    
+        Task.objects.all().delete()
+        UserStory.objects.all().delete()
+        Milestone.objects.all().delete()
+        Project.objects.all().delete()
+        User.objects.all().delete()
+
     def test_task_create(self):
         self.client.login(username="test2", password="test")
         
@@ -920,3 +915,52 @@ class TasksTests(TestCase):
 
         response  = self.client.post(task.get_delete_url(), {})
         self.assertEqual(response.status_code, 403)
+
+    def test_task_list_order_by_params(self):
+        self.client.login(username="test2", password="test")
+
+        task1 = Task.objects.create(
+            status = 'progress',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+        
+        task2 = Task.objects.create(
+            status = 'open',
+            priority = 1,
+            subject = 'test',
+            description = 'test',
+            assigned_to = None,
+            type = 'bug',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+
+        response = self.client.get(self.milestone2.get_tasks_url())
+        self.assertEqual(response.status_code, 200)
+
+        tasks = response.context['tasks']
+        self.assertEqual(tasks.count(), 3)
+
+        # test initial status
+        self.assertEqual(tasks[0].status, 'open')
+        self.assertEqual(tasks[1].status, 'progress')
+        self.assertEqual(tasks[2].status, 'open')
+
+        response = self.client.get(self.milestone2.get_tasks_url() + "?order_by=status")
+        self.assertEqual(response.status_code, 200)
+        tasks = response.context['tasks']
+
+        # test initial status
+        self.assertEqual(tasks[0].status, 'open')
+        self.assertEqual(tasks[1].status, 'open')
+        self.assertEqual(tasks[2].status, 'progress')

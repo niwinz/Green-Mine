@@ -286,6 +286,9 @@ class TasksView(GenericView):
         milestone = get_object_or_404(project.milestones, pk=mid)
         tasks = milestone.tasks.all()
 
+        if "order_by" in request.GET:
+            tasks = tasks.order_by(request.GET['order_by'])
+
         context = {
             'project': project,
             'milestones': project.milestones.order_by('-created_date'),
