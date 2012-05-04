@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 
 SMAILER_EMAIL_BACKEND = getattr(settings, 'SMAILER_EMAIL_BACKEND', 
     'django.core.mail.backends.locmem.EmailBackend')

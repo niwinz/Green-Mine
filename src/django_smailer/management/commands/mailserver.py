@@ -4,28 +4,19 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.mail import get_connection
 from django.conf import settings
 from optparse import make_option
-from Queue import Queue
+from Queue import Queue, Empty
 
 import importlib
 import threading
 
 import logging
+import zmq
+import sys
+import os
 
-log = logging.getLogger('greenmine.mail')
+log = logging.getLogger('greenmine.mail.server')
 
 from django_smailer.settings import SMAILER_EMAIL_BACKEND, SMAILER_BIND_ADDRESS
-
-
-class MailDispatcher(threading.Thread):
-    def __init__(self, queue):
-        super(MailDispatcher, self).__init__()
-        self.queue = queue
-
-    def run(self):
-        while True:
-            connection = get_connection(backends=SMAILER_EMAIL_BACKEND)
-            messages = self.queue.get(True)
-            connection.send_messages(messages)
 
 
 class Command(BaseCommand):
@@ -39,14 +30,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ctx = zmq.Context.instance()
-        socket = ctx.socket(zmq.REP)
-        socket.bind(options.socket)
 
-        work_queue = Queue()
-        dispatcher = MailDispatcher(queue)
-        dispatcher.start()
+        socket = ctx.socket(zmq.SUB)
+        socket.setsockopt(zmq.SUBSCRIBE, "")
+        socket.bind(options['socket'])
+        
+        log.info("smailer-server: now listening on %s. (pid %s)", options['socket'], os.getpid())
 
-        while True:
-            _obj = socket.recv_pyobj()
-            work_queue.put(_obj)
-            socket.send_pyobj(len(_obj))
+        try:
+            while True:
+                messages = socket.recv_pyobj()
+                log.debug("smailer-server: now sending %s mails.", len(messages))
+                connection = get_connection(backend=SMAILER_EMAIL_BACKEND)
+                connection.send_messages(messages)
+
+        except KeyboardInterrupt:
+            log.debug("smailer-server: stoping workers.")
+            socket.close()
+            sys.exit(0)

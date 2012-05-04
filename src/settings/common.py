@@ -175,6 +175,7 @@ INSTALLED_APPS = [
     'django_gravatar',
     'greenmine',
     'greenmine_mobile',
+    'django_smailer',
     'html5forms',
 ]
 
@@ -245,7 +246,12 @@ LOGGING = {
             'handlers': ['console'],
             'level':'INFO',
             'propagate': False,
-        }
+        },
+        'greenmine.mail.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     }
 }
 
