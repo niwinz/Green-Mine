@@ -102,7 +102,7 @@ class SendRecoveryPasswordView(GenericView):
         utils.send_recovery_email(user)
 
         messages.info(request, _(u"Recovery password email are sended"))
-        referer = request.META.get('HTTP_REFERER', reverse('web:user-edit', args=[uid]))
+        referer = request.META.get('HTTP_REFERER', reverse('web:users-edit', args=[uid]))
         return self.render_redirect(referer)
 
 

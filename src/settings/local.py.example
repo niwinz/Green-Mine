@@ -16,3 +16,11 @@ HOST="http://greenmine.projects.kaleidos.net"
 
 MEDIA_ROOT = '/home/greenmine/media'
 STATIC_ROOT = '/home/greenmine/static'
+
+#EMAIL_USE_TLS = False
+#EMAIL_HOST = 'localhost'
+#EMAIL_HOST_USER = 'user'
+#EMAIL_HOST_PASSWORD = 'password'
+#EMAIL_PORT = 25
+#DEFAULT_FROM_EMAIL = "niwi@niwi.be"
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
