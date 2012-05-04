@@ -83,6 +83,7 @@ HOST = 'http://localhost:8000'
 DEFAULT_FROM_EMAIL = "niwi@niwi.be"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 SV_CSS_MENU_ACTIVE = 'selected'
 SV_CONTEXT_VARNAME = 'menu'
