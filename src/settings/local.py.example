@@ -1,4 +1,18 @@
 # -*- coding: utf-8 -*-
 from .development import *
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'greenmine',
+        'USER': 'greenmine',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+    }
+}
 
+HOST="http://greenmine.projects.kaleidos.net"
+
+MEDIA_ROOT = '/home/greenmine/media'
+STATIC_ROOT = '/home/greenmine/static'
