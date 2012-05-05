@@ -4,10 +4,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.mail import get_connection
 from django.conf import settings
 from optparse import make_option
-from Queue import Queue, Empty
-
-import importlib
-import threading
 
 import logging
 import zmq
@@ -22,7 +18,7 @@ from django_smailer.settings import SMAILER_EMAIL_BACKEND, SMAILER_BIND_ADDRESS
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--socket', action="store", dest="socket", default=SMAILER_BIND_ADDRESS,
-            help="Tells tornado server to use this zmq push socket path instead a default."),
+            help="Tells maildispatcher server to use this zmq push socket path instead a default."),
     )
 
     help = "Starts a internal maildispatcher."
