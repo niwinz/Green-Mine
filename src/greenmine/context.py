@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from urlparse import urlparse
 
+from . import version
 
 def main(request):
     context_extra = dict(
@@ -22,5 +23,7 @@ def main(request):
     context_extra['full_current_url'] = context_extra['current_url']
     if request.META.get("QUERY_STRING"):
         context_extra['full_current_url'] += "?%s" % (request.META.get("QUERY_STRING"))
+
+    context_extra['version'] = version.version_as_string()
 
     return context_extra
