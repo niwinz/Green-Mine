@@ -39,6 +39,7 @@ class LowLevelEmailTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
 
+
 class UserMailTests(TestCase):
     def setUp(self):
         self.user1 = User.objects.create(
