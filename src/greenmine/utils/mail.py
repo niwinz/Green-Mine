@@ -1,22 +1,70 @@
 # -*- coding: utf-8 -*-
 
-from multiprocessing import Process, Queue
+from django.core.urlresolvers import reverse
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.utils.translation import ugettext
+from django.utils.encoding import force_unicode
+from django.template import RequestContext, loader
+
+from . import Singleton, set_token
 
 
-gqueue = Queue()
-gprocess = None
+MAILS = {
+    'new.registration': 'email/new.user.html',
+    'password.recovery': 'email/forgot.password.html',
+}
 
-def mailer_process_callback(queue):
-    while True:
-        email_object = queue.get()
-        email_object.send()
+def send_new_registration_mail(user):
+    context = {
+        'user': user, 
+        'token': set_token(user),
+        'current_host': settings.HOST,
+    }
+
+    params = {
+        "to": [user.email],
+        "subject": ugettext("Greenmine: Welcome!"),
+    }
+
+    return send("new.registration", context, **params)
 
 
-def send_mail(email_object):
-    global gqueue, gprocess
+def send_recovery_email(user):
+    """
+    Set token for user profile and send password
+    recovery mail.
+    """
 
-    gqueue.put(email_object)
-    
-    if gprocess is None:
-        gprocess = Process(target=mailer_process_callback, args=(gqueue,))
-        gprocess.start()
+    context = {
+        'user': user, 
+        'token': set_token(user),
+        'current_host': settings.HOST,
+    }
+
+    params = {
+        "to": [user.email],
+        "subject": ugettext("Greenmine: password recovery."),
+    }
+    return send("password.recovery", context, **params)
+
+
+def send(key, context, **kwargs):
+    if key not in MAILS:
+        raise ValueError("Invalid key parameter")
+
+    template = loader.render_to_string(MAILS[key], context)
+    return send_email(template, **kwargs)
+
+
+def send_email(body, to, subject, content_subtype='html'):
+    if not isinstance(to, (list,tuple)):
+        to = [to]
+
+    email_message = EmailMessage(
+        body = body,
+        to = to,
+        subject = subject
+    )
+    email_message.content_subtype = content_subtype
+    email_message.send(fail_silently=False)

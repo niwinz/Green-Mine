@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*- 
 
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
 from django.conf import settings
-from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
-from django.template.loader import render_to_string
-from django.template import RequestContext, loader
 
 
 import datetime, hashlib, os.path, os
@@ -59,42 +54,3 @@ def set_token(user):
     profile.save()
     return token
 
-
-def send_recovery_email(user):
-    """
-    Set token for user profile and send password
-    recovery mail.
-    """
-
-    context = {
-        'user': user, 
-        'token': set_token(user),
-        'current_host': settings.HOST,
-    }
-    email_body = loader.render_to_string("email/forgot.password.html", 
-                                                                context)
-    send_email(user.email, email_body, _(u"Greenmine: password revovery."))
-
-
-def send_new_registered_email(user):
-    """ Set token for user and send
-    first registration email.
-    """
-
-    context = {
-        'user': user, 
-        'token': set_token(user),
-        'current_host': settings.HOST,
-    }
-    email_body = loader.render_to_string("email/new.user.html", context)
-    send_email(user.email, email_body, _(u"Greenmine: Welcome to Greenmine."))
-
-
-def send_email(email, body, subject, content_subtype='html'):
-    email_message = EmailMessage(
-        body = body,
-        to = [email],
-        subject = subject
-    )
-    email_message.content_subtype = content_subtype
-    email_message.send(fail_silently=True)

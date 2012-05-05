@@ -22,7 +22,8 @@ from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
-from greenmine import models, forms, utils
+from greenmine import models, forms
+from greenmine.utils import mail
 from greenmine import permissions as perms
 
 from greenmine.middleware import PermissionDeniedException
@@ -48,7 +49,7 @@ class RegisterView(GenericView):
                 email = form.cleaned_data['email'],
             )
 
-            utils.send_new_registered_email(user)
+            mail.send_new_registered_email(user)
             messages.info(request, _(u"Validation message was sent successfully."))
             return self.render_redirect(reverse('web:login'))
 
@@ -99,7 +100,7 @@ class SendRecoveryPasswordView(GenericView):
     @staff_required
     def get(self, request, uid):
         user = get_object_or_404(User, pk=uid)
-        utils.send_recovery_email(user)
+        mail.send_recovery_email(user)
 
         messages.info(request, _(u"Recovery password email are sended"))
         referer = request.META.get('HTTP_REFERER', reverse('web:users-edit', args=[uid]))
