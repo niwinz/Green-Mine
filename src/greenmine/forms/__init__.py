@@ -101,7 +101,6 @@ class RegisterForm(forms.Form):
         required=True, label=_(u"First name"))
     last_name = forms.CharField(max_length=200,
         required=True, label=_(u"Last name"))
-
     email = forms.EmailField(max_length=200,
         required=True, label=_(u"Email"))
 

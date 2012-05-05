@@ -75,7 +75,7 @@ TASK_ASSIGNATION_CHANGE = 4
 
 TASK_CHANGE_CHOICES = (
     (TASK_COMMENT, _(u"Task comment")),
-    (TASK_STATUS_CHANGE, _(u"Task change")),
+    (TASK_STATUS_CHANGE, _(u"Task status change")),
     (TASK_PRIORITY_CHANGE, _(u"Task prioriy change")),
     (TASK_ASSIGNATION_CHANGE, _(u"Task assignation change")),
 )
