@@ -49,7 +49,7 @@ class RegisterView(GenericView):
                 email = form.cleaned_data['email'],
             )
 
-            mail.send_new_registered_email(user)
+            mail.send_new_registration_mail(user)
             messages.info(request, _(u"Validation message was sent successfully."))
             return self.render_redirect(reverse('web:login'))
 
@@ -81,6 +81,7 @@ class LoginView(GenericView):
 
 
 class RememberPasswordView(GenericView):
+    # TODO: finish this view or delete
     template_name = 'remember-password.html'
     
     @method_decorator(ensure_csrf_cookie)
@@ -134,6 +135,10 @@ class PasswordChangeView(GenericView):
 
 
 class PasswordRecoveryView(GenericView):
+    """
+    Simple recovery password procedure.
+    """
+
     template_name = "password_recovery.html"
 
     def get(self, request, token):
@@ -145,7 +150,6 @@ class PasswordRecoveryView(GenericView):
         form = forms.PasswordRecoveryForm(request.POST)
         if form.is_valid():
             profile_queryset = models.Profile.objects.filter(token=token)
-            print token, profile_queryset
             if not profile_queryset:
                 messages.error(request, _(u'Token has expired, try again'))
                 return self.render_redirect(reverse('web:login'))
@@ -224,8 +228,6 @@ class HomeView(GenericView):
             'projects': projects,
         }
         return self.render_to_response(self.template_name, context)
- 
-
 
 
 class BacklogView(GenericView):

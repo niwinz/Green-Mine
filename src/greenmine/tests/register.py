@@ -47,12 +47,21 @@ class UserRelatedTests(TestCase):
 
         instance.set_password("fooo")
         instance.save()
-
         return instance
 
     def tearDown(self):
         self.client.logout()
         User.objects.all().delete()
+
+    def test_profile_view(self):
+        user = self.create_sample_user()
+        url = reverse("web:profile")
+
+        ok = self.client.login(username='test', password='fooo')
+        self.assertTrue(ok)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_login(self):
         instance = self.create_sample_user()
@@ -63,9 +72,6 @@ class UserRelatedTests(TestCase):
         }
 
         login_url = reverse('web:login')
-        #with self.assertRaises(ValueError):
-        #    response = self.client.post(login_url, post_params)
-            
         response = self.client.post(login_url, post_params, 
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
@@ -104,7 +110,6 @@ class UserRelatedTests(TestCase):
         response = self.client.post(profile_url, post_params, follow=True)
         self.assertEqual(response.redirect_chain, [('http://testserver/login/', 302)])
 
-        
         ok = self.client.login(username='test', password='fooo')
         self.assertTrue(ok)
 

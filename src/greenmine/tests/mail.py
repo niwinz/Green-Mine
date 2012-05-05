@@ -90,3 +90,19 @@ class UserMailTests(TestCase):
         self.assertTrue(self.user2.is_active)
         self.assertFalse(self.user2.has_usable_password())
         self.assertNotEqual(self.user2.get_profile().token, None)
+
+        url = reverse('web:password-recovery', args=[self.user2.get_profile().token])
+
+        post_params = {
+            'password': '123123',
+            'password2': '123123',
+        }
+        response = self.client.post(url, post_params, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+        # expected redirect
+        self.assertEqual(response.redirect_chain, [('http://testserver/login/', 302)])
+
+        ok = self.client.login(username="test2", password="123123")
+        self.assertTrue(ok)
