@@ -81,7 +81,12 @@ class LoginView(GenericView):
 
 
 class RememberPasswordView(GenericView):
-    # TODO: finish this view or delete
+    """
+    Remember password procedure for non logged users.
+    This sends the password revery mail with link for
+    a recovery procedure.
+    """
+
     template_name = 'remember-password.html'
     
     @method_decorator(ensure_csrf_cookie)
@@ -90,6 +95,16 @@ class RememberPasswordView(GenericView):
 
         return self.render_to_response(self.template_name, 
             {'form': form})
+    
+    def post(self, request):
+        form = forms.ForgottenPasswordForm(request.POST)
+        if form.is_valid():
+            mail.send_recovery_email(form.user)
+            messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
+            return self.render_to_ok({'redirect_to':'/'})
+
+        response = {'errors': form.errors}
+        return self.render_to_error(response)
 
 
 class SendRecoveryPasswordView(GenericView):

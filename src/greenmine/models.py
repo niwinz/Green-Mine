@@ -469,12 +469,6 @@ class UserStory(models.Model):
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
-    def get_asoiciate_api_url(self):
-        # TODO: check if this url is used.
-        return ('api:user-story-asociate', (),
-            {'pslug': self.project.slug, 'iref': self.ref})
-
-    @models.permalink
     def get_drop_api_url(self):
         # TODO: check if this url is used.
         return ('api:user-story-drop', (),

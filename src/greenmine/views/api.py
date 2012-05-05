@@ -29,7 +29,15 @@ from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
 import datetime
 
+from django.core.cache import cache
+import uuid
+
 class UserListApiView(GenericView):
+    """
+    Autocomplete helper for project create/edit.
+    This autocompletes and searches users by term.
+    """
+
     @login_required
     def get(self, request):
         if "term" not in request.GET:
@@ -63,29 +71,11 @@ class UserListApiView(GenericView):
         return self.render_to_ok(context)
 
 
-class UserStoryAsociateApiView(GenericView):
-    """ Asociate user story with one milestone. """
-    @login_required
-    def get(self, request, pslug, iref):
-        us = get_object_or_404(models.UserStory, ref=iref, project__slug=pslug)
-        try:
-            mid = int(request.GET.get('milestone', ''))
-        except (ValueError, TypeError):
-            return self.render_to_error('invalid paremeters')
-        
-        if mid == 0:
-            us.milestone = None
-        else:
-            us.milestone = get_object_or_404(models.Milestone, \
-                project__slug=pslug, pk=mid)
-
-        us.tasks.update(milestone=us.milestone)
-        us.save()
-        return self.render_to_ok()
-
-        
 class I18NLangChangeApiView(GenericView):
-    """ View for set language."""
+    """ 
+    View for set language.
+    """
+
     def get(self, request):
         if 'lang' in request.GET and request.GET['lang'] \
                                     in dict(settings.LANGUAGES).keys():
@@ -98,27 +88,15 @@ class I18NLangChangeApiView(GenericView):
         return HttpResponseRedirect('/')
 
 
-from django.core.cache import cache
-import uuid
-
-class ForgottenPasswordApiView(GenericView):
-    """ TODO: send mails asyncronous with celery tasks. """
-
-    def post(self, request):
-        form = forms.ForgottenPasswordForm(request.POST)
-        if form.is_valid():
-            utils.send_recovery_email(form.user)
-            messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
-            return self.render_to_ok({'redirect_to':'/'})
-
-        response = {'errors': form.errors}
-        return self.render_to_error(response)
-
-
 class TaskAlterApiView(GenericView):
-    """ Api view for alter task status, priority and other 
-    minor modifications. """
-
+    """ 
+    Api view for alter task status, priority and other 
+    minor modifications. 
+    This is used on dashboard drag and drop.
+    """
+    # TODO: permission check
+    
+    @login_required
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
@@ -156,6 +134,7 @@ class TaskAlterApiView(GenericView):
  
 
 class TaskReasignationsApiView(GenericView):
+    # TODO: refactor
     def get(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
@@ -168,19 +147,3 @@ class TaskReasignationsApiView(GenericView):
 
         task.save()
         return self.render_to_ok()
-
-
-""" Statistics Views """
-
-class MilestoneStatsApiView(GenericView):
-    def get(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-        
-        total_tasks = milestone.tasks.all().count()
-        total_sum = sum([2 if x.status in ['completed', 'closed'] else 1 \
-            for x in milestone.tasks.exclude(status='open')])
-
-        value = (total_sum * 100)/(total_tasks*2)
-        
-        return self.render_to_ok({'ts': total_sum, 't': total_tasks, 'v':value})
