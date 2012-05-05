@@ -39,3 +39,54 @@ class LowLevelEmailTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
 
+class UserMailTests(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create(
+            username = 'test1',
+            email = 'test1@test.com',
+            is_active = True,
+            is_staff = True,
+            is_superuser = True,
+        )
+
+        self.user2 = User.objects.create(
+            username = 'test2',
+            email = 'test2@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+        )
+
+        self.user1.set_password("test")
+        self.user2.set_password("test")
+
+        self.user1.save()
+        self.user2.save()
+
+        mail.outbox = []
+
+    def test_send_recovery_password_by_staff(self):
+        url = reverse("web:users-recovery-password", args=[self.user2.pk])
+        
+        ok = self.client.login(username="test1", password="test")
+        self.assertTrue(ok)
+        
+        # pre test
+        self.assertTrue(self.user2.is_active)
+        self.assertEqual(self.user2.get_profile().token, None)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # expected redirect
+        self.assertEqual(response.redirect_chain, [('http://testserver/users/2/edit/', 302)])
+
+        # test mail sending
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Greenmine: password recovery.")
+
+        # test user model modification
+        self.user2 = User.objects.get(pk=self.user2.pk)
+        self.assertTrue(self.user2.is_active)
+        self.assertFalse(self.user2.has_usable_password())
+        self.assertNotEqual(self.user2.get_profile().token, None)
