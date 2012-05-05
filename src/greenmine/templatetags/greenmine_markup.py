@@ -25,17 +25,3 @@ def markdown_filter(value, project):
     )
     res = mark_safe(res)
     return res
-
-
-#from django.contrib.markup.templatetags.markup import restructuredtext
-#from docutils.parsers.rst import directives
-#from greenmine.utils.markup import CodeBlock
-#
-#directives.register_directive('code-block', CodeBlock)
-#
-#@register.filter(is_safe=True, name="rst")
-#def rst_filter(valie, project):
-#    pass
-#    
-#    
-#    
