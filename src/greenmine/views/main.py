@@ -47,6 +47,7 @@ class RegisterView(GenericView):
                 first_name = form.cleaned_data['first_name'],
                 last_name = form.cleaned_data['last_name'],
                 email = form.cleaned_data['email'],
+                is_active = False
             )
 
             mail.send_new_registration_mail(user)
@@ -55,6 +56,21 @@ class RegisterView(GenericView):
 
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
+
+
+class AccountActivation(GenericView):
+    def get(self, request, token):
+        try:
+            profile = Profile.objects.get(token=token)
+            profile.user.is_active = True
+            profile.user.save()
+            messages.info(request, _(u"User %(username)s is now activated!") % \
+                {'username': profile.user.username})
+
+        except Profile.DoesNotExist:
+            messages.error(request, _(u"Invalid token"))
+
+        return self.render_redirect(reverse("web:login"))
 
 
 class LoginView(GenericView):
@@ -172,9 +188,12 @@ class PasswordRecoveryView(GenericView):
             profile = profile_queryset.get()
             user = profile.user
             user.set_password(form.cleaned_data['password'])
+            #user.is_active = True
             user.save()
+
             profile.token = None
             profile.save()
+
             messages.info(request, _(u'The password has been successfully restored.'))
             return self.render_redirect(reverse('web:login'))
 

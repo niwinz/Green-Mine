@@ -17,18 +17,6 @@ from greenmine.models import *
 from greenmine import models
 
 
-class Form(forms.Form):
-    """ Custom form with some jquery validator friendly propertys. """
-    @property
-    def jquery_errors(self):
-        errors_object = {}
-        for key, value in self.errors.iteritems():
-            if isinstance(value, (list,tuple)) and len(value) > 0:
-                errors_object[key] = value[0]
-
-        return errors_object
-
-
 class CharField(DjangoCharField):
     """ jQuery-validator friendly charfield """
     def __init__(self, *args, **kwargs):
@@ -59,7 +47,7 @@ class CharField(DjangoCharField):
         return attrs
 
 
-class LoginForm(Form):
+class LoginForm(forms.Form):
     username = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'Username'))
     password = CharField(max_length=200, min_length=4, 
@@ -119,7 +107,8 @@ class RegisterForm(forms.Form):
         
         return cleaned_data
 
-class ForgottenPasswordForm(Form):
+
+class ForgottenPasswordForm(forms.Form):
     email = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'E-Mail'))
 
@@ -138,7 +127,7 @@ class ForgottenPasswordForm(Form):
         return cleaned_data
 
 
-class PasswordRecoveryForm(Form):
+class PasswordRecoveryForm(forms.Form):
     password = forms.CharField(max_length=200, widget=forms.PasswordInput,
         label=_(u'Enter your new password'))
     password2 = forms.CharField(max_length=200, widget=forms.PasswordInput,
@@ -323,7 +312,7 @@ class QuestionResponseForm(forms.ModelForm):
         exclude = ('owner', 'question', 'modified_date',)
 
 
-class CommentForm(Form):
+class CommentForm(forms.Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
     
