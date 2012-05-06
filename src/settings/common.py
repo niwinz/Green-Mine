@@ -26,6 +26,7 @@ LANGUAGES = (
 )
 
 MANAGERS = ADMINS
+DISABLE_REGISTRATION = False
 
 DATABASES = {
     'default': {

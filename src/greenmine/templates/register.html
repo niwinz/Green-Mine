@@ -4,6 +4,7 @@
 
 {% block middle-box %}
 <div id="login">
+    {% include "messages.html" %}
     <form id="register-form" method="post" action=""  >
         {% csrf_token %}
         <h2>{% trans "Register" %}</h2>

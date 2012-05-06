@@ -35,11 +35,17 @@ class RegisterView(GenericView):
     template_path = 'register.html'
 
     def get(self, request):
+        if settings.DISABLE_REGISTRATION:
+            messages.warning(request, _(u"Registration system is disabled."))
+
         form = forms.RegisterForm()
         context = {'form':form}
         return self.render_to_response(self.template_path, context)
 
     def post(self, request):
+        if settings.DISABLE_REGISTRATION:
+            return self.render_redirect(reverse('web:register'))
+
         form = forms.RegisterForm(request.POST)
         if form.is_valid():
             user = User(
@@ -90,8 +96,12 @@ class LoginView(GenericView):
     def get(self, request, *args, **kwargs):
         login_form = forms.LoginForm(request=request)
 
-        return self.render_to_response(self.template_name, 
-            {'form': login_form})
+        context = {
+            'form': login_form,
+            'register_disabled': settings.DISABLE_REGISTRATION,
+        }
+
+        return self.render_to_response(self.template_name, context)
 
     def post(self, request):
         login_form = forms.LoginForm(request.POST, request=request)
