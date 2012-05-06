@@ -1131,6 +1131,7 @@ class ProjectGeneralSettings(GenericView):
 
         if form.is_valid():
             project.meta_category_color = form.colors_data
+            project.markup = form.cleaned_data['markup']
             project.save()
 
             messages.info(request, _(u"Project preferences saved successfull"))

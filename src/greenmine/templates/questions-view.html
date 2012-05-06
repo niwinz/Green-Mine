@@ -34,7 +34,7 @@
         </div>
         <div class="question-body">
             <div class="content">
-                {{ question.content|markdown:project.slug }}
+                {{ question.content|markup:project }}
             </div>
         </div>
 
@@ -68,4 +68,12 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block bottom-headers %}
+    {% if project.markup == 'rst' %}
+        {% include "modules/syntaxhighlighter.html" %}
+    {% else %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/friendly.css" type="text/css" media="handheld, all" />
+    {% endif %}
 {% endblock %}

@@ -20,9 +20,8 @@ ORG_ROLE_CHOICES = (
 )
 
 MARKUP_TYPE = (
-    ('', 'None'),
-    ('markdown', _(u'Markdown')),
-    ('rest', _('Restructured Text')),
+    ('md', _(u'Markdown')),
+    ('rst', _('Restructured Text')),
 )
 
 US_STATUS_CHOICES = (
@@ -180,6 +179,7 @@ class Project(models.Model):
     fixed_story_points = models.IntegerField(default=0, null=True)
     meta_category_list = ListField(null=True, default=[], editable=False)
     meta_category_color = DictField(null=True, default={}, editable=False)
+    markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
 
     objects = ProjectManager()
 

@@ -8,16 +8,16 @@
 <div id="my-profile" class="form-container">
     {% include "messages.html" %}
 
+    <h1>{% trans "Project general settings" %}</h1>
+    <br />
+
     <form id="edit-project-settings" method="post"
         action="{{ full_current_url }}" class="inline">
         {% csrf_token %}
 
-
-        <div class="form-legend">
-            <span>{% trans "Category colors:" %}</span>
-        </div>
-
-        <fieldset class="colors-form">
+        <h3>{% trans "Category colors:" %}</h3>
+        
+        <div class="colors-section">
             {% with pc=project.meta_category_color %}
             <div class="selected-colors" {% if not pc %}style="display: none"{% endif %}>
                 <h3>{% trans "Current colors:" %}</h3>
@@ -46,9 +46,15 @@
                 </div>
             </div>
             {{ form.colors_hidden }}
-        </fieldset>
+        </div>
 
-        <div class="width100 float-left">
+        <h3>{% trans "Markup system:" %}</h3>
+
+        <div class="markup-section">
+            {{ form.markup }}
+        </div>
+
+        <div class="width100 float-left" style="margin-top:20px">
             <input class="btn01" type="submit" value="Guardar" />
             <span class="ajax-loader"></span>        
         </div>

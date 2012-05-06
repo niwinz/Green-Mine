@@ -276,6 +276,9 @@ class ProjectPersonalSettingsForm(forms.Form):
 class ProjectGeneralSettingsForm(forms.Form):
     colors_hidden = forms.CharField(max_length=5000, required=False,
         widget=forms.HiddenInput)
+    
+    markup = forms.ChoiceField(required=True,  choices=models.MARKUP_TYPE)
+        
 
     def _validate_colors(self, data):
         return True
