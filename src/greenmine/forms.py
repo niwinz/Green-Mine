@@ -301,6 +301,10 @@ class MilestoneForm(forms.ModelForm):
         model = models.Milestone
         fields = ['name', 'estimated_finish']
 
+    def __init__(self, *args, **kwargs):
+        super(MilestoneForm, self).__init__(*args, **kwargs)
+        self.fields['estimated_finish'].widget.attrs.update({'autocomplete':'off'})
+
 
 class UserStoryForm(forms.ModelForm):
     class Meta:
