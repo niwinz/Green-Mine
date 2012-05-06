@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Green-Mine'
+project = u'greenmine'
 copyright = u'2012, Andrei Antoukh'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -92,6 +92,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'default'
+html_theme = 'celery'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -100,6 +101,8 @@ html_theme = 'default'
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
+html_theme_path = ["_theme"]
+
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -132,6 +135,13 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
+html_sidebars = {
+    'index': ['sidebarlogo.html', 'sidebarintro.html',
+              'sourcelink.html', 'searchbox.html'],
+    '**': ['sidebarlogo.html', 'localtoc.html', 'relations.html',
+           'sourcelink.html', 'searchbox.html'],
+}
+
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -164,7 +174,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Green-Minedoc'
+htmlhelp_basename = 'greenminedoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,7 +193,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Green-Mine.tex', u'Green-Mine Documentation',
+  ('index', 'greenmine.tex', u'greenmine documentation',
    u'Andrei Antoukh', 'manual'),
 ]
 
@@ -213,7 +223,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'green-mine', u'Green-Mine Documentation',
+    ('index', 'green-mine', u'greenmine documentation',
      [u'Andrei Antoukh'], 1)
 ]
 
@@ -227,8 +237,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Green-Mine', u'Green-Mine Documentation',
-   u'Andrei Antoukh', 'Green-Mine', 'One line description of project.',
+  ('index', 'greenmine', u'greenmine documentation',
+   u'Andrei Antoukh', 'greenmine', 'One line description of project.',
    'Miscellaneous'),
 ]
 
