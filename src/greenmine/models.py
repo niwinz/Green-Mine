@@ -25,16 +25,6 @@ MARKUP_TYPE = (
     ('rest', _('Restructured Text')),
 )
 
-#US_STATUS_CHOICES = (
-#    ('new', _(u'New')),
-#    ('accepted', _(u'In progress')),
-#    ('fixed', _(u'Fixed')),
-#    ('invalid', _(u'Invalid')),
-#    ('wontfix', _(u'Wontfix')),
-#    ('workaround', _(u'Workaround')),
-#    ('duplicate', _(u'Duplicated')),
-#)
-
 US_STATUS_CHOICES = (
     ('open', _(u'Open/New')),
     ('progress', _(u'In progress')),
