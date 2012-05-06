@@ -80,7 +80,7 @@ Changed {{ tuntil }} ago by {{ name }}
                         </ul>
                         {% else %}
                         <div class="comment">
-                            {{ change.data.comment|markdown:project.slug }}
+                            {{ change.data.comment|markup:project }}
                         </div>
                         <div class="comment-attachments">
                             {% with files=change.attachments.all %}
