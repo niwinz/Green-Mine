@@ -91,6 +91,11 @@ class RegisterForm(forms.Form):
         required=True, label=_(u"Last name"))
     email = forms.EmailField(max_length=200,
         required=True, label=_(u"Email"))
+    
+    password = forms.CharField(max_length=200, widget=forms.PasswordInput,
+        label=_(u'Enter your new password'))
+    password2 = forms.CharField(max_length=200, widget=forms.PasswordInput,
+        label=_(u'Retype the password'))
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -104,6 +109,14 @@ class RegisterForm(forms.Form):
                 del cleaned_data['username']
             except User.DoesNotExist:
                 pass
+
+        if 'password2' in cleaned_data and 'password' in cleaned_data:
+            if cleaned_data['password'] != cleaned_data['password2']:
+                self._errors['password2'] = self.error_class(
+                    [_(u'Passwords do not match')]
+                )
+                del cleaned_data['password2']
+                del cleaned_data['password']
         
         return cleaned_data
 

@@ -28,6 +28,19 @@
                 {{ form.email.errors }}
                 {{ form.email }}
             </div>
+
+            <h3>{% trans "Password" %}</h3>
+
+            <div class="form-field">
+                <label>{{ form.password.label }}</label>
+                {{ form.password.errors }}
+                {{ form.password }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.password2.label }}</label>
+                {{ form.password2.errors }}
+                {{ form.password2 }}
+            </div>
             <div class="form-field">
                 <input class="btn01" type="submit" value="{% trans "Register now" %}" />
                 <span class="ajax-loader"></span>        

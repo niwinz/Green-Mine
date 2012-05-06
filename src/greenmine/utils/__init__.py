@@ -48,8 +48,6 @@ def set_token(user):
     profile = user.get_profile()
     profile.token = token
 
-    user.set_unusable_password()
-    
     user.save()
     profile.save()
     return token

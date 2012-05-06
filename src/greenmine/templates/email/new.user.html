@@ -3,7 +3,6 @@
 
 <p>{% trans "Hi" %} {{ user.get_full_name }}.</p>
 <p>{% trans "Thanks for signing in Greenmine! To set your new password, follow this link:" %}<br />
-    <a href="{{ current_host }}{% url 'web:password-recovery' token %}">{{ current_host }}{% url 'web:password-recovery' token %}</a></p>
-
+    <a href="{{ current_host }}{% url 'web:activate' token %}">{{ current_host }}{% url 'web:activate' token %}</a></p>
 <p><br />
 {% trans "Greenmine Team" %}</p>

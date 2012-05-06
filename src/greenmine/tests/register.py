@@ -7,32 +7,6 @@ from django.utils import simplejson as json
 
 from django.contrib.auth.models import User
 
-class RegisterTests(TestCase):
-    def tearDown(self):
-        mail.outbox = []
-        User.objects.all().delete()
-
-    def test_simple_register(self):
-        register_params = {
-            'username': 'test',
-            'first_name': 'Foo',
-            'last_name': 'Bar',
-            'email': 'foo@bar.com',
-        }
-
-        register_url = reverse('web:register')
-        response = self.client.post(register_url, register_params)
-        self.assertEqual(response.status_code, 302)
-
-        instance = User.objects.get()
-        
-        self.assertTrue(instance.get_profile())
-        self.assertFalse(instance.has_usable_password())
-
-        self.assertEqual(instance.username, 'test')
-        self.assertEqual(len(mail.outbox), 1)
-
-
 class UserRelatedTests(TestCase):
     def create_sample_user(self):
         instance = User.objects.create(
@@ -50,8 +24,43 @@ class UserRelatedTests(TestCase):
         return instance
 
     def tearDown(self):
+        mail.outbox = []
         self.client.logout()
         User.objects.all().delete()
+
+    def test_simple_register_and_activate(self):
+        register_params = {
+            'username': 'test',
+            'first_name': 'Foo',
+            'last_name': 'Bar',
+            'email': 'foo@bar.com',
+            'password': '123123',
+            'password2': '123123',
+        }
+
+        register_url = reverse('web:register')
+        response = self.client.post(register_url, register_params)
+        self.assertEqual(response.status_code, 302)
+
+        user = User.objects.get(username='test')
+        
+        self.assertTrue(user.get_profile())
+    
+        self.assertTrue(user.has_usable_password())
+        self.assertFalse(user.is_active)
+        
+        # expected send 1 email
+        self.assertEqual(len(mail.outbox), 1)
+
+        activate_url = reverse('web:activate', args=[user.get_profile().token])
+        response = self.client.get(activate_url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/login/', 302)])
+        
+        user = User.objects.get(username='test')
+        self.assertTrue(user.is_active)
+        self.assertEqual(user.get_profile().token, None)
 
     def test_profile_view(self):
         user = self.create_sample_user()

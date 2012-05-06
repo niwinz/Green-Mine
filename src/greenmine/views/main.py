@@ -42,16 +42,22 @@ class RegisterView(GenericView):
     def post(self, request):
         form = forms.RegisterForm(request.POST)
         if form.is_valid():
-            user = User.objects.create(
+            user = User(
                 username = form.cleaned_data['username'],
                 first_name = form.cleaned_data['first_name'],
                 last_name = form.cleaned_data['last_name'],
                 email = form.cleaned_data['email'],
-                is_active = False
+                is_active = False,
+                is_staff = False,
+                is_superuser = False,
             )
-
+            
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            
             mail.send_new_registration_mail(user)
             messages.info(request, _(u"Validation message was sent successfully."))
+
             return self.render_redirect(reverse('web:login'))
 
         context = {'form': form}
@@ -61,13 +67,17 @@ class RegisterView(GenericView):
 class AccountActivation(GenericView):
     def get(self, request, token):
         try:
-            profile = Profile.objects.get(token=token)
+            profile = models.Profile.objects.get(token=token)
             profile.user.is_active = True
+            profile.token = None
+
             profile.user.save()
+            profile.save()
+
             messages.info(request, _(u"User %(username)s is now activated!") % \
                 {'username': profile.user.username})
 
-        except Profile.DoesNotExist:
+        except models.Profile.DoesNotExist:
             messages.error(request, _(u"Invalid token"))
 
         return self.render_redirect(reverse("web:login"))
@@ -115,6 +125,9 @@ class RememberPasswordView(GenericView):
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
+            form.user.set_unusable_password()
+            form.user.save()
+
             mail.send_recovery_email(form.user)
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
             return self.render_to_ok({'redirect_to':'/'})
@@ -132,6 +145,8 @@ class SendRecoveryPasswordView(GenericView):
     @staff_required
     def get(self, request, uid):
         user = get_object_or_404(User, pk=uid)
+        user.set_unusable_password()
+        user.save()
         mail.send_recovery_email(user)
 
         messages.info(request, _(u"Recovery password email are sended"))
@@ -188,7 +203,6 @@ class PasswordRecoveryView(GenericView):
             profile = profile_queryset.get()
             user = profile.user
             user.set_password(form.cleaned_data['password'])
-            #user.is_active = True
             user.save()
 
             profile.token = None

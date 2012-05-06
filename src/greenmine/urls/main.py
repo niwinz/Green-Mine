@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     url(r'^remember-password/$', main.RememberPasswordView.as_view(), name='remember-password'),
 
     url(r'^register/$', main.RegisterView.as_view(), name='register'),
+    url(r'^activate/(?P<token>[\d\w\-]+)/$',
+        main.AccountActivation.as_view(), name='activate'),
 
     url(r'^profile/$', 
         main.ProfileView.as_view(), name='profile'),
