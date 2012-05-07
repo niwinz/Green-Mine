@@ -173,7 +173,7 @@ $(document).ready(function(){
                         return true;
                     } else {
                         messages.reset();
-                        messages._send('error', gettext('You must specify at least one person to the project'));
+                        messages.send('error', gettext('You must specify at least one person to the project'));
                         return false;
                     }
                 }
