@@ -34,7 +34,7 @@
                 {% endif %}
             </td>
             <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | 
-                <a class="delete" rel="{{ project.get_delete_api_url }}" href="">{% trans "Delete" %}</a>
+                <a class="delete" rel="{{ project.get_delete_url }}" href="">{% trans "Delete" %}</a>
             </td>
         </tr>
         {% endfor %}
@@ -44,5 +44,9 @@
     {% endif %}
 
     {% include "paginator.html" %}
+</div>
+
+<div class="delete-project-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this project?" %}
 </div>
 {% endblock %}

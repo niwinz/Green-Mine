@@ -111,7 +111,6 @@ class ProjectRelatedTests(TestCase):
         response = self.client.get(project2.get_general_settings_url())
         self.assertEqual(response.status_code, 403)
 
-
     def test_home_projects_view(self):
         home_url = reverse('web:projects')
         response = self.client.get(home_url)
@@ -151,6 +150,20 @@ class ProjectRelatedTests(TestCase):
         self.assertEqual(response.status_code, 200)
         jdata = json.loads(response.content)
         self.assertFalse(jdata['valid'])
+
+    def test_delete_project(self):
+        self.test_create_project()
+
+        project = Project.objects.get(name='test-project')
+
+        response = self.client.post(project.get_delete_url(), {})
+        self.assertEqual(response.status_code, 200)
+        
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+        self.assertEqual(Project.objects.all().count(), 0)
 
     def test_normal_user_projects(self):
         """

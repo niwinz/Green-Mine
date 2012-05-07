@@ -184,9 +184,26 @@ $(document).ready(function(){
     if($('#projects').length){
         $('.table01 a.delete').click(function(e){
             var self = $(this);
-            $.post($(this).attr('rel'), function(data){
-                self.parents('tr').remove();
+            //self.closest('.un-us-item').css('border', '1px solid red');
+            
+            var buttons = {};
+            buttons[gettext('Delete')] = function() {
+                var $this = $(this);
+                $.post(self.attr('rel'), {}, function(data) {
+                    $this.dialog('close');
+                    self.parents('tr').remove();
+                });
+            };
+            buttons[gettext('Cancel')] = function() {
+                $(this).dialog('close');
+            };
+
+            $(".delete-project-dialog").dialog({
+                modal: true,
+                width: '220px',
+                buttons: buttons
             });
+
             e.preventDefault();
         });
         

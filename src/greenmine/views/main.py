@@ -548,6 +548,19 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         return self.render_to_ok({'redirect_to':reverse('web:projects')})  
 
 
+class ProjectDelete(GenericView):
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', ('view', 'edit', 'delete')),
+        ])
+        
+        project.delete()
+        return self.render_to_ok({})
+
+
 class MilestoneCreateView(GenericView):
     template_name = 'milestone-create.html'
     menu = []
@@ -963,6 +976,7 @@ class TaskEdit(GenericView):
         }
         
         return self.render_to_response(self.template_path, context)
+
 
 
 class TaskDelete(GenericView):

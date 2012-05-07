@@ -240,12 +240,12 @@ class Project(models.Model):
         return ('web:user-story-create', (), {'pslug': self.slug})
 
     @models.permalink
-    def get_delete_api_url(self):
-        return ('api:project-delete', (), {'pslug': self.slug})
-
-    @models.permalink
     def get_edit_url(self):
         return ('web:project-edit', (), {'pslug': self.slug})        
+
+    @models.permalink
+    def get_delete_url(self):
+        return ('web:project-delete', (), {'pslug': self.slug})
 
     @models.permalink
     def get_export_url(self):
