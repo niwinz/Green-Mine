@@ -13,7 +13,21 @@ from . import Singleton, set_token
 MAILS = {
     'new.registration': 'email/new.user.html',
     'password.recovery': 'email/forgot.password.html',
+    'user.story.created': 'email/user.story.created.html',
 }
+
+
+def send_user_story_create_mail(users):
+    context = {
+        'current_host': settings.HOST,
+    }
+
+    params = {'subject': ugettext(u"Greenmine: new user story!")}
+
+    for user in users:
+        params.update({'to': [user.email]})
+        send("user.story.created", context, **params)
+        
 
 def send_new_registration_mail(user):
     context = {

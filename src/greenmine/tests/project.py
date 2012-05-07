@@ -394,19 +394,27 @@ class UserStoriesTests(TestCase):
             is_superuser = True,
         )
 
+        self.user1.set_password("test")
+        self.user1.save()
+
         self.user2 = User.objects.create(
             username = 'test2',
             email = 'test2@test.com',
             is_active = True,
             is_staff = False,
             is_superuser = False,
+            password = self.user1.password,
         )
 
-        self.user1.set_password("test")
-        self.user2.set_password("test")
+        self.user3 = User.objects.create(
+            username = 'test3',
+            email = 'test3@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+            password = self.user1.password,
+        )
 
-        self.user1.save()
-        self.user2.save()
 
         self.project1 = Project.objects\
             .create(name='test1', description='test1', owner=self.user1, slug='test1')
@@ -416,6 +424,7 @@ class UserStoriesTests(TestCase):
 
         self.project1.add_user(self.user1, 'developer')
         self.project2.add_user(self.user2, 'developer')
+        self.project2.add_user(self.user3, 'developer')
 
         self.milestone1 = Milestone.objects.create(
             project = self.project1,
@@ -504,7 +513,6 @@ class UserStoriesTests(TestCase):
         self.assertEqual(self.milestone2.user_stories.count(), 0)
         self.assertEqual(self.project2.user_stories.count(), 1)
         self.assertEqual(self.project2.tasks.count(), 1)
-
 
     def test_user_story_create_bad_status(self):
         self.client.login(username="test2", password="test")

@@ -655,6 +655,18 @@ class UserStoryView(GenericView):
 class UserStoryCreateView(GenericView):
     template_name = "user-story-create.html"
 
+    #def send_emails(self, project):
+    #    participants = set([project.owner])
+    #    participants.update(
+    #        list(project.participants.all())
+    #    )
+
+    #    valid_participants = []
+    #    for participant in participants
+
+    #    mail.send_user_story_create_mail(participants)
+
+
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -691,6 +703,8 @@ class UserStoryCreateView(GenericView):
             milestone = get_object_or_404(project.milestones, pk=mid)
         else:
             milestone = None
+
+        #self.send_emails(project)
 
         form = forms.UserStoryForm(request.POST, initial={'milestone': milestone})
 
