@@ -32,15 +32,17 @@ class ZMQService(object):
     def zmq(self):
         return import_module('zmq')
 
-    def start(self, socket_path=settings.GREENQUEUE_BIND_ADDRESS):
+    def start(self, socket=None):
         # load all modules
         self.load_modules()
         
-        # bind socket
-        ctx = self.zmq().Context.instance()
-        socket = ctx.socket(self.zmq().PULL)
-        socket.bind(options['socket'])
-        log.info("greenqueue: now listening on %s. (pid %s)", socket_path, os.getpid())
+        # bind socket if need
+        if socket is None:
+            ctx = self.zmq().Context.instance()
+            socket = ctx.socket(self.zmq().PULL)
+            socket.bind(settings.GREENQUEUE_BIND_ADDRESS)
+            log.info("greenqueue: now listening on %s. (pid %s)",
+                settings.GREENQUEUE_BIND_ADDRESS, os.getpid())
 
         # recv loop
         while True:

@@ -176,8 +176,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_gravatar',
     'greenmine',
-    'greenmine_mobile',
     'django_smailer',
+    'greenqueue',
     'html5forms',
 ]
 

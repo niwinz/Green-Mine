@@ -11,12 +11,12 @@ import os
 
 log = logging.getLogger('greenqueue')
 
-from greenqueue.settings import GREENQUEUE_BIND_ADDRESS, GREENQUEUE_TASK_MODULES
-
+from greenqueue import settings
+from greenqueue.core import load_class
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option('--socket', action="store", dest="socket", default=GREENQUEUE_BIND_ADDRESS,
+        make_option('--socket', action="store", dest="socket", default=settings.GREENQUEUE_BIND_ADDRESS,
             help="Tells greenqueue server to use this zmq push socket path instead a default."),
     )
 
@@ -24,22 +24,6 @@ class Command(BaseCommand):
     args = "[]"
 
     def handle(self, *args, **options):
-        ctx = zmq.Context.instance()
-
-        socket = ctx.socket(zmq.SUB)
-        socket.setsockopt(zmq.SUBSCRIBE, "")
-        socket.bind(options['socket'])
-        
-        log.info("greenqueue: now listening on %s. (pid %s)", options['socket'], os.getpid())
-
-        #try:
-        #    while True:
-        #        messages = socket.recv_pyobj()
-        #        log.debug("smailer-server: now sending %s mails.", len(messages))
-        #        connection = get_connection(backend=SMAILER_EMAIL_BACKEND)
-        #        connection.send_messages(messages)
-
-        #except KeyboardInterrupt:
-        #    log.debug("smailer-server: stoping workers.")
-        #    socket.close()
-        #    sys.exit(0)
+        settings.GREENQUEUE_BIND_ADDRESS = options['socket']
+        service_handler = load_class(settings.GREENQUEUE_BACKEND)()
+        service_handler.start()
