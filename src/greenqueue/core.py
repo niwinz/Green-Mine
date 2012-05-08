@@ -90,3 +90,4 @@ class Library(object):
 
 
 library = Library
+register = Library()

@@ -22,6 +22,8 @@ class AsyncResult(object):
         finally:
             self.ready = True
 
+        return self.result
+
     def is_ready(self):
         return self.ready
     
