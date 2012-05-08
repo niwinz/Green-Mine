@@ -28,6 +28,7 @@
         <div class="form-legend">
             <span>{% trans "Profile:" %} {{ uobj.get_full_name }}</span>
         </div>
+
         <form id="edit-profile-form" method="post" enctype="multipart/form-data"
             action="{{ current_url }}" class="inline">
             {% csrf_token %}
@@ -42,20 +43,34 @@
                 {{ form.last_name.errors }}
             </div>
             <div class="form-field">
-                <label>{{ form.username.label }}</label>
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-            <div class="form-field">
                 <label>{{ form.email.label }}</label>
                 {{ form.email }}
                 {{ form.email.errors }}
             </div>    
+            <div class="form-field">
+                <label>{{ form.username.label }}</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>    
+            <div class="form-field">
+                <label>{{ form.is_active.label }}</label>
+                {{ form.is_active }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.is_staff.label }}</label>
+                {{ form.is_staff }}
+            </div>
+            <div class="form-field">
+                <label>{{ form.is_superuser.label }}</label>
+                {{ form.is_superuser }}
+            </div>
+
             <div class="form-field width100">
                 <label>{{ form.description.label }}</label>
                 {{ form.description }}
                 {{ form.description.errors }}
             </div>
+
             <div class="form-field">
                 {% if not uobj.get_profile.photo %}
                     {% gravatar uobj.email 50 %}
@@ -70,7 +85,7 @@
             <div class="width100 float-left">
                 <input class="btn01" type="submit" value="{% trans "Save" %}" />
                 <a href="{% url 'web:users-recovery-password' uid=uobj.id %}" class="btn01">{% trans "Send password recovery mail" %}</a>
-                <span class="ajax-loader"></span>        
+                <span class="ajax-loader"></span>
             </div>
         </form>
     </div>
