@@ -5,6 +5,9 @@ from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 from greenmine.utils import Singleton
 
+from . import settings
+from . import result
+
 import logging
 log = logging.getLogger('greenqueue')
 
@@ -72,3 +75,18 @@ class Library(object):
     def task_function(self, func):
         self.add_to_class(getattr(func, "_decorated_function", func).__name__, func)
         return func
+
+    @classmethod
+    def send_task(cls, name, args=[], kwargs={}):
+        # load main backend
+        backend_class = load_class(settings.GREENQUEUE_BACKEND)
+
+        # obtain client instance
+        client = backend_class.get_client_instance()
+
+        # send task to workers
+        uuid = client.send(name, args, kwargs)
+        return result.AsyncResult(uuid)
+
+
+library = Library
