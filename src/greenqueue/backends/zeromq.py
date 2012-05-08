@@ -13,6 +13,7 @@ class ZMQService(object):
     def __init__(self):
         self.lib = Library
         self.storage = get_storage_backend()
+        self.socket = None
 
     @classmethod
     def setup_gevent_spawn(cls):
@@ -43,11 +44,17 @@ class ZMQService(object):
             socket.bind(settings.GREENQUEUE_BIND_ADDRESS)
             log.info("greenqueue: now listening on %s. (pid %s)",
                 settings.GREENQUEUE_BIND_ADDRESS, os.getpid())
+        
+        self.socket = socket
 
         # recv loop
         while True:
             message = socket.recv_pyobj()
             self.handle_message(message)
+
+    def close(self):
+        if self.socket is not None:
+            self.socket.close()
 
     def validate_message(self, message):
         name = None

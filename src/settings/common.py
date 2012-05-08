@@ -249,7 +249,7 @@ LOGGING = {
             'level':'INFO',
             'propagate': False,
         },
-        'greenmine.mail.server': {
+        'greenqueue': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,

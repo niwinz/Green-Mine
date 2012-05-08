@@ -11,12 +11,12 @@ import os
 
 log = logging.getLogger('greenqueue')
 
-from greenqueue import settings
+from greenqueue import settings as gq_settings
 from greenqueue.core import load_class
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option('--socket', action="store", dest="socket", default=settings.GREENQUEUE_BIND_ADDRESS,
+        make_option('--socket', action="store", dest="socket", default=gq_settings.GREENQUEUE_BIND_ADDRESS,
             help="Tells greenqueue server to use this zmq push socket path instead a default."),
     )
 
@@ -24,6 +24,11 @@ class Command(BaseCommand):
     args = "[]"
 
     def handle(self, *args, **options):
-        settings.GREENQUEUE_BIND_ADDRESS = options['socket']
-        service_handler = load_class(settings.GREENQUEUE_BACKEND)()
-        service_handler.start()
+        print 1111
+        gq_settings.GREENQUEUE_BIND_ADDRESS = options['socket']
+        service_handler = load_class(gq_settings.GREENQUEUE_BACKEND)()
+
+        try:
+            service_handler.start()
+        except KeyboardInterrupt:
+            service_handler.close()
