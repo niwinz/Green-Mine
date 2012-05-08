@@ -28,6 +28,7 @@ class ZMQService(object):
 
     def load_modules(self):
         for modpath in settings.GREENQUEUE_TASK_MODULES:
+            log.debug("greenqueue: loading module %s", modpath)
             import_module(modpath)
 
     def zmq(self):

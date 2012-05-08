@@ -5,6 +5,10 @@ from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 from greenmine.utils import Singleton
 
+import logging
+log = logging.getLogger('greenqueue')
+
+
 def load_class(path):
     """
     Load class from path.
@@ -41,6 +45,7 @@ class Library(object):
 
     @classmethod
     def add_to_class(cls, name, func):
+        log.debug("greenqueue: library registring method '%s'", name)
         cls.__tasks__[name] = func
         return func
 
@@ -59,11 +64,11 @@ class Library(object):
                 return dec
         elif name is not None and compile_function is not None:
             # register.tag('somename', somefunc)
-            self._tasks[name] = compile_function
+            self.add_to_class(name, compile_function)
             return compile_function
         else:
             raise ImproperlyConfigured("invalid task registration")
 
     def task_function(self, func):
-        self._tasks[getattr(func, "_decorated_function", func).__name__] = func
+        self.add_to_class(getattr(func, "_decorated_function", func).__name__, func)
         return func

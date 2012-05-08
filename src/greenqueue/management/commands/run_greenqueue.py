@@ -24,7 +24,6 @@ class Command(BaseCommand):
     args = "[]"
 
     def handle(self, *args, **options):
-        print 1111
         gq_settings.GREENQUEUE_BIND_ADDRESS = options['socket']
         service_handler = load_class(gq_settings.GREENQUEUE_BACKEND)()
 
