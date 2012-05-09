@@ -19,7 +19,7 @@
     <div id="footer">
         <p>
             {% for code, name in LANGUAGES %}
-            <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ name }}</a>
+            <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ code }}</a>
             {% endfor %}
             | Powered by Greenmine © 2011 | {% trans "Version" %}: {{ version }}
         </p>
