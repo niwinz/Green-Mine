@@ -176,8 +176,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_gravatar',
     'greenmine',
-    'greenmine_mobile',
     'django_smailer',
+    'greenqueue',
     'html5forms',
 ]
 
@@ -194,6 +194,9 @@ LOGGING = {
     'formatters': {
         'simple': {
             'format': '%(levelname)s:%(asctime)s:%(module)s %(message)s'
+        },
+        'null': {
+            'format': '%(message)s',
         },
     },
     'handlers': {
@@ -215,7 +218,7 @@ LOGGING = {
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
-            'formatter': 'simple',
+            'formatter': 'null',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -249,7 +252,7 @@ LOGGING = {
             'level':'INFO',
             'propagate': False,
         },
-        'greenmine.mail.server': {
+        'greenqueue': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
