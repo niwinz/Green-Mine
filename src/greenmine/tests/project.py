@@ -3,7 +3,6 @@
 from django.test import TestCase
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
 
 from django.contrib.auth.models import User
 from ..models import *
@@ -11,6 +10,7 @@ from ..models import *
 from greenmine import permissions as perms
 from django.utils import timezone
 import datetime
+import json
 
 
 class SimplePermissionMethodsTest(TestCase):

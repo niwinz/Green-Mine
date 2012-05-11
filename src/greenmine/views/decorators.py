@@ -3,8 +3,8 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson
 from functools import wraps
+import json
 
 from superview.views import LazyEncoder
 
@@ -16,7 +16,7 @@ def login_required(view_func):
         
         if request.is_ajax():
             response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
-            response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
+            response_data = json.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
             return HttpResponse(response_data, mimetype='text/plain')
         
         return HttpResponseRedirect(settings.LOGIN_URL)
@@ -31,7 +31,7 @@ def staff_required(view_func):
 
         if request.is_ajax():
             response_dict = {'valid': False, 'errors':[_(u"Permission denied.")]}
-            response_data = simplejson.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
+            response_data = json.dumps(response_dict, cls=LazyEncoder, indent=4, sort_keys=True)
             return HttpResponse(response_data, mimetype='text/plain')
         
         return HttpResponseRedirect(settings.LOGIN_URL)

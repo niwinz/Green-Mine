@@ -3,7 +3,8 @@
 from django.test import TestCase
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
+
+import json
 
 from django.contrib.auth.models import User
 

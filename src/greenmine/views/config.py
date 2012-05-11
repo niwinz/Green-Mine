@@ -8,7 +8,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
-from django.utils import simplejson
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext, loader
@@ -22,8 +21,10 @@ from .decorators import login_required
 from .. import models, forms
 
 from django.core import serializers
-from django.utils import simplejson as json
+
 import zipfile
+import json
+
 from StringIO import StringIO
 
 class AdminProjectsView(GenericView):

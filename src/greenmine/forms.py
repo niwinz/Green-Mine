@@ -2,7 +2,6 @@
 
 from django import forms
 from django.conf import settings
-from django.utils import simplejson
 from django.contrib import messages
 
 from django.utils.translation import ugettext_lazy as _
@@ -11,10 +10,10 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
-from django.utils import simplejson
-
 from greenmine.models import *
 from greenmine import models
+
+import json
 
 
 class CharField(DjangoCharField):
@@ -288,7 +287,7 @@ class ProjectGeneralSettingsForm(forms.Form):
         
         self.colors_data = {}
         if 'colors_hidden' in cleaned_data and cleaned_data['colors_hidden'].strip():
-            self.colors_data = simplejson.loads(cleaned_data['colors_hidden'])
+            self.colors_data = json.loads(cleaned_data['colors_hidden'])
             if not self._validate_colors(self.colors_data):
                 self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
                 del cleaned_data['colors_hidden']

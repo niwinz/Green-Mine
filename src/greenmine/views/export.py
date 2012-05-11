@@ -12,7 +12,6 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson
 from django.utils.encoding import force_unicode
 from django.views.decorators.cache import cache_page
 
