@@ -1597,18 +1597,66 @@ class WikiPageEditView(GenericView):
 
         form = forms.WikiPageEditForm(request.POST, instance=wikipage)
         if form.is_valid():
-            wikipage = form.save(commit=False)
-            if not wikipage.slug:
-                wikipage.slug = models.slugify_uniquely(wslug, wikipage.__class__)
+            wikipage_new = form.save(commit=False)
 
-            if not wikipage.project_id:
-                wikipage.project = project
+            if wikipage is not None:
+                old_wikipage = models.WikiPage.objects.get(pk=wikipage.pk)
+                history_entry = models.WikiPageHistory(
+                    wikipage = old_wikipage,
+                    content = old_wikipage.content,
+                    owner = old_wikipage.owner,
+                    created_date = old_wikipage.created_date,
+                )
+                history_entry.save()
+            
+            if not wikipage_new.slug:
+                wikipage_new.slug = models.slugify_uniquely(wslug, wikipage_new.__class__)
 
-            wikipage.save()
-            return self.render_redirect(wikipage.get_view_url())
+            if not wikipage_new.project_id:
+                wikipage_new.project = project
+
+            wikipage_new.owner = request.user
+            wikipage_new.save()
+            return self.render_redirect(wikipage_new.get_view_url())
 
         context = {
             'form': form,
             'project': project,
+        }
+        return self.render_to_response(self.template_path, context)
+
+
+class WikiPageHistory(GenericView):
+    menu = ['wiki']
+    template_path = 'wiki-page-history.html'
+
+    @login_required
+    def get(self, request, pslug, wslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
+
+        context = {
+            'entries': wikipage.history_entries.order_by('created_date'),
+            'wikipage': wikipage,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_path, context)
+
+
+class WikiPageHistoryView(GenericView):
+    menu = ['wiki']
+    template_path = 'wiki-page-history-view.html'
+    
+    @login_required
+    def get(self, request, pslug, wslug, hpk):
+        project = get_object_or_404(models.Project, slug=pslug)
+        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
+        history_entry = get_object_or_404(wikipage.history_entries, pk=hpk)
+        
+        context = {
+            'project': project,
+            'wikipage': wikipage,
+            'history_entry': history_entry,
         }
         return self.render_to_response(self.template_path, context)

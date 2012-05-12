@@ -10,3 +10,12 @@
 .wiki-content ul li {
     list-style-type:circle;
 }
+
+.context-submenu {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #aaa;
+    background-color: white;
+    width: 170px;
+    float: right;
+}

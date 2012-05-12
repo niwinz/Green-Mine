@@ -336,9 +336,23 @@ var user_story_handlers = function() {
     });
 };
 
+var wiki_handlers = function() {
+    $("#wiki-module").on('click', '.show-menu', function(event) {
+        event.preventDefault();
+        
+        var wiki_menu = $("#wiki-menu");
+        if (wiki_menu.is(":hidden")) {
+            wiki_menu.show();
+        } else {
+            wiki_menu.hide();
+        }
+    });
+};
+
 $(document).ready(function() {
     backlog_handlers();
     settings_handlers();
     tasks_issues_handlers();
     user_story_handlers();
+    wiki_handlers();
 });

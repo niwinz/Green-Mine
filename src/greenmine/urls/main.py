@@ -145,8 +145,14 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/$',
         main.WikiPageView.as_view(), name='wiki-page'),
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/history/$',
+        main.WikiPageHistory.as_view(), name='wiki-page-history'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/wiki/edit/(?P<wslug>[\d\w\-]+)/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/history/(?P<hpk>\d+)/$',
+        main.WikiPageHistoryView.as_view(), name='wiki-page-history-view'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/edit/$',
         main.WikiPageEditView.as_view(), name='wiki-page-edit'),
 )
 

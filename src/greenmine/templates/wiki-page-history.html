@@ -11,12 +11,10 @@
 <div id="wiki-module" class="show-module wiki-module">
     <div class="context-menu">
         <ul>
-            <li><a class="new-us" href="{{ wikipage.get_edit_url }}">{% trans "Edit" %}</a></li>
-            <li><a class="new-milestone" href="#">{% trans "Delete" %}</a></li>
+            <li><a class="" href="{{ wikipage.get_view_url }}">{% trans "Show main page" %}</a></li>
             <li><a class="show-menu" href="#">{% trans "Show options" %}</a></li>
         </ul>
     </div>
-    
     <div class="context-submenu" id="wiki-menu" style="display: none">
         <ul>
             <li><a href="">{% trans "View all wiki pages" %}</a></li>
@@ -24,9 +22,15 @@
         </ul>
     </div>
 
-    <div class="wiki-content">
-        {{ wikipage.content|markup:project }}
+    <div class="wiki-changes">
+        <h1>{% trans "Changes" %}</h1>
+        <ul>
+            {% for entry in entries %}
+            <li><a href="{{ entry.get_history_view_url }}">{{ entry.created_date }}</a> by {{ entry.owner.get_full_name }}</li>
+            {% endfor %}
+        </ul>
     </div>
+
 </div>
 {% endblock %}
 
