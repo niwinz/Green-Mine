@@ -15,19 +15,27 @@ import markdown
 
 from greenmine.utils.markup import CodeBlock
 
+from .plugin_wikilinks import WikiLinkExtension, makeExtension
+
 directives.register_directive('code-block', CodeBlock)
 
 def rst_filter(value, project):
     return restructuredtext(value)
 
 def markdown_filter(value, project):
+    wikilinks_extension = makeExtension([
+        ('base_url', '/'+project.slug+'/wiki/'),
+        ('end_url', ''),
+        ('html_class', '')
+    ])
+
     res = markdown.markdown(
         value,
-        extensions = ['wikilinks', 'codehilite'], 
-        extension_configs = {'wikilinks': [
-                                    ('base_url', '/'+project.slug+'/wiki/'),
-                                    ('end_url', ''),
-                                    ('html_class', '') ]},
+        extensions = [wikilinks_extension, 'codehilite'], 
+        #extension_configs = {'wikilinks': [
+        #                            ('base_url', '/'+project.slug+'/wiki/'),
+        #                            ('end_url', ''),
+        #                            ('html_class', '') ]},
         safe_mode = True
     )
     res = mark_safe(res)
