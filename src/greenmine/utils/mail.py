@@ -16,53 +16,6 @@ MAILS = {
     'user.story.created': 'email/user.story.created.html',
 }
 
-
-def send_user_story_create_mail(users):
-    context = {
-        'current_host': settings.HOST,
-    }
-
-    params = {'subject': ugettext(u"Greenmine: new user story!")}
-
-    for user in users:
-        params.update({'to': [user.email]})
-        send("user.story.created", context, **params)
-        
-
-def send_new_registration_mail(user):
-    context = {
-        'user': user, 
-        'token': set_token(user),
-        'current_host': settings.HOST,
-    }
-
-    params = {
-        "to": [user.email],
-        "subject": ugettext("Greenmine: Welcome!"),
-    }
-
-    return send("new.registration", context, **params)
-
-
-def send_recovery_email(user):
-    """
-    Set token for user profile and send password
-    recovery mail.
-    """
-
-    context = {
-        'user': user, 
-        'token': set_token(user),
-        'current_host': settings.HOST,
-    }
-
-    params = {
-        "to": [user.email],
-        "subject": ugettext("Greenmine: password recovery."),
-    }
-    return send("password.recovery", context, **params)
-
-
 def send(key, context, **kwargs):
     if key not in MAILS:
         raise ValueError("Invalid key parameter")

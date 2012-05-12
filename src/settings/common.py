@@ -86,6 +86,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+GREENQUEUE_TASK_MODULES = [
+    'greenmine.async',
+]
+
+GREENQUEUE_BACKEND = 'greenqueue.backends.sync.SyncService'
+
 SV_CSS_MENU_ACTIVE = 'selected'
 SV_CONTEXT_VARNAME = 'menu'
 

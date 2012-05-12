@@ -15,6 +15,8 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
+
 from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.cache import cache_page
@@ -26,6 +28,7 @@ from greenmine.utils import mail
 from greenmine import permissions as perms
 
 from greenmine.middleware import PermissionDeniedException
+from greenqueue import send_task
 
 import os
 import re
@@ -60,7 +63,9 @@ class RegisterView(GenericView):
             user.set_password(form.cleaned_data['password'])
             user.save()
             
-            mail.send_new_registration_mail(user)
+            send_task("mail-new.registration",
+                args = [settings.HOST, ugettext("Greenmine: Welcome!"), user])
+
             messages.info(request, _(u"Validation message was sent successfully."))
 
             return self.render_redirect(reverse('web:login'))
@@ -137,7 +142,9 @@ class RememberPasswordView(GenericView):
             form.user.set_unusable_password()
             form.user.save()
 
-            mail.send_recovery_email(form.user)
+            send_task("mail-recovery.password",
+                args = [settings.HOST, ugettext("Greenmine: password recovery."), form.user])
+
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
             return self.render_to_ok({'redirect_to':'/'})
 
@@ -156,7 +163,9 @@ class SendRecoveryPasswordView(GenericView):
         user = get_object_or_404(User, pk=uid)
         user.set_unusable_password()
         user.save()
-        mail.send_recovery_email(user)
+
+        send_task("mail-recovery.password",
+            args = [settings.HOST, ugettext("Greenmine: password recovery."), user])
 
         messages.info(request, _(u"Recovery password email are sended"))
         referer = request.META.get('HTTP_REFERER', reverse('web:users-edit', args=[uid]))

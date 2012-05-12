@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+from django.conf import settings
 from django.test import TestCase
 from django.core import mail
 from django.core.urlresolvers import reverse
@@ -13,8 +13,7 @@ from django.utils import timezone
 import datetime
 import json
 
-from greenmine.utils import mail as mailutils
-
+from greenqueue import send_task
 
 class LowLevelEmailTests(TestCase):
     def setUp(self):
@@ -30,12 +29,16 @@ class LowLevelEmailTests(TestCase):
         mail.outbox = []
 
     def test_send_recovery_mail(self):
-        mailutils.send_recovery_email(self.user)
+        send_task("mail-recovery.password",
+            args = [settings.HOST, "Greenmine: password recovery.", self.user])
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Greenmine: password recovery.")
 
     def test_send_registration_mail(self):
-        mailutils.send_new_registration_mail(self.user)
+        send_task("mail-new.registration",
+            args = [settings.HOST, "Greenmine: Welcome!", self.user])
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
 
