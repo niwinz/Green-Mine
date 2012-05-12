@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/mod.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/markitup/markitup/skins/simple/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/markitup/markitup/sets/markdown/style.css" />
     {% block top-headers %}{% endblock %}
 </head>
 <body>
@@ -38,9 +40,13 @@
     <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
 
+    <script type="text/javascript" src="{% static 'js/markitup/markitup/jquery.markitup.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/markitup/markitup/sets/markdown/set.js' %}"></script>
+
     <script type="text/javascript" src="{% static 'js/general.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/messages.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
     {% block bottom-headers %}{% endblock %}
 </body>
 </html>
