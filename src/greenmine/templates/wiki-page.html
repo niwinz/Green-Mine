@@ -22,6 +22,7 @@
 {% endblock %}
 
 {% block bottom-headers %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/wiki.css" type="text/css" media="handheld, all" />
     {% if project.markup == 'rst' %}
         {% include "modules/syntaxhighlighter.html" %}
     {% else %}

@@ -1,0 +1,9 @@
+.wiki-content ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 20px;
+}
+
+.wiki-content ul li {
+    list-style-type:circle;
+}
