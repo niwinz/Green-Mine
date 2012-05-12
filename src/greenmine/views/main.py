@@ -1660,3 +1660,31 @@ class WikiPageHistoryView(GenericView):
             'history_entry': history_entry,
         }
         return self.render_to_response(self.template_path, context)
+
+
+class WikipageDeleteView(GenericView):
+    template_path = 'wiki-page-delete.html'
+
+    def get_context(self):
+        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+        wikipage = get_object_or_404(project.wiki_pages, slug=self.kwargs['wslug'])
+
+        context = {
+            'project': project,
+            'wikipage': wikipage,
+        }
+        return context
+
+    @login_required
+    def get(self, request, **kwargs):
+        context = self.get_context()
+        return self.render_to_response(self.template_path, context)
+    
+    @login_required
+    def post(self, request, **kwargs):
+        context = self.get_context()
+        context['wikipage'].history_entries.all().delete()
+        context['wikipage'].delete()
+
+        return self.render_redirect(reverse('web:wiki-page',
+            args = [context['project'].slug, 'home']))

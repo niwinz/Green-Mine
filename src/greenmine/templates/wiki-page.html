@@ -12,7 +12,7 @@
     <div class="context-menu">
         <ul>
             <li><a class="new-us" href="{{ wikipage.get_edit_url }}">{% trans "Edit" %}</a></li>
-            <li><a class="new-milestone" href="#">{% trans "Delete" %}</a></li>
+            <li><a class="new-milestone" href="{{ wikipage.get_delete_url }}">{% trans "Delete" %}</a></li>
             <li><a class="show-menu" href="#">{% trans "Show options" %}</a></li>
         </ul>
     </div>

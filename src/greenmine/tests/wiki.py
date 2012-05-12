@@ -83,3 +83,26 @@ class WikiRelatedTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(project.wiki_pages.count(), 1)
         self.assertEqual(wp.history_entries.count(), 1)
+
+    def test_wikipage_delete(self):
+        project = Project.objects.get(name='test1')
+        project.add_user(self.user1, "developer")
+
+        wp = WikiPage.objects.create(
+            project = project,
+            content = 'test',
+            slug = 'test',
+            owner = self.user1,
+        )
+
+        response = self.client.get(wp.get_delete_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(wp.get_delete_url(), follow=True)
+        self.assertEqual(response.redirect_chain, [
+            ('http://testserver/test1/wiki/home/', 302),
+            ('http://testserver/test1/wiki/home/edit/', 302)
+        ])
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.wiki_pages.count(), 0)
