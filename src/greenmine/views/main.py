@@ -1136,7 +1136,11 @@ class ProjectGeneralSettings(GenericView):
             ('project', ('view', 'edit')),
         ])
 
-        form = forms.ProjectGeneralSettingsForm()
+        initial = {
+            'markup': project.markup,
+        }
+
+        form = forms.ProjectGeneralSettingsForm(initial=initial)
 
         context = {
             'categorys': self.create_category_choices(project),
@@ -1157,6 +1161,7 @@ class ProjectGeneralSettings(GenericView):
         form = forms.ProjectGeneralSettingsForm(request.POST)
 
         if form.is_valid():
+            print form.cleaned_data
             project.meta_category_color = form.colors_data
             project.markup = form.cleaned_data['markup']
             project.save()

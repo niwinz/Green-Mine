@@ -235,14 +235,14 @@ var backlog_handlers = function() {
 };
 
 var settings_handlers = function() {
-    $(".colors-form").on("click", ".tag-color-item .tag-rm", function(event) {
+    $(".selected-colors").on("click", ".tag-color-item .tag-rm", function(event) {
         $(this).parents(".tag-color-item").remove();
         if ($(".selected-colors .tag-color-item").length == 0) {
             $(".selected-colors").hide();
         }
     });
 
-    $(".colors-form").on("click", "input[type='button']", function(event) {
+    $(".colors-section").on("click", "input[type='button']", function(event) {
         var new_dom = $('<div />', {'class': 'tag-color-item'});
         var name_dom = $('<div />', {'class': 'tag-name'});
         var color_dom = $('<div />', {'class': 'tag-color'});
