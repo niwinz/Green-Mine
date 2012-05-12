@@ -5,3 +5,4 @@ from .project import *
 from .milestone import *
 from .mail import *
 from .questions import *
+from .wiki import *
