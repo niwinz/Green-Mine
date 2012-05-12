@@ -322,7 +322,16 @@ class UserStoryFormInline(forms.ModelForm):
 class QuestionCreateForm(forms.ModelForm):
     class Meta:
         model = models.Question
-        exclude = ('project', 'owner', 'slug',)
+        exclude = ('project', 'owner', 'slug')
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project')
+        super(QuestionCreateForm, self).__init__(*args, **kwargs)
+
+        participants = set([project.owner.pk])
+        participants.update([x.pk for x in project.participants.only('pk').all()])
+
+        self.fields['assigned_to'].queryset = User.objects.filter(pk__in=participants)
 
 
 class QuestionResponseForm(forms.ModelForm):

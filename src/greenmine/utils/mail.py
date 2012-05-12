@@ -14,6 +14,8 @@ MAILS = {
     'new.registration': 'email/new.user.html',
     'password.recovery': 'email/forgot.password.html',
     'user.story.created': 'email/user.story.created.html',
+    'question.assigned': 'email/question.assigned.html',
+    'question.created': 'email/question.created.html',
 }
 
 def send(key, context, **kwargs):
@@ -22,7 +24,6 @@ def send(key, context, **kwargs):
 
     template = loader.render_to_string(MAILS[key], context)
     return send_email(template, **kwargs)
-
 
 def send_email(body, to, subject, content_subtype='html'):
     if not isinstance(to, (list,tuple)):

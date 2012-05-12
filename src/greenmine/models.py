@@ -614,12 +614,14 @@ class Question(models.Model):
     milestone = models.ForeignKey('Milestone', related_name='questions',
         null=True, default=None, blank=True)
 
+    assigned_to = models.ForeignKey("auth.User")
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='questions')
 
+
     watchers = models.ManyToManyField('auth.User',
-        related_name='question_watch', null=True)
+        related_name='question_watch', null=True, blank=True)
 
     @models.permalink
     def get_view_url(self):

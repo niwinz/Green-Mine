@@ -1210,7 +1210,7 @@ class QuestionsCreateView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.QuestionCreateForm()
+        form = forms.QuestionCreateForm(project=project)
 
         context = {
             'form': form,
@@ -1222,12 +1222,30 @@ class QuestionsCreateView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        form = forms.QuestionCreateForm(request.POST)
+        form = forms.QuestionCreateForm(request.POST, project=project)
         if form.is_valid():
             question = form.save(commit=False)
             question.project = project
             question.owner = request.user
             question.save()
+
+            send_task('mail-question.created',
+                args = [
+                    settings.HOST,
+                    ugettext(u"Greenmine: new question"),
+                    question,
+                    project
+                ]
+            )
+
+            send_task('mail-question.assigned',
+                args = [
+                    settings.HOST,
+                    ugettext(u"Greenmine: question assigned."),
+                    question,
+                    question.assigned_to,
+                ]
+            )
 
             messages.info(request, _(u"Question are created"))
             return self.render_redirect(question.get_view_url())
@@ -1247,7 +1265,7 @@ class QuestionsEditView(GenericView):
     def get(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionCreateForm(instance=question)
+        form = forms.QuestionCreateForm(instance=question, project=project)
 
         context = {
             'form': form,
@@ -1260,7 +1278,7 @@ class QuestionsEditView(GenericView):
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionCreateForm(request.POST, instance=question)
+        form = forms.QuestionCreateForm(request.POST, instance=question, project=project)
 
         if form.is_valid():
             question = form.save(commit=False)

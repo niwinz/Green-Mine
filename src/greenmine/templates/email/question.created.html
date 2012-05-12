@@ -1,0 +1,5 @@
+{% load url from future %}
+{% load i18n %}
+
+<p>{% trans "New question are created:" %} <a href="{{ current_host}}{{ question.get_view_url }}">{{ question.subject }}</a></p>
+<p>{% trans "Greenmine Team" %}</p>
