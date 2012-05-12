@@ -124,3 +124,47 @@ class QuestionsRelatedTests(TestCase):
 
         response = self.client.get(question.get_view_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_question_edit(self):
+        project = Project.objects.get(name='test1')
+        project.add_user(self.user1, "developer")
+        project.add_user(self.user2, "developer")
+
+        question = Question(
+            project = project,
+            owner = self.user1,
+            subject = 'test',
+            content = 'test',
+            closed = False,
+            assigned_to = self.user2,
+        )
+        question.save()
+
+        post_params = {
+            'subject': 'test2',
+            'content': 'test2',
+            'closed': False,
+            'assigned_to': self.user1.id,
+        }
+        
+        url = question.get_edit_url()
+        response = self.client.post(url, post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/test1/questions/test/view/', 302)])
+
+        questions = Question.objects.filter(project=project)
+        self.assertEqual(questions.count(), 1)
+
+        question = questions[0]
+        self.assertEqual(question.owner, self.user1)
+        self.assertEqual(question.watchers.all().count(), 0)
+        self.assertEqual(question.subject, 'test2')
+        self.assertEqual(question.content, 'test2')
+        self.assertEqual(len(mail.outbox), 1)
+
+        mail.outbox = []
+        
+        response = self.client.post(url, post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [('http://testserver/test1/questions/test/view/', 302)])
+        self.assertEqual(len(mail.outbox), 0)

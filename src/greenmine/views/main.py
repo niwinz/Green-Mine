@@ -1218,6 +1218,26 @@ class QuestionsCreateView(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+
+    def send_mails(self, project, question):
+        send_task('mail-question.created',
+            args = [
+                settings.HOST,
+                ugettext(u"Greenmine: new question"),
+                question,
+                project
+            ]
+        )
+
+        send_task('mail-question.assigned',
+            args = [
+                settings.HOST,
+                ugettext(u"Greenmine: question assigned."),
+                question,
+                question.assigned_to,
+            ]
+        )
+        
     
     @login_required
     def post(self, request, pslug):
@@ -1229,25 +1249,9 @@ class QuestionsCreateView(GenericView):
             question.owner = request.user
             question.save()
 
-            send_task('mail-question.created',
-                args = [
-                    settings.HOST,
-                    ugettext(u"Greenmine: new question"),
-                    question,
-                    project
-                ]
-            )
-
-            send_task('mail-question.assigned',
-                args = [
-                    settings.HOST,
-                    ugettext(u"Greenmine: question assigned."),
-                    question,
-                    question.assigned_to,
-                ]
-            )
-
+            self.send_mails(project, question)
             messages.info(request, _(u"Question are created"))
+
             return self.render_redirect(question.get_view_url())
 
         context = {
@@ -1274,15 +1278,30 @@ class QuestionsEditView(GenericView):
         }
         return self.render_to_response(self.template_path, context)
     
+    def send_assignation_email(self, project, question):
+        send_task('mail-question.assigned',
+            args = [
+                settings.HOST,
+                ugettext(u"Greenmine: question assigned."),
+                question,
+                question.assigned_to,
+            ]
+        )
+
     @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionCreateForm(request.POST, instance=question, project=project)
 
+        _old_assigned_to_pk = question.assigned_to.pk
+
         if form.is_valid():
             question = form.save(commit=False)
             question.save()
+
+            if question.assigned_to.pk != _old_assigned_to_pk:
+                self.send_assignation_email(project, question)
 
             messages.info(request, _(u"Quienstion are saved"))
             return self.render_redirect(question.get_view_url())
