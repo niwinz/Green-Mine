@@ -333,6 +333,20 @@ div.main-menu ul.right-menu li {
     margin-top: 10px;
 }
 
+#dashboard .left-block .user-story-stats {
+    padding: 7px;
+    border: 1px solid #aaa;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+#dashboard .left-block .user-story-stats ul {
+    list-style: none;
+}
+#dashboard .left-block .user-story-stats ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
 
 /* Context Menu */
 .context-menu {
