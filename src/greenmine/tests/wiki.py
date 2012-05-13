@@ -83,3 +83,50 @@ class WikiRelatedTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(project.wiki_pages.count(), 1)
         self.assertEqual(wp.history_entries.count(), 1)
+
+    def test_wikipage_delete(self):
+        project = Project.objects.get(name='test1')
+        project.add_user(self.user1, "developer")
+
+        wp = WikiPage.objects.create(
+            project = project,
+            content = 'test',
+            slug = 'test',
+            owner = self.user1,
+        )
+
+        response = self.client.get(wp.get_delete_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(wp.get_delete_url(), follow=True)
+        self.assertEqual(response.redirect_chain, [
+            ('http://testserver/test1/wiki/home/', 302),
+            ('http://testserver/test1/wiki/home/edit/', 302)
+        ])
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.wiki_pages.count(), 0)
+
+    def test_create_wikipaga_without_permisions(self):
+        project = Project.objects.get(name='test1')
+
+        user3 = User.objects.create(
+            username = 'test3',
+            email = 'test3@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+            password = self.user1.password,
+        )
+
+        project.add_user(self.user1, "developer")
+        project.add_user(user3, "observer")
+
+        url = reverse('web:wiki-page-edit', args=[project.slug, "test"])
+        params = {'content': 'test'}
+
+        ok = self.client.login(username="test3", password="test")
+        self.assertTrue(ok)
+
+        response = self.client.post(url, params, follow=True)
+        self.assertEqual(response.status_code, 403)

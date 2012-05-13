@@ -16,16 +16,16 @@
     <div id="user-stories-module">
         <div class="user-story-legend">
             <div class="user-story-header hfield">
-                <b>User story: </b>
+                <b>{% trans "User story" %}: </b>
             </div>
             <div class="user-story-status hfield status-new">
-                <b>New tasks...</b>
+                <b>{% trans "New tasks..." %}</b>
             </div>
             <div class="user-story-status hfield status-progess">
-                <b>Tasks in progress...</b>
+                <b>{% trans "Tasks in progress..." %}</b>
             </div>
             <div class="user-story-status hfield status-closed">
-                <b>Tasks finished...</b>
+                <b>{% trans "Tasks finished..." %}</b>
             </div>
         </div>
         {% for us in uss %}

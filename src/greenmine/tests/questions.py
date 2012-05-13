@@ -71,7 +71,37 @@ class QuestionsRelatedTests(TestCase):
         self.assertEqual(question.watchers.all().count(), 0)
         self.assertEqual(len(mail.outbox), 2)
 
-    def test_post_responses(self):
+    def test_create_question_without_permissions(self):
+        project = Project.objects.get(name='test1')
+
+        user3 = User.objects.create(
+            username = 'test3',
+            email = 'test3@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+            password = self.user1.password,
+        )
+
+        project.add_user(self.user1, "developer")
+        project.add_user(user3, "observer")
+
+        url = project.get_questions_create_url()
+
+        post_params = {
+            'subject': 'test',
+            'content': 'test',
+            'closed': False,
+            'assigned_to': self.user1.id,
+        }
+
+        ok = self.client.login(username="test3", password="test")
+        self.assertTrue(ok)
+        
+        response = self.client.post(url, post_params, follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_comment_on_question(self):
         project = Project.objects.get(name='test1')
         project.add_user(self.user1, "developer")
 
@@ -124,6 +154,46 @@ class QuestionsRelatedTests(TestCase):
 
         response = self.client.get(question.get_view_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_question_edit_without_permissions(self):
+        project = Project.objects.get(name='test1')
+        
+        user3 = User.objects.create(
+            username = 'test3',
+            email = 'test3@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+            password = self.user1.password,
+        )
+
+        project.add_user(self.user1, "developer")
+        project.add_user(user3, "observer")
+
+
+        question = Question(
+            project = project,
+            owner = self.user1,
+            subject = 'test',
+            content = 'test',
+            closed = False,
+            assigned_to = self.user1,
+        )
+        question.save()
+
+        post_params = {
+            'subject': 'test2',
+            'content': 'test2',
+            'closed': False,
+            'assigned_to': self.user1.id,
+        }
+
+        ok = self.client.login(username="test3", password="test")
+        self.assertTrue(ok)
+        
+        url = question.get_edit_url()
+        response = self.client.post(url, post_params, follow=True)
+        self.assertEqual(response.status_code, 403)
 
     def test_question_edit(self):
         project = Project.objects.get(name='test1')

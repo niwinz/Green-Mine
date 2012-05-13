@@ -677,6 +677,11 @@ class WikiPage(models.Model):
             {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
+    def get_delete_url(self):
+        return ('web:wiki-page-delete', (),
+            {'pslug': self.project.slug, 'wslug': self.slug})
+
+    @models.permalink
     def get_history_view_url(self):
         return ('web:wiki-page-history', (), 
             {'pslug': self.project.slug, 'wslug': self.slug})

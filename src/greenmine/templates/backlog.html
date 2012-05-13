@@ -112,16 +112,4 @@
         </div>
     </div>
 </div>
-
-<!-- it seems deprecated -->
-{% comment %}
-<div id="lightbox-backlog" style="display: none">
-    <ul>
-        {% for ml in milestones %}
-        <li><a rel="{{ ml.id }}" href="{{ml.get_assign_url}}">{{ ml.name|capfirst }}</a></li>
-        {% endfor %}
-    </ul>
-</div>
-<div id="overlay"></div>
-{% endcomment %}
 {% endblock %}

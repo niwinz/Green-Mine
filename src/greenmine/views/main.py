@@ -1195,11 +1195,17 @@ class QuestionsListView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         questions = project.questions.order_by('-created_date')
 
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', 'view'),
+        ])
+
         context = {
             'open_questions': questions.filter(closed=False),
             'closed_questions': questions.filter(closed=True),
             'project': project,
         }
+
         return self.render_to_response(self.template_path, context)
 
 
@@ -1211,6 +1217,11 @@ class QuestionsCreateView(GenericView):
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.QuestionCreateForm(project=project)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', ('view', 'create')),
+        ])
 
         context = {
             'form': form,
@@ -1243,6 +1254,12 @@ class QuestionsCreateView(GenericView):
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         form = forms.QuestionCreateForm(request.POST, project=project)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', ('view', 'create')),
+        ])
+
         if form.is_valid():
             question = form.save(commit=False)
             question.project = project
@@ -1268,6 +1285,12 @@ class QuestionsEditView(GenericView):
     @login_required
     def get(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', ('view', 'edit')),
+        ])
+
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionCreateForm(instance=question, project=project)
 
@@ -1291,6 +1314,12 @@ class QuestionsEditView(GenericView):
     @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', ('view', 'edit')),
+        ])
+
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionCreateForm(request.POST, instance=question, project=project)
 
@@ -1321,6 +1350,12 @@ class QuestionsView(GenericView):
     @login_required
     def get(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', 'view'),
+        ])
+
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionResponseForm()
         
@@ -1335,9 +1370,14 @@ class QuestionsView(GenericView):
     @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('question', 'view'),
+        ])
+
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionResponseForm(request.POST)
-        
 
         if form.is_valid():
             response = form.save(commit=False)
@@ -1359,6 +1399,12 @@ class QuestionsDeleteView(GenericView):
 
     def get_context(self):
         project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+
+        self.check_role(self.request.user, project, [
+            ('project', 'view'),
+            ('question', ('view', 'delete')),
+        ])
+
         question = get_object_or_404(project.questions, slug=self.kwargs['qslug'])
 
         context = {
@@ -1509,6 +1555,13 @@ class UsFormInline(GenericView):
     @login_required
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', ('view', 'edit')),
+        ])
+
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         form = forms.UserStoryFormInline(instance=user_story)
@@ -1518,6 +1571,13 @@ class UsFormInline(GenericView):
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', ('view', 'edit')),
+        ])
+
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
@@ -1552,6 +1612,11 @@ class WikiPageView(GenericView):
     def get(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
         
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('wiki', 'view'),
+        ])
+        
         try:
             wikipage = project.wiki_pages.get(slug=wslug)
         except models.WikiPage.DoesNotExist:
@@ -1572,6 +1637,11 @@ class WikiPageEditView(GenericView):
     @login_required
     def get(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
+        
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('wiki', ('view', 'create', 'edit')),
+        ])
 
         try:
             wikipage = project.wiki_pages.get(slug=wslug)
@@ -1590,6 +1660,12 @@ class WikiPageEditView(GenericView):
     @login_required
     def post(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('wiki', ('view', 'create', 'edit')),
+        ])
+
         try:
             wikipage = project.wiki_pages.get(slug=wslug)
         except models.WikiPage.DoesNotExist:
@@ -1633,6 +1709,12 @@ class WikiPageHistory(GenericView):
     @login_required
     def get(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('wiki', 'view'),
+        ])
+
         wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
 
         context = {
@@ -1651,6 +1733,12 @@ class WikiPageHistoryView(GenericView):
     @login_required
     def get(self, request, pslug, wslug, hpk):
         project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('wiki', 'view'),
+        ])
+
         wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
         history_entry = get_object_or_404(wikipage.history_entries, pk=hpk)
         
@@ -1660,3 +1748,37 @@ class WikiPageHistoryView(GenericView):
             'history_entry': history_entry,
         }
         return self.render_to_response(self.template_path, context)
+
+
+class WikipageDeleteView(GenericView):
+    template_path = 'wiki-page-delete.html'
+
+    def get_context(self):
+        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+
+        self.check_role(self.request.user, project, [
+            ('project', 'view'),
+            ('wiki', ('view', 'delete')),
+        ])
+
+        wikipage = get_object_or_404(project.wiki_pages, slug=self.kwargs['wslug'])
+
+        context = {
+            'project': project,
+            'wikipage': wikipage,
+        }
+        return context
+
+    @login_required
+    def get(self, request, **kwargs):
+        context = self.get_context()
+        return self.render_to_response(self.template_path, context)
+    
+    @login_required
+    def post(self, request, **kwargs):
+        context = self.get_context()
+        context['wikipage'].history_entries.all().delete()
+        context['wikipage'].delete()
+
+        return self.render_redirect(reverse('web:wiki-page',
+            args = [context['project'].slug, 'home']))

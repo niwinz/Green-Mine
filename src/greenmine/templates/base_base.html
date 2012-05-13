@@ -25,7 +25,7 @@
             {% for code, name in LANGUAGES %}
             <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ code }}</a>
             {% endfor %}
-            | Powered by Greenmine © 2011 | {% trans "Version" %}: {{ version }}
+            | Powered by Greenmine © 2012 | {% trans "Version" %}: {{ version }}
         </p>
     </div>
     <script type="text/javascript" src="{% url "web:jsi18n" %}"></script>

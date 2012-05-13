@@ -2,7 +2,7 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} Questions / Create{% endblock %}
+{% block title %}{{ block.super }} {% trans "Questions" %} / {% trans "Create" %}{% endblock %}
 
 {% block bottom-headers %}
 <script>
@@ -63,7 +63,7 @@
             </div>    
 
             <div class="width100 float-left">
-                <input class="btn01" type="submit" value="Guardar" />
+                <input class="btn01" type="submit" value="{% trans "Save" %}" />
             </div>
         </form>
     </div>

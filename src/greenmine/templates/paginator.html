@@ -6,7 +6,9 @@
     <a href="{{ current_url }}?page={{ page.previous_page_number }}">{% trans "Previous" %}</a>
     {% endif %}
     <span class="current">
-    Page {{ page.number }} of {{ page.paginator.num_pages }}.
+{% blocktrans with number=page.number total=page.paginator.num_pages %}
+Page {{ number }} of {{ total }}
+{% endblocktrans %}
     </span>
     {% if page.has_next %}
     <a href="{{ current_url }}?page={{ page.next_page_number }}">{% trans "Next" %}</a>

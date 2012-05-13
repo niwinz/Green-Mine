@@ -154,6 +154,9 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/edit/$',
         main.WikiPageEditView.as_view(), name='wiki-page-edit'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/delete/$',
+        main.WikipageDeleteView.as_view(), name='wiki-page-delete'),
 )
 
 urlpatterns += patterns('',
