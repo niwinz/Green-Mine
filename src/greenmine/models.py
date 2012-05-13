@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
-from greenmine.fields import DictField, ListField
+from greenmine.fields import DictField, ListField, WikiField
 
 from django.utils import timezone
 import datetime
@@ -110,7 +110,7 @@ def ref_uniquely(project, model, field='ref'):
 
 class Profile(models.Model):
     user = models.OneToOneField("auth.User", related_name='profile')
-    description = models.TextField(blank=True)
+    description = WikiField(blank=True)
     photo = models.FileField(upload_to="files/msg",
         max_length=500, null=True, blank=True)
 
@@ -164,7 +164,7 @@ class ProjectManager(models.Manager):
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
-    description = models.TextField(blank=False)
+    description = WikiField(blank=False)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
@@ -423,7 +423,7 @@ class UserStory(models.Model):
     tested = models.BooleanField(default=False)
 
     subject = models.CharField(max_length=500)
-    description = models.TextField()
+    description = WikiField()
     finish_date = models.DateTimeField(null=True, blank=True)
 
     watchers = models.ManyToManyField('auth.User',
@@ -548,7 +548,7 @@ class Task(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
 
     subject = models.CharField(max_length=500)
-    description = models.TextField(blank=True)
+    description = WikiField(blank=True)
     assigned_to = models.ForeignKey('auth.User',
         related_name='user_storys_assigned_to_me',
         blank=True, null=True, default=None)
@@ -605,7 +605,7 @@ class Task(models.Model):
 class Question(models.Model):
     subject = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=250, blank=True)
-    content = models.TextField()
+    content = WikiField()
     closed = models.BooleanField(default=False)
     attached_file = models.FileField(upload_to="messages",
         max_length=500, null=True, blank=True)
@@ -645,7 +645,7 @@ class Question(models.Model):
 
 
 class QuestionResponse(models.Model):
-    content = models.TextField()
+    content = WikiField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     attached_file = models.FileField(upload_to="messages",
@@ -658,7 +658,7 @@ class QuestionResponse(models.Model):
 class WikiPage(models.Model):
     project = models.ForeignKey('Project', related_name='wiki_pages')
     slug = models.SlugField(max_length=500, db_index=True)
-    content = models.TextField(blank=False, null=True)
+    content = WikiField(blank=False, null=True)
     owner = models.ForeignKey("auth.User", related_name="wiki_pages", null=True)
 
     watchers = models.ManyToManyField('auth.User',
@@ -690,7 +690,7 @@ class WikiPage(models.Model):
 
 class WikiPageHistory(models.Model):
     wikipage = models.ForeignKey("WikiPage", related_name="history_entries")
-    content = models.TextField(blank=True, null=True)
+    content = WikiField(blank=True, null=True)
     created_date = models.DateTimeField()
     owner = models.ForeignKey("auth.User", related_name="wiki_page_historys")
     
