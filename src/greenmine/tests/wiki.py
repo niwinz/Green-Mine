@@ -106,3 +106,27 @@ class WikiRelatedTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(project.wiki_pages.count(), 0)
+
+    def test_create_wikipaga_without_permisions(self):
+        project = Project.objects.get(name='test1')
+
+        user3 = User.objects.create(
+            username = 'test3',
+            email = 'test3@test.com',
+            is_active = True,
+            is_staff = False,
+            is_superuser = False,
+            password = self.user1.password,
+        )
+
+        project.add_user(self.user1, "developer")
+        project.add_user(user3, "observer")
+
+        url = reverse('web:wiki-page-edit', args=[project.slug, "test"])
+        params = {'content': 'test'}
+
+        ok = self.client.login(username="test3", password="test")
+        self.assertTrue(ok)
+
+        response = self.client.post(url, params, follow=True)
+        self.assertEqual(response.status_code, 403)
