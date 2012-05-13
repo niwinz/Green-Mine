@@ -605,7 +605,7 @@ class Task(models.Model):
 class Question(models.Model):
     subject = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=250, blank=True)
-    content = models.TextField()
+    content = WikiField()
     closed = models.BooleanField(default=False)
     attached_file = models.FileField(upload_to="messages",
         max_length=500, null=True, blank=True)
@@ -645,7 +645,7 @@ class Question(models.Model):
 
 
 class QuestionResponse(models.Model):
-    content = models.TextField()
+    content = WikiField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
     attached_file = models.FileField(upload_to="messages",
@@ -658,7 +658,7 @@ class QuestionResponse(models.Model):
 class WikiPage(models.Model):
     project = models.ForeignKey('Project', related_name='wiki_pages')
     slug = models.SlugField(max_length=500, db_index=True)
-    content = models.TextField(blank=False, null=True)
+    content = WikiField(blank=False, null=True)
     owner = models.ForeignKey("auth.User", related_name="wiki_pages", null=True)
 
     watchers = models.ManyToManyField('auth.User',
@@ -685,7 +685,7 @@ class WikiPage(models.Model):
 
 class WikiPageHistory(models.Model):
     wikipage = models.ForeignKey("WikiPage", related_name="history_entries")
-    content = models.TextField(blank=True, null=True)
+    content = WikiField(blank=True, null=True)
     created_date = models.DateTimeField()
     owner = models.ForeignKey("auth.User", related_name="wiki_page_historys")
     

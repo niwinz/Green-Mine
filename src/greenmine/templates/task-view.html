@@ -43,7 +43,9 @@
         {% if task.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
-            {{ task.description|linebreaks }}
+            <div class="wiki-content">
+            {{ task.description|markup:task.user_story.project }}
+            </div>
         </div>
         {% endif %}
         
