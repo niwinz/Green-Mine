@@ -698,6 +698,8 @@ class MilestoneDeleteView(GenericView):
 
         # delete all tasks without user story
         milestone.tasks.filter(user_story__isnull=True).delete()
+        milestone.delete()
+
         return self.render_to_ok()
         
 

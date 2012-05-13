@@ -46,7 +46,7 @@
                 <div class="milestone-title">
                     <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
                     <div class="meta">
-                        <a href="" class="delete">
+                        <a href="{{ ml.get_delete_url }}" class="delete">
                             <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img>
                         </a>
                     </div>

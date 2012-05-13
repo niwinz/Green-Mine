@@ -1,11 +1,4 @@
 var StatsModel = Backbone.Model.extend({
-    defaults: {
-        'unassigned_points': 0,
-        'assigned_points': 0,
-        'total_points': 0,
-        'percentage_completed': 0,
-        'percentage_assigned': 0,
-    },
     url: function() {
         return this.get('view').$el.attr('url');
     }
@@ -41,6 +34,8 @@ var Backlog = Backbone.View.extend({
 
     events: {
         "click .un-us-item .delete": "unassign_us",
+
+        /* Drag and drop of assignation and unassignation of user stories */
         "dragstart .unassigned-us .un-us-item": "unassigned_us_dragstart",
         "dragover .milestones .milestone-item": "milestones_dragover",
         "dragleave .milestones .milestone-item": "milestones_drageleave",
@@ -48,7 +43,15 @@ var Backlog = Backbone.View.extend({
         "dragstart .milestones .us-item": "milestones_dragstart",
         "dragover .left-block .unassigned-us": "left_block_dragover",
         "dragleave .left-block .unassigned-us": "left_block_dragleave",
-        "drop .left-block .unassigned-us": "left_block_drop"
+        "drop .left-block .unassigned-us": "left_block_drop",
+
+        /* Iniline edit */
+        "click .unassigned-us .config-us-inline": "on_us_edit_inline",
+        "click .unassigned-us .user-story-inline-submit": "on_us_edit_inline_submit",
+        "click .unassigned-us .user-story-inline-cancel": "on_us_edit_form_cancel",
+
+        /* Milestone delete */
+        "click .milestone-item .milestone-title a.delete": "on_milestone_delete_click"
     },
 
     render: function() {},
@@ -172,6 +175,92 @@ var Backlog = Backbone.View.extend({
 
         // Refresh stats
         this.stats_view.render();
+    },
+
+    /*
+     * On request visualize a inline edit user story form.
+    */
+
+    on_us_edit_inline: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+        $.get(self.attr('href'), function(data) {
+            self.closest('.un-us-item').find('.form-inline').html(data).show();
+        }, 'html');
+    },
+
+    /*
+     * On inline user story edit form submit changes
+    */
+
+    on_us_edit_inline_submit: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget),
+            form = self.closest('form');
+
+        $.post(form.attr('action'), form.serialize(), function(data) {
+            if (data.valid) {
+                var usitem = self.closest('.un-us-item');
+                usitem.find('.form-inline').hide();
+
+                if (data.action == 'save') {
+                    usitem.replaceWith(data.html);
+                } else {
+                    var ml_id = form.find("#id_milestone").val();
+                    var milestone = $("#milestone-" + ml_id);
+
+                    // hide empty entries.
+                    milestone.find(".us-item-empty").remove()
+                    milestone.find(".milestone-userstorys").append(data.html);
+                    usitem.remove();
+                }
+            } else {
+                form.find('.errorlist').remove();
+                $.each(data.errors, function(index, value) {
+                    var ul = $(document.createElement('ul'))
+                        .attr('class', 'errorlist');
+                    for(var i=0; i<value.length; i++){
+                        $(document.createElement('li')).html(value[i]).appendTo(ul);
+                    }
+                    
+                    form.find('[name='+index+']').before(ul);
+                });
+            }
+        }, 'json');
+
+        // Refresh stats
+        this.stats_view.render();
+    },
+
+    on_us_edit_form_cancel: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+        self.closest('.un-us-item').find('.form-inline').hide();
+    },
+
+    on_milestone_delete_click: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+
+        var buttons = {};
+        buttons[gettext('Delete')] = function() {
+            $(this).dialog('close');
+            $.post(self.attr('href'), {}, function(data) {
+                if (data.valid) {
+                    self.parents('.milestone-item').remove();
+                }
+            }, 'json');
+        };
+
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close'); 
+        };
+
+        $(".delete-milestone-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });
     }
 });
 
