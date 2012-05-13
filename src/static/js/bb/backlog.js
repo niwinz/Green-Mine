@@ -106,6 +106,7 @@ var LeftBlockView = Backbone.View.extend({
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
         var unassign_url = source.attr('unassignurl');
+        var stats_view = this.options.stats_view;
 
         $.post(unassign_url, {}, function(data) {
             self.append(data);
@@ -118,10 +119,11 @@ var LeftBlockView = Backbone.View.extend({
             } else {
                 source.remove();
             }
+
+            // Refresh stats
+            stats_view.render();
         }, 'html');
 
-        // Refresh stats
-        this.options.stats_view.render();
     },
     
     left_block_dragleave: function(event) {
@@ -163,7 +165,8 @@ var LeftBlockView = Backbone.View.extend({
     on_us_edit_inline_submit: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget),
-            form = self.closest('form');
+            form = self.closest('form'),
+            stats_view = this.options.stats_view;
 
         $.post(form.attr('action'), form.serialize(), function(data) {
             if (data.valid) {
@@ -193,10 +196,11 @@ var LeftBlockView = Backbone.View.extend({
                     form.find('[name='+index+']').before(ul);
                 });
             }
+
+            // Refresh stats
+            stats_view.render();
         }, 'json');
 
-        // Refresh stats
-        this.stats_view.render();
     },
 
     on_us_edit_form_cancel: function(event) {
@@ -270,16 +274,15 @@ var RightBlockView = Backbone.View.extend({
         var source = $("#" + source_id);
         var assign_url = source.attr('assignurl');
         var milestone_id = self.attr('ref');
+        var stats_view = this.options.stats_view;
 
         $.post(assign_url, {mid: milestone_id}, function(data) {
             var data_object = $(data);
             self.find(".us-item-empty").remove()
             self.find(".milestone-userstorys").append(data_object);
             source.remove()
+            stats_view.render();
         }, 'html');
-
-        // Refresh stats
-        this.options.stats_view.render();
     },
 
     milestones_dragstart: function(event) {
