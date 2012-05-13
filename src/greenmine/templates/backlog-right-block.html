@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% for ml in milestones %}
+<div id="milestone-{{ml.id}}" ref="{{ ml.id }}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
+    <div class="milestone-title">
+        <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
+        <div class="meta">
+            <a href="{{ ml.get_delete_url }}" class="delete">
+                <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img>
+            </a>
+        </div>
+    </div>
+
+    <div class="milestone-userstorys">
+        {% for us in ml.user_stories.select_related %}
+            {% include "milestone-item.html" with us=us %}
+        {% empty %}
+        <div class="us-item-empty us-item">
+            <div class="us-title">{% trans "No user storys" %}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}

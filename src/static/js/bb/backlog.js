@@ -1,10 +1,12 @@
+/* Backlog Stats */
+
 var StatsModel = Backbone.Model.extend({
     url: function() {
         return this.get('view').$el.attr('url');
     }
 });
 
-var BacklogStats = Backbone.View.extend({
+var StatsView = Backbone.View.extend({
     el: $(".user-story-stats"),
 
     initialize: function() {
@@ -22,25 +24,19 @@ var BacklogStats = Backbone.View.extend({
     }
 });
 
-var Backlog = Backbone.View.extend({
-    el: $("#dashboard"),
+/* Unassigned user storyes (left block) */
 
-    initialize: function() {
-        _.bindAll(this, 'render');
-        
-        this.stats_view = new BacklogStats();
-        this.stats_view.render();
-    },
+var UnassignedModel = Backbone.Model.extend({
+    url: function() {
+        return this.get('view').$el.attr('url');
+    }
+});
+
+var LeftBlockView = Backbone.View.extend({
+    el: $(".left-block"),
 
     events: {
-        "click .un-us-item .delete": "unassign_us",
-
-        /* Drag and drop of assignation and unassignation of user stories */
         "dragstart .unassigned-us .un-us-item": "unassigned_us_dragstart",
-        "dragover .milestones .milestone-item": "milestones_dragover",
-        "dragleave .milestones .milestone-item": "milestones_drageleave",
-        "drop .milestones .milestone-item": "milestones_on_drop",
-        "dragstart .milestones .us-item": "milestones_dragstart",
         "dragover .left-block .unassigned-us": "left_block_dragover",
         "dragleave .left-block .unassigned-us": "left_block_dragleave",
         "drop .left-block .unassigned-us": "left_block_drop",
@@ -50,11 +46,24 @@ var Backlog = Backbone.View.extend({
         "click .unassigned-us .user-story-inline-submit": "on_us_edit_inline_submit",
         "click .unassigned-us .user-story-inline-cancel": "on_us_edit_form_cancel",
 
-        /* Milestone delete */
-        "click .milestone-item .milestone-title a.delete": "on_milestone_delete_click"
+        "click .un-us-item .delete": "unassign_us",
     },
 
-    render: function() {},
+    initialize: function() {
+        _.bindAll(this, 'render');
+        this.model = new UnassignedModel({view:this});
+        this.model.on('change', this.render);
+        this.model.fetch();
+    },
+
+    render: function() {
+        var self = this,
+            deff = this.model.fetch();
+
+        deff.done(function() {
+            self.$('.unassigned-us').html(self.model.get('html'))
+        });
+    },
 
     /* 
      * On click to delete button on unassigned user story list. 
@@ -82,74 +91,6 @@ var Backlog = Backbone.View.extend({
         });
     },
 
-    unassigned_us_dragstart: function(event) {
-        var self = $(event.currentTarget);
-        event.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-        event.originalEvent.dataTransfer.setData('source_id', self.attr('id')); // required otherwise doesn't work
-    },
-
-    milestones_dragover: function(event) {
-        event.originalEvent.dataTransfer.dropEffect = 'copy';
-        event.preventDefault();
-
-        var self = $(event.currentTarget);
-
-        if (!self.hasClass("drag-over")) {
-            self.addClass("drag-over");
-        }
-    },
-
-    milestones_drageleave: function(event) {
-        event.preventDefault();
-
-        var self = $(event.currentTarget);
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
-        }
-    },
-
-    milestones_on_drop: function(event) {
-        var self = $(event.currentTarget);
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
-        }
-
-        var source_id = event.originalEvent.dataTransfer.getData('source_id');
-        var source = $("#" + source_id);
-        var assign_url = source.attr('assignurl');
-        var milestone_id = self.attr('ref');
-
-        $.post(assign_url, {mid: milestone_id}, function(data) {
-            var data_object = $(data);
-            self.find(".us-item-empty").remove()
-            self.find(".milestone-userstorys").append(data_object);
-            source.remove()
-        }, 'html');
-
-        // Refresh stats
-        this.stats_view.render();
-    },
-
-    milestones_dragstart: function(event) {
-        var self = $(event.currentTarget);
-        event.originalEvent.dataTransfer.effectAllowed = 'copy'; 
-        event.originalEvent.dataTransfer.setData('source_id', self.attr('id'));
-    },
-
-    left_block_dragover: function(event) {
-        var self = $(event.currentTarget);
-        event.originalEvent.dataTransfer.dropEffect = 'copy';
-        event.preventDefault();
-    },
-
-    left_block_dragleave: function(event) {
-        var self = $(event.currentTarget);
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
-        }
-        event.preventDefault();
-    },
-
     left_block_drop: function(event) {
         var self = $(event.currentTarget);
         if (self.hasClass('drag-over')) {
@@ -174,7 +115,27 @@ var Backlog = Backbone.View.extend({
         }, 'html');
 
         // Refresh stats
-        this.stats_view.render();
+        this.options.stats_view.render();
+    },
+    
+    left_block_dragleave: function(event) {
+        var self = $(event.currentTarget);
+        if (self.hasClass('drag-over')) {
+            self.removeClass('drag-over');
+        }
+        event.preventDefault();
+    },
+    
+    left_block_dragover: function(event) {
+        var self = $(event.currentTarget);
+        event.originalEvent.dataTransfer.dropEffect = 'copy';
+        event.preventDefault();
+    },
+
+    unassigned_us_dragstart: function(event) {
+        var self = $(event.currentTarget);
+        event.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+        event.originalEvent.dataTransfer.setData('source_id', self.attr('id')); // required otherwise doesn't work
     },
 
     /*
@@ -237,6 +198,89 @@ var Backlog = Backbone.View.extend({
         var self = $(event.currentTarget);
         self.closest('.un-us-item').find('.form-inline').hide();
     },
+});
+
+
+/* Milestones (right block) */
+
+var MilestonesModel = Backbone.Model.extend({
+    url: function() {
+        return this.get('view').$el.attr('url');
+    }
+});
+
+var RightBlockView = Backbone.View.extend({
+    el: $(".right-block"),
+
+    events: {
+        "dragover .milestones .milestone-item": "milestones_dragover",
+        "dragleave .milestones .milestone-item": "milestones_drageleave",
+        "drop .milestones .milestone-item": "milestones_on_drop",
+        "dragstart .milestones .us-item": "milestones_dragstart",
+
+        /* Milestone delete */
+        "click .milestone-item .milestone-title a.delete": "on_milestone_delete_click"
+    },
+
+    initialize: function() {
+        _.bindAll(this, 'render');
+        this.model = new MilestonesModel({view:this});
+        this.model.on('change', this.render);
+        this.model.fetch();
+    },
+
+    render: function() {
+        var self = this;
+        self.$(".milestones").html(this.model.get('html'));
+    },
+
+    milestones_dragover: function(event) {
+        event.originalEvent.dataTransfer.dropEffect = 'copy';
+        event.preventDefault();
+
+        var self = $(event.currentTarget);
+
+        if (!self.hasClass("drag-over")) {
+            self.addClass("drag-over");
+        }
+    },
+
+    milestones_drageleave: function(event) {
+        event.preventDefault();
+
+        var self = $(event.currentTarget);
+        if (self.hasClass('drag-over')) {
+            self.removeClass('drag-over');
+        }
+    },
+
+    milestones_on_drop: function(event) {
+        var self = $(event.currentTarget);
+        if (self.hasClass('drag-over')) {
+            self.removeClass('drag-over');
+        }
+
+        var source_id = event.originalEvent.dataTransfer.getData('source_id');
+        var source = $("#" + source_id);
+        var assign_url = source.attr('assignurl');
+        var milestone_id = self.attr('ref');
+
+        $.post(assign_url, {mid: milestone_id}, function(data) {
+            var data_object = $(data);
+            self.find(".us-item-empty").remove()
+            self.find(".milestone-userstorys").append(data_object);
+            source.remove()
+        }, 'html');
+
+        // Refresh stats
+        this.options.stats_view.render();
+    },
+
+    milestones_dragstart: function(event) {
+        var self = $(event.currentTarget);
+        event.originalEvent.dataTransfer.effectAllowed = 'copy'; 
+        event.originalEvent.dataTransfer.setData('source_id', self.attr('id'));
+    },
 
     on_milestone_delete_click: function(event) {
         event.preventDefault();
@@ -262,6 +306,23 @@ var Backlog = Backbone.View.extend({
             buttons: buttons
         });
     }
+});
+
+var Backlog = Backbone.View.extend({
+    el: $("#dashboard"),
+
+    initialize: function() {
+        _.bindAll(this, 'render');
+        
+        var stats_view = new StatsView();
+        stats_view.render();
+
+        this.left_block = new LeftBlockView({stats_view:stats_view});
+        this.right_block = new RightBlockView({stats_view:stats_view});
+    },
+
+    render: function() {},
+
 });
 
 $(function() {

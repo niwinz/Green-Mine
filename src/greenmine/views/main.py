@@ -359,13 +359,13 @@ class BacklogStats(GenericView):
         return self.render_to_ok({'stats_html': stats, 'stats': context})
 
 
-class BacklogView(GenericView):
-    """ 
-    General dasboard view,  with all milestones and all tasks. 
+class BacklogLeftBlockView(GenericView):
+    """
+    Get unassigned user story html part for backlog.
+    API
     """
 
-    template_name = 'backlog.html'
-    menu = ['backlog']
+    template_path = 'backlog-left-block.html'
 
     @login_required
     def get(self, request, pslug):
@@ -385,11 +385,68 @@ class BacklogView(GenericView):
             unassigned = unassigned.order_by(request.GET['order_by'])
 
         unassigned = unassigned.select_related()
-        context = {
+        template_context = {
+            'project': project,
+            'unassigned_us': unassigned,
+        }
+
+        response_context = {
+            'html': loader.render_to_string(self.template_path, template_context)
+        }
+        
+        return self.render_to_ok(response_context)
+
+class BacklogRightBlockView(GenericView):
+    """
+    Get milestones html part for backlog.
+    API
+    """
+
+    template_path = 'backlog-right-block.html'
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        template_context = {
             'project': project,
             'milestones': project.milestones.order_by('-created_date')\
-                                            .prefetch_related('project'),
-            'unassigned_us': unassigned,
+                .prefetch_related('project'),
+        }
+
+        response_context = {
+            'html': loader.render_to_string(self.template_path, template_context),
+        }
+
+        return self.render_to_ok(response_context)
+
+
+class BacklogView(GenericView):
+    """ 
+    General dasboard view,  with all milestones and all tasks. 
+    """
+
+    template_name = 'backlog.html'
+    menu = ['backlog']
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = {
+            'project': project,
         }
 
         return self.render_to_response(self.template_name, context)
