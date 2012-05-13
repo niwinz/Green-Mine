@@ -231,6 +231,11 @@ class Project(models.Model):
             {'pslug': self.slug})
 
     @models.permalink
+    def get_backlog_stats_url(self):
+        return ('web:project-backlog-stats', (),
+            {'pslug': self.slug})
+
+    @models.permalink
     def get_milestone_create_url(self):
         return ('web:milestone-create', (),
             {'pslug': self.slug})

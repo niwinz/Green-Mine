@@ -17,6 +17,8 @@
     {% include "messages.html" %}
 
     <div class="left-block">
+        <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}">
+        </div>
         <div class="unassigned-us">
             <div class="un-us-item head-title">
                 <div class="row title">
@@ -112,4 +114,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block bottom-headers %}
+<script type="text/javascript" src="{% static 'js/bb/backlog.js' %}"></script>
 {% endblock %}

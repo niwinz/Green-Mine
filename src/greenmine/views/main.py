@@ -296,6 +296,69 @@ class HomeView(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
+class BacklogStats(GenericView):
+    def sum_points(self, queryset):
+        total = 0.0
+        for item in queryset:
+            if item.points == -1:
+                continue
+
+            if item.points == -2:
+                total += 0.5
+                continue
+
+            total += item.points
+        return total
+
+    def calculate_stats(self, unassigned, assigned, completed):
+        unassigned_points = self.sum_points(unassigned)
+        assigned_points = self.sum_points(assigned)
+        completed_points = self.sum_points(completed)
+        total_points = unassigned_points + assigned_points
+        
+        try:
+            percentage_assigned = (assigned_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_assigned = 0
+
+        try:
+            percentage_completed = (completed_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_completed = 0
+
+        return {
+            'unassigned_points': unassigned_points,
+            'assigned_points': assigned_points,
+            'total_points': total_points,
+            'percentage_completed': percentage_completed,
+            'percentage_assigned': percentage_assigned,
+        }
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        unassigned = project.user_stories\
+            .filter(milestone__isnull=True)\
+            .only('points')
+        
+        assigned = project.user_stories\
+            .filter(milestone__isnull=False)\
+            .only('points')
+
+        completed = assigned.filter(status__in=['completed', 'closed'])
+
+        context = self.calculate_stats(unassigned, assigned, completed)
+        stats = loader.render_to_string("modules/backlog-stats.html", context)
+        return self.render_to_ok({'stats_html': stats, 'stats': context})
+
+
 class BacklogView(GenericView):
     """ 
     General dasboard view,  with all milestones and all tasks. 
@@ -317,15 +380,16 @@ class BacklogView(GenericView):
         unassigned = project.user_stories\
             .filter(milestone__isnull=True)\
             .order_by('-priority')
-
+        
         if "order_by" in request.GET:
             unassigned = unassigned.order_by(request.GET['order_by'])
 
+        unassigned = unassigned.select_related()
         context = {
             'project': project,
             'milestones': project.milestones.order_by('-created_date')\
                                             .prefetch_related('project'),
-            'unassigned_us': unassigned.select_related(),
+            'unassigned_us': unassigned,
         }
 
         return self.render_to_response(self.template_name, context)
@@ -1079,7 +1143,7 @@ class UnassignUserStory(GenericView):
         user_story.save()
         user_story.tasks.update(milestone=None)
         
-        context = {'us': user_story}
+        context = {'us': user_story, 'project':project}
         return self.render_to_response(self.template_name, context)
 
 

@@ -62,6 +62,9 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
         main.BacklogView.as_view(), name='project-backlog'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/stats/$', 
+        main.BacklogStats.as_view(), name='project-backlog-stats'),
+
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$', 
         main.DashboardView.as_view(), name="dashboard"),
 
