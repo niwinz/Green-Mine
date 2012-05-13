@@ -26,7 +26,7 @@ var StatsView = Backbone.View.extend({
 
 /* Unassigned user storyes (left block) */
 
-var UnassignedModel = Backbone.Model.extend({
+var LeftBlockModel = Backbone.Model.extend({
     url: function() {
         return this.get('view').$el.attr('url');
     }
@@ -50,24 +50,30 @@ var LeftBlockView = Backbone.View.extend({
     },
 
     initialize: function() {
-        _.bindAll(this, 'render');
-        this.model = new UnassignedModel({view:this});
+        _.bindAll(this, 'render', 'rehash');
+        this.model = new LeftBlockModel({view:this});
         this.model.on('change', this.render);
         this.model.fetch();
     },
 
     render: function() {
-        var self = this,
-            deff = this.model.fetch();
-
-        deff.done(function() {
-            self.$('.unassigned-us').html(self.model.get('html'))
-        });
+        this.$('.unassigned-us').html(this.model.get('html'))
     },
+
+
+    /*
+     * Reload state fetching new content from server. 
+    */
+
+    rehash: function() {    
+        this.model.fetch({success:this.render});
+    },
+
 
     /* 
      * On click to delete button on unassigned user story list. 
     */
+
     unassign_us: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
@@ -284,8 +290,10 @@ var RightBlockView = Backbone.View.extend({
 
     on_milestone_delete_click: function(event) {
         event.preventDefault();
-        var self = $(event.currentTarget);
-
+        var self = $(event.currentTarget)
+            , buttons = {}
+            , left_block = this.options.parent.left_block;
+    
         var buttons = {};
         buttons[gettext('Delete')] = function() {
             $(this).dialog('close');
@@ -293,6 +301,8 @@ var RightBlockView = Backbone.View.extend({
                 if (data.valid) {
                     self.parents('.milestone-item').remove();
                 }
+                
+                left_block.rehash();
             }, 'json');
         };
 
@@ -317,12 +327,11 @@ var Backlog = Backbone.View.extend({
         var stats_view = new StatsView();
         stats_view.render();
 
-        this.left_block = new LeftBlockView({stats_view:stats_view});
-        this.right_block = new RightBlockView({stats_view:stats_view});
+        this.left_block = new LeftBlockView({stats_view:stats_view, parent:this});
+        this.right_block = new RightBlockView({stats_view:stats_view, parent:this});
     },
 
     render: function() {},
-
 });
 
 $(function() {
