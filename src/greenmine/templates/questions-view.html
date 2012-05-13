@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="question-body">
-            <div class="content">
+            <div class="content wiki-content">
                 {{ question.content|markup:project }}
             </div>
         </div>
@@ -42,7 +42,7 @@
     <div class="question-responses">
         {% for response in responses %}
         <div class="question-response-item">
-            <div class="content">{{ response.content|markup:project }}</div>
+            <div class="content wiki-content">{{ response.content|markup:project }}</div>
             <div class="owner">{% trans "By: " %}<span>{{ response.owner.get_full_name }}</span></div>
             <div class="created-date">{{ response.created_date }}</div>
         </div>
