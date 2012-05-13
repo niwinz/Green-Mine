@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load static from staticfiles %}
 {% load greenmine_utils %}
+{% load greenmine_markup %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
@@ -47,7 +48,9 @@
         {% if user_story.description %}
         <div class="form-field width100">
             <span class="label">{% trans "Description" %}</span>
-            {{ user_story.description|linebreaks }}
+            <div class="wiki-content">
+            {{ user_story.description|markup:user_story.project }}
+            </div>
         </div>
         {% endif %}
 

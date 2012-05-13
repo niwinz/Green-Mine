@@ -5,6 +5,15 @@
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
+{% block bottom-headers %}
+<script>
+    {% if project.markup == "rst" %}
+        $('.wiki_field').markItUp(myRestSettings);
+    {% else %}
+        $('.wiki_field').markItUp(myMarkdownSettings);
+    {% endif %}
+</script>
+{% endblock %}
 
 {% block wrapper %}
 <div class="user-story-create form-container">
