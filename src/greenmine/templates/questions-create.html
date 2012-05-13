@@ -4,6 +4,16 @@
 
 {% block title %}{{ block.super }} Questions / Create{% endblock %}
 
+{% block bottom-headers %}
+<script>
+    {% if project.markup == "rst" %}
+        $('.wiki_field').markItUp(myRestSettings);
+    {% else %}
+        $('.wiki_field').markItUp(myMarkdownSettings);
+    {% endif %}
+</script>
+{% endblock %}
+
 {% block wrapper %}
 <div id="questions" class="questions-create">
     <div class="context-menu">

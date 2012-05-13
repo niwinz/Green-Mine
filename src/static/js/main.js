@@ -355,5 +355,4 @@ $(document).ready(function() {
     tasks_issues_handlers();
     user_story_handlers();
     wiki_handlers();
-    $('.wiki_field').markItUp(myMarkdownSettings);
 });
