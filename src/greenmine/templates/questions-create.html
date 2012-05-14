@@ -5,13 +5,7 @@
 {% block title %}{{ block.super }} {% trans "Questions" %} / {% trans "Create" %}{% endblock %}
 
 {% block bottom-headers %}
-<script>
-    {% if project.markup == "rst" %}
-        $('.wiki_field').markItUp(myRestSettings);
-    {% else %}
-        $('.wiki_field').markItUp(myMarkdownSettings);
-    {% endif %}
-</script>
+    {% include "modules/wikiwidget.html" %}
 {% endblock %}
 
 {% block wrapper %}
