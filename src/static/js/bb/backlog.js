@@ -54,11 +54,12 @@ var LeftBlockView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'render', 'rehash', 'fetch_url');
+
+        this.options.order_by = "-points";
+
         this.model = new LeftBlockModel({view:this});
         this.model.on('change', this.render);
         this.model.fetch();
-
-        this.order_by = "-points";
     },
 
     render: function() {
@@ -67,9 +68,7 @@ var LeftBlockView = Backbone.View.extend({
 
     fetch_url: function() {
         var base_url = this.$el.attr('url');
-        console.log(this);
-        return base_url + "?order_by=" + this.order_by;
-
+        return base_url + "?order_by=" + this.options.order_by;
     },
 
     /*
@@ -83,8 +82,8 @@ var LeftBlockView = Backbone.View.extend({
     on_order_link_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
-
-
+        this.options.order_by = self.attr('order_by');
+        this.model.fetch({success:this.render});
     },
 
 
