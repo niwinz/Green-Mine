@@ -28,7 +28,7 @@ var StatsView = Backbone.View.extend({
 
 var LeftBlockModel = Backbone.Model.extend({
     url: function() {
-        return this.get('view').$el.attr('url');
+        return this.get('view').fetch_url();
     }
 });
 
@@ -47,19 +47,30 @@ var LeftBlockView = Backbone.View.extend({
         "click .unassigned-us .user-story-inline-cancel": "on_us_edit_form_cancel",
 
         "click .un-us-item .delete": "unassign_us",
+
+        /* Ordering */
+        "click .unassigned-us .head-title .row a": "on_order_link_clicked",
     },
 
     initialize: function() {
-        _.bindAll(this, 'render', 'rehash');
+        _.bindAll(this, 'render', 'rehash', 'fetch_url');
         this.model = new LeftBlockModel({view:this});
         this.model.on('change', this.render);
         this.model.fetch();
+
+        this.order_by = "-points";
     },
 
     render: function() {
         this.$('.unassigned-us').html(this.model.get('html'))
     },
 
+    fetch_url: function() {
+        var base_url = this.$el.attr('url');
+        console.log(this);
+        return base_url + "?order_by=" + this.order_by;
+
+    },
 
     /*
      * Reload state fetching new content from server. 
@@ -67,6 +78,13 @@ var LeftBlockView = Backbone.View.extend({
 
     rehash: function() {    
         this.model.fetch({success:this.render});
+    },
+
+    on_order_link_clicked: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+
+
     },
 
 
