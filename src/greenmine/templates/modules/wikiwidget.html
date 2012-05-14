@@ -1,0 +1,9 @@
+{% load static from staticfiles %}
+
+{% if project.markup == "rst" %}
+    <link rel="stylesheet" type="text/css" href="{% static "js/markitup/sets/rest/style.css" %}" />
+    <script>$('.wiki_field').markItUp(myRestSettings);</script>
+{% else %}
+    <link rel="stylesheet" type="text/css" href="{% static "js/markitup/sets/markdown/style.css" %}"/>
+    <script>$('.wiki_field').markItUp(myMarkdownSettings);</script>
+{% endif %}
