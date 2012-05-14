@@ -293,9 +293,11 @@ var RightBlockView = Backbone.View.extend({
 
     on_milestone_delete_click: function(event) {
         event.preventDefault();
-        var self = $(event.currentTarget)
-            , buttons = {}
-            , left_block = this.options.parent.left_block;
+        var self = $(event.currentTarget), 
+            buttons = {}, 
+            left_block = this.options.parent.left_block,
+            stats_view = this.options.stats_view;
+        
     
         var buttons = {};
         buttons[gettext('Delete')] = function() {
@@ -304,7 +306,7 @@ var RightBlockView = Backbone.View.extend({
                 if (data.valid) {
                     self.parents('.milestone-item').remove();
                 }
-                
+                stats_view.render();
                 left_block.rehash();
             }, 'json');
         };
