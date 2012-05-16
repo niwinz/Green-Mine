@@ -82,12 +82,19 @@ var LeftBlockView = Backbone.View.extend({
     on_order_link_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
-        var opt = self.attr('order_opt') || undefined;
-        if (opt === undefined || opt == "") {
-            this.options.order_by = self.attr('order_by');
+        
+        var order_by = self.attr('order_by');
+        var opt_key = "backlog_order_by_" + order_by + "_opt";
+        var opt = localStorage.getItem(opt_key)
+
+        if (opt == "" || opt === null) {
+            this.options.order_by = order_by;
+            localStorage.setItem(opt_key, "-")
         } else {
-            this.options.order_by = "-" + self.attr('order_by');
+            this.options.order_by = "-" + order_by;
+            localStorage.setItem(opt_key, "");
         }
+
         this.model.fetch({success:this.render});
     },
 
