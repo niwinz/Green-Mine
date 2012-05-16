@@ -63,7 +63,7 @@ ul.list {
     padding-left: 10px;
 }
 #wrapper{
-    width:980px; 
+    min-width:980px; 
     width:90%;
     background-color:#FFF; 
     padding: 10px; 
@@ -99,7 +99,7 @@ div.main-menu ul.menu-item li a.selected {
 }
 
 div.main-menu ul.left-menu {
-    width: 700px;
+    width: 530px;
 }
 
 div.main-menu ul.left-menu.settings {
@@ -421,13 +421,13 @@ div.fieldset div.field-inline {
     min-height: 100px;
     margin-right: 4px;
     border-top: 1px solid #EEE;
+    width: 24.2%;
 }
 
 #milestone-dashboard .user-story .user-story-header {
-    width: 200px;
+    /*width: 200px;*/
     background-color: #eee;
     color: black;
-    padding: 6px;
     font-size: 11px;
     position: relative;
     border: 1px solid #BBB;
@@ -448,16 +448,15 @@ div.fieldset div.field-inline {
 }
 #milestone-dashboard .user-story .user-story-status {
     background-color: white;
-    width: 238px;
-    padding: 4px;
 }
 #milestone-dashboard .user-story .user-story-task {
     min-height: 85px;
     background-color: #eee;
     border: 1px solid #BBB;
     border-radius: 5px;
-    padding: 5px;
     width: 226px;
+    width: 80%;
+    max-width: 300px;
     margin-bottom: 3px;
     position: relative;
 }
@@ -486,16 +485,11 @@ div.fieldset div.field-inline {
     margin-right: 4px;
     font-weight: bold;
     height: 20px;
+    width: 24.2%;
 }
-#milestone-dashboard .user-story-legend .user-story-header {
-    width: 200px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-#milestone-dashboard .user-story-legend .user-story-status { 
-    width: 238px;
-    padding-left: 4px;
-}
+#milestone-dashboard .user-story-legend .user-story-header {}
+
+#milestone-dashboard .user-story-legend .user-story-status { }
 
 
 .radio-choices div {
