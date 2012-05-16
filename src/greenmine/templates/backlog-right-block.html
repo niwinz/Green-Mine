@@ -16,10 +16,12 @@
             </span> //
             <span class="completed-points">
                 <strong>{% trans "Completed" %}:</strong><span class="value">{{ ml.completed_points }}</span>
-            </span> //
+            </span> 
+            {% comment %}
             <span class="completed-points">
                 <strong>{% trans "Percentage completed" %}:</strong><span class="value">{{ ml.percentage_completed }} %</span>
             </span>
+            {% endcomment %}
         </div>
     </div>
 
