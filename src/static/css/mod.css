@@ -59,8 +59,10 @@ input[type=button] {
 
 .question-module {
     padding: 10px;
-    background-color: #eee;
     margin-bottom: 10px;
+    background-color: white;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .question-module .question-header {
@@ -98,14 +100,16 @@ input[type=button] {
 }
 
 textarea#id_description,
-textarea#id_content { width: 930px; height: 190px; }
+textarea#id_content { width: 99%; height: 190px; }
 .question-responses { overflow: hidden; }
 .question-responses .question-response-item {
     float:right;
-    width: 900px;
+    width: 95%;
     margin-bottom: 5px;
     padding: 10px;
-    background-color: #eee;
+    background-color: #FCFCFC;
+    border: 1px solid #EEE;
+    border-radius: 5px;
 }
 .question-responses .question-response-item .created-date,
 .question-responses .question-response-item .owner {
