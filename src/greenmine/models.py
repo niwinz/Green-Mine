@@ -347,6 +347,46 @@ class Milestone(models.Model):
         ordering = ['-created_date']
         unique_together = ('name', 'project')
 
+    @property
+    def total_points(self):
+        """
+        Get total story points for this milestone.
+        """
+
+        total = 0.0
+
+        for item in self.user_stories.exclude(points = -1):
+            if item.points == -2:
+                total += 0.5
+                continue
+
+            total += item.points
+
+        return "{0:.2f}".format(total)
+
+    @property
+    def completed_points(self):
+        """
+        Get a total of completed points.
+        """
+
+        total = 0.0
+
+        for item in self.user_stories.filter(status__in=['completed', 'closed']):
+            if item.points == -2:
+                total += 0.5
+                continue
+
+            total += item.points
+
+        return "{0:.2f}".format(total)
+    
+    @property
+    def percentage_completed(self):
+        return "{0:.2f}".format(
+            (float(self.completed_points) * 100) / float(self.total_points)
+        )
+
     @models.permalink
     def get_delete_url(self):
         return ('web:milestone-delete', (),

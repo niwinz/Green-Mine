@@ -10,6 +10,17 @@
                 <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img>
             </a>
         </div>
+        <div class="milestone-stats" style="clear:both">
+            <span class="total-points">
+                <strong>{% trans "Total" %}:</strong><span class="value">{{ ml.total_points }}</span>
+            </span> //
+            <span class="completed-points">
+                <strong>{% trans "Completed" %}:</strong><span class="value">{{ ml.completed_points }}</span>
+            </span> //
+            <span class="completed-points">
+                <strong>{% trans "Percentage completed" %}:</strong><span class="value">{{ ml.percentage_completed }} %</span>
+            </span>
+        </div>
     </div>
 
     <div class="milestone-userstorys">
