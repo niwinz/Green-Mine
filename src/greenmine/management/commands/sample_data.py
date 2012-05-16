@@ -46,49 +46,45 @@ class Command(BaseCommand):
                 owner = random.choice(list(User.objects.all()[:1])),
                 public = True,
             )
-
-            # add owner to participants list
-            ProjectUserRole.objects.create(
-                project = project,
-                user = project.owner,
-                role = 'developer'
-            )
+            
+            project.add_user(project.owner, "developer")
             
             # add random participants to project
             participants = []
             for t in xrange(random.randint(1, 2)):
                 participant = create_user(users_counter)
                 participants.append(participant)
-                ProjectUserRole.objects.create(
-                    project = project,
-                    user = participant,
-                    role = random.choice(dict(ROLE_CHOICES).keys()),
-                )
+
+                project.add_user(participant, "developer")
                 users_counter += 1
             
             # create random milestones
             for y in xrange(2):
                 milestone = Milestone.objects.create(
                     project = project,
-                    name = 'Sprint 20110%s' % (y),
+                    name = 'Sprint 20120%s' % (y),
+                    owner = project.owner,
                 )
                 
                 # create uss asociated to milestones
                 for z in xrange(random.randint(2, 6)):
                     us = UserStory.objects.create(
                         subject = lorem_ipsum.words(random.randint(4,9), common=False),
-                        priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
+                        priority = random.choice([1,2,3,4,5,6,7,8,12]),
+                        points = random.choice([1,2,3,5,10]),
                         project = project,
                         owner = random.choice(participants),
                         description = lorem_ipsum.words(30, common=False),
                         milestone = milestone,
                     )
+
             # created unassociated uss.
             for y in xrange(10):
                 us = UserStory.objects.create(
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
-                    priority = random.choice(dict(US_PRIORITY_CHOICES).keys()),
+                    priority = random.choice([1,2,3,4,5,6,7,8,12]),
                     project = project,
+                    points = random.choice([1,2,3,5,10]),
                     owner = random.choice(participants),
                     description = lorem_ipsum.words(30, common=False),
                 )

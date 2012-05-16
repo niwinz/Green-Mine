@@ -330,8 +330,8 @@ class BacklogStats(GenericView):
             'unassigned_points': unassigned_points,
             'assigned_points': assigned_points,
             'total_points': total_points,
-            'percentage_completed': percentage_completed,
-            'percentage_assigned': percentage_assigned,
+            'percentage_completed': "{0:.2f}".format(percentage_completed),
+            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
         }
 
     @login_required
