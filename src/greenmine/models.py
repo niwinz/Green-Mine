@@ -362,7 +362,7 @@ class Milestone(models.Model):
 
             total += item.points
 
-        return "{0:.2f}".format(total)
+        return "{0:.1f}".format(total)
 
     @property
     def completed_points(self):
@@ -379,11 +379,11 @@ class Milestone(models.Model):
 
             total += item.points
 
-        return "{0:.2f}".format(total)
+        return "{0:.1f}".format(total)
     
     @property
     def percentage_completed(self):
-        return "{0:.2f}".format(
+        return "{0:.1f}".format(
             (float(self.completed_points) * 100) / float(self.total_points)
         )
 

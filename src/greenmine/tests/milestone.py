@@ -84,3 +84,51 @@ class MilestoneRelatedTests(TestCase):
 
         milestone = project.milestones.get(name='sprint1')
         self.assertEqual(milestone.owner, self.user1)
+
+    def test_stats_methods_0(self):
+        project = Project.objects.get(name="test1", owner=self.user1)
+        milestone = Milestone.objects.create(name="sprint1", project=project, owner=self.user1)
+
+        for x in xrange(5):
+            UserStory.objects.create(
+                project = project,
+                owner = self.user1,
+                description = "test",
+                subject = "User Story Test",
+                milestone = milestone,
+                status = 'completed',
+                points = 2
+            )
+
+        self.assertEqual(milestone.total_points, '10.0')
+        self.assertEqual(milestone.completed_points, '10.0')
+        self.assertEqual(milestone.percentage_completed, '100.0')
+
+
+    def test_stats_methods_1(self):
+        project = Project.objects.get(name="test1", owner=self.user1)
+        milestone = Milestone.objects.create(name="sprint1", project=project, owner=self.user1)
+
+        UserStory.objects.create(
+            project = project,
+            owner = self.user1,
+            description = "test",
+            subject = "User Story Test",
+            milestone = milestone,
+            status = 'completed',
+            points = 2
+        )
+
+        UserStory.objects.create(
+            project = project,
+            owner = self.user1,
+            description = "test",
+            subject = "User Story Test",
+            milestone = milestone,
+            status = 'open',
+            points = 2
+        )
+
+        self.assertEqual(milestone.total_points, '4.0')
+        self.assertEqual(milestone.completed_points, '2.0')
+        self.assertEqual(milestone.percentage_completed, '50.0')

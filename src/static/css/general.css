@@ -334,9 +334,10 @@ div.main-menu ul.right-menu li {
 #dashboard .right-block .milestone-item .us-item .us-title,
 #dashboard .right-block .milestone-item .us-item .us-meta {
     float: left;
+    width: 5%;
 }
 #dashboard .right-block .milestone-item .us-item .us-title {
-    width: 295px;
+    width: 95%;
 }
 #dashboard .right-block .milestones {
     margin-top: 10px;
