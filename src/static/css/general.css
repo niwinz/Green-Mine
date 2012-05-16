@@ -65,6 +65,7 @@ ul.list {
 }
 #wrapper{
     width:980px; 
+    width:90%;
     background-color:#FFF; 
     padding: 10px; 
     margin: 10px auto 0 auto; 
@@ -75,6 +76,7 @@ ul.list {
 
 div.main-menu {
     width:980px;
+    width: 90%;
     margin: 0px auto 0 auto;
     padding: 0px;
     overflow: hidden;
@@ -112,6 +114,7 @@ div.main-menu ul.left-menu li {
 div.main-menu ul.right-menu {
     width: 270px;
     text-align: right;
+    float:right;
 }
 
 
@@ -193,9 +196,11 @@ div.main-menu ul.right-menu li {
 
 #dashboard .left-block {
     width: 650px;
+    width: 70%;
 }
 #dashboard.tasks-ds .left-block {
     width: 755px;
+    width: 80%;
 }
 
 #dashboard .left-block .unassigned-us {
@@ -227,7 +232,8 @@ div.main-menu ul.right-menu li {
 }
 
 #dashboard.backlog .left-block .unassigned-us .un-us-item .row.title {
-    width: 450px;
+    min-width: 450px;
+    width: 80%;
 }
 
 #dashboard.backlog .left-block .unassigned-us .un-us-item .row.cat {
@@ -251,6 +257,7 @@ div.main-menu ul.right-menu li {
 
 #dashboard .left-block .unassigned-us .un-us-item .row.priority {
     width: 60px;
+
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.points {
     width: 50px;
@@ -271,9 +278,11 @@ div.main-menu ul.right-menu li {
 
 #dashboard .right-block {
     width: 325px;
+    width: 30%;
 }
 #dashboard.tasks-ds .right-block {
     width: 220px;
+    width: 20%;
 }
 #dashboard .right-block .milestone-item {
     margin-bottom: 10px;

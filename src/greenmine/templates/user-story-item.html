@@ -11,7 +11,7 @@
             {{ us.category|capfirst }}
         </span>
         {% endif %}
-        <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:45 }}</a></span>
+        <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:85 }}</a></span>
     </div>
     <div class="row points">
         <span>{{ us.get_points_display }}</span>
