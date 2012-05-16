@@ -1,7 +1,7 @@
 .wiki-content {
     padding: 10px;
 }
-.wiki-content ul {
+.wiki-content ul, .wiki-content ol {
     margin-top: 5px;
     margin-bottom: 5px;
     padding-left: 20px;
@@ -10,6 +10,10 @@
 .wiki-content ul li {
     list-style-type:circle;
 }
+.wiki-content ol li {
+    list-style-type: decimal;
+}
+
 
 .context-submenu {
     padding: 10px;
