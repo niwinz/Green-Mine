@@ -90,9 +90,11 @@ Changed {{ tuntil }} ago by {{ name }}
                             {% if files|length > 0 %}
                             <p>
                                 {% for file in files %}
-                                <a href="{{ file.attached_file.url }}">
-                                    {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
-                                </a>
+                                    {% if file.attached_file %}
+                                        <a href="{{ file.attached_file.url }}">
+                                            {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
+                                        </a>
+                                    {% endif %}
                                 {% endfor %}
                             </p>
                             {% endif %}
