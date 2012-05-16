@@ -15,7 +15,7 @@
     </div>
     <form method="post" action="{{ current_url }}">
         {% csrf_token %}
-        <div class="form-field">
+        <div class="form-field width100">
             <label>{{ form.content.label }}</label>
             {{ form.content.errors }}
             {{ form.content }}

@@ -204,6 +204,7 @@ div.highlight pre {
 
 .wiki-page-edit #id_content {
     width: 945px;
+    width:99%;
     height: 500px;
     font-size: 12px;
 }

@@ -38,7 +38,6 @@ fieldset{padding: 20px;}
 label.error{color: red;}
 #login, #password-recovery{margin: 0 auto; background-color: #FFF; padding: 30px 90px; width: 335px;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
-.form-field{margin-bottom: 20px;}
 
 form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{
     width: 284px; 
@@ -47,7 +46,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
     padding: 2px; 
     font-size: 14px;
 }
-.form-field{width: 305px;}
+.form-field{width: 305px; margin-bottom: 20px}
 #login  .forgot-pass{line-height: 18px; float: left;}
 #login .btn01{float: right;}
 #login fieldset, #password-recovery fieldset{border: 0;}
