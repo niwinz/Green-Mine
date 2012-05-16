@@ -82,7 +82,12 @@ var LeftBlockView = Backbone.View.extend({
     on_order_link_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
-        this.options.order_by = self.attr('order_by');
+        var opt = self.attr('order_opt') || undefined;
+        if (opt === undefined || opt == "") {
+            this.options.order_by = self.attr('order_by');
+        } else {
+            this.options.order_by = "-" + self.attr('order_by');
+        }
         this.model.fetch({success:this.render});
     },
 
