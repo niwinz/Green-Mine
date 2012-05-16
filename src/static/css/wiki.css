@@ -1,6 +1,11 @@
 .wiki-content {
     padding: 10px;
 }
+.wiki-content pre { 
+    padding: 10px;
+    background-color: #EEE;
+    border-radius: 3px;
+}
 .wiki-content ul, .wiki-content ol {
     margin-top: 5px;
     margin-bottom: 5px;
