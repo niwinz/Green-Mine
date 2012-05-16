@@ -55,7 +55,7 @@ var LeftBlockView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'rehash', 'fetch_url');
 
-        this.options.order_by = "-points";
+        this.options.order_by = "-priority";
 
         this.model = new LeftBlockModel({view:this});
         this.model.on('change', this.render);
