@@ -240,7 +240,8 @@ div.main-menu ul.right-menu li {
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.title { 
-    width: 330px;
+    min-width: 400px;
+    width: 65%;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.type { 

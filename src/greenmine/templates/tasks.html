@@ -45,7 +45,7 @@
             {% for task in tasks %}
             <div class="un-us-item">
                 <div class="row title">
-                    <span><a href="{{ task.get_view_url }}">{{ task.subject|truncatechars:45 }}</a></span>
+                    <span><a href="{{ task.get_view_url }}">{{ task.subject|truncatechars:60 }}</a></span>
                 </div>
                 <div class="row type">
                     <span>{{ task.get_type_display }}</span>
