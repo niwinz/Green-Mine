@@ -32,10 +32,12 @@ As a first step, download the latest version of the repository and follow the in
     
     git clone git://github.com/niwibe/Green-Mine.git greenmine
     cd greenmine/src
-    python manage.py syncdb
-    python manage.py loaddata initial_users
+    python manage.py migrate greenmine 0001 --fake
+    python manage.py syncdb --migrate
+    python manage.py loaddata development_users
+    python manage.py sample_data # optional
 
-The ``initial_users`` fixture, by default inserts two users: ``andrei`` and ``juanfran``. These users
+The ``development_users`` fixture, by default inserts two users: ``andrei`` and ``juanfran``. These users
 have superuser flag set to ``True`` and password is ``123123``.
 
 For run tests::
