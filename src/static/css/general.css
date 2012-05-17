@@ -219,6 +219,10 @@ div.main-menu ul.right-menu li {
     vertical-align: bottom;
 }
 
+#dashboard .left-block .unassigned-us .un-us-item:hover {
+    background-color: #f7f7f7;
+}
+
 #dashboard .left-block .unassigned-us .un-us-item .row.identify {
     width: 65px;
     font-family: monospace;
