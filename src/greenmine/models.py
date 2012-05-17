@@ -520,7 +520,7 @@ class UserStory(models.Model):
         return u"<UserStory %s>" % (self.id)
 
     def __unicode__(self):
-        return self.ref + " - " + self.subject
+        return u"{0} ({1})".format(self.subject, self.ref)
 
     def save(self, *args, **kwargs):
         if self.id:
