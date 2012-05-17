@@ -369,7 +369,8 @@ class TaskForm(forms.ModelForm):
 
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['user_story'].queryset = self.project.user_stories.order_by('subject')
-        self.fields['assigned_to'].queryset = self.project.all_participants
+        self.fields['assigned_to'].queryset = self.project\
+            .all_participants.order_by('first_name', 'last_name')
         self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
 
     class Meta:
