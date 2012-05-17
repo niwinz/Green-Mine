@@ -10,9 +10,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
 from greenmine.fields import DictField, ListField, WikiField
+from django.conf import settings
 
 from django.utils import timezone
 import datetime
+import re
 
 ORG_ROLE_CHOICES = (
     ('owner', _(u'Owner')),
@@ -161,6 +163,22 @@ class ProjectManager(models.Manager):
         return Project.objects.filter(pk__in=queryset)
 
 
+class ProjectExtras(models.Model):
+    task_parser_re = models.CharField(max_length=1000, blank=True, null=True, default=None)
+
+    def get_task_parse_re(self):
+        re_str = settings.DEFAULT_TASK_PARSER_RE
+        if self.task_parser_re:
+            re_str = self.task_parser_re
+        return re.compile(re_str, flags=re.U+re.M)
+
+    def parse_ustext(self, text):
+        rx = self.get_task_parse_re()
+        texts = rx.findall(text)
+        for text in texts:
+            yield text
+
+
 class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
@@ -181,7 +199,16 @@ class Project(models.Model):
     meta_category_color = DictField(null=True, default={}, editable=False)
     markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
 
+    extras = models.OneToOneField("ProjectExtras", related_name="project", null=True, default=None)
+
     objects = ProjectManager()
+
+    def get_extras(self):
+        if self.extras is None:
+            self.extras = ProjectExtras.objects.create()
+            self.__class__.objects.filter(pk=self.pk).update(extras=self.extras)
+
+        return self.extras
 
     def natural_key(self):
         return (self.slug,)
@@ -660,7 +687,7 @@ class Task(models.Model):
 class Question(models.Model):
     subject = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=250, blank=True)
-    content = WikiField()
+    content = WikiField(blank=True)
     closed = models.BooleanField(default=False)
     attached_file = models.FileField(upload_to="messages",
         max_length=500, null=True, blank=True)

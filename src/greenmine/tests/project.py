@@ -24,20 +24,13 @@ class SimplePermissionMethodsTest(TestCase):
         )
 
         project = Project.objects.create(name='test1', description='test1', owner=user, slug='test1')
-        role = perms.get_role('developer')
-
-        pur = ProjectUserRole.objects.create(
-            project = project,
-            user = user,
-            role = role,
-        )
+        project.add_user(user, "developer")
 
         self.assertTrue(perms.has_perm(user, project, "project", "view"))
         self.assertTrue(perms.has_perm(user, project, "task", "edit"))
 
         project.delete()
         user.delete()
-        pur.delete()
 
     def test_has_multiple_permissions(self):
         user = User.objects.create(
@@ -87,6 +80,38 @@ class ProjectRelatedTests(TestCase):
         Project.objects.all().delete()
         User.objects.all().delete()
         self.client.logout()
+
+    def test_parse_ustext(self):
+        text = """
+        Note that you’ll need to convert before you make any changes; South detects changes by comparing
+        against the frozen state of the last migration, so it cannot detect changes from before you converted
+        to using South.
+
+        Task: Foo task.
+        Task: Foo2 task.
+        """
+
+        project = Project.objects.create(name='test1', description='test1', owner=self.user, slug='test1')
+        extras_instance = project.get_extras()
+
+        tasks = list(extras_instance.parse_ustext(text))
+        self.assertEqual(len(tasks), 2)
+
+    def test_project_extras(self):
+        project = Project.objects.create(name='test1', description='test1', owner=self.user, slug='test1')
+        self.assertNotEqual(project.get_extras(), None)
+
+        Project.objects.bulk_create([
+            Project(name='test2', description='test1', owner=self.user, slug='test2'),
+            Project(name='test3', description='test2', owner=self.user, slug='test3'),
+        ])
+
+        project = Project.objects.get(name='test2')
+        self.assertEqual(project.extras, None)
+        self.assertNotEqual(project.get_extras(), None)
+    
+        project = Project.objects.get(name='test2')
+        self.assertNotEqual(project.extras, None)
 
     def test_permission_on_general_settings(self):
         superuser = User.objects.create(
@@ -489,7 +514,7 @@ class UserStoriesTests(TestCase):
 
         self.assertEqual(self.milestone2.user_stories.count(), 1)
         self.assertEqual(self.project2.user_stories.count(), 1)
-        self.assertEqual(self.project2.tasks.count(), 1)
+        self.assertEqual(self.project2.tasks.count(), 0)
 
     def test_user_story_create(self):
         self.client.login(username="test2", password="test")
@@ -512,7 +537,7 @@ class UserStoriesTests(TestCase):
 
         self.assertEqual(self.milestone2.user_stories.count(), 0)
         self.assertEqual(self.project2.user_stories.count(), 1)
-        self.assertEqual(self.project2.tasks.count(), 1)
+        self.assertEqual(self.project2.tasks.count(), 0)
 
     def test_user_story_create_bad_status(self):
         self.client.login(username="test2", password="test")
@@ -994,12 +1019,11 @@ class TasksTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         tasks = response.context['tasks']
-        self.assertEqual(tasks.count(), 3)
+        self.assertEqual(tasks.count(), 2)
 
         # test initial status
-        self.assertEqual(tasks[0].status, 'open')
-        self.assertEqual(tasks[1].status, 'progress')
-        self.assertEqual(tasks[2].status, 'open')
+        self.assertEqual(tasks[0].status, 'progress')
+        self.assertEqual(tasks[1].status, 'open')
 
         response = self.client.get(self.milestone2.get_tasks_url() + "?order_by=status")
         self.assertEqual(response.status_code, 200)
@@ -1007,8 +1031,7 @@ class TasksTests(TestCase):
 
         # test initial status
         self.assertEqual(tasks[0].status, 'open')
-        self.assertEqual(tasks[1].status, 'open')
-        self.assertEqual(tasks[2].status, 'progress')
+        self.assertEqual(tasks[1].status, 'progress')
 
     def test_tasks_filter_by(self):
         self.client.login(username="test2", password="test")
@@ -1043,7 +1066,7 @@ class TasksTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         tasks = response.context['tasks']
-        self.assertEqual(tasks.count(), 2)
+        self.assertEqual(tasks.count(), 1)
         
         response = self.client.get(self.milestone2.get_tasks_url_filter_by_bug())
         self.assertEqual(response.status_code, 200)

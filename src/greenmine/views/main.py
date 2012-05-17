@@ -797,7 +797,6 @@ class UserStoryCreateView(GenericView):
 
     #    mail.send_user_story_create_mail(participants)
 
-
     @login_required
     def get(self, request, pslug, mid=None):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -845,6 +844,9 @@ class UserStoryCreateView(GenericView):
             instance.owner = request.user
             instance.project = project
             instance.save()
+
+            self.create_asociated_tasks(project, instance)
+            
             messages.info(request, _(u'The user story was created correctly'))
             return self.render_redirect(project.get_backlog_url())
     
@@ -854,6 +856,23 @@ class UserStoryCreateView(GenericView):
         }
         return self.render_to_response(self.template_name, context)
 
+    def create_asociated_tasks(self, project, user_story):
+        texts = list(project.get_extras().parse_ustext(user_story.description))
+        tasks = []
+
+        for text in texts:
+            task = models.Task(
+                user_story=user_story, 
+                ref = models.ref_uniquely(project, user_story.__class__),
+                description = "",
+                project = project,
+                milestone = user_story.milestone,
+                owner = self.request.user,
+                subject = text
+            )
+            tasks.append(task)
+
+        models.Task.objects.bulk_create(tasks)
 
 class UserStoryEdit(GenericView):
     template_name = "user-story-edit.html"

@@ -14,17 +14,17 @@ def user_post_save(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-@receiver(post_save, sender=UserStory)
-def us_post_save(sender, instance, created, **kwargs):
-    if created:
-        task = Task.objects.create(
-            subject = instance.subject,
-            description = instance.description,
-            owner = instance.owner,
-            milestone = instance.milestone,
-            project = instance.project,
-            user_story = instance,
-        )
+#@receiver(post_save, sender=UserStory)
+#def us_post_save(sender, instance, created, **kwargs):
+#    if created:
+#        task = Task.objects.create(
+#            subject = instance.subject,
+#            description = instance.description,
+#            owner = instance.owner,
+#            milestone = instance.milestone,
+#            project = instance.project,
+#            user_story = instance,
+#        )
 
 
 @receiver(post_save, sender=Task)

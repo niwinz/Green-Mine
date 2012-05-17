@@ -26,7 +26,9 @@ LANGUAGES = (
 )
 
 MANAGERS = ADMINS
+
 DISABLE_REGISTRATION = False
+DEFAULT_TASK_PARSER_RE = "^\s*Task\:(.+)$"
 
 DATABASES = {
     'default': {
@@ -185,6 +187,7 @@ INSTALLED_APPS = [
     'django_smailer',
     'greenqueue',
     'html5forms',
+    'south',
 ]
 
 WSGI_APPLICATION = 'wsgi.application'

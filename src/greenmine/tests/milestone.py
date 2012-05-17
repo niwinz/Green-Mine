@@ -54,23 +54,15 @@ class MilestoneRelatedTests(TestCase):
             milestone = None,
             project = project,
             owner = self.user1,
-            description = "test",
+            description = "dd",
             subject = "User Story Test",
         )
 
         response = self.client.post(us.get_assign_url(), {'mid':milestone.id})
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(us.tasks.count(), 1)
-        self.assertEqual(milestone.tasks.count(), 1)
-        self.assertEqual(project.tasks.count(), 1)
-
         response = self.client.post(us.get_unassign_url())
         self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(us.tasks.count(), 1)
-        self.assertEqual(milestone.tasks.count(), 0)
-        self.assertEqual(project.tasks.count(), 1)
 
     def test_create_milestone(self):
         project = Project.objects.get(name="test1", owner=self.user1)
