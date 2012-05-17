@@ -106,7 +106,7 @@
         {% endwith %}
 
         <div class="form-field width100" style="min-height: 30px">
-            <a href="{{ user_story.get_create_task_url }}?next={{ current_url }}" 
+            <a href="{{ user_story.get_task_create_url }}?next={{ current_url }}" 
                 class="btn01 float-right">{% trans "Create task" %}</a>
         </div>
     </div>

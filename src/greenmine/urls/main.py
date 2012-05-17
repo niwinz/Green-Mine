@@ -121,7 +121,7 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/user_story/(?P<usref>[\w\d]+)/task/create/$',
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<usref>[\w\d]+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',

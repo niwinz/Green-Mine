@@ -569,7 +569,7 @@ class UserStory(models.Model):
     @models.permalink
     def get_task_create_url(self):
         return ('web:task-create', (),
-            {'pslug': self.project.slug, 'iref': self.ref})
+            {'pslug': self.project.slug, 'usref': self.ref})
 
     """ Propertys """
 
