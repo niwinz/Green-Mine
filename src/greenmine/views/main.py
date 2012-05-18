@@ -520,7 +520,7 @@ class DashboardView(GenericView):
             return self.render_redirect(milestone.get_dashboard_url())
 
         context = {
-            'user_stories':milestone.user_stories.all(),
+            'user_stories':milestone.user_stories.order_by('subject'),
             'milestones': milestones,
             'milestone':milestone,
             'project': project,
