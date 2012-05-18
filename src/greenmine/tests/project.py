@@ -545,11 +545,9 @@ class UserStoriesTests(TestCase):
         post_params = {
             'priority': 6,
             'points': '10',
-            'status': 'foo',
             'category': '',
-            'tested': False,
             'subject': 'test us',
-            'description': 'test desc us',
+            'description': '',
             'finish_date': '02/02/2012',
         }
 
@@ -557,7 +555,7 @@ class UserStoriesTests(TestCase):
         self.assertIn("form", response.context)
         
         form_errors = dict(response.context['form'].errors)
-        self.assertIn('status', form_errors)
+        self.assertIn('description', form_errors)
         self.assertEqual(response.status_code, 200)
 
     def test_user_story_create_without_permissions(self):
@@ -615,9 +613,7 @@ class UserStoriesTests(TestCase):
         post_params = {
             'priority': 6,
             'points': '10',
-            'status': 'progress',
             'category': '',
-            'tested': False,
             'subject': 'test us foo',
             'description': 'test desc us',
             'finish_date': '02/02/2012',
@@ -628,7 +624,7 @@ class UserStoriesTests(TestCase):
 
         user_story = UserStory.objects.get(pk=user_story.pk)
         self.assertEqual(user_story.subject, 'test us foo')
-        self.assertEqual(user_story.status, 'progress')
+        self.assertEqual(user_story.status, 'open')
 
     def test_user_story_edit_without_permission(self):
         self.client.login(username="test2", password="test")

@@ -93,58 +93,76 @@ class TaskAlterApiView(GenericView):
     minor modifications. 
     This is used on dashboard drag and drop.
     """
-    # TODO: permission check
     
     @login_required
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
-        us = None
 
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view')),
+            ('userstory', ('view', 'edit')),
+            ('task', ('view', 'edit')),
+        ])
+        
         status = request.POST.get('status', '')
         if status not in ['closed', 'progress', 'open', 'completed']:
             return self.render_to_error({"error_message": "invalid status"})
 
-        # mark old us modified
-        if task.user_story and task.user_story != us:
-            task.user_story.modified_date = datetime.datetime.now()
-            task.user_story.save()
+        task.status = status
 
         if "us" in request.POST:
-            queryset = models.UserStory.objects.filter(pk=request.POST['us'])
+            try:
+                queryset = models.UserStory.objects.filter(pk=request.POST['us'])
+            except ValueError:
+                queryset = models.UserStory.objects.none()
+
             us = len(queryset) == 1 and queryset.get() or None
 
-        if us:
-            task.user_story = us
+            # mark old us modified
+            if task.user_story and task.user_story != us:
+                task.user_story.modified_date = datetime.datetime.now()
+                task.user_story.save()
 
-        task.status = status
+            if us:
+                task.user_story = us
+            else:
+                task.user_story = None
+
+            if us:
+                # automatic control of user story status.
+                if us.tasks.filter(status__in=['closed','completed']).count() == us.tasks.all().count():
+                    us.status = 'completed'
+                elif us.tasks.all().count() == us.tasks.filter(status='open').count():
+                    us.status = 'open'
+                else:
+                    us.status = 'progress'
+                us.save()
+        
         task.save()
-        
-        # automatic control of user story status.
-        if us.tasks.filter(status__in=['closed','completed']).count() == us.tasks.all().count():
-            us.status = 'completed'
-        elif us.tasks.all().count() == us.tasks.filter(status='open').count():
-            us.status = 'open'
-        else:
-            us.status = 'progress'
-        us.save()
-        
         return self.render_to_ok()
  
 
 class TaskReasignationsApiView(GenericView):
-    # TODO: refactor
     @login_required
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view')),
+            ('userstory', ('view', 'edit')),
+            ('task', ('view', 'edit')),
+        ])
         
         userid = request.POST.get('userid', '')
         if not userid:
             task.assigned_to = None
             task.save()
             return self.render_to_ok()
-
+        
         queryset = project.all_participants.filter(pk=userid)
         user = len(queryset) == 1 and queryset.get() or None
 

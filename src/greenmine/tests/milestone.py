@@ -99,6 +99,7 @@ class MilestoneRelatedTests(TestCase):
 
     def test_stats_methods_1(self):
         project = Project.objects.get(name="test1", owner=self.user1)
+
         milestone = Milestone.objects.create(name="sprint1", project=project, owner=self.user1)
 
         UserStory.objects.create(
@@ -124,3 +125,96 @@ class MilestoneRelatedTests(TestCase):
         self.assertEqual(milestone.total_points, '4.0')
         self.assertEqual(milestone.completed_points, '2.0')
         self.assertEqual(milestone.percentage_completed, '50.0')
+
+
+    def test_assignation_task(self):
+        project = Project.objects.get(name="test1", owner=self.user1)
+        project.add_user(self.user1, 'developer')
+        
+        milestone = Milestone.objects.create(name="sprint1", project=project, owner=self.user1)
+
+        user_story  = UserStory.objects.create(
+            project = project,
+            owner = self.user1,
+            description = "test",
+            subject = "User Story Test",
+            milestone = milestone,
+            status = 'completed',
+            points = 2
+        )
+        
+        task = Task.objects.create(
+            project = project,
+            user_story = user_story,
+            owner = self.user1,
+            subject = 'Test',
+            description = 'test',
+            status = 'open',
+        )
+
+        self.assertEqual(task.assigned_to, None)
+
+
+        url =  task.get_reassign_api_url()
+        response = self.client.post(url, {'userid': self.user1.id})
+        self.assertEqual(response.status_code, 200)
+        
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+        task = Task.objects.get(pk=task.pk)
+        self.assertEqual(task.assigned_to, self.user1)
+    
+    def test_alteration_task(self):
+        project = Project.objects.get(name="test1", owner=self.user1)
+        project.add_user(self.user1, 'developer')
+        
+        milestone = Milestone.objects.create(name="sprint1", project=project, owner=self.user1)
+
+        user_story  = UserStory.objects.create(
+            project = project,
+            owner = self.user1,
+            description = "test",
+            subject = "User Story Test",
+            milestone = milestone,
+            status = 'completed',
+            points = 2
+        )
+        
+        task = Task.objects.create(
+            project = project,
+            user_story = user_story,
+            owner = self.user1,
+            subject = 'Test',
+            description = 'test',
+            status = 'open',
+        )
+
+        self.assertEqual(task.status, 'open')
+
+
+        url =  task.get_alter_api_url()
+        response = self.client.post(url, {'status': 'progress'})
+        self.assertEqual(response.status_code, 200)
+        
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+        task = Task.objects.get(pk=task.pk)
+        self.assertEqual(task.status, 'progress')
+
+        url =  task.get_alter_api_url()
+        response = self.client.post(url, {'status': 'progress', 'us':''})
+        self.assertEqual(response.status_code, 200)
+        
+        jdata = json.loads(response.content)
+        self.assertIn("valid", jdata)
+        self.assertTrue(jdata['valid'])
+
+        task = Task.objects.get(pk=task.pk)
+        self.assertEqual(task.user_story, None)
+
+
+
