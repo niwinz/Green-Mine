@@ -134,15 +134,23 @@ class TaskAlterApiView(GenericView):
 
 class TaskReasignationsApiView(GenericView):
     # TODO: refactor
-    def get(self, request, pslug, taskref):
+    @login_required
+    def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
         
-        userid = request.GET.get('userid', '')
+        userid = request.POST.get('userid', '')
         if not userid:
             task.assigned_to = None
-        else:
-            task.assigned_to = get_object_or_404(project.participants, pk=userid)
+            task.save()
+            return self.render_to_ok()
 
+        queryset = project.all_participants.filter(pk=userid)
+        user = len(queryset) == 1 and queryset.get() or None
+
+        if user is None:
+            return self.render_to_error()
+
+        task.assigned_to = user
         task.save()
         return self.render_to_ok()

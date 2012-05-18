@@ -4,7 +4,8 @@
 {% load static %}
 
 <div class="task-container" draggable="true" ref="{{ task.id }}" id="task-{{ task.id }}"
-    alter_url="{{ task.get_alter_api_url }}">
+        alter_url="{{ task.get_alter_api_url }}"
+        reasign_url="{{ task.get_reassign_api_url }}">
     <div class="task">
         <div class="description">
             <a href="">{{ task.subject }}</a>

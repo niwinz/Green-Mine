@@ -71,10 +71,16 @@ var DashboardView = Backbone.View.extend({
         var self = $(event.currentTarget);
         var selected_person_id = self.val();
         var selected_person_name = self.find('option:selected').html();
-    
+        var url = self.closest(".task-container").attr('reasign_url');
+
         var new_dom_attrs = {'ref': selected_person_id, 'class': 'assigned-to'};
         var new_dom = this.make('div', new_dom_attrs, selected_person_name);
-        self.replaceWith(new_dom);
+
+        $.post(url, {userid:selected_person_id}, function(data) {
+            if (data.valid) {
+                self.replaceWith(new_dom);
+            }
+        }, 'json');
     },
 
     onDragStart: function(event) {
