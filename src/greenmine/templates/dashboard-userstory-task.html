@@ -3,7 +3,13 @@
 {% load cache %}
 {% load static %}
 
-<div class="task-container" draggable="true" ref="{{ task.id }}" id="task-{{ task.id }}"
+{% if task.has_noncolumn_status %}
+<div class="task-container non-closed-task" 
+{% else %}
+<div class="task-container" 
+{% endif %}
+        draggable="true" ref="{{ task.id }}" id="task-{{ task.id }}"
+        current_status="{{ task.status }}"
         alter_url="{{ task.get_alter_api_url }}"
         reasign_url="{{ task.get_reassign_api_url }}">
     <div class="task">
@@ -22,6 +28,7 @@
                     {% trans "Unassigned" %}
                 {% endif %}
             </div>
+            <div class="current-status" status="{{ task.status }}">{{ task.get_status_display }}</div>
         </div>
     </div>
 </div>

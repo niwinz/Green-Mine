@@ -107,7 +107,7 @@ class TaskAlterApiView(GenericView):
         ])
         
         status = request.POST.get('status', '')
-        if status not in ['closed', 'progress', 'open', 'completed']:
+        if status not in dict(TASK_STATUS_CHOICES).keys():
             return self.render_to_error({"error_message": "invalid status"})
 
         task.status = status

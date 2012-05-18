@@ -1,3 +1,11 @@
+var stats = {
+    'open': gettext('New'),
+    'progress': gettext('In progress'),
+    'completed': gettext('Ready for test'),
+    'closed': gettext('Closed'),
+};
+
+
 var UserStory = Backbone.Model.extend({});
 var UserStoryCollection = Backbone.Collection.extend({
     model: UserStory
@@ -6,8 +14,6 @@ var UserStoryCollection = Backbone.Collection.extend({
 
 var UserStoryView = Backbone.View.extend({
     tagName: 'tr',
-
-    events: {},
 
     initialize: function() {
         _.bindAll(this, 'render');
@@ -33,12 +39,16 @@ var DashboardView = Backbone.View.extend({
 
         "click .task-col .task-container .icons .assigned-to": "assignationChangeClick",
         "change .task-col .task-container .icons .participants": "assignationChangeSelect",
+        
+        "click .task-col .task-container .icons .current-status": "statusChangeClick",
+        "change .task-col .task-container .icons .statuses": "statusChangeChange" 
     },
 
     initialize: function() {
         _.bindAll(this, 'render', 'addOne', 'addAll', 'onDrop',
                         'onDragOver', 'onDragLeave', 'onDragStart',
-                        'assignationChangeClick', 'assignationChangeSelect');
+                        'assignationChangeClick', 'assignationChangeSelect',
+                        'statusChangeClick', 'statusChangeChange');
         var self = this;
 
         this.user_stories = new UserStoryCollection();
@@ -54,6 +64,62 @@ var DashboardView = Backbone.View.extend({
         })
 
         this.user_stories.bind('add', this.addOne);
+    },
+
+    statusChangeClick: function(event) {
+        var self = $(event.currentTarget);
+        var current_status_key = self.attr('status');
+        var current_status_text = self.html();
+
+        var select_dom_copy = $("#templates select.statuses").clone();
+        select_dom_copy.val(current_status_key);
+        self.replaceWith(select_dom_copy);
+    },
+
+    statusChangeChange: function(event) {
+        var self = $(event.currentTarget);
+        var selected_status_key = self.val()
+        var selected_status_text = self.find('option:selected').html();
+
+        var new_dom_attrs = {'status':selected_status_key, 'class': 'current-status'};
+        var new_dom = this.make('div', new_dom_attrs, selected_status_text);
+
+        var userstory = self.closest('.user-story-row');
+        var task = self.closest('.task-container');
+        task.removeClass('non-closed-task');
+        
+        var post_callback = function() {
+            self.replaceWith(new_dom);
+
+            if (stats[selected_status_key] !== undefined) {
+                var coldom = _.find(userstory.find('.task-col'), function(item) {
+                    return $(item).attr('tstatus') == selected_status_key;
+                });
+
+                if (coldom !== undefined) {
+                    $(coldom).append(task);
+                }
+            } else {
+                var coldom = _.find(userstory.find('.task-col'), function(item) {
+                    return $(item).attr('tstatus') == 'closed';
+                });
+
+                task.addClass("non-closed-task");
+                if (coldom !== undefined) {
+                    $(coldom).append(task);
+                }
+            }
+            task.attr('current_status', selected_status_key);
+        };
+
+        var url = task.attr('alter_url');
+        var data = {
+            'status': selected_status_key
+        };
+
+        $.post(url, data, function(data) {
+            if (data.valid) { post_callback(); }
+        }, 'json');
     },
 
     assignationChangeClick: function(event) {
@@ -115,17 +181,35 @@ var DashboardView = Backbone.View.extend({
 
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
+        var current_source_status = source.attr('current_status');
         var source_parent = source.closest('td');
 
         var userstory = self.closest('tr');
         var userstory_id = userstory.attr('ref');
+
+        var status_node = source.find('.current-status');
+        var new_status_string = null;
+
+        if (stats[current_source_status] === undefined) {
+            new_status_string = current_source_status;
+        } else {
+            new_status_string = self.attr('tstatus');
+
+            // Remove some classes added on status change
+            source.removeClass('non-closed-task');
+            source.attr('current_status', new_status_string);
+
+            // Set new status and new status representation text
+            status_node.attr('status', new_status_string);
+            status_node.html(stats[new_status_string]);
+        }
 
         // Move dom
         self.append(source);
 
         var url = source.attr('alter_url');
         var data = {
-            'status': self.attr('tstatus')
+            'status': new_status_string
         };
 
         if (userstory_id) {
@@ -137,10 +221,7 @@ var DashboardView = Backbone.View.extend({
                 source_parent.append(source);
             }
         }, 'json');
-
-
     },
-
 
     addOne: function(item) {
         var view = new UserStoryView({model:item});

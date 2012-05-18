@@ -22,7 +22,7 @@
                         <div class="text">{% trans "User story" %}</div>
                     </td>
                     <td class="task-col col open-task-col">
-                        <div class="text">{% trans "New / Open" %}</div>
+                        <div class="text">{% trans "New" %}</div>
                     </td>
                     <td class="task-col col progress-task-col">
                         <div class="text">{% trans "In progress" %}</div>
@@ -31,7 +31,7 @@
                         <div class="text">{% trans "Ready for test" %}</div>
                     </td>
                     <td class="task-col col closed-task-col">
-                        <div class="text">{% trans "Closed / Rejected" %}</div>
+                        <div class="text">{% trans "Closed" %}</div>
                     </td>
                 </tr>
             </thead>
@@ -50,7 +50,12 @@
         {% for participant in participants %}
         <option value="{{ participant.id }}">{{ participant.get_full_name }}</option>
         {% endfor %}
-    </select
+    </select>
+    <select class="statuses">
+        {% for key, value in status_list %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+    </select>
 </div>
 
 {% endblock %}

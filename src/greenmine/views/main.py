@@ -524,6 +524,7 @@ class DashboardView(GenericView):
             'milestones': milestones,
             'milestone':milestone,
             'project': project,
+            'status_list': models.TASK_STATUS_CHOICES,
             'participants': project.all_participants,
         }
         return self.render_to_response(self.template_name, context)

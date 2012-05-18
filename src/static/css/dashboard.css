@@ -1,6 +1,9 @@
 #dashboard-matrix table {
     width: 100%;
 }
+#dashboard-matrix select {
+    height: 16px !important;
+}
 #dashboard-matrix table td { vertical-align: top; }
 #dashboard-matrix table thead td.user-story-col { width: 16%; }
 #dashboard-matrix table thead td.task-col { width: 21%; }
@@ -18,10 +21,10 @@
 
 
 
-#dashboard-matrix table tbody td.open-task-col .task-container { border-color: #F78181 !important; }
-#dashboard-matrix table tbody td.progress-task-col .task-container { border-color: #81BEF7 !important; }
-#dashboard-matrix table tbody td.completed-task-col .task-container { border-color: #AEB404 !important; }
-#dashboard-matrix table tbody td.closed-task-col .task-container { border-color: #088A08 !important; }
+#dashboard-matrix table tbody td.open-task-col .task-container { border-color: #F78181; }
+#dashboard-matrix table tbody td.progress-task-col .task-container { border-color: #81BEF7; }
+#dashboard-matrix table tbody td.completed-task-col .task-container { border-color: #AEB404; }
+#dashboard-matrix table tbody td.closed-task-col .task-container { border-color: #088A08; }
 
 
 #dashboard-matrix table tbody td.col { border: 1px solid #ccc; }
@@ -37,13 +40,39 @@
     min-height: 50px; 
     background-color: #f3f3f3; 
     margin: 3px;
-    border: 1px solid #eeeeee;
+    border-width: 1px;
+    border-style: solid;
     max-width: 380px;
 }
 
+#dashboard-matrix table tbody td.task-col .task-container.non-closed-task { 
+    min-height: 50px; 
+    background-color: #f3f3f3; 
+    margin: 3px;
+    border: 1px solid #eeeeee;
+    max-width: 380px;
+    border-color: #F78181;
+}
+
 #dashboard-matrix table tbody td.task-col .task-container .task { padding: 10px; }
-#dashboard-matrix table tbody td.task-col .task-container .task .icons { overflow: hidden; margin-top: 6px; }
-#dashboard-matrix table tbody td.task-col .task-container .task .icons  .assigned-to { font-size: 12px; font-weight: bold; }
+#dashboard-matrix table tbody td.task-col .task-container .task .icons { 
+    overflow: hidden; 
+    margin-top: 15px; 
+}
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  .assigned-to { 
+    font-size: 12px; 
+    font-weight: bold; 
+    float:left;
+}
+
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  select.statuses,
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  div.current-status {
+    font-size: 12px;
+    font-weight: bold;
+    float: right;
+    color #777;
+}
+
 
 
 

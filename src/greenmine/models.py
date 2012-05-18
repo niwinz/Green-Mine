@@ -27,9 +27,9 @@ MARKUP_TYPE = (
 )
 
 US_STATUS_CHOICES = (
-    ('open', _(u'Open/New')),
+    ('open', _(u'New')),
     ('progress', _(u'In progress')),
-    ('completed', _(u'Completed')),
+    ('completed', _(u'Ready for test')),
     ('closed', _(u'Closed')),
 )
 
@@ -45,7 +45,11 @@ TASK_TYPE_CHOICES = (
     ('task', _(u'Task')),
 )
 
-TASK_STATUS_CHOICES = US_STATUS_CHOICES
+TASK_STATUS_CHOICES = US_STATUS_CHOICES + (
+    ('workaround', _(u"Workaround")),
+    ('needinfo', _(u"Needs info")),
+    ('posponed', _(u"Posponed")),
+)
 
 POINTS_CHOICES = (
     (-1, u'?'),
@@ -587,7 +591,7 @@ class UserStory(models.Model):
 
     @property
     def tasks_closed(self):
-        return self.tasks.filter(status='closed')
+        return self.tasks.filter(status__in=['workaround', 'needinfo','closed', 'posponed'])
 
 
 class Change(models.Model):
@@ -646,6 +650,10 @@ class Task(models.Model):
 
     class Meta:
         unique_together = ('ref', 'project')
+    
+    @property
+    def has_noncolumn_status(self):
+        return self.status in ['needinfo', 'workaround', 'posponed']
 
     @models.permalink
     def get_edit_url(self):
