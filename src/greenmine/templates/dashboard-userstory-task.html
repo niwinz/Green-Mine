@@ -3,13 +3,14 @@
 {% load cache %}
 {% load static %}
 
-<div class="task-container" draggable="true">
+<div class="task-container" draggable="true" ref="{{ task.id }}" id="task-{{ task.id }}"
+    alter_url="{{ task.get_alter_api_url }}">
     <div class="task">
         <div class="description">
             <a href="">{{ task.subject }}</a>
         </div>
         <div class="icons">
-            <div class="assigned-to">{{ task.assigned_to }}</div>
+            <div class="assigned-to" ref="{{ task.assigned_to.id }}">{{ task.assigned_to }}</div>
         </div>
     </div>
 </div>

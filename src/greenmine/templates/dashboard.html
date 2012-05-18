@@ -43,6 +43,16 @@
         </table>
     </div>
 </div>
+
+<div class="hidden" id="templates">
+    <select class="participants">
+        <option value="">None</option>
+        {% for participant in participants %}
+        <option value="{{ participant.id }}">{{ participant.get_full_name }}</option>
+        {% endfor %}
+    </select
+</div>
+
 {% endblock %}
 
 {% block bottom-headers %}

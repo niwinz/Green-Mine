@@ -99,25 +99,25 @@ class TaskAlterApiView(GenericView):
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=taskref)
-        us = get_object_or_404(project.user_stories, pk=request.POST.get('us',None))
+        us = None
 
-        mf = request.POST.get('modify_flag', '')
-        if mf not in ['close', 'progress', 'new']:
-            return self.render_to_error()
+        status = request.POST.get('status', '')
+        if status not in ['closed', 'progress', 'open', 'completed']:
+            return self.render_to_error({"error_message": "invalid status"})
 
         # mark old us modified
         if task.user_story and task.user_story != us:
             task.user_story.modified_date = datetime.datetime.now()
+            task.user_story.save()
 
-        task.user_story = us
-        
-        if mf == 'close':
-            task.status = 'completed'
-        elif mf == 'progress':
-            task.status = 'progress'
-        else:
-            task.status = 'open'
+        if "us" in request.POST:
+            queryset = models.UserStory.objects.filter(pk=request.POST['us'])
+            us = len(queryset) == 1 and queryset.get() or None
 
+        if us:
+            task.user_story = us
+
+        task.status = status
         task.save()
         
         # automatic control of user story status.
@@ -127,8 +127,8 @@ class TaskAlterApiView(GenericView):
             us.status = 'open'
         else:
             us.status = 'progress'
-
         us.save()
+        
         return self.render_to_ok()
  
 
