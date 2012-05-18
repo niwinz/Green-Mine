@@ -280,11 +280,12 @@ class HomeView(GenericView):
             page = 1
         
         if request.user.is_staff:
-            projects = models.Project.objects.order_by('name')
+            projects = models.Project.objects.all()
         else:
             projects = request.user.projects.all() | \
                 request.user.projects_participant.all()
-
+        
+        projects = projects.order_by('name').distinct()
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
 
