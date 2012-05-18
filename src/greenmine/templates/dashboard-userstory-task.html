@@ -1,0 +1,15 @@
+{% load url from future %}
+{% load i18n %}
+{% load cache %}
+{% load static %}
+
+<div class="task-container" draggable="true">
+    <div class="task">
+        <div class="description">
+            <a href="">{{ task.subject }}</a>
+        </div>
+        <div class="icons">
+            <div class="assigned-to">{{ task.assigned_to }}</div>
+        </div>
+    </div>
+</div>

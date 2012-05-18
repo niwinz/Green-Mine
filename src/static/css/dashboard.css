@@ -1,0 +1,64 @@
+#dashboard-matrix table {
+    width: 100%;
+}
+#dashboard-matrix table td { vertical-align: top; }
+#dashboard-matrix table thead td.user-story-col { width: 16%; }
+#dashboard-matrix table thead td.task-col { width: 21%; }
+#dashboard-matrix table thead td .text { 
+    padding: 5px; 
+    font-size: 13px;
+    color: #777;
+    font-weight: bold;
+}
+
+#dashboard-matrix table thead td.open-task-col .text { color: #FA5858 !important; }
+#dashboard-matrix table thead td.progress-task-col .text { color: #2E9AFE !important; }
+#dashboard-matrix table thead td.completed-task-col .text { color: #AEB404 !important; }
+#dashboard-matrix table thead td.closed-task-col .text { color: #088A08 !important; }
+
+
+
+#dashboard-matrix table tbody td.open-task-col .task-container { border-color: #F78181 !important; }
+#dashboard-matrix table tbody td.progress-task-col .task-container { border-color: #81BEF7 !important; }
+#dashboard-matrix table tbody td.completed-task-col .task-container { border-color: #AEB404 !important; }
+#dashboard-matrix table tbody td.closed-task-col .task-container { border-color: #088A08 !important; }
+
+
+#dashboard-matrix table tbody td.col { border: 1px solid #ccc; }
+#dashboard-matrix table tbody td.user-story-col { background-color: #f3f3f3; }
+#dashboard-matrix table tbody td.user-story-col .user-story-container { 
+    min-height: 30px;
+    background-color: white;
+    margin: 5px;
+    border: 1px solid #aaa;
+}
+
+#dashboard-matrix table tbody td.task-col .task-container { 
+    min-height: 50px; 
+    background-color: #f3f3f3; 
+    margin: 3px;
+    border: 1px solid #eeeeee;
+    max-width: 380px;
+}
+
+#dashboard-matrix table tbody td.task-col .task-container .task { padding: 10px; }
+#dashboard-matrix table tbody td.task-col .task-container .task .icons { overflow: hidden; margin-top: 6px; }
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  .assigned-to { font-size: 12px; font-weight: bold; }
+
+
+
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story { padding: 10px; }
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story .description a { font-weight: bold; }
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story .icons { overflow: hidden; margin-top: 6px; }
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story .icons .points {
+    float: left;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    line-height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #eee;
+}
+

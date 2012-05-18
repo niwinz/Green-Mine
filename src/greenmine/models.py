@@ -582,8 +582,12 @@ class UserStory(models.Model):
         return self.tasks.filter(status='progress')
 
     @property
+    def tasks_completed(self):
+        return self.tasks.filter(status='completed')
+
+    @property
     def tasks_closed(self):
-        return self.tasks.filter(status__in=['closed', 'completed'])
+        return self.tasks.filter(status='closed')
 
 
 class Change(models.Model):

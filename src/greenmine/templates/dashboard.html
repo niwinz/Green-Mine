@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load i18n %}
 {% load cache %}
+{% load static %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
@@ -13,26 +14,38 @@
         <br />
     </div>
 
-    <div id="user-stories-module">
-        <div class="user-story-legend">
-            <div class="user-story-header hfield">
-                <b>{% trans "User story" %}: </b>
-            </div>
-            <div class="user-story-status hfield status-new">
-                <b>{% trans "New tasks..." %}</b>
-            </div>
-            <div class="user-story-status hfield status-progess">
-                <b>{% trans "Tasks in progress..." %}</b>
-            </div>
-            <div class="user-story-status hfield status-closed">
-                <b>{% trans "Tasks finished..." %}</b>
-            </div>
-        </div>
-        {% for us in uss %}
-            {#{% cache 0 us.id us.modified_date %} #}
-            {% include "modules/user-story-dashboard.html" %}
-            {#{% endcache %}  #}
-        {% endfor %}
+    <div class="matrix" id="dashboard-matrix">
+        <table>
+            <thead>
+                <tr class="header-row row">
+                    <td class="user-story-col col">
+                        <div class="text">{% trans "User story" %}</div>
+                    </td>
+                    <td class="task-col col open-task-col">
+                        <div class="text">{% trans "New / Open" %}</div>
+                    </td>
+                    <td class="task-col col progress-task-col">
+                        <div class="text">{% trans "In progress" %}</div>
+                    </td>
+                    <td class="task-col col completed-task-col">
+                        <div class="text">{% trans "Ready for test" %}</div>
+                    </td>
+                    <td class="task-col col closed-task-col">
+                        <div class="text">{% trans "Closed" %}</div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for us in user_stories %}
+                    {% include "dashboard-userstory.html" with us=us %}
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+{% endblock %}
+
+{% block bottom-headers %}
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+<script type="text/javascript" src="{% static "js/bb/dashboard.js" %}"></script>
 {% endblock %}
