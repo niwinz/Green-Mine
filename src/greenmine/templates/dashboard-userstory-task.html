@@ -11,7 +11,17 @@
             <a href="">{{ task.subject }}</a>
         </div>
         <div class="icons">
-            <div class="assigned-to" ref="{{ task.assigned_to.id }}">{{ task.assigned_to }}</div>
+            <div class="assigned-to" ref="{{ task.assigned_to.id }}">
+                {% if task.assigned_to %}
+                    {% if task.assigned_to.get_full_name %}
+                    <span class="title">{{ task.assigned_to.get_full_name }}</span>
+                    {% else %}
+                    <span class="title">{{ task.assigned_to.username }}</span>
+                    {% endif %}
+                {% else %}
+                    {% trans "Unassigned" %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
