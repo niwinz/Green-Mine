@@ -740,6 +740,53 @@ class MilestoneCreateView(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
+class MilestoneEditView(GenericView):
+    template_name = 'milestone-edit.html'
+    menu = []
+
+    @login_required
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'edit', 'create')),
+        ])
+
+        form = forms.MilestoneForm(instance=milestone)
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_name, context)
+
+    @login_required
+    def post(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view', 'create')),
+        ])
+        
+        form = forms.MilestoneForm(request.POST, instance=milestone)
+
+        if form.is_valid():
+            milestone = form.save(commit=True)
+            messages.info(request, _(u"Milestone saved successful."))
+            return self.render_redirect(project.get_backlog_url())
+
+        context = {
+            'form': form,
+            'project': project,
+        }
+        return self.render_to_response(self.template_name, context)
+
+
 class MilestoneDeleteView(GenericView):
     def post(self, request, pslug, mid):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1285,6 +1332,7 @@ class ProjectGeneralSettings(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
+        extras = project.get_extras()
 
         self.check_role(request.user, project, [
             ('project', ('view', 'edit')),
@@ -1292,6 +1340,8 @@ class ProjectGeneralSettings(GenericView):
 
         initial = {
             'markup': project.markup,
+            'sprints': extras.sprints,
+            'show_burndown': extras.show_burndown,
         }
 
         form = forms.ProjectGeneralSettingsForm(initial=initial)
@@ -1303,6 +1353,17 @@ class ProjectGeneralSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+    
+    @transaction.commit_on_success
+    def save_form(self, project, form):
+        project.meta_category_color = form.colors_data
+        project.markup = form.cleaned_data['markup']
+        project.save()
+
+        extras = project.get_extras()
+        extras.sprints = form.cleaned_data['sprints']
+        extras.show_burndown = form.cleaned_data['show_burndown']
+        extras.save()
 
     @login_required
     def post(self, request, pslug):
@@ -1315,13 +1376,13 @@ class ProjectGeneralSettings(GenericView):
         form = forms.ProjectGeneralSettingsForm(request.POST)
 
         if form.is_valid():
-            project.meta_category_color = form.colors_data
-            project.markup = form.cleaned_data['markup']
-            project.save()
+            self.save_form(project, form)
 
             messages.info(request, _(u"Project preferences saved successfull"))
             return self.render_redirect(project.get_general_settings_url())
+        
 
+        print dict(form.errors)
         context = {
             'categorys': self.create_category_choices(project),
             'project': project,

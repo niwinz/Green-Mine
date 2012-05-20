@@ -302,7 +302,10 @@ class ProjectGeneralSettingsForm(forms.Form):
         widget=forms.HiddenInput)
     
     markup = forms.ChoiceField(required=True,  choices=models.MARKUP_TYPE)
-        
+
+    sprints = forms.IntegerField(required=False)
+    show_burndown = forms.BooleanField(required=False)
+
 
     def _validate_colors(self, data):
         return True
@@ -323,7 +326,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 class MilestoneForm(forms.ModelForm):
     class Meta:
         model = models.Milestone
-        fields = ['name', 'estimated_finish']
+        fields = ('name', 'estimated_finish', 'disponibility')
 
     def __init__(self, *args, **kwargs):
         super(MilestoneForm, self).__init__(*args, **kwargs)

@@ -423,6 +423,11 @@ class Milestone(models.Model):
         return "{0:.1f}".format(
             (float(self.completed_points) * 100) / float(self.total_points)
         )
+    
+    @models.permalink
+    def get_edit_url(self):
+        return ('web:milestone-edit', (),
+            {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_delete_url(self):

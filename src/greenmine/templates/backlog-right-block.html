@@ -6,10 +6,11 @@
     <div class="milestone-title">
         <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
         <div class="meta">
+            <a href="{{ ml.get_edit_url }}" class="mledit">
+                <img style="vertical-align: middle; width: 18px;" src="{% static 'imgs/settings.png' %}"></img>
+            </a>
+
             <a href="{{ ml.get_delete_url }}" class="delete">
-                <a href="">
-                    <img style="vertical-align: middle; width: 18px;" src="{% static 'imgs/settings.png' %}"></img>
-                </a>
                 <img style="vertical-align: middle; width: 20px;" src="{% static 'imgs/close-icon2.png' %}"></img>
             </a>
         </div>
@@ -20,11 +21,6 @@
             <span class="completed-points">
                 <strong>{% trans "Completed" %}:</strong><span class="value">{{ ml.completed_points }}</span>
             </span> 
-            {% comment %}
-            <span class="completed-points">
-                <strong>{% trans "Percentage completed" %}:</strong><span class="value">{{ ml.percentage_completed }} %</span>
-            </span>
-            {% endcomment %}
         </div>
     </div>
 

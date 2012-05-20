@@ -7,9 +7,9 @@
 {% block wrapper %}
 <div class="milestone milestone-create form-container">
     <div class="form-legend">
-        <span>{% trans "Create new milestone:" %}</span>
+        <span>{% trans "Modify milestone " %} {{ milestone.name }}</span>
     </div>
-    <form method="post" action="{{ project.get_milestone_create_url }}">
+    <form method="post" action="{{ current_url }}">
         {% csrf_token %}
         <div class="form-row">
             <label>{{ form.name.label }}</label>

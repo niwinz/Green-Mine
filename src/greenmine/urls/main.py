@@ -79,6 +79,9 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$', 
         main.MilestoneCreateView.as_view(), name='milestone-create'),
+    
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/edit/$',
+        main.MilestoneEditView.as_view(), name='milestone-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/delete/$',
         main.MilestoneDeleteView.as_view(), name='milestone-delete'),

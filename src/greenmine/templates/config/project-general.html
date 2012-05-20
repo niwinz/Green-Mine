@@ -4,6 +4,90 @@
 
 {% block title %}{{ block.super }} / {% trans "Notifications" %}{% endblock %}
 
+
+
+
+
+{% block wrapper %}
+<div class="user-story-create form-container">
+    {% include "messages.html" %}
+    <div class="form-legend">
+        <span>{% trans "Project general settings:" %}</span>
+    </div>
+
+    <form action="{{ full_current_url }}" method="post" class="inline" id="edit-project-settings">
+        {% csrf_token %}
+        <div class="form-field">
+            <label>{{ form.markup.label }}</label>
+            {{ form.markup.errors }}
+            {{ form.markup }}
+        </div>
+
+        <div class="form-field">
+            <label>{{ form.show_burndown.label }}</label>
+            {{ form.show_burndown.errors }}
+            {{ form.show_burndown }}
+        </div>
+
+        <div class="form-field">
+            <label>{{ form.sprints.label }}</label>
+            {{ form.sprints.errors }}
+            {{ form.sprints }}
+        </div>
+
+        <div class="form-field width100">
+            <label>{% trans "Category colors:" %}</label>
+
+            <div class="colors-section">
+                {% with pc=project.meta_category_color %}
+                <div class="selected-colors" {% if not pc %}style="display: none"{% endif %}>
+                    {% for key, val in pc.iteritems %}
+                    <div class="tag-color-item">
+                        <div class="tag-name">{{ key|lower }}</div>
+                        <div class="tag-color" val="{{ val }}" style="background-color: {{ val }}"></div>
+                        <div class="tag-rm">x</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endwith %}
+                <div class="form-field width100 category-field">
+                    <div class="sub-item-field">
+                        <select name="category">
+                            {% for key, value in categorys %}
+                            <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="sub-item-field">
+                        <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
+                    </div>
+                    <div class="sub-item-field">
+                        <input type="button" value="{% trans "Add" %}" />
+                    </div>
+                </div>
+                {{ form.colors_hidden }}
+            </div>
+        </div>
+        <div class="form-field width100 float-left">
+           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+{% comment %}
+
+
+
 {% block wrapper %}
 <div id="my-profile" class="form-container">
     {% include "messages.html" %}
@@ -17,39 +101,8 @@
 
         <h3>{% trans "Category colors:" %}</h3>
         
-        <div class="colors-section">
-            {% with pc=project.meta_category_color %}
-            <div class="selected-colors" {% if not pc %}style="display: none"{% endif %}>
-                <h3>{% trans "Current colors:" %}</h3>
-                {% for key, val in pc.iteritems %}
-                <div class="tag-color-item">
-                    <div class="tag-name">{{ key|lower }}</div>
-                    <div class="tag-color" val="{{ val }}" style="background-color: {{ val }}"></div>
-                    <div class="tag-rm">x</div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endwith %}
-            <div class="form-field width100 category-field">
-                <div class="sub-item-field">
-                    <select name="category">
-                        {% for key, value in categorys %}
-                        <option value="{{ key }}">{{ value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="sub-item-field">
-                    <input type="text" placeholder="{% trans "Type hexadecimal color:" %}"></input>
-                </div>
-                <div class="sub-item-field">
-                    <input type="button" value="{% trans "Add" %}" />
-                </div>
-            </div>
-            {{ form.colors_hidden }}
-        </div>
 
         <h3>{% trans "Markup system:" %}</h3>
-
         <div class="markup-section">
             {{ form.markup }}
         </div>
@@ -61,3 +114,5 @@
     </form>
 </div>
 {% endblock %}
+
+{% endcomment %}
