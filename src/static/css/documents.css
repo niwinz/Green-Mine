@@ -1,0 +1,79 @@
+#documents-dashboard .left-block { width: 100%; }
+#documents-dashboard .left-block .documents-table {
+    min-height: 200px;
+    padding: 5px;
+}
+#documents-dashboard .left-block .documents-table .document-row {
+    padding: 5px;
+    overflow: hidden;
+    border-bottom: 1px solid #EEE;
+    padding-top: 8px;
+}
+
+#documents-dashboard .left-block .documents-table .document-row.head-row a,
+#documents-dashboard .left-block .documents-table .document-row.head-row span { font-weight: bold; }
+#documents-dashboard .left-block .documents-table .document-row .row {
+    float: left;
+    vertical-align: bottom;
+}
+
+#documents-dashboard .left-block .documents-table .document-row .row.title { width:60%; }
+#documents-dashboard .left-block .documents-table .document-row .row.size {
+    float: right;
+    min-width: 100px;
+}
+#documents-dashboard .left-block .documents-table .document-row .row.date {
+    float: right;
+    min-width: 270px;
+}
+#documents-dashboard .left-block .documents-table .document-row .row.metaicon { 
+    float: right;
+    min-width: 100px;
+}
+#documents-dashboard .left-block .documents-table .document-row .row.metaicon img {
+    cursor: pointer;
+}
+
+
+#upload-dialog div.row { margin-bottom: 10px; overflow: hidden; }
+#upload-dialog *:focus{ outline:none; }
+#upload-dialog .floatLeft { float: left; }
+#upload-dialog .floatRight { float: right; }
+#upload-dialog .clear { clear: both; }
+#upload-dialog form {
+    padding: 5px;
+    margin: 10px auto;
+}
+#upload-dialog #fileToUpload { width: 378px; }
+#upload-dialog #progressIndicator { font-size: 10pt; }
+#upload-dialog #fileInfo {
+    font-size: 10pt;
+    font-style: italic;
+    color: #aaa;
+    margin-top: 10px;
+}
+
+#upload-dialog #progressBar {
+    height: 14px;
+    border: 1px solid #cccccc;
+    display: none;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    background-image: -moz-linear-gradient(top, #66cc00, #4b9500);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#66cc00), to(#4b9500));
+}
+
+#upload-dialog #uploadResponse {
+    margin-top: 10px;
+    padding: 10px;
+    overflow: hidden;
+    display: none;
+    border-radius:4px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px #ccc;
+    background-image: -moz-linear-gradient(top, #ff9900, #c77801);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ff9900), to(#c77801));
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

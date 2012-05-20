@@ -82,7 +82,15 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/delete/$',
         main.MilestoneDeleteView.as_view(), name='milestone-delete'),
+    
+    # Documents
+    url(r'^(?P<pslug>[\w\d\-]+)/documents/$',
+        main.Documents.as_view(), name='documents'),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/documents/upload/',
+        main.DocumentUpload.as_view(), name='documents-upload'),
+    
+    # Questions
     url(r'^(?P<pslug>[\w\d\-]+)/questions/$', 
         main.QuestionsListView.as_view(), name='questions'),
     

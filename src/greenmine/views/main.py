@@ -1315,7 +1315,6 @@ class ProjectGeneralSettings(GenericView):
         form = forms.ProjectGeneralSettingsForm(request.POST)
 
         if form.is_valid():
-            print form.cleaned_data
             project.meta_category_color = form.colors_data
             project.markup = form.cleaned_data['markup']
             project.save()
@@ -1330,6 +1329,94 @@ class ProjectGeneralSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
+
+
+class Documents(GenericView):
+    template_path = 'documents.html'
+    menu = ['documents']
+
+    # TODO: fix permissions
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        if "document_id" in request.session:
+            del request.session['document_id']
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+        ])
+
+        documents = project.documents.order_by('title')
+
+        context = {
+            'documents': documents,
+            'project': project,
+            'form': forms.DocumentForm(),
+        }
+
+        return self.render_to_response(self.template_path, context)
+    
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+        ])
+
+        initial = {}
+
+        if "document_id" in request.session:
+            initial['document_id'] = request.session['document_id']
+
+        form = forms.DocumentForm(request.POST, request.FILES, initial=initial)
+        if form.is_valid():
+            document = models.Document.objects.create(
+                title = form.cleaned_data['title'],
+                owner = request.user,
+                project = project,
+            )
+
+            if "document_id" in form.cleaned_data:
+                tmp_document = models.TemporalFile.objects.get(pk=form.cleaned_data['document_id'])
+                document.attached_file = tmp_document.attached_file
+                document.save()
+                
+            elif "document" in form.cleaned_data:
+                document.attached_file = form.cleaned_data['document']
+                document.save()
+
+            return self.render_to_ok()
+
+        if "document" in request.FILES and "document_id" not in request.session:
+            document_file = request.FILES['document']
+            document = models.TemporalFile.objects.create(
+                owner = request.user,
+                attached_file = request.FILES['document'],
+            )
+            request.session['document_id'] = document.pk
+
+        if "document_id" in request.session:
+            return self.render_json_error(form.errors, context={'document_id': request.session['document_id']})
+        
+        return self.render_json_error(form.errors)
+
+
+class DocumentUpload(GenericView):
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+        ])
+
+        if "document" in request.FILES:
+
+            return self.render_to_ok({'id': document.pk})
+        return self.render_to_error()
 
 
 class QuestionsListView(GenericView):

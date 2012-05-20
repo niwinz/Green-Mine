@@ -61,6 +61,24 @@ class CharField(DjangoCharField):
         return attrs
 
 
+class DocumentForm(forms.Form):
+    title = forms.CharField(max_length=200)
+    document = forms.FileField(required=False)
+    document_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        if "document_id" in cleaned_data and not cleaned_data['document_id']:
+            del cleaned_data['document_id']
+
+        if "document_id" not in cleaned_data:
+            if "document" not in cleaned_data or not cleaned_data['document']:
+                self._errors['document'] = self.error_class([_(u"This field is required")])
+
+        return cleaned_data
+
+
 class LoginForm(forms.Form):
     username = CharField(max_length=200, min_length=4, 
         required=True, type='text', label=_(u'Username'))

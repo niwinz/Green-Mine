@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+
+{% block wrapper %}
+<div id="documents-dashboard" class="documents-dashboard" rel="{{ project.get_milestones_list_api_url }}">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-document" href="#upload-dialog">
+                {% trans "Upload new file" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+    <div class="left-block">
+        <div class="documents-table">
+            <div class="document-row head-row">
+                <div class="row title">
+                    <span><a href="?order_by=subject">{% trans "Title" %}</a></span>
+                </div>
+                <div class="row metaicon">
+                    <span>{% trans "Acctions" %}</span>
+                </div>
+                <div class="row date">
+                    <span><a href="?order_by=status">{% trans "Created on" %}</a></span>
+                </div>
+                <div class="row size">
+                    <span><a href="?order_by=type">{% trans "Size" %}</a></span>
+                </div>
+            </div>
+            {% for doc in documents %}
+            <div class="document-row">
+                <div class="row title">
+                    <span><a href="{{ doc.get_detail_url }}">{{ doc.title }}</a></span>
+                </div>
+                <div class="row metaicon">
+                    <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
+                        deleteurl="{{ task.get_delete_url }}"></img>
+                </div>
+                <div class="row date">
+                    <span>{{ doc.created_date }}</span>
+                </div>
+                <div class="row size">
+                    <span>{{ doc.file_size }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% comment %}
+    <div class="right-block">
+        <div class="milestones simple-list">
+            {% for ml in milestones %}
+            <div class="milestone-item simple {% if ml == milestone %}selected{% endif %}">
+                <div class="milestone-title">
+                    <a class="text" href="{{ ml.get_tasks_url }}">{{ ml.name|capfirst }}</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endcomment %}
+</div>
+
+<div id="upload-dialog" class="hidden" uploadurl="{% url 'web:documents-upload' pslug=project.slug %}">
+    <h3>{% trans "Uploads new document / file" %}</h3>
+
+
+    <form id="form1" enctype="multipart/form-data" method="post" action="{{ current_url }}">
+        <div id="uploadResponse"></div>
+        <div class="row">
+            <label>{{ form.title.label }}</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="row document-row">
+            <label>{{ form.document.label }}</label>
+            {{ form.document }}
+        </div>
+            
+        <div class="document-related">
+            <div id="fileInfo">
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+            </div>
+            <div class="row"></div>
+
+            <div id="progressIndicator">
+                <div id="progressBar" class="floatLeft"></div>
+                <div id="progressNumber" class="floatRight">&nbsp;</div>
+                <div class="clear"></div>
+                <div>
+                    <div id="transferSpeedInfo" class="floatLeft" style="width: 80px;">&nbsp;</div>
+                    <div id="timeRemainingInfo" class="floatLeft" style="margin-left: 10px;">&nbsp;</div>
+                    <div id="transferBytesInfo" class="floatRight" style="text-align: right;">&nbsp;</div>
+                    <div class="clear"></div>
+                </div>    
+            </div>
+        </div>
+
+        <div class="row">
+            {{ form.document_id }}
+            <input type="submit" class="btn01" value="{% trans "Save" %}" />
+        </div>
+    </form>
+</div>
+
+<div class="delete-document-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this document?" %}
+</div>
+{% endblock %}
+
+
+{% block top-headers %}
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/documents.css' %}" />
+{% endblock %}
+
+{% block bottom-headers %}
+<script type="text/javascript" src="{% static "js/bb/documents.js" %}"></script>
+{% endblock %}
