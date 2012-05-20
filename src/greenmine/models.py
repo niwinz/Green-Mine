@@ -169,6 +169,8 @@ class ProjectManager(models.Manager):
 
 class ProjectExtras(models.Model):
     task_parser_re = models.CharField(max_length=1000, blank=True, null=True, default=None)
+    sprints = models.IntegerField(default=1, blank=True, null=True)
+    show_burndown = models.BooleanField(default=False, blank=True)
 
     def get_task_parse_re(self):
         re_str = settings.DEFAULT_TASK_PARSER_RE
@@ -375,7 +377,7 @@ class Milestone(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     closed = models.BooleanField(default=False)
 
-    meta_velocity = DictField(null=True, default={}, editable=False)
+    disponibility = models.FloatField(null=True, default=0.0)
     objects = MilestoneManager()
 
     class Meta:

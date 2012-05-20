@@ -7,7 +7,10 @@
         <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
         <div class="meta">
             <a href="{{ ml.get_delete_url }}" class="delete">
-                <img style="vertical-align: middle" src="{% static 'imgs/delete-icon.png' %}"></img>
+                <a href="">
+                    <img style="vertical-align: middle; width: 18px;" src="{% static 'imgs/settings.png' %}"></img>
+                </a>
+                <img style="vertical-align: middle; width: 20px;" src="{% static 'imgs/close-icon2.png' %}"></img>
             </a>
         </div>
         <div class="milestone-stats" style="clear:both">
