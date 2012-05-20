@@ -1,0 +1,19 @@
+{% load static %}
+<div class="document-row">
+    <div class="row title">
+        <span><a href="{{ doc.get_detail_url }}">{{ doc.title }}</a></span>
+    </div>
+    <div class="row metaicon">
+        <a href="{{ doc.attached_file.url }}">
+            <img class="save" src="{% static 'imgs/save.png' %}"
+                download_url="{{ doc.attached_file.url }}"></img></a>
+        <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
+            deleteurl="{{ doc.get_delete_url }}"></img>
+    </div>
+    <div class="row date">
+        <span>{{ doc.created_date }}</span>
+    </div>
+    <div class="row size">
+        <span>{{ doc.file_size }}</span>
+    </div>
+</div>
