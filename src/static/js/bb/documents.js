@@ -1,14 +1,18 @@
-var FormView = Backbone.View.extend({
+var Form = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'validate', 'clear', 'setErrors', 'collect_data', 'submit',
-                'success', 'error');
+                'success', 'error', 'getXhr', 'fields', 'uploadProgress');
         this.clear();
         this.has_files;
+
+        this.default_errors = {
+            'required': gettext('This field is required')
+        };
     },
 
     clear: function() {
         this.$("ul.errorlist").remove();
-        this.$("input[type=text], item[type=file], select, textarea").val('');
+        this.$("input[type=text], input[type=file], select, textarea").val('');
     },
     
     getXhr: function() {
@@ -42,6 +46,7 @@ var FormView = Backbone.View.extend({
             success: success,
             error: error,
             dataType: dataType,
+            xhr: this.getXhr,
         };
 
         if (opts.data === undefined) {
@@ -69,8 +74,8 @@ var FormView = Backbone.View.extend({
     collect_data: function() {
         var data = {};
         this.has_files = false;
-        
-        _.each(this.$("input, select, textarea"), function(item) {
+
+        _.each(this.fields(), function(item) {
             var item = $(item);
             var item_type = item.attr('type');
 
@@ -92,8 +97,34 @@ var FormView = Backbone.View.extend({
         return data;
     },
 
-    validate: function() {
+    fields: function() {
+        var _fields = new Array();
+        _.each(this.$("input, select, textarea"), function(item) {
+            _fields.push( $(item) );
+        });
 
+        return _fields;
+    },
+        
+    validate: function() {
+        var required_fields = _.filter(this.fields(), function(item) {
+            return item.attr('required') === 'true';
+        });
+
+        var errors = {};
+        var has_errors = false;
+
+        _.each(required_fields, function(item) {
+            if (item.val() == "") {
+                errors[item.attr('name')] = this.default_errors['required'];
+                has_errors = true;
+            }
+        });
+        
+        if (has_errors) {
+            this.setErrors(errors);
+        }
+        return has_errors;
     },
 
     setErrors: function(errors) {
@@ -120,10 +151,10 @@ var UploadDialog = Backbone.View.extend({
     },
 
     initialize: function() {
-        _.bindAll(this, 'onColorboxClose', 'clear', 'show', 'onUploadFileClick');
+        _.bindAll(this, 'onColorboxClose', 'clear', 'show', 'onUploadFileClick', 'uploadComplete');
 
         this.form = this.$("form");
-        this.form_view = new FormView({el: this.form});
+        this.form_view = new Form({el: this.form});
         this.file_selected = false;
     },
 
@@ -131,7 +162,7 @@ var UploadDialog = Backbone.View.extend({
         this.form_view.clear();
         
         this.$("#fileName, #fileSize, #fileType").html("");
-        this.$("#fileInfo").css('display', 'none');
+        this.$("#fileInfo").hide();
         this.$("#progressBar").css({'display':'none', 'width': '0px'});
     },
 
@@ -145,11 +176,11 @@ var UploadDialog = Backbone.View.extend({
             fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
         }
         
-        this.$("#fileInfo").css('display', 'block');
-        document.getElementById('fileInfo').style.display = 'block';
-        document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
-        document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
-        document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
+        this.$("#fileInfo").show();
+        this.$("#fileName").html("Name: " + file.name);
+        this.$("#fileSize").html("Size: " + fileSize);
+        this.$("#fileType").html("Type: " + file.type);
+
         $.colorbox.resize();
         this.file_selected = true;
     },
@@ -157,22 +188,18 @@ var UploadDialog = Backbone.View.extend({
     onUploadFileClick: function(event) {
         event.preventDefault();
 
-        this.previousBytesLoaded = 0;
-        document.getElementById('uploadResponse').style.display = 'none';
-        document.getElementById('progressNumber').innerHTML = '';
-        
-        if (this.file_selected) {
-            var progressBar = document.getElementById('progressBar');
-            progressBar.style.display = 'block';
-            progressBar.style.width = '0px';
-        }
-        
+        this.$("#uploadResponse").hide();
+        this.$("#progressNumber").html("");
+
         // Collect data
         var fd = new FormData();
         fd.append("document", document.getElementById('id_document').files[0]);
         fd.append("title", this.form.find('input[name=title]').val());
-
-        var xhr = this.form_view.submit({data:fd, success:this.uploadComplete})
+        
+        var errors = this.form_view.validate();
+        if (!errors) {
+            var xhr = this.form_view.submit({data:fd, success:this.uploadComplete});
+        }
     },
 
     uploadComplete: function(data) {

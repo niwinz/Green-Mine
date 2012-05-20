@@ -66,6 +66,11 @@ class DocumentForm(forms.Form):
     document = forms.FileField(required=False)
     document_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(DocumentForm, self).__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs['required'] = 'true'
+        self.fields['document'].widget.attrs['required'] = 'true'
+
     def clean(self):
         cleaned_data = self.cleaned_data
 

@@ -45,6 +45,7 @@ form input[type="text"], form input[type="password"], form textarea, form input[
     display: block;
     padding: 2px; 
     font-size: 14px;
+    height: 22px;
 }
 .form-field{width: 305px; margin-bottom: 20px}
 #login  .forgot-pass{line-height: 18px; float: left;}
