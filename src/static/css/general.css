@@ -185,6 +185,11 @@ div.main-menu ul.right-menu li {
 
 
 /* Backlog */
+#burndown #burndown-graph {
+    height: 200px;
+}
+
+
 #dashboard {
     overflow:hidden;
 }

@@ -277,6 +277,11 @@ class Project(models.Model):
     def get_backlog_right_block_url(self):
         return ('web:project-backlog-right-block', (),
             {'pslug': self.slug})
+    
+    @models.permalink
+    def get_backlog_burndown_url(self):
+        return ('web:project-backlog-burndown', (),
+            {'pslug': self.slug})
 
     @models.permalink
     def get_milestone_create_url(self):

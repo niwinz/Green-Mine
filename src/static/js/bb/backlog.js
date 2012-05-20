@@ -24,6 +24,65 @@ var StatsView = Backbone.View.extend({
     }
 });
 
+/* Burndown */
+
+
+var BurndownModel = Backbone.Model.extend({
+    url: function() {
+        return this.get('view').$el.attr('url');
+    }
+});
+
+var BurndownView = Backbone.View.extend({
+    el: $("#burndown"),
+
+    initialize: function() {
+        _.bindAll(this, 'render', 'reload');
+        this.model = new BurndownModel({'view':this});
+        this.model.fetch({success:this.render});
+    },
+
+    reload: function() {
+        this.model.fetch({success:this.render});
+    },
+
+    render: function() {
+        var d1 = new Array(),
+            d2 = new Array(),
+            d3 = new Array(),
+            ticks = new Array();
+
+        var total_points = this.model.get('total_points');
+        var points_for_sprint = this.model.get('points_for_sprint');
+        var sprints = this.model.get('sprints_number');
+        var disponibility = this.model.get('disponibility');
+
+        for(var i=0; i<=sprints; i++) {
+            d1.push([i+1, total_points - points_for_sprint[i]]);
+            d2.push([i+1, total_points - ((total_points/sprints)*i)]);
+            d3.push([i+1, disponibility[i]]);
+            ticks.push([i,"Sprint "+i])
+        }
+
+        $.plot(this.$('#burndown-graph'), [
+            {
+                data: d1,
+                lines: { show: true, fill: true },
+                points: { show: true }
+            },
+            {
+                data: d2,
+                lines: { show: true, fill: true },
+                points: { show: true }
+            },
+            {
+                data: d3,
+                bars: { show: true }
+            }
+        ], { xaxis: { ticks: ticks } });
+    }
+});
+
 /* Unassigned user storyes (left block) */
 
 var LeftBlockModel = Backbone.Model.extend({
@@ -360,6 +419,8 @@ var Backlog = Backbone.View.extend({
         
         var stats_view = new StatsView();
         stats_view.render();
+
+        this.burndown = new BurndownView();
 
         this.left_block = new LeftBlockView({stats_view:stats_view, parent:this});
         this.right_block = new RightBlockView({stats_view:stats_view, parent:this});

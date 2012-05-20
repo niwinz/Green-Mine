@@ -428,6 +428,52 @@ class BacklogRightBlockView(GenericView):
         return self.render_to_ok(response_context)
 
 
+class BacklogBurnDownView(GenericView):
+    def sum_points(self, queryset):
+        total = 0.0
+        for item in queryset:
+            if item.points == -1:
+                continue
+
+            if item.points == -2:
+                total += 0.5
+                continue
+
+            total += item.points
+        return total
+
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        extras = project.get_extras()
+        
+        points_sum = 0
+        points_for_sprint = [points_sum]
+        disponibility = []
+
+        sprints_queryset = project.milestones.order_by('created_date')
+        for i, sprint in enumerate(sprints_queryset, 1):
+            usqs = sprint.user_stories.all()
+            points_sum += self.sum_points(usqs)
+
+            points_for_sprint.append(points_sum)
+            disponibility.append(sprint.disponibility)
+
+        context = {
+            'points_for_sprint': points_for_sprint,
+            'disponibility': disponibility,
+            'sprints_number': extras.sprints,
+            'total_points': self.sum_points(project.user_stories.all()),
+        }
+
+        return self.render_to_ok(context)
+
 class BacklogView(GenericView):
     """ 
     General dasboard view,  with all milestones and all tasks. 

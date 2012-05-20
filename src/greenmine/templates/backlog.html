@@ -15,8 +15,10 @@
     </div>
 
     {% include "messages.html" %}
-
     <div class="left-block" url="{{ project.get_backlog_left_block_url }}">
+        <div id="burndown" url="{{ project.get_backlog_burndown_url }}">
+            <div id="burndown-graph"></div>
+        </div>
         <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
         <div class="unassigned-us"></div>
     </div>
