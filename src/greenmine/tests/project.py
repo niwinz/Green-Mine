@@ -324,6 +324,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'disponibility': 20,
         }
 
         response = self.client.post(self.project1.get_milestone_create_url(), post_params, follow=True)
@@ -338,6 +339,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'disponibility': 20,
         }
 
 
@@ -350,6 +352,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'disponibility': 20,
         }
 
         response = self.client.post(self.project2.get_milestone_create_url(), post_params, follow=True)

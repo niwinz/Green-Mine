@@ -69,6 +69,7 @@ class MilestoneRelatedTests(TestCase):
         post_params = {
             'name': 'sprint1',
             'estimated_finish': '01/01/2012',
+            'disponibility': 20,
         }
         response = self.client.post(project.get_milestone_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
