@@ -47,6 +47,12 @@ var BurndownView = Backbone.View.extend({
     },
 
     render: function() {
+        if (this.$el.attr('show') !== 'on') {
+            return;
+        }
+
+        this.$("#burndown-graph").show();
+
         var d1 = new Array(),
             d2 = new Array(),
             d3 = new Array(),

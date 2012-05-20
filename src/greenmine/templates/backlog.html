@@ -16,8 +16,8 @@
 
     {% include "messages.html" %}
     <div class="left-block" url="{{ project.get_backlog_left_block_url }}">
-        <div id="burndown" url="{{ project.get_backlog_burndown_url }}">
-            <div id="burndown-graph"></div>
+        <div id="burndown" url="{{ project.get_backlog_burndown_url }}" {% if project_extras.show_burndown %}show="on"{%endif%}>
+            <div id="burndown-graph" style="display:none"></div>
         </div>
         <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
         <div class="unassigned-us"></div>

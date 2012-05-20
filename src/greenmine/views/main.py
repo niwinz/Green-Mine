@@ -397,6 +397,7 @@ class BacklogLeftBlockView(GenericView):
         
         return self.render_to_ok(response_context)
 
+
 class BacklogRightBlockView(GenericView):
     """
     Get milestones html part for backlog.
@@ -441,7 +442,8 @@ class BacklogBurnDownView(GenericView):
 
             total += item.points
         return total
-
+    
+    @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
 
@@ -459,7 +461,7 @@ class BacklogBurnDownView(GenericView):
 
         sprints_queryset = project.milestones.order_by('created_date')
         for i, sprint in enumerate(sprints_queryset, 1):
-            usqs = sprint.user_stories.all()
+            usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
             points_sum += self.sum_points(usqs)
 
             points_for_sprint.append(points_sum)
@@ -473,6 +475,7 @@ class BacklogBurnDownView(GenericView):
         }
 
         return self.render_to_ok(context)
+
 
 class BacklogView(GenericView):
     """ 
@@ -494,6 +497,7 @@ class BacklogView(GenericView):
 
         context = {
             'project': project,
+            'project_extras': project.get_extras()
         }
 
         return self.render_to_response(self.template_name, context)
