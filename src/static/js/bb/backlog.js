@@ -10,17 +10,17 @@ var StatsView = Backbone.View.extend({
     el: $(".user-story-stats"),
 
     initialize: function() {
-        _.bindAll(this, 'render');
+        _.bindAll(this, 'render', 'reload');
         this.model = new StatsModel({view:this});
+        this.model.fetch({success:this.render});
+    },
+
+    reload: function() {
+        this.model.fetch({success:this.render});
     },
 
     render: function() {
-        var self = this,
-            deff = this.model.fetch();
-
-        deff.done(function() {
-            self.$el.html(self.model.get('stats_html'));
-        });
+        this.$el.html(this.model.get('stats_html'));
     }
 });
 
@@ -111,14 +111,14 @@ var LeftBlockView = Backbone.View.extend({
         "click .unassigned-us .user-story-inline-submit": "on_us_edit_inline_submit",
         "click .unassigned-us .user-story-inline-cancel": "on_us_edit_form_cancel",
 
-        "click .un-us-item .delete": "unassign_us",
+        "click .un-us-item .delete": "onUserStoryDeleteClick",
 
         /* Ordering */
         "click .unassigned-us .head-title .row a": "on_order_link_clicked",
     },
 
     initialize: function() {
-        _.bindAll(this, 'render', 'rehash', 'fetch_url');
+        _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
 
         this.options.order_by = "-priority";
 
@@ -140,7 +140,7 @@ var LeftBlockView = Backbone.View.extend({
      * Reload state fetching new content from server. 
     */
 
-    rehash: function() {    
+    reload: function() {    
         this.model.fetch({success:this.render});
     },
 
@@ -168,15 +168,18 @@ var LeftBlockView = Backbone.View.extend({
      * On click to delete button on unassigned user story list. 
     */
 
-    unassign_us: function(event) {
+    onUserStoryDeleteClick: function(event) {
         event.preventDefault();
+        
         var self = $(event.currentTarget);
+        var $this = this;
         var buttons = {};
+
         buttons[gettext('Delete')] = function() {
             $(this).dialog('close');
             $.post(self.attr('href'), {}, function(data) {
-                console.log(data);
                 self.parents('.un-us-item').remove();
+                $this.reloadDependents();
             });
         };
 
@@ -215,7 +218,7 @@ var LeftBlockView = Backbone.View.extend({
             }
 
             // Refresh stats
-            stats_view.render();
+            stats_view.reload();
         }, 'html');
 
     },
@@ -260,7 +263,8 @@ var LeftBlockView = Backbone.View.extend({
         event.preventDefault();
         var self = $(event.currentTarget),
             form = self.closest('form'),
-            stats_view = this.options.stats_view;
+            stats_view = this.options.stats_view,
+            $this = this;
 
         $.post(form.attr('action'), form.serialize(), function(data) {
             if (data.valid) {
@@ -291,10 +295,14 @@ var LeftBlockView = Backbone.View.extend({
                 });
             }
 
-            // Refresh stats
-            stats_view.render();
+            $this.reloadDependents();
         }, 'json');
 
+    },
+
+    reloadDependents: function() {
+        this.options.stats_view.render();
+        this.options.burndown_view.reload();
     },
 
     on_us_edit_form_cancel: function(event) {
@@ -401,7 +409,7 @@ var RightBlockView = Backbone.View.extend({
                     self.parents('.milestone-item').remove();
                 }
                 stats_view.render();
-                left_block.rehash();
+                left_block.reload();
             }, 'json');
         };
 
@@ -426,9 +434,13 @@ var Backlog = Backbone.View.extend({
         var stats_view = new StatsView();
         stats_view.render();
 
-        this.burndown = new BurndownView();
+        var burndown_view = new BurndownView();
 
-        this.left_block = new LeftBlockView({stats_view:stats_view, parent:this});
+        this.left_block = new LeftBlockView({
+            stats_view:stats_view, 
+            burndown_view: burndown_view,
+            parent:this
+        });
         this.right_block = new RightBlockView({stats_view:stats_view, parent:this});
     },
 
