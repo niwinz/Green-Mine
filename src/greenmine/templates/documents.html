@@ -31,21 +31,7 @@
                 </div>
             </div>
             {% for doc in documents %}
-            <div class="document-row">
-                <div class="row title">
-                    <span><a href="{{ doc.get_detail_url }}">{{ doc.title }}</a></span>
-                </div>
-                <div class="row metaicon">
-                    <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
-                        deleteurl="{{ task.get_delete_url }}"></img>
-                </div>
-                <div class="row date">
-                    <span>{{ doc.created_date }}</span>
-                </div>
-                <div class="row size">
-                    <span>{{ doc.file_size }}</span>
-                </div>
-            </div>
+                {% include "documents-item.html" with doc=doc %}
             {% endfor %}
         </div>
     </div>
@@ -64,9 +50,8 @@
     {% endcomment %}
 </div>
 
-<div id="upload-dialog" class="hidden" uploadurl="{% url 'web:documents-upload' pslug=project.slug %}">
+<div id="upload-dialog" class="hidden">
     <h3>{% trans "Uploads new document / file" %}</h3>
-
 
     <form id="form1" enctype="multipart/form-data" method="post" action="{{ current_url }}">
         <div id="uploadResponse"></div>

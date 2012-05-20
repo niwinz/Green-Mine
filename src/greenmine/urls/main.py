@@ -86,10 +86,11 @@ urlpatterns = patterns('',
     # Documents
     url(r'^(?P<pslug>[\w\d\-]+)/documents/$',
         main.Documents.as_view(), name='documents'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/documents/upload/',
-        main.DocumentUpload.as_view(), name='documents-upload'),
     
+    # Documents
+    url(r'^(?P<pslug>[\w\d\-]+)/documents/(?P<docid>\d+)/delete/$',
+        main.Documents.as_view(), name='documents-delete'),
+
     # Questions
     url(r'^(?P<pslug>[\w\d\-]+)/questions/$', 
         main.QuestionsListView.as_view(), name='questions'),

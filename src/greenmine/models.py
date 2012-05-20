@@ -722,11 +722,15 @@ class Document(models.Model):
     attached_file = models.FileField(upload_to="documents",
         max_length=1000, null=True, blank=True)
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.title, self.__class__)
         super(Document, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_delete_url(self):
+        return ('web:documents-delete', (),
+            {'pslug': self.project.slug, 'docid': self.pk})
 
 
 class Question(models.Model):

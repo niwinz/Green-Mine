@@ -204,12 +204,17 @@ var UploadDialog = Backbone.View.extend({
 
     uploadComplete: function(data) {
         if (data.success) {
+
             this.form_view.clear()
             $.colorbox.close();
             this.file_selected = false;
         } else {
             this.form_view.setErrors(data.errors.form);
             $.colorbox.resize();
+        }
+        
+        if (data.html) {
+            $(data.html).insertAfter($(".documents-table .head-row"));
         }
     },
 

@@ -32,6 +32,7 @@
 }
 #documents-dashboard .left-block .documents-table .document-row .row.metaicon img {
     cursor: pointer;
+    width: 20px;
 }
 
 
