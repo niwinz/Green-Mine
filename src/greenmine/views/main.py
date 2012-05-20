@@ -1382,9 +1382,9 @@ class Documents(GenericView):
 
 class DocumentsDelete(GenericView):
     @login_required
-    def post(self, request, docid):
+    def post(self, request, pslug, docid):
         project = get_object_or_404(models.Project, slug=pslug)
-        document = get_object_or_404(project.documents)
+        document = get_object_or_404(project.documents, pk=docid)
 
         document.delete()
         return self.render_to_ok()

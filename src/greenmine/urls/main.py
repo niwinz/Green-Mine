@@ -89,7 +89,7 @@ urlpatterns = patterns('',
     
     # Documents
     url(r'^(?P<pslug>[\w\d\-]+)/documents/(?P<docid>\d+)/delete/$',
-        main.Documents.as_view(), name='documents-delete'),
+        main.DocumentsDelete.as_view(), name='documents-delete'),
 
     # Questions
     url(r'^(?P<pslug>[\w\d\-]+)/questions/$', 

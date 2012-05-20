@@ -238,11 +238,12 @@ var DocumentsView = Backbone.View.extend({
     el: $("#documents-dashboard"),
 
     events: {
-        "click .context-menu .new-document": "onUploadDocumentClick"
+        "click .context-menu .new-document": "onUploadDocumentClick",
+        "click .document-row .metaicon img.delete": "onDeleteDocumentClick"
     },
 
     initialize: function() {
-        _.bindAll(this, 'onUploadDocumentClick');
+        _.bindAll(this, 'onUploadDocumentClick', 'onDeleteDocumentClick');
         this.dialog = new UploadDialog({el: $("#upload-dialog"), target: self});
     },
 
@@ -250,6 +251,28 @@ var DocumentsView = Backbone.View.extend({
         event.preventDefault();
         var target = $(event.currentTarget);
         this.dialog.show(target);
+    },
+    onDeleteDocumentClick: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+
+        var buttons = {};
+        buttons[gettext('Delete')] = function() {
+            $(this).dialog('close');
+            $.post(self.attr('deleteurl'), {}, function(data) {
+                self.closest('.document-row').remove();
+            });
+        };
+
+        buttons[gettext('Cancel')] = function() {
+            $(this).dialog('close');
+        };
+
+        $(".delete-document-dialog").dialog({
+            modal: true,
+            width: '220px',
+            buttons: buttons
+        });
     }
 });
 
