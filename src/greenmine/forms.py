@@ -73,9 +73,9 @@ class DocumentForm(forms.Form):
 
 class LoginForm(forms.Form):
     username = CharField(max_length=200, min_length=4, 
-        required=True, type='text', label=_(u'Username'))
+        required=False, type='text', label=_(u'Username'))
     password = CharField(max_length=200, min_length=4, 
-        required=True, type='password', label=_(u'Password'))
+        required=False, type='password', label=_(u'Password'))
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop('request', None)

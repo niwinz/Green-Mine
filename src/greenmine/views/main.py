@@ -114,10 +114,11 @@ class LoginView(GenericView):
                 user_profile = login_form._user.get_profile()
                 if user_profile.default_language:
                     request.session['django_language'] = user_profile.default_language
+
                 return self.render_to_ok({'redirect_to':'/'})
-            else:
-                response = {'errors': login_form.errors}
-                return self.render_to_error(response)
+            
+            return self.render_json_error(login_form.errors)
+        return self.render_json({'error_msg':'Invalid request'}, ok=False)
 
 
 class RememberPasswordView(GenericView):
