@@ -110,7 +110,8 @@ class TaskAlterApiView(GenericView):
         if status not in dict(TASK_STATUS_CHOICES).keys():
             return self.render_to_error({"error_message": "invalid status"})
 
-        task.status = status
+        task.status, us = status, None
+        us_for_update = []
 
         if "us" in request.POST:
             try:
@@ -120,27 +121,32 @@ class TaskAlterApiView(GenericView):
 
             us = len(queryset) == 1 and queryset.get() or None
 
-            # mark old us modified
-            if task.user_story and task.user_story != us:
-                task.user_story.modified_date = datetime.datetime.now()
-                task.user_story.save()
+        # mark old us modified
+        if task.user_story and task.user_story != us:
+            us_for_update.append(task.user_story)
+            task.user_story.modified_date = datetime.datetime.now()
+            task.user_story.save()
 
-            if us:
-                task.user_story = us
-            else:
-                task.user_story = None
+        if us:
+            task.user_story = us
+            us_for_update.append(us)
+        else:
+            task.user_story = None
 
-            if us:
-                # automatic control of user story status.
-                if us.tasks.filter(status__in=['closed','completed']).count() == us.tasks.all().count():
-                    us.status = 'completed'
-                elif us.tasks.all().count() == us.tasks.filter(status='open').count():
-                    us.status = 'open'
-                else:
-                    us.status = 'progress'
-                us.save()
-        
         task.save()
+
+        for us in us_for_update:
+            # automatic control of user story status.
+            total_tasks_count = us.tasks.count()
+
+            if us.tasks.filter(status__in=['closed','completed']).count() == total_tasks_count:
+                us.status = 'completed'
+            elif us.tasks.filter(status='open').count() == total_tasks_count:
+                us.status = 'open'
+            else:
+                us.status = 'progress'
+            us.save()
+        
         return self.render_to_ok()
  
 
