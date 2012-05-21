@@ -129,19 +129,6 @@ $(document).ready(function(){
         milestone_dashboard_bindings();
     }
 
-    //if ($("#login-form").length) {
-    //    $("#id_username").focus();
-    //    $("#login-form").validate({
-    //        printFieldError: function(field) {
-    //            djangoPrintError(this, $(field));
-    //        },
-    //        ajax: true,
-    //        ajaxSuccess: function(data) {
-    //            djangoAjaxSuccess(this.self, data);
-    //        }
-    //    });
-    //}
-    
     if ($("#forgotten-password-form").length) {
         $("#id_email").focus();
         $("#forgotten-password-form").validate({
