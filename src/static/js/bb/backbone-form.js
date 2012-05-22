@@ -9,12 +9,18 @@
  *
  * Changelog:
  *  * 21-05-2012 - First public version. (0.1)
+ *  * 22-05-2012 - Add global errors. (0.2)
+ *               - Add higlight field.
  *
  *
  * Author: Andrei Antoukh <andrei.antoukh@kaleidos.net>
  * License: BSD
- * Version: 0.1
+ * Version: 0.2
 */
+
+if (window.gettext === undefined) {
+    window.gettext = function(data) { return data; }
+}
 
 var Form = Backbone.View.extend({
     /* CONSTRUCTOR
@@ -34,11 +40,23 @@ var Form = Backbone.View.extend({
      *  `resetOnInit`
      *      
      *      same as `clearOnInit` but reset form.
+     *
+     *  `fieldErrorsOnGlobalBox`
     */ 
+
+    defaultHiglightClass: 'error-field',
+
+    defaultFormErrors: {
+        'required': gettext('This field is required.'),
+        'maxlength': gettext('Field contents  exceeds the maximum size allowed.'),
+        'minlength': gettext('The label is smaller than allowed.')
+    },
+
 
     initialize: function() {
         _.bindAll(this, 'validate', 'clear', 'setErrors', 'collectData', 'submit',
-                'success', 'error', 'reset', 'getXhr', 'fields', 'uploadProgress');
+                'success', 'error', 'reset', 'getXhr', 'fields', 'uploadProgress', 
+                'setErrorsFieldsStandatd', 'setErrorsFieldsOnGlobalBox', 'setErrorsGlobal');
 
         if (this.options.clearOnInit) {
             this.clear();
@@ -48,25 +66,35 @@ var Form = Backbone.View.extend({
             this.reset();
         }
 
-        this.default_errors = {
-            'required': gettext('This field is required')
-        };
 
+        this.globalErrorsBox = null;
         this.errors = {}
-
         
-        _.extend(this.errors, this.default_errors)
+        _.extend(this.errors, this.defaultFormErrors)
         if (this.options.errors == undefined) {
             _.extend(this.errors, this.options.errors);
         }
+        
+        if (this.options.higlight === undefined) {
+            this.options.higlight = this.defaultHiglightClass;
+        }
     },
-    
+
     /* 
      * Remove all errors on form.
     */
 
     clear: function() {
         this.$("ul.errorlist").remove();
+
+        if (this.globalErrorsBox) {
+            this.globalErrorsBox.html("");
+            this.globalErrorsBox.hide();
+        }
+
+        if (this.options.higlight) {
+            this.$("." + this.options.higlight).removeClass(this.options.higlight);
+        }
     },
 
     /*
@@ -232,7 +260,7 @@ var Form = Backbone.View.extend({
 
     validate: function() {
         var required_fields = _.filter(this.fields(), function(item) {
-            return item.attr('required') === 'true';
+            return item.hasClass('required');
         });
 
         var errors = {};
@@ -251,34 +279,91 @@ var Form = Backbone.View.extend({
         return has_errors;
     },
 
+    searchField: function(key) {
+        return this.$("[name='" + key + "']");
+    },
+
+    setGlobalErrorsBox: function(dom) {
+        this.globalErrorsBox = $(dom);
+    },
+
+    setErrorsGlobal: function(errors) {
+        var self = this;
+        _.each(errors.global, function(item) {
+            self.globalErrorsBox.append(self.make('li', {}, item));
+        });
+        this.globalErrorsBox.show();
+    },
+
+    setErrorsFieldsStandatd: function(errors) {
+        var self = this;
+
+        _.each(errors.form, function(error_list, key) {
+            var field = self.searchField(key);
+            self.higlight(field);
+            var error_list_dom = $(self.make('ul', {'class': 'errorlist', 'id': 'field-' + field.attr('id')}));
+
+            _.each(error_list, function(item) {
+                error_list_dom.append(self.make('li', {}, item));
+            });
+
+            error_list_dom.insertBefore(field);
+        });
+    },
+
+    setErrorsFieldsOnGlobalBox: function(errors) {
+        var error_list = new Array();
+        var self = this;
+
+        _.each(errors.form, function(field_errors, key) {
+            var field = self.searchField(key);
+            var field_name = field.attr('name');
+
+            self.higlight(field);
+            
+            if (errors.fields !== undefined) {
+                if (errors.fields[field_name] !== undefined) {
+                    field_name = errors.fields[field_name].name;
+                }
+            }
+
+            _.each(field_errors, function(item) {
+                var field_error_string = "<strong>" + field_name + "</strong>: " + item;
+                error_list.push(field_error_string);
+            });
+        });
+
+        this.setErrorsGlobal({global:error_list});
+    },
+
+    higlight: function(field) {
+        if (this.options.higlight !== undefined){
+            field.addClass(this.options.higlight);
+        }
+    },
+
+
     /* setErrors(errors)
      *
      * Draw dinamicaly all errors returned by `render_json_error` from 
      * `django-superview`
      *
-     * TODO: global form errors not implemented.
-     * TODO: all errors to global option, not implemented.
     */
 
     setErrors: function(errors) {
         this.clear();
         var self = this;
 
-        if (errors.form) {
-            _.each(errors.form, function(error_list, key) {
-                var field = self.$("#id_" + key);
-                var error_list_dom = $(self.make('ul', {'class': 'errorlist', 'id': 'field-' + field.attr('id')}));
-
-                _.each(error_list, function(item) {
-                    error_list_dom.append(self.make('li', {}, item));
-                });
-
-                error_list_dom.insertBefore(field);
-            });
+        if (errors.global && this.globalErrorsBox !== null) {
+            this.setErrorsGlobal(errors);
         }
-        
-        if (errors.global) {
-            // TODO
+
+        if (errors.form) {
+            if (this.options.fieldErrorsOnGlobalBox) {
+                this.setErrorsFieldsOnGlobalBox(errors);
+            } else {
+                this.setErrorsFieldsStandatd(errors);
+            }
         }
     }
 });
