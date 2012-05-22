@@ -14,6 +14,6 @@
         <span>{{ doc.created_date }}</span>
     </div>
     <div class="row size">
-        <span>{{ doc.file_size }}</span>
+        <span>{{ doc.attached_file.size|filesizeformat }}</span>
     </div>
 </div>
