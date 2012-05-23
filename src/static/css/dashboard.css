@@ -2,7 +2,7 @@
     width: 100%;
 }
 #dashboard-matrix select {
-    height: 16px !important;
+    height: 23px !important;
 }
 #dashboard-matrix table td { vertical-align: top; }
 #dashboard-matrix table thead td.user-story-col { width: 16%; }
@@ -57,8 +57,9 @@
 #dashboard-matrix table tbody td.task-col .task-container .task { padding: 10px; }
 #dashboard-matrix table tbody td.task-col .task-container .task .icons { 
     overflow: hidden; 
-    margin-top: 15px; 
+    margin-top: 25px; 
 }
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  .participants, 
 #dashboard-matrix table tbody td.task-col .task-container .task .icons  .assigned-to { 
     font-size: 12px; 
     font-weight: bold; 
@@ -69,10 +70,28 @@
 #dashboard-matrix table tbody td.task-col .task-container .task .icons  div.current-status {
     font-size: 12px;
     font-weight: bold;
-    float: right;
+    float: left;
     color #777;
+    margin-left: 10px;
 }
 
+#dashboard-matrix table tbody td.task-col .task-container .task .icons .task-edit {
+    float: left;
+    border: 1px solid 
+    white;
+    width: 17px;
+    height: 17px;
+    vertical-align: middle;
+    line-height: 30px;
+    font-size: 8px;
+    font-weight: bold;
+    text-align: center;
+    padding: 2px;
+    margin-left: 10px;
+}
+#dashboard-matrix table tbody td.task-col .task-container .task .icons .task-edit img {
+    width: 17px;
+}
 
 
 

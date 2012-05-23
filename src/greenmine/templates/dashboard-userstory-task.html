@@ -14,21 +14,25 @@
         reasign_url="{{ task.get_reassign_api_url }}">
     <div class="task">
         <div class="description">
-            <a href="{{ task.get_view_url }}">{{ task.subject }}</a>
+            <a>{{ task.subject }}</a>
         </div>
         <div class="icons">
-            <div class="assigned-to" ref="{{ task.assigned_to.id }}">
-                {% if task.assigned_to %}
-                    {% if task.assigned_to.get_full_name %}
-                    <span class="title">{{ task.assigned_to.get_full_name }}</span>
-                    {% else %}
-                    <span class="title">{{ task.assigned_to.username }}</span>
-                    {% endif %}
-                {% else %}
-                    {% trans "Unassigned" %}
-                {% endif %}
+            <select class="participants">
+                <option value="">{% trans "Unassigned" %}</option>
+                {% for participant in participants %}
+                <option value="{{ participant.id }}" {% if participant.pk == task.assigned_to.pk%}selected{%endif %}>{{ participant.get_full_name }}</option>
+                {% endfor %}
+            </select>
+            <select class="statuses">
+                {% for key, value in status_list %}
+                <option value="{{ key }}" {% if key == task.status %}selected{%endif%}>{{ value }}</option>
+                {% endfor %}
+            </select>
+            <div class="task-edit">
+                <a href="{{ task.get_view_url }}">
+                    <img src="{% static 'imgs/plus-icon.png' %}" />
+                </a>
             </div>
-            <div class="current-status" status="{{ task.status }}">{{ task.get_status_display }}</div>
         </div>
     </div>
 </div>

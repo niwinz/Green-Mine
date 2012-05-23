@@ -37,18 +37,14 @@ var DashboardView = Backbone.View.extend({
         "dragover .task-col": "onDragOver",
         "drop .task-col": "onDrop",
 
-        "click .task-col .task-container .icons .assigned-to": "assignationChangeClick",
         "change .task-col .task-container .icons .participants": "assignationChangeSelect",
-        
-        "click .task-col .task-container .icons .current-status": "statusChangeClick",
-        "change .task-col .task-container .icons .statuses": "statusChangeChange" 
+        "change .task-col .task-container .icons .statuses": "statusChangeChange",
     },
 
     initialize: function() {
         _.bindAll(this, 'render', 'addOne', 'addAll', 'onDrop',
                         'onDragOver', 'onDragLeave', 'onDragStart',
-                        'assignationChangeClick', 'assignationChangeSelect',
-                        'statusChangeClick', 'statusChangeChange');
+                        'assignationChangeSelect', 'statusChangeChange');
         var self = this;
 
         this.user_stories = new UserStoryCollection();
@@ -66,31 +62,16 @@ var DashboardView = Backbone.View.extend({
         this.user_stories.bind('add', this.addOne);
     },
 
-    statusChangeClick: function(event) {
-        var self = $(event.currentTarget);
-        var current_status_key = self.attr('status');
-        var current_status_text = self.html();
-
-        var select_dom_copy = $("#templates select.statuses").clone();
-        select_dom_copy.val(current_status_key);
-        self.replaceWith(select_dom_copy);
-    },
-
     statusChangeChange: function(event) {
         var self = $(event.currentTarget);
         var selected_status_key = self.val()
         var selected_status_text = self.find('option:selected').html();
-
-        var new_dom_attrs = {'status':selected_status_key, 'class': 'current-status'};
-        var new_dom = this.make('div', new_dom_attrs, selected_status_text);
 
         var userstory = self.closest('.user-story-row');
         var task = self.closest('.task-container');
         task.removeClass('non-closed-task');
         
         var post_callback = function() {
-            self.replaceWith(new_dom);
-
             if (stats[selected_status_key] !== undefined) {
                 var coldom = _.find(userstory.find('.task-col'), function(item) {
                     return $(item).attr('tstatus') == selected_status_key;
@@ -113,24 +94,11 @@ var DashboardView = Backbone.View.extend({
         };
 
         var url = task.attr('alter_url');
-        var data = {
-            'status': selected_status_key
-        };
+        var data = {'status': selected_status_key};
 
         $.post(url, data, function(data) {
             if (data.valid) { post_callback(); }
         }, 'json');
-    },
-
-    assignationChangeClick: function(event) {
-        var self = $(event.currentTarget);
-        var current_person_id = self.attr('ref');
-        var select_dom_copy = $("#templates select.participants").clone();
-        if (current_person_id) {
-            select_dom_copy.val(current_person_id);
-        }
-
-        self.replaceWith(select_dom_copy);
     },
 
     assignationChangeSelect: function(event) {
@@ -139,12 +107,8 @@ var DashboardView = Backbone.View.extend({
         var selected_person_name = self.find('option:selected').html();
         var url = self.closest(".task-container").attr('reasign_url');
 
-        var new_dom_attrs = {'ref': selected_person_id, 'class': 'assigned-to'};
-        var new_dom = this.make('div', new_dom_attrs, selected_person_name);
-
         $.post(url, {userid:selected_person_id}, function(data) {
             if (data.valid) {
-                self.replaceWith(new_dom);
             }
         }, 'json');
     },

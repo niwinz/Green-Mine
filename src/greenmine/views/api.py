@@ -114,28 +114,28 @@ class TaskAlterApiView(GenericView):
         us_for_update = []
 
         if "us" in request.POST:
-            try:
-                queryset = models.UserStory.objects.filter(pk=request.POST['us'])
-            except ValueError:
-                queryset = models.UserStory.objects.none()
+            us_pk = request.POST['us']
+            
+            if len(us_pk.strip()) == 0:
+                if task.user_story:
+                    us_for_update.append(task.user_story)
+                task.user_story = None
 
-            us = len(queryset) == 1 and queryset.get() or None
+            else:
+                try:
+                    queryset = models.UserStory.objects.filter(pk=request.POST['us'])
+                except ValueError:
+                    queryset = models.UserStory.objects.none()
 
-        # mark old us modified
-        if task.user_story and task.user_story != us:
-            us_for_update.append(task.user_story)
-            task.user_story.modified_date = datetime.datetime.now()
-            task.user_story.save()
+                us = len(queryset) == 1 and queryset.get() or None
 
-        if us:
-            task.user_story = us
-            us_for_update.append(us)
-        else:
-            task.user_story = None
+            if us:
+                task.user_story = us
+                us_for_update.append(us)
 
         task.save()
 
-        for us in us_for_update:
+        for us in set(us_for_update):
             # automatic control of user story status.
             total_tasks_count = us.tasks.count()
 
@@ -145,6 +145,8 @@ class TaskAlterApiView(GenericView):
                 us.status = 'open'
             else:
                 us.status = 'progress'
+
+            us.modified_date = datetime.datetime.now()
             us.save()
         
         return self.render_to_ok()
