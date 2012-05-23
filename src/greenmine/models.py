@@ -155,6 +155,10 @@ class Role(models.Model):
     question_create = models.BooleanField(default=True)
     question_edit = models.BooleanField(default=True)
     question_delete = models.BooleanField(default=False)
+    document_view = models.BooleanField(default=True)
+    document_create = models.BooleanField(default=True)
+    document_edit = models.BooleanField(default=True)
+    document_delete = models.BooleanField(default=True)
 
 
 class ProjectManager(models.Manager):
