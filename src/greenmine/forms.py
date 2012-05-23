@@ -72,10 +72,8 @@ class DocumentForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    username = CharField(max_length=200, min_length=4, 
-        required=False, type='text', label=_(u'Username'))
-    password = CharField(max_length=200, min_length=4, 
-        required=False, type='password', label=_(u'Password'))
+    username = forms.CharField(max_length=200, min_length=4, label=_(u'Username'))
+    password = forms.CharField(max_length=200, min_length=4, label=_(u'Password'), widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop('request', None)
@@ -305,6 +303,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 
     sprints = forms.IntegerField(required=False)
     show_burndown = forms.BooleanField(required=False)
+    total_story_points = forms.FloatField(required=False)
 
 
     def _validate_colors(self, data):

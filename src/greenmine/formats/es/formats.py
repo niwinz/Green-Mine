@@ -12,3 +12,4 @@ DATETIME_INPUT_FORMATS = (
     '%m/%d/%Y %H:%M:%S', '%m/%d/%Y %H:%M', '%m/%d/%Y',
     '%m/%d/%y %H:%M:%S', '%m/%d/%y %H:%M', '%m/%d/%y'
 )
+DECIMAL_SEPARATOR = '.'

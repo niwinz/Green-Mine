@@ -129,6 +129,7 @@ var LeftBlockView = Backbone.View.extend({
 
     render: function() {
         this.$('.unassigned-us').html(this.model.get('html'))
+        this.trigger('load');
     },
 
     fetch_url: function() {
@@ -163,7 +164,6 @@ var LeftBlockView = Backbone.View.extend({
         this.model.fetch({success:this.render});
     },
 
-
     /* 
      * On click to delete button on unassigned user story list. 
     */
@@ -180,6 +180,10 @@ var LeftBlockView = Backbone.View.extend({
             $.post(self.attr('href'), {}, function(data) {
                 self.parents('.un-us-item').remove();
                 $this.reloadDependents();
+                $this.options.stats_view.render();
+                $this.options.burndown_view.reload();
+                $this.trigger('change');
+                //$this.reload();
             });
         };
 
@@ -203,7 +207,7 @@ var LeftBlockView = Backbone.View.extend({
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
         var unassign_url = source.attr('unassignurl');
-        var stats_view = this.options.stats_view;
+        var $this = this;
 
         $.post(unassign_url, {}, function(data) {
             self.append(data);
@@ -217,8 +221,11 @@ var LeftBlockView = Backbone.View.extend({
                 source.remove();
             }
 
-            // Refresh stats
-            stats_view.reload();
+            // Reload some views.
+            $this.options.stats_view.render();
+            $this.options.burndown_view.reload();
+            $this.trigger('change');
+            $this.reload();
         }, 'html');
 
     },
@@ -263,7 +270,6 @@ var LeftBlockView = Backbone.View.extend({
         event.preventDefault();
         var self = $(event.currentTarget),
             form = self.closest('form'),
-            stats_view = this.options.stats_view,
             $this = this;
 
         $.post(form.attr('action'), form.serialize(), function(data) {
@@ -295,16 +301,12 @@ var LeftBlockView = Backbone.View.extend({
                 });
             }
 
-            $this.reloadDependents();
+            $this.options.stats_view.render();
+            $this.options.burndown_view.reload();
+            $this.trigger('change');
         }, 'json');
 
     },
-
-    reloadDependents: function() {
-        this.options.stats_view.render();
-        this.options.burndown_view.reload();
-    },
-
     on_us_edit_form_cancel: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
@@ -344,6 +346,7 @@ var RightBlockView = Backbone.View.extend({
     render: function() {
         var self = this;
         self.$(".milestones").html(this.model.get('html'));
+        this.trigger('load');
     },
 
     milestones_dragover: function(event) {
@@ -376,14 +379,16 @@ var RightBlockView = Backbone.View.extend({
         var source = $("#" + source_id);
         var assign_url = source.attr('assignurl');
         var milestone_id = self.attr('ref');
-        var stats_view = this.options.stats_view;
+        var $this = this;
 
         $.post(assign_url, {mid: milestone_id}, function(data) {
             var data_object = $(data);
             self.find(".us-item-empty").remove()
             self.find(".milestone-userstorys").append(data_object);
             source.remove()
-            stats_view.render();
+
+            $this.options.stats_view.render();
+            $this.trigger('change');
         }, 'html');
     },
 
@@ -399,8 +404,8 @@ var RightBlockView = Backbone.View.extend({
             buttons = {}, 
             left_block = this.options.parent.left_block,
             stats_view = this.options.stats_view;
+            $this = this;
         
-    
         var buttons = {};
         buttons[gettext('Delete')] = function() {
             $(this).dialog('close');
@@ -408,8 +413,9 @@ var RightBlockView = Backbone.View.extend({
                 if (data.valid) {
                     self.parents('.milestone-item').remove();
                 }
-                stats_view.render();
-                left_block.reload();
+                $this.stats_view.render();
+                $this.left_block.reload();
+                $this.trigger('change');
             }, 'json');
         };
 
@@ -422,6 +428,12 @@ var RightBlockView = Backbone.View.extend({
             width: '220px',
             buttons: buttons
         });
+    },
+
+    reloadDependents: function() {
+        this.stats_view.render();
+        this.left_block.reload();
+        this.trigger('change');
     }
 });
 
@@ -429,7 +441,7 @@ var Backlog = Backbone.View.extend({
     el: $("#dashboard"),
 
     initialize: function() {
-        _.bindAll(this, 'render');
+        _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
         
         var stats_view = new StatsView();
         stats_view.render();
@@ -437,16 +449,70 @@ var Backlog = Backbone.View.extend({
         var burndown_view = new BurndownView();
 
         this.left_block = new LeftBlockView({
-            stats_view:stats_view, 
+            stats_view: stats_view, 
             burndown_view: burndown_view,
-            parent:this
+            parent: this
         });
-        this.right_block = new RightBlockView({stats_view:stats_view, parent:this});
+
+        this.right_block = new RightBlockView({
+            stats_view: stats_view, 
+            parent: this
+        });
+
+        this.left_block.on('load', this.calculateLimit);
+        this.right_block.on('load', this.calculateLimit);
+        this.left_block.on('change', this.calculateLimit);
+        this.right_block.on('change', this.calculateLimit);
     },
+
+    assignedPoints: function() {
+        var total = 0;
+        _.each(this.$(".milestone-userstorys .us-item"), function(item) {
+            var points = $(item).find(".us-meta").html();
+            if (points === '?') return;
+
+            points = parseFloat(points);
+            total += points;
+        }, this);
+
+        return total;
+    },
+
+    calculateLimit: _.after(2, function(){
+        this.$(".limit-line").removeClass("limit-line");
+
+        var items = _.filter(this.$(".un-us-item"), function(item) {
+            return !$(item).hasClass("head-title");
+        });
+        
+        var total_limit = parseFloat(this.$el.attr('total_story_points'));
+
+        console.log(total_limit, this.assignedPoints(), total_limit - this.assignedPoints());
+
+        var total_limit = total_limit - this.assignedPoints();
+        
+        if (total_limit <= 0) {
+            this.$(".head-title").addClass("limit-line");
+        } else {
+            var total = 0;
+            var finished = false;
+
+            _.each(items, function(item) {
+                var points = $(item).find(".row.points span").html();
+                if (points === '?') return;
+
+                var points = parseFloat(points);
+                total += points;
+
+                if (total >= total_limit && !finished) {
+                    $(item).addClass("limit-line");
+                    finished = true;
+                }
+            }, this);
+        }
+    }),
 
     render: function() {},
 });
 
-$(function() {
-    var backlog = new Backlog();
-});
+var backlog = new Backlog();

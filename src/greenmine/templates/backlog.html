@@ -6,7 +6,7 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}" class="backlog">
+<div id="dashboard" rel="{{ project.get_milestones_list_api_url }}" class="backlog" total_story_points="{{ project_extras.total_story_points }}">
     <div class="context-menu">
         <ul>
             <li><a class="new-us" href="{{ project.get_userstory_create_url }}">{% trans "Add new user story" %}</a></li>

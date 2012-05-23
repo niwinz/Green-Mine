@@ -35,6 +35,12 @@
             {{ form.sprints }}
         </div>
 
+        <div class="form-field">
+            <label>{{ form.total_story_points.label }}</label>
+            {{ form.total_story_points.errors }}
+            {{ form.total_story_points }}
+        </div>
+
         <div class="form-field width100">
             <label>{% trans "Category colors:" %}</label>
 

@@ -613,3 +613,4 @@ ul.errorlist li {
 .drag-over {
     border:1px solid #F6CED8;
 }
+#dashboard .left-block .unassigned-us .un-us-item.limit-line { border-bottom: 1px solid green !important}
