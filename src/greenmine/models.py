@@ -175,6 +175,7 @@ class ProjectExtras(models.Model):
     task_parser_re = models.CharField(max_length=1000, blank=True, null=True, default=None)
     sprints = models.IntegerField(default=1, blank=True, null=True)
     show_burndown = models.BooleanField(default=False, blank=True)
+    total_story_points = models.FloatField(default=None, null=True)
 
     def get_task_parse_re(self):
         re_str = settings.DEFAULT_TASK_PARSER_RE
@@ -204,7 +205,6 @@ class Project(models.Model):
 
     public = models.BooleanField(default=True)
 
-    fixed_story_points = models.IntegerField(default=0, null=True)
     meta_category_list = ListField(null=True, default=[], editable=False)
     meta_category_color = DictField(null=True, default={}, editable=False)
     markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
