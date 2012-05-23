@@ -486,9 +486,11 @@ var Backlog = Backbone.View.extend({
         });
         
         var total_limit = parseFloat(this.$el.attr('total_story_points'));
+        if (_.isNaN(total_limit)) {
+            return;
+        }
 
-        console.log(total_limit, this.assignedPoints(), total_limit - this.assignedPoints());
-
+        //console.log(total_limit, this.assignedPoints(), total_limit - this.assignedPoints());
         var total_limit = total_limit - this.assignedPoints();
         
         if (total_limit <= 0) {
