@@ -869,7 +869,11 @@ class TasksTests(TestCase):
 
         response = self.client.post(self.milestone2.get_task_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.redirect_chain, [('http://testserver/test2/milestone/2/task/list/', 302)])
+        
+        jdata = json.loads(response.content)
+
+        self.assertTrue(jdata['success'])
+        self.assertIn('redirect_to', jdata)
 
     def test_task_create_without_permissions_1(self):
         self.client.login(username="test2", password="test")
@@ -906,8 +910,10 @@ class TasksTests(TestCase):
         response = self.client.post(self.milestone2.get_task_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        form_errors = dict(response.context['form'].errors)
-        self.assertIn("milestone", form_errors)
+        jdata = json.loads(response.content)
+        self.assertIn('errors', jdata)
+        self.assertIn('form', jdata['errors'])
+        self.assertIn("milestone", jdata['errors']['form'])
 
     def test_task_edit(self):
         self.client.login(username="test2", password="test")
