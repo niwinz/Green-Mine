@@ -45,11 +45,6 @@ var UploadDialog = Backbone.View.extend({
         this.$("#uploadResponse").hide();
         this.$("#progressNumber").html("");
 
-        // Collect data
-        //var fd = new FormData();
-        //fd.append("document", document.getElementById('id_document').files[0]);
-        //fd.append("title", this.form.find('input[name=title]').val());
-        
         var errors = this.form_view.validate();
         if (!errors) {
             var xhr = this.form_view.submit({success:this.uploadComplete});
