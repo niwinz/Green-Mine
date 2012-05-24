@@ -44,18 +44,58 @@
     </div>
 </div>
 
-<div class="hidden" id="templates">
-    <select class="participants">
-        <option value="">{% trans "Unassigned" %}</option>
-        {% for participant in participants %}
-        <option value="{{ participant.id }}">{{ participant.get_full_name }}</option>
-        {% endfor %}
-    </select>
-    <select class="statuses">
-        {% for key, value in status_list %}
-        <option value="{{ key }}">{{ value }}</option>
-        {% endfor %}
-    </select>
+<div id="create-task-dialog" class="user-story-create form-container hidden">
+    <div class="form-legend">
+        <span>{% trans "Task Create:" %}</span>
+    </div>
+
+    <form action="" method="post" class="inline">
+        {% csrf_token %}
+        <div class="form-field width100">
+            <label>{{ form.subject.label }}</label>
+            {{ form.subject.errors }}
+            {{ form.subject }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.status.label }}</label>
+            {{ form.status.errors }}
+            {{ form.status }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.priority.label }}</label>
+            {{ form.priority.errors }}
+            {{ form.priority }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.milestone.label }}</label>
+            {{ form.milestone.errors }}
+            {{ form.milestone }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.user_story.label }}</label>
+            {{ form.user_story.errors }}
+            {{ form.user_story }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.type.label }}</label>
+            {{ form.type.errors }}
+            {{ form.type}}
+        </div>
+        <div class="form-field">
+            <label>{{ form.assigned_to.label }}</label>
+            {{ form.assigned_to.errors }}
+            {{ form.assigned_to }}
+        </div>
+        <div class="form-field width100">
+            <label>{{ form.description.label }}</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        <input type="hidden" name="from" value="dashboard" />
+        <div class="form-field width100 float-left">
+           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+        </div>
+    </form>
 </div>
 
 {% endblock %}

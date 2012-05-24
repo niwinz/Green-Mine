@@ -109,4 +109,27 @@
     text-align: center;
     border: 1px solid #eee;
 }
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story .icons .new-task {
+    float: left;
+    margin-left: 10px;
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+    line-height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #eee;
+    padding:4px;
+    cursor: pointer;
+}
+#dashboard-matrix table tbody td.user-story-col .user-story-container .user-story .icons .new-task img {
+    width: 20px;
+}
 
+#create-task-dialog input#id_subject {
+    width: 430px;
+}
+
+#create-task-dialog .form-field {
+    width: 250px;

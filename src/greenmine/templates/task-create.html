@@ -1,16 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 {% load url from future %}
 {% load greenmine_utils %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Task" %}{% endblock %}
 
-{% block bottom-headers %}
-    {% include "modules/wikiwidget.html" %}
-{% endblock %}
-
 {% block wrapper %}
-<div class="user-story-create form-container">
+<div class="user-story-create form-container" id="task-create">
     <div class="form-legend">
         <span>{% trans "Task Create:" %}</span>
     </div>
@@ -65,4 +62,9 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block bottom-headers %}
+<script type="text/javascript" src="{% static "js/bb/task.js" %}"></script>
+{% include "modules/wikiwidget.html" %}
 {% endblock %}

@@ -570,6 +570,8 @@ class DashboardView(GenericView):
         if mid is None:
             return self.render_redirect(milestone.get_dashboard_url())
 
+        form = forms.TaskForm(project=project, initial={'milestone':milestone})
+
         context = {
             'user_stories':milestone.user_stories.order_by('subject'),
             'milestones': milestones,
@@ -577,6 +579,7 @@ class DashboardView(GenericView):
             'project': project,
             'status_list': models.TASK_STATUS_CHOICES,
             'participants': project.all_participants,
+            'form': form,
         }
         return self.render_to_response(self.template_name, context)
 
@@ -1104,25 +1107,48 @@ class TaskCreateView(GenericView):
             initial={'milestone':milestone, 'user_story': user_story})
 
         next_url = request.GET.get('next', None)
+        _from = request.POST.get('from', '')
 
         if form.is_valid():
             task = form.save(commit=False)
             task.owner = request.user
             task.project = project
             task.save()
+    
+            if _from == 'dashboard':
+                return self.create_response_for_dashboard(form, task, project)
             
             messages.info(request, _(u"The task has been created with success!"))
-            if next_url:
-                # TODO fix security
-                return self.render_redirect(next_url)
-            
-            return self.render_redirect(task.milestone.get_tasks_url())
+            response = {}
 
-        context = {
-            'project': project,
-            'form': form,
+            if next_url:
+                response['redirect_to'] = next_url
+            else:
+                response['redirect_to'] = task.milestone.get_tasks_url()
+
+            return self.render_json(response)
+
+        return self.render_json_error(form.errors)
+
+    def create_response_for_dashboard(self, form, task, project):
+        html = loader.render_to_string("dashboard-userstory-task.html", {
+            'task':task, 
+            'project': project, 
+            'participants': project.all_participants,
+            'status_list': models.TASK_STATUS_CHOICES,
+        })
+
+        response = {
+            'html': html,
+            'status': task.status,
+            'userStory': task.user_story.id if task.user_story else None,
         }
-        return self.render_to_response(self.template_name, context)
+
+        return self.render_json(response)
+        
+
+
+        
 
 
 class TaskView(GenericView):

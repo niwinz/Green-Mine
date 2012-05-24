@@ -3,7 +3,8 @@
 {% load cache %}
 {% load static %}
 
-<tr class="user-story-row row" id="user-story-{{ us.ud }}" ref="{{ us.id }}">
+<tr class="user-story-row row" id="user-story-{{ us.id }}" ref="{{ us.id }}" 
+        create_task_url="{{ us.get_task_create_url }}">
     <td class="user-story-col col">
         <div class="user-story-container">
             <div class="user-story">
@@ -12,6 +13,9 @@
                 </div>
                 <div class="icons">
                     <div class="points">{{ us.get_points_display }}</div>
+                    <div class="new-task" href="#create-task-dialog">
+                        <img src="{% static 'imgs/plus-icon.png' %}" title="{% trans "Add new tast to the user story." %}" />
+                    </div>
                 </div>
             </div>
         </div>

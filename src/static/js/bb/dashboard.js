@@ -28,6 +28,59 @@ var UserStoryView = Backbone.View.extend({
 });
 
 
+var CreateTaskDialog = Backbone.View.extend({
+    events: {
+        "submit form": "onFormSubmit"
+    },
+
+    initialize: function() {
+        _.bindAll(this, 'show', 'onFormSubmit', 'onFormSubmitSuccess', 'onClose');
+        this.form = this.$("form");
+        this.form_view = new Form({el: this.form});
+    },
+
+    onFormSubmit: function(event) {
+        event.preventDefault();
+        this.form_view.submit({success: this.onFormSubmitSuccess});
+    },
+
+    onFormSubmitSuccess: function(data) {
+        if (data.success && data.userStory) {
+            var userstory = $("#user-story-" + data.userStory);
+            var task = $(data.html);
+            this.trigger('new-task', userstory, task, data.status);
+            $.colorbox.close();
+        } else {
+            this.form_view.setErrors(data.errors);
+        }
+    },
+
+    show: function(target) {
+        this.$el.removeClass('hidden');
+
+        var userstory = target.closest(".user-story-row");
+        var url = userstory.attr('create_task_url');
+        var id = userstory.attr('ref');
+
+        this.$('form').attr('action', url);
+        this.$('form #id_user_story').val(id);
+        this.$('form #id_description').val('');
+        this.$('form #id_subject').val('');
+
+        target.colorbox({
+            inline:true,
+            width: '960px',
+            onCleanup: this.onClose
+        });
+    },
+
+    onClose: function(){
+        this.$el.addClass('hidden');
+    }
+});
+        
+
+
 var DashboardView = Backbone.View.extend({
     el: $("#dashboard-matrix"),
 
@@ -39,12 +92,14 @@ var DashboardView = Backbone.View.extend({
 
         "change .task-col .task-container .icons .participants": "assignationChangeSelect",
         "change .task-col .task-container .icons .statuses": "statusChangeChange",
+        "click .user-story-row .user-story-container .new-task": "onNewTaskClick"
     },
 
     initialize: function() {
         _.bindAll(this, 'render', 'addOne', 'addAll', 'onDrop',
                         'onDragOver', 'onDragLeave', 'onDragStart',
-                        'assignationChangeSelect', 'statusChangeChange');
+                        'assignationChangeSelect', 'statusChangeChange',
+                        'onNewTaskClick', 'addTask');
         var self = this;
 
         this.user_stories = new UserStoryCollection();
@@ -60,36 +115,61 @@ var DashboardView = Backbone.View.extend({
         })
 
         this.user_stories.bind('add', this.addOne);
+        this.create_task_dialog = new CreateTaskDialog({el: $("#create-task-dialog")});
+        this.create_task_dialog.on('new-task', this.addTask);
+    },
+    
+    onNewTaskClick: function(event) {
+        var target = $(event.currentTarget);
+        this.create_task_dialog.show(target);
+    },
+
+    addTask: function(userstorydom, taskdom, tstatus) { 
+        if (stats[tstatus] === undefined) {
+            tstatus = 'closed';
+        }
+
+        var coldom = _.find(userstorydom.find('.task-col'), function(item) {
+            return $(item).attr('tstatus') == tstatus;
+        });
+
+        if (coldom !== undefined) {
+            $(coldom).append(taskdom);
+        }
     },
 
     statusChangeChange: function(event) {
-        var self = $(event.currentTarget);
-        var selected_status_key = self.val()
-        var selected_status_text = self.find('option:selected').html();
+        var target = $(event.currentTarget);
+        var selected_status_key = target.val()
+        var selected_status_text = target.find('option:selected').html();
 
-        var userstory = self.closest('.user-story-row');
-        var task = self.closest('.task-container');
+        var userstory = target.closest('.user-story-row');
+        var task = target.closest('.task-container');
+
         task.removeClass('non-closed-task');
+        var self = this;
         
         var post_callback = function() {
-            if (stats[selected_status_key] !== undefined) {
-                var coldom = _.find(userstory.find('.task-col'), function(item) {
-                    return $(item).attr('tstatus') == selected_status_key;
-                });
+            self.addTask(userstory, task, selected_status_key);
+            
+            //if (stats[selected_status_key] !== undefined) {
+            //    var coldom = _.find(userstory.find('.task-col'), function(item) {
+            //        return $(item).attr('tstatus') == selected_status_key;
+            //    });
 
-                if (coldom !== undefined) {
-                    $(coldom).append(task);
-                }
-            } else {
-                var coldom = _.find(userstory.find('.task-col'), function(item) {
-                    return $(item).attr('tstatus') == 'closed';
-                });
+            //    if (coldom !== undefined) {
+            //        $(coldom).append(task);
+            //    }
+            //} else {
+            //    var coldom = _.find(userstory.find('.task-col'), function(item) {
+            //        return $(item).attr('tstatus') == 'closed';
+            //    });
 
-                task.addClass("non-closed-task");
-                if (coldom !== undefined) {
-                    $(coldom).append(task);
-                }
-            }
+            //    task.addClass("non-closed-task");
+            //    if (coldom !== undefined) {
+            //        $(coldom).append(task);
+            //    }
+            //}
             task.attr('current_status', selected_status_key);
         };
 

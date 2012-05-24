@@ -35,19 +35,6 @@
             {% endfor %}
         </div>
     </div>
-    {% comment %}
-    <div class="right-block">
-        <div class="milestones simple-list">
-            {% for ml in milestones %}
-            <div class="milestone-item simple {% if ml == milestone %}selected{% endif %}">
-                <div class="milestone-title">
-                    <a class="text" href="{{ ml.get_tasks_url }}">{{ ml.name|capfirst }}</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endcomment %}
 </div>
 
 <div id="upload-dialog" class="hidden">
