@@ -4,7 +4,7 @@
 {% load cache %}
 {% load static %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Dashboard" %} {% endblock %}
 
 {% block wrapper %}
 <div id="milestone-dashboard" rel="{{ milestone.id }}">

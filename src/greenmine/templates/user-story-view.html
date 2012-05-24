@@ -5,7 +5,7 @@
 {% load greenmine_markup %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "User Story" %}{% endblock %}
 
 {% block wrapper %}
 <div id="user-story-module" class="show-module">

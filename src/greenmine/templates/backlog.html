@@ -3,7 +3,7 @@
 {% load static from staticfiles %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Backlog" %}{% endblock %}
 
 {% block wrapper %}
 <div id="dashboard" rel="{{ project.get_milestones_list_api_url }}" class="backlog" total_story_points="{{ project_extras.total_story_points }}">

@@ -2,7 +2,7 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Wiki" %}{% endblock %}
 
 {% block bottom-headers %}
     {% include "modules/wikiwidget.html" %}
