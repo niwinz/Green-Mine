@@ -468,8 +468,10 @@ class BacklogBurnDownView(GenericView):
             points_sum += self.sum_points(usqs)
 
             extra_points_user_stories = sprint.user_stories.filter(created_date__gt=sprint.created_date, created_date__lt=sprint.estimated_finish)
-            extra_points_user_stories = extra_points_user_stories.filter(client_requirement=True)
-            extra_points_sum += sum([ us.points for us in extra_points_user_stories])
+            extra_points_user_stories_shareds = extra_points_user_stories.filter(client_requirement=True, team_requirement=True)
+            extra_points_sum += sum([ us.points/2.0 for us in extra_points_user_stories_shareds if us.points != -1])
+            extra_points_user_stories = extra_points_user_stories.filter(client_requirement=True, team_requirement=False)
+            extra_points_sum += sum([ us.points for us in extra_points_user_stories_shareds if us.points != -1])
             extra_points.append(extra_points_sum)
 
             points_for_sprint.append(points_sum)
