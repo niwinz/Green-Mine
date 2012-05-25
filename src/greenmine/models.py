@@ -542,6 +542,7 @@ class UserStory(models.Model):
         related_name='us_watch', null=True)
 
     client_requirement = models.BooleanField(default=False)
+    team_requirement = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('ref', 'project')
