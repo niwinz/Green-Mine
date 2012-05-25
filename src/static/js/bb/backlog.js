@@ -56,17 +56,20 @@ var BurndownView = Backbone.View.extend({
         var d1 = new Array(),
             d2 = new Array(),
             d3 = new Array(),
+            d4 = new Array(),
             ticks = new Array();
 
         var total_points = this.model.get('total_points');
         var points_for_sprint = this.model.get('points_for_sprint');
         var sprints = this.model.get('sprints_number');
         var disponibility = this.model.get('disponibility');
+        var extra_points = this.model.get('extra_points');
 
         for(var i=0; i<=sprints; i++) {
             d1.push([i+1, total_points - points_for_sprint[i]]);
             d2.push([i+1, total_points - ((total_points/sprints)*i)]);
-            d3.push([i+1, disponibility[i]]);
+            d3.push([i+1, -extra_points[i]]);
+            d4.push([i+1, disponibility[i]]);
             ticks.push([i,"Sprint "+i])
         }
 
@@ -83,6 +86,11 @@ var BurndownView = Backbone.View.extend({
             },
             {
                 data: d3,
+                lines: { show: true, fill: true },
+                points: { show: true }
+            },
+            {
+                data: d4,
                 bars: { show: true }
             }
         ], { xaxis: { ticks: ticks } });
