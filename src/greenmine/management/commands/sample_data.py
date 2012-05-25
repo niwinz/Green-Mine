@@ -5,7 +5,9 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 from django.core import management  
 from django.contrib.webdesign import lorem_ipsum
-import random, sys
+from django.utils.timezone import now
+
+import random, sys, datetime
 
 from greenmine.models import *
 
@@ -57,6 +59,8 @@ class Command(BaseCommand):
 
                 project.add_user(participant, "developer")
                 users_counter += 1
+
+            now_date = now() - datetime.timedelta(20)
             
             # create random milestones
             for y in xrange(2):
@@ -64,7 +68,12 @@ class Command(BaseCommand):
                     project = project,
                     name = 'Sprint 20120%s' % (y),
                     owner = project.owner,
+                    created_date = now_date,
+                    modified_date = now_date,
+                    estimated_finish = now_date + datetime.timedelta(20)
                 )
+
+                now_date = now_date +  datetime.timedelta(20)
                 
                 # create uss asociated to milestones
                 for z in xrange(random.randint(2, 6)):
