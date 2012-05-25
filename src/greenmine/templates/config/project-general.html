@@ -30,6 +30,12 @@
         </div>
 
         <div class="form-field">
+            <label>{{ form.show_burnup.label }}</label>
+            {{ form.show_burnup.errors }}
+            {{ form.show_burnup }}
+        </div>
+
+        <div class="form-field">
             <label>{{ form.sprints.label }}</label>
             {{ form.sprints.errors }}
             {{ form.sprints }}
