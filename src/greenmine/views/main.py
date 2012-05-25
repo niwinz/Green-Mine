@@ -539,8 +539,8 @@ class BacklogBurnUpView(GenericView):
         total_points = self.sum_points(project.user_stories.all())
         sprints = []
         sprints.append(points_for_sprint)
-        sprints.append(extra_points)
         sprints.append(extra_points_team)
+        sprints.append(extra_points)
         
         context = {
             'sprints': sprints,
