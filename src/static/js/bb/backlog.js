@@ -97,6 +97,78 @@ var BurndownView = Backbone.View.extend({
     }
 });
 
+/* Burnup */
+
+var BurnupModel = Backbone.Model.extend({
+    url: function() {
+        return this.get('view').$el.attr('url');
+    }
+});
+
+var BurnupView = Backbone.View.extend({
+    el: $("#burnup"),
+
+    initialize: function() {
+        _.bindAll(this, 'render', 'reload');
+        this.model = new BurnupModel({'view':this});
+        this.model.fetch({success:this.render});
+    },
+
+    reload: function() {
+        this.model.fetch({success:this.render});
+    },
+
+    render: function() {
+        if (this.$el.attr('show') !== 'on') {
+            return;
+        }
+
+        this.$("#burnup-graph").show();
+
+        var d1 = new Array(),
+            d2 = new Array(),
+            d3 = new Array(),
+            d4 = new Array(),
+            ticks = new Array();
+
+        var sprints = this.model.get('sprints');
+        var total_points = this.model.get('total_points');
+        var total_sprints = this.model.get('total_sprints');
+
+        for(var i=0; i<=total_sprints; i++) {
+            d1.push([i+1, total_points]);
+            d2.push([i+1, sprints[0][i]]);
+            d3.push([i+1, total_points+sprints[1][i]]);
+            d4.push([i+1, total_points+sprints[1][i]+sprints[2][i]]);
+            ticks.push([i,"Sprint "+i]);
+        }
+
+        $.plot($("#burnup-graph"), [
+            {
+                data: d4,
+                lines: { show: true, fill: 1.0 },
+                points: { show: true }
+            },
+            {
+                data: d3,
+                lines: { show: true, fill: 1.0 },
+                points: { show: true }
+            },
+            {
+                data: d1,
+                lines: { show: true, fill: 1.0 },
+                points: { show: true }
+            },
+            {
+                data: d2,
+                lines: { show: true, fill: 1.0 },
+                points: { show: true }
+            }
+            ], { xaxis: { ticks: ticks }});
+    }
+});
+
+
 /* Unassigned user storyes (left block) */
 
 var LeftBlockModel = Backbone.Model.extend({
@@ -455,6 +527,7 @@ var Backlog = Backbone.View.extend({
         stats_view.render();
 
         var burndown_view = new BurndownView();
+        var burnup_view = new BurnupView();
 
         this.left_block = new LeftBlockView({
             stats_view: stats_view, 

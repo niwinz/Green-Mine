@@ -484,6 +484,63 @@ class BacklogBurnDownView(GenericView):
 
         return self.render_to_ok(context)
 
+class BacklogBurnUpView(GenericView):
+    def sum_points(self, queryset):
+        total = 0.0
+        for item in queryset:
+            if item.points == -1:
+                continue
+
+            if item.points == -2:
+                total += 0.5
+                continue
+
+            total += item.points
+        return total
+    
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        extras = project.get_extras()
+        
+        points_sum = 0
+        points_for_sprint = [points_sum]
+        disponibility = []
+        extra_points = [0]
+
+        sprints_queryset = project.milestones.order_by('created_date')
+        for i, sprint in enumerate(sprints_queryset, 1):
+            usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
+            points_sum += self.sum_points(usqs)
+
+            extra_points_user_stories = sprint.user_stories.filter(created_date__gt=sprint.created_date, created_date__lt=sprint.estimated_finish)
+            extra_points_user_stories = extra_points_user_stories.filter(client_requirement=True)
+            extra_points_sum = sum([ us.points for us in extra_points_user_stories])
+            extra_points.append(extra_points_sum)
+
+            points_for_sprint.append(points_sum)
+            disponibility.append(sprint.disponibility)
+
+        total_points = self.sum_points(project.user_stories.all())
+        sprints = []
+        sprints.append(points_for_sprint)
+        sprints.append(extra_points)
+        sprints.append([ 0 for x in range(extras.sprints) ])
+        
+        context = {
+            'sprints': sprints,
+            'total_points': total_points,
+            'total_sprints': extras.sprints,
+        }
+
+        return self.render_to_ok(context)
 
 class BacklogView(GenericView):
     """ 

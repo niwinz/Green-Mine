@@ -175,6 +175,7 @@ class ProjectExtras(models.Model):
     task_parser_re = models.CharField(max_length=1000, blank=True, null=True, default=None)
     sprints = models.IntegerField(default=1, blank=True, null=True)
     show_burndown = models.BooleanField(default=False, blank=True)
+    show_burnup = models.BooleanField(default=False, blank=True)
     total_story_points = models.FloatField(default=None, null=True)
 
     def get_task_parse_re(self):
@@ -285,6 +286,11 @@ class Project(models.Model):
     @models.permalink
     def get_backlog_burndown_url(self):
         return ('web:project-backlog-burndown', (),
+            {'pslug': self.slug})
+
+    @models.permalink
+    def get_backlog_burnup_url(self):
+        return ('web:project-backlog-burnup', (),
             {'pslug': self.slug})
 
     @models.permalink
