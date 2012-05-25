@@ -15,7 +15,7 @@
     <div class="form-legend">
         <span>{% trans "Create user story:" %}</span>
     </div>
-    <form method="post" action="{{ project.get_userstory_create_url }}" class="inline">
+    <form method="post" action="{{ project.get_userstory_edit_url }}" class="inline">
         {% csrf_token %}
         <div class="form-field">
             <label>{{ form.subject.label }}</label>
@@ -31,6 +31,16 @@
             <label>{{ form.category.label }}</label>
             {{ form.category.errors }}
             {{ form.category }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.client_requirement.label }}</label>
+            {{ form.client_requirement.errors }}
+            {{ form.client_requirement }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.team_requirement.label }}</label>
+            {{ form.team_requirement.errors }}
+            {{ form.team_requirement }}
         </div>
         <div class="form-field width100">
             <label>{{ form.description.label }}</label>
