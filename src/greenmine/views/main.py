@@ -1483,6 +1483,7 @@ class ProjectGeneralSettings(GenericView):
             'markup': project.markup,
             'sprints': extras.sprints,
             'show_burndown': extras.show_burndown,
+            'show_burnup': extras.show_burnup,
             'total_story_points': extras.total_story_points,
         }
 
@@ -1505,6 +1506,7 @@ class ProjectGeneralSettings(GenericView):
         extras = project.get_extras()
         extras.sprints = form.cleaned_data['sprints']
         extras.show_burndown = form.cleaned_data['show_burndown']
+        extras.show_burnup = form.cleaned_data['show_burnup']
         extras.total_story_points = form.cleaned_data['total_story_points']
         extras.save()
 

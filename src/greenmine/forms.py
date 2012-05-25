@@ -303,6 +303,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 
     sprints = forms.IntegerField(required=False)
     show_burndown = forms.BooleanField(required=False)
+    show_burnup = forms.BooleanField(required=False)
     total_story_points = forms.FloatField(required=False)
 
 

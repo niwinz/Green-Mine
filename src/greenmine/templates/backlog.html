@@ -19,7 +19,8 @@
         <div id="burndown" url="{{ project.get_backlog_burndown_url }}" {% if project_extras.show_burndown %}show="on"{%endif%}>
             <div id="burndown-graph" style="display:none"></div>
         </div>
-        <div id="burnup" url="{{ project.get_backlog_burnup_url }}" {% if project_extras.show_burnup %}show="on"{%endif%}>
+
+        <div id="burnup" url="{{ project.get_backlog_burnup_url }}" {% if project_extras.show_burnup %}show="on"{% endif %}>
             <div id="burnup-graph" style="display:none"></div>
         </div>
         <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
