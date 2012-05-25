@@ -15,7 +15,7 @@
     <div class="form-legend">
         <span>{% trans "Create user story:" %}</span>
     </div>
-    <form method="post" action="{{ project.get_userstory_create_url }}" class="inline">
+    <form method="post" action="{{ project.get_userstory_edit_url }}" class="inline">
         {% csrf_token %}
         <div class="form-field">
             <label>{{ form.subject.label }}</label>
