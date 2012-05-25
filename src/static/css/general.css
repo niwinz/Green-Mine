@@ -189,6 +189,10 @@ div.main-menu ul.right-menu li {
     height: 200px;
 }
 
+#burnup #burnup-graph {
+    height: 200px;
+}
+
 
 #dashboard {
     overflow:hidden;
