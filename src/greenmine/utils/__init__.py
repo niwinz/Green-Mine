@@ -23,6 +23,16 @@ class Singleton(type):
         return cls.__instance
 
 
+def iter_points(queryset):
+    for item in queryset:
+        if item.points == -1:
+            yield 0
+        elif item.points == -2:
+            yield 0.5
+        else:
+            yield item.points
+
+
 def clear_model_dict(data):
     hidden_fields = ['password']
 
