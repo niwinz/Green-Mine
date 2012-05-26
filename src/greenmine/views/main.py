@@ -528,16 +528,16 @@ class BacklogBurnUpView(GenericView):
 
             extra_points_user_stories = models.UserStory.objects.filter(created_date__gt=sprint.created_date, created_date__lt=sprint.estimated_finish)
             extra_points_user_stories_shareds = extra_points_user_stories.filter(client_requirement=True, team_requirement=True)
-            extra_points_sum += sum([ us.points/2.0 for us in extra_points_user_stories_shareds])
+            extra_points_sum += sum([ us.points/2.0 for us in extra_points_user_stories_shareds if us.points != -1 ])
             extra_points_user_stories = extra_points_user_stories.filter(client_requirement=True, team_requirement=False)
-            extra_points_sum += sum([ us.points for us in extra_points_user_stories])
+            extra_points_sum += sum([ us.points for us in extra_points_user_stories if us.points != -1 ])
             extra_points.append(extra_points_sum)
 
             extra_points_team_user_stories = models.UserStory.objects.filter(created_date__gt=sprint.created_date, created_date__lt=sprint.estimated_finish)
             extra_points_team_user_stories_shareds = extra_points_team_user_stories.filter(team_requirement=True, client_requirement=True)
-            extra_points_team_sum += sum([ us.points/2.0 for us in extra_points_team_user_stories_shareds])
+            extra_points_team_sum += sum([ us.points/2.0 for us in extra_points_team_user_stories_shareds if us.points != -1 ])
             extra_points_team_user_stories = extra_points_team_user_stories.filter(team_requirement=True, client_requirement=False)
-            extra_points_team_sum += sum([ us.points for us in extra_points_team_user_stories])
+            extra_points_team_sum += sum([ us.points for us in extra_points_team_user_stories if us.points != -1 ])
             extra_points_team.append(extra_points_team_sum)
 
             points_for_sprint.append(points_sum)
