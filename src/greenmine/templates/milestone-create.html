@@ -17,6 +17,11 @@
             {{ form.name }}
         </div>
         <div class="form-row">
+            <label>{{ form.estimated_start.label }}</label>
+            {{ form.estimated_start.errors }}
+            {{ form.estimated_start }}
+        </div>
+        <div class="form-row">
             <label>{{ form.estimated_finish.label }}</label>
             {{ form.estimated_finish.errors }}
             {{ form.estimated_finish }}
