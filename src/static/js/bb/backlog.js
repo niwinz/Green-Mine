@@ -210,8 +210,7 @@ var LeftBlockView = Backbone.View.extend({
         this.options.order_by = "-priority";
 
         this.model = new LeftBlockModel({view:this});
-        this.model.on('change', this.render);
-        this.model.fetch();
+        this.model.fetch({success: this.render});
     },
 
     render: function() {
@@ -258,19 +257,15 @@ var LeftBlockView = Backbone.View.extend({
     onUserStoryDeleteClick: function(event) {
         event.preventDefault();
         
-        var self = $(event.currentTarget);
-        var $this = this;
+        var target = $(event.currentTarget);
+        var self = this;
         var buttons = {};
 
         buttons[gettext('Delete')] = function() {
             $(this).dialog('close');
-            $.post(self.attr('href'), {}, function(data) {
-                self.parents('.un-us-item').remove();
-                $this.reloadDependents();
-                $this.options.stats_view.render();
-                $this.options.burndown_view.reload();
-                $this.trigger('change');
-                //$this.reload();
+            $.post(target.attr('href'), {}, function(data) {
+                target.parents('.un-us-item').remove();
+                self.trigger('change');
             });
         };
 
@@ -387,9 +382,6 @@ var LeftBlockView = Backbone.View.extend({
                     form.find('[name='+index+']').before(ul);
                 });
             }
-
-            $this.options.stats_view.render();
-            $this.options.burndown_view.reload();
             $this.trigger('change');
         }, 'json');
 
@@ -440,42 +432,41 @@ var RightBlockView = Backbone.View.extend({
         event.originalEvent.dataTransfer.dropEffect = 'copy';
         event.preventDefault();
 
-        var self = $(event.currentTarget);
+        var target = $(event.currentTarget);
 
-        if (!self.hasClass("drag-over")) {
-            self.addClass("drag-over");
+        if (!target.hasClass("drag-over")) {
+            target.addClass("drag-over");
         }
     },
 
     milestones_drageleave: function(event) {
         event.preventDefault();
 
-        var self = $(event.currentTarget);
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
+        var target = $(event.currentTarget);
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
         }
     },
 
     milestones_on_drop: function(event) {
-        var self = $(event.currentTarget);
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
+        var target = $(event.currentTarget);
+        if (target.hasClass('drag-over')) {
+            target.removeClass('drag-over');
         }
 
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
         var assign_url = source.attr('assignurl');
-        var milestone_id = self.attr('ref');
-        var $this = this;
+        var milestone_id = target.attr('ref');
+        var self = this;
 
         $.post(assign_url, {mid: milestone_id}, function(data) {
             var data_object = $(data);
-            self.find(".us-item-empty").remove()
-            self.find(".milestone-userstorys").append(data_object);
+            target.find(".us-item-empty").remove()
+            target.find(".milestone-userstorys").append(data_object);
             source.remove()
-
-            $this.options.stats_view.render();
-            $this.trigger('change');
+            
+            self.trigger('change');
         }, 'html');
     },
 
@@ -487,22 +478,17 @@ var RightBlockView = Backbone.View.extend({
 
     on_milestone_delete_click: function(event) {
         event.preventDefault();
-        var self = $(event.currentTarget), 
-            buttons = {}, 
-            left_block = this.options.parent.left_block,
-            stats_view = this.options.stats_view;
-            $this = this;
-        
+        var target = $(event.currentTarget);
+        var self = this;
         var buttons = {};
+
         buttons[gettext('Delete')] = function() {
             $(this).dialog('close');
-            $.post(self.attr('href'), {}, function(data) {
+            $.post(target.attr('href'), {}, function(data) {
                 if (data.valid) {
-                    self.parents('.milestone-item').remove();
+                    target.parents('.milestone-item').remove();
                 }
-                $this.stats_view.render();
-                $this.left_block.reload();
-                $this.trigger('change');
+                self.trigger('change');
             }, 'json');
         };
 
@@ -515,12 +501,6 @@ var RightBlockView = Backbone.View.extend({
             width: '220px',
             buttons: buttons
         });
-    },
-
-    reloadDependents: function() {
-        this.stats_view.render();
-        this.left_block.reload();
-        this.trigger('change');
     }
 });
 
@@ -531,26 +511,24 @@ var Backlog = Backbone.View.extend({
         _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
         
         var stats_view = new StatsView();
-        stats_view.render();
-
         var burndown_view = new BurndownView();
         var burnup_view = new BurnupView();
 
-        this.left_block = new LeftBlockView({
-            stats_view: stats_view, 
-            burndown_view: burndown_view,
-            parent: this
-        });
-
-        this.right_block = new RightBlockView({
-            stats_view: stats_view, 
-            parent: this
-        });
+        this.left_block = new LeftBlockView();
+        this.right_block = new RightBlockView();
 
         this.left_block.on('load', this.calculateLimit);
-        this.right_block.on('load', this.calculateLimit);
+        this.left_block.on('change', stats_view.reload);
+        this.left_block.on('change', burndown_view.reload);
+        this.left_block.on('change', burndown_view.reload);
         this.left_block.on('change', this.calculateLimit);
+
+
+        this.right_block.on('load', this.calculateLimit);
         this.right_block.on('change', this.calculateLimit);
+        this.right_block.on('change', this.left_block.reload);
+        this.right_block.on('change', stats_view.reload);
+        this.right_block.on('change', burndown_view.reload);
     },
 
     assignedPoints: function() {
