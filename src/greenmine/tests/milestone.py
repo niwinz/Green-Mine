@@ -68,7 +68,8 @@ class MilestoneRelatedTests(TestCase):
         project = Project.objects.get(name="test1", owner=self.user1)
         post_params = {
             'name': 'sprint1',
-            'estimated_finish': '01/01/2012',
+            'estimated_finish': '20/01/2012',
+            'estimated_start': '01/01/2012',
             'disponibility': 20,
         }
         response = self.client.post(project.get_milestone_create_url(), post_params, follow=True)
