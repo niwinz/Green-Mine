@@ -26,7 +26,6 @@ var StatsView = Backbone.View.extend({
 
 /* Burndown */
 
-
 var BurndownModel = Backbone.Model.extend({
     url: function() {
         return this.get('view').$el.attr('url');
@@ -38,12 +37,16 @@ var BurndownView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'render', 'reload');
-        this.model = new BurndownModel({'view':this});
-        this.model.fetch({success:this.render});
+        if (this.$el.attr('show') === 'on') {
+            this.model = new BurndownModel({'view':this});
+            this.model.fetch({success:this.render});
+        }
     },
 
     reload: function() {
-        this.model.fetch({success:this.render});
+        if (this.$el.attr('show') === 'on') {
+            this.model.fetch({success:this.render});
+        }
     },
 
     render: function() {
@@ -110,12 +113,16 @@ var BurnupView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'render', 'reload');
-        this.model = new BurnupModel({'view':this});
-        this.model.fetch({success:this.render});
+        if (this.$el.attr('show') === 'on') {
+            this.model = new BurnupModel({'view':this});
+            this.model.fetch({success:this.render});
+        }
     },
 
     reload: function() {
-        this.model.fetch({success:this.render});
+        if (this.$el.attr('show') === 'on') {
+            this.model.fetch({success:this.render});
+        }
     },
 
     render: function() {
