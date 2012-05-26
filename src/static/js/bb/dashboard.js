@@ -30,13 +30,28 @@ var UserStoryView = Backbone.View.extend({
 
 var CreateTaskDialog = Backbone.View.extend({
     events: {
-        "submit form": "onFormSubmit"
+        "submit form": "onFormSubmit",
+        "click .form-field input[type=submit].save": "onSaveClicked",
+        "click .form-field input[type=submit].save-and-create-other": "onSaveClicked"
     },
 
     initialize: function() {
-        _.bindAll(this, 'show', 'onFormSubmit', 'onFormSubmitSuccess', 'onClose');
+        _.bindAll(this, 'show', 'onFormSubmit', 'onFormSubmitSuccess', 'onClose', 'onSaveClicked');
         this.form = this.$("form");
+        this.form.find('input[name=createother]').val('off');
         this.form_view = new Form({el: this.form});
+    },
+
+    onSaveClicked: function(event) {
+        event.preventDefault();
+
+        var target = $(event.currentTarget);
+        if (target.hasClass('save-and-create-other')){
+            this.$("form input[name=createother]").val('on');
+        } else {
+            this.$("form input[name=createother]").val('off');
+        }
+        this.$('form').submit();
     },
 
     onFormSubmit: function(event) {
@@ -49,10 +64,20 @@ var CreateTaskDialog = Backbone.View.extend({
             var userstory = $("#user-story-" + data.userStory);
             var task = $(data.html);
             this.trigger('new-task', userstory, task, data.status);
-            $.colorbox.close();
+
+            if (this.$("form input[name=createother]").val() == 'on') {
+                this.partialClear();
+            } else {
+                $.colorbox.close();
+            }
         } else {
             this.form_view.setErrors(data.errors);
         }
+    },
+
+    partialClear: function() {
+        this.$('form #id_description').val('');
+        this.$('form #id_subject').val('');
     },
 
     show: function(target) {
@@ -64,8 +89,7 @@ var CreateTaskDialog = Backbone.View.extend({
 
         this.$('form').attr('action', url);
         this.$('form #id_user_story').val(id);
-        this.$('form #id_description').val('');
-        this.$('form #id_subject').val('');
+        this.partialClear();
 
         target.colorbox({
             inline:true,
@@ -151,25 +175,6 @@ var DashboardView = Backbone.View.extend({
         
         var post_callback = function() {
             self.addTask(userstory, task, selected_status_key);
-            
-            //if (stats[selected_status_key] !== undefined) {
-            //    var coldom = _.find(userstory.find('.task-col'), function(item) {
-            //        return $(item).attr('tstatus') == selected_status_key;
-            //    });
-
-            //    if (coldom !== undefined) {
-            //        $(coldom).append(task);
-            //    }
-            //} else {
-            //    var coldom = _.find(userstory.find('.task-col'), function(item) {
-            //        return $(item).attr('tstatus') == 'closed';
-            //    });
-
-            //    task.addClass("non-closed-task");
-            //    if (coldom !== undefined) {
-            //        $(coldom).append(task);
-            //    }
-            //}
             task.attr('current_status', selected_status_key);
         };
 
@@ -279,6 +284,4 @@ var DashboardView = Backbone.View.extend({
     render: function() {},
 });
 
-$(function() {
-    var dashboard = new DashboardView();
-});
+var dashboard = new DashboardView();

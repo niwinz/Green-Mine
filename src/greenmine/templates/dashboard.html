@@ -92,8 +92,10 @@
             {{ form.description.errors }}
         </div>
         <input type="hidden" name="from" value="dashboard" />
+        <input type="hidden" name="createother" value="off" />
         <div class="form-field width100 float-left">
-           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+           <input type="submit" value="{% trans "Save" %}" class="btn01 save"></input>
+           <input type="submit" value="{% trans "Save and create other" %}" class="btn01 save-and-create-other"></input>
         </div>
     </form>
 </div>
