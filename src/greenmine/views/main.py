@@ -16,6 +16,7 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.utils.timezone import now
 
 from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -829,7 +830,7 @@ class MilestoneCreateView(GenericView):
             ('milestone', ('view', 'edit', 'create')),
         ])
 
-        form = forms.MilestoneForm()
+        form = forms.MilestoneForm(initial={'estimated_start': now()})
         context = {
             'form': form,
             'project': project,

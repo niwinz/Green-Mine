@@ -326,7 +326,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 class MilestoneForm(forms.ModelForm):
     class Meta:
         model = models.Milestone
-        fields = ('name', 'estimated_finish', 'disponibility')
+        fields = ('name', 'estimated_start', 'estimated_finish', 'disponibility')
 
     def __init__(self, *args, **kwargs):
         super(MilestoneForm, self).__init__(*args, **kwargs)
