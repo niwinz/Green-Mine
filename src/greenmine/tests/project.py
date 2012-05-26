@@ -324,6 +324,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'estimated_start': '02/01/2012',
             'disponibility': 20,
         }
 
@@ -339,6 +340,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'estimated_start': '02/01/2012',
             'disponibility': 20,
         }
 
@@ -352,6 +354,7 @@ class MilestoneTests(TestCase):
         post_params = {
             'name': 'test milestone',
             'estimated_finish': '02/02/2012',
+            'estimated_start': '02/01/2012',
             'disponibility': 20,
         }
 
@@ -367,6 +370,7 @@ class MilestoneTests(TestCase):
             owner = self.user1,
             name = 'test milestone',
             estimated_finish = now_date + datetime.timedelta(20),
+            estimated_start = now_date,
         )
 
         self.client.login(username='test1', password='test')
@@ -385,6 +389,7 @@ class MilestoneTests(TestCase):
             owner = self.user2,
             name = 'test milestone',
             estimated_finish = now_date + datetime.timedelta(20),
+            estimated_start = now_date,
         )
 
         self.client.login(username='test1', password='test')
