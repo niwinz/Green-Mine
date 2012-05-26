@@ -90,7 +90,7 @@ class ListField(models.Field):
             return ""
 
         value = getattr(obj, self.attname)
-        assert isinstance(value, dict)
+        assert isinstance(value, (list, tuple))
         return self.__prefix__ + b64encode(pickle.dumps(value, protocol=self.__pickleproto__))
         return self.token.join(map(unicode, value))
 
