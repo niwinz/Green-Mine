@@ -359,6 +359,11 @@ div.main-menu ul.right-menu li {
 #dashboard .right-block .milestone-item .us-item .us-title {
     width: 95%;
 }
+
+#dashboard .right-block .milestone-item .us-item .us-title.us-status-completed {
+    color: #0B6121;
+}
+
 #dashboard .right-block .milestones {
     margin-top: 10px;
 }

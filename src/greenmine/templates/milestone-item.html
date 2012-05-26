@@ -1,6 +1,6 @@
 {% load static from staticfiles %}
-<div class="us-item" id="us-item-{{ us.id }}" unassignurl="{{ us.get_unassign_url }}" draggable="true">
-    <div class="us-title">{{ us.subject|truncatechars:40 }}</div>
+<div class="us-item" id="us-item-{{ us.id }}" unassignurl="{{ us.get_unassign_url }}" assignurl="{{ us.get_assign_url }}" draggable="true">
+    <div class="us-title us-status-{{ us.status }}">{{ us.subject|truncatechars:40 }}</div>
     <div class="us-meta">
         {{ us.get_points_display }}
     </div>
