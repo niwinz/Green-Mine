@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.db import transaction
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
@@ -443,24 +444,21 @@ class BacklogBurnDownView(GenericView):
             points_sum += sum(iter_points(usqs))
 
             extra_points_user_stories = models.UserStory.objects.filter(
-                created_date__gt=sprint.created_date, 
-                created_date__lt=sprint.estimated_finish
+                created_date__gte=sprint.created_date, 
+                created_date__lte=sprint.estimated_finish
             )
 
             extra_points_user_stories_shareds = extra_points_user_stories\
                 .filter(client_requirement=True, team_requirement=True)
-            #extra_points_sum += sum([ us.points/2.0 for us in extra_points_user_stories_shareds if us.points != -1 ])
             extra_points_sum += sum(x/2.0 for x in iter_points(extra_points_user_stories_shareds))
 
 
             extra_points_user_stories = extra_points_user_stories\
                 .filter(client_requirement=True, team_requirement=False)
-            #extra_points_sum += sum([ us.points for us in extra_points_user_stories if us.points != -1 ])
             extra_points_sum += sum(iter_points(extra_points_user_stories))
             extra_points.append(extra_points_sum)
 
             points_for_sprint.append(points_sum)
-            print points_sum
             disponibility.append(sprint.disponibility)
 
         context = {
@@ -468,7 +466,10 @@ class BacklogBurnDownView(GenericView):
             'disponibility': disponibility,
             'sprints_number': extras.sprints,
             'extra_points': extra_points,
-            'total_points': sum(iter_points(project.user_stories.all())),
+            #old
+            #'total_points': sum(iter_points(project.user_stories.all())),
+            'total_points': sum(iter_points(project.user_stories\
+                .exclude(Q(client_requirement=True) | Q(team_requirement=True)))),
         }
 
         return self.render_to_ok(context)
@@ -506,12 +507,10 @@ class BacklogBurnUpView(GenericView):
 
             extra_points_user_stories_shareds = extra_points_user_stories\
                 .filter(client_requirement=True, team_requirement=True)
-            #extra_points_sum += sum([ us.points/2.0 for us in extra_points_user_stories_shareds if us.points != -1 ])
             extra_points_sum += sum(x/2.0 for x in iter_points(extra_points_user_stories_shareds))
 
             extra_points_user_stories = extra_points_user_stories\
                 .filter(client_requirement=True, team_requirement=False)
-            #extra_points_sum += sum([ us.points for us in extra_points_user_stories if us.points != -1 ])
             extra_points_sum += sum(iter_points(extra_points_user_stories))
             extra_points.append(extra_points_sum)
 
@@ -522,12 +521,12 @@ class BacklogBurnUpView(GenericView):
 
             extra_points_team_user_stories_shareds = extra_points_team_user_stories\
                 .filter(team_requirement=True, client_requirement=True)
-            #extra_points_team_sum += sum([ us.points/2.0 for us in extra_points_team_user_stories_shareds if us.points != -1 ])
+
             extra_points_team_sum += sum(x/2.0 for x in iter_points(extra_points_team_user_stories_shareds))
 
             extra_points_team_user_stories = extra_points_team_user_stories\
                 .filter(team_requirement=True, client_requirement=False)
-            #extra_points_team_sum += sum([ us.points for us in extra_points_team_user_stories if us.points != -1 ])
+
             extra_points_team_sum += sum(iter_points(extra_points_team_user_stories))
             extra_points_team.append(extra_points_team_sum)
 
