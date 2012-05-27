@@ -26,7 +26,7 @@ from django.views.decorators.cache import cache_page
 from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms
-from greenmine.utils import mail, iter_points
+from greenmine.utils import iter_points
 from greenmine import permissions as perms, signals
 
 from greenmine.middleware import PermissionDeniedException

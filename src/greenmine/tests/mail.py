@@ -43,6 +43,23 @@ from greenqueue import send_task
 #        self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
 
 
+class LowLevelEmailTests(TestCase):
+    def setUp(self):
+        mail.outbox = []
+
+    def test_send_one_mail(self):
+        send_task("send-mail", args = ["subject", "template", ["hola@niwi.be"]])
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_send_bulk_mail(self):
+        send_task("send-bulk-mail", args = [[
+            ('s1', 't1', ['hola@niwi.be']),
+            ('s2', 't2', ['hola@niwi.be']),
+        ]])
+
+        self.assertEqual(len(mail.outbox), 2)
+
+
 class UserMailTests(TestCase):
     def setUp(self):
         self.user1 = User.objects.create(
