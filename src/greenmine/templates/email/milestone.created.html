@@ -1,0 +1,6 @@
+<p>Hi {{ person.get_full_name }}!</p>
+
+<p>{{ user.get_full_name }} has created a new sprint in the project {{ milestone.project }}: <br />
+    <blockquote><a href="{{ current_host }}{{ milestone.project.get_backlog_url }}">{{ milestone.name }}</a></blockquote>
+</p>
+

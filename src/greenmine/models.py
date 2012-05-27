@@ -214,6 +214,9 @@ class Project(models.Model):
 
     objects = ProjectManager()
 
+    def __unicode__(self):
+        return self.name
+
     def get_extras(self):
         if self.extras is None:
             self.extras = ProjectExtras.objects.create()

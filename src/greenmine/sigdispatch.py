@@ -100,9 +100,10 @@ def mail_milestone_created(sender, milestone, user, **kwargs):
     subject = ugettext("Greenmine: sprint created")
     for person in participants:
         template = render_to_string("email/milestone.created.html", {
-            "user": person,
+            "person": person,
             "current_host": settings.HOST,
             "milestone": milestone,
+            "user": user,
         })
 
         emails_list.append([subject, template, [person.email]])
@@ -122,9 +123,34 @@ def mail_userstory_created(sender, us, user, **kwargs):
 
     for person in participants:
         template = render_to_string("email/userstory.created.html", {
-            "user": person,
+            "person": person,
             "current_host": settings.HOST,
             "us": us,
+            "user": user,
+        })
+
+        emails_list.append([subject, template, [person.email]])
+
+    send_task("send-bulk-mail", args=[emails_list])
+
+
+@receiver(signals.mail_task_created)
+def mail_task_created(sender, task, user, **kwargs):
+    participants_ids = ProjectUserRole.objects\
+        .filter(user=user, mail_task_created=True, project=task.project)\
+        .values_list('user__pk', flat=True)
+
+    participants = User.objects.filter(pk__in=participants_ids)
+
+    emails_list = []
+    subject = ugettext("Greenmine: task created")
+
+    for person in participants:
+        template = render_to_string("email/task.created.html", {
+            "person": person,
+            "current_host": settings.HOST,
+            "task": task,
+            "user": user,
         })
 
         emails_list.append([subject, template, [person.email]])

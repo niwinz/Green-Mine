@@ -1,0 +1,6 @@
+<p>Hi {{ person.get_full_name }}!</p>
+
+<p>{{ user.get_full_name }} has created a new user story in the project {{ us.project }}: <br />
+    <blockquote><a href="{{ current_host }}{{ us.get_view_url }}">{{ us.subject }}</a></blockquote>
+</p>
+

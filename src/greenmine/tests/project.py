@@ -853,6 +853,7 @@ class TasksTests(TestCase):
             project = self.project2,
             milestone = self.milestone2,
         )
+        mail.outbox = []
 
     def tearDown(self):
         Task.objects.all().delete()
@@ -882,6 +883,7 @@ class TasksTests(TestCase):
 
         self.assertTrue(jdata['success'])
         self.assertIn('redirect_to', jdata)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_task_create_without_permissions_1(self):
         self.client.login(username="test2", password="test")
@@ -899,6 +901,7 @@ class TasksTests(TestCase):
 
         response = self.client.post(self.milestone1.get_task_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 403)
+        self.assertEqual(len(mail.outbox), 0)
 
 
     def test_task_create_without_permissions_2(self):
@@ -922,6 +925,7 @@ class TasksTests(TestCase):
         self.assertIn('errors', jdata)
         self.assertIn('form', jdata['errors'])
         self.assertIn("milestone", jdata['errors']['form'])
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_task_edit(self):
         self.client.login(username="test2", password="test")
