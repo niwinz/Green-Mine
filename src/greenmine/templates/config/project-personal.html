@@ -18,7 +18,7 @@
             <span>{% trans "Email notifications:" %}</span>
         </div>
         <fieldset>
-            {% for efield in form.email_fields_iterator %}
+            {% for efield in form %}
             <div class="form-field">
                 <label>{{ efield.label }}</label>
                 {{ efield }}

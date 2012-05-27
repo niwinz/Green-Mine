@@ -30,7 +30,6 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def handle(self, *args, **options):
         from django.core import management
-        management.call_command('flush', verbosity=0, interactive=False)
         management.call_command('loaddata', 'development_users')
         users_counter = 0
 

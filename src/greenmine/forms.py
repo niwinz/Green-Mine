@@ -242,57 +242,10 @@ class ProjectForm(forms.ModelForm):
 from django.forms.forms import BoundField
 
 
-class ProjectPersonalSettingsForm(forms.Form):
-    # email notifications
-    send_email_on_us_created = forms.BooleanField(required=False, initial=True)
-    send_email_on_us_modified = forms.BooleanField(required=False, initial=True)
-    send_email_on_us_assigned = forms.BooleanField(required=False, initial=True)
-    send_email_on_task_created = forms.BooleanField(required=False, initial=True)
-    send_email_on_task_modified = forms.BooleanField(required=False, initial=True)
-    send_email_on_task_assigned = forms.BooleanField(required=False, initial=True)
-    send_email_on_question_created = forms.BooleanField(required=False, initial=True)
-    send_email_on_question_response_created = forms.BooleanField(required=False, initial=True)
-
-    posible_email_settings = [
-        'send_email_on_us_created',
-        'send_email_on_us_modified',
-        'send_email_on_us_assigned',
-        'send_email_on_task_created',
-        'send_email_on_task_modified',
-        'send_email_on_task_assigned',
-        'send_email_on_question_created',
-        'send_email_on_question_response_created',
-    ]
-
-    def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', None)
-        if self.instance:
-            initial_data = {}
-            
-            for key in self.posible_email_settings:
-                current_value = self.instance.meta_email_settings.get(key, None)
-                if current_value is not None:
-                    initial_data[key] = current_value
-
-            kwargs['initial'] = initial_data
-
-        super(ProjectPersonalSettingsForm, self).__init__(*args, **kwargs)
-
-    @property
-    def email_fields_iterator(self):
-        for key in self.posible_email_settings:
-            yield BoundField(self, self.fields[key], key)
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        
-        self.emails_data = {}
-        for key in self.posible_email_settings:
-            clean_value = cleaned_data.get(key, None)
-            if clean_value is not None:
-                self.emails_data[key] = clean_value
-
-        return cleaned_data
+class ProjectPersonalSettingsForm(forms.ModelForm):
+    class Meta:
+        model = models.ProjectUserRole
+        exclude = ('project', 'user', 'role')
 
 
 class ProjectGeneralSettingsForm(forms.Form):

@@ -15,32 +15,32 @@ import json
 
 from greenqueue import send_task
 
-class LowLevelEmailTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create(
-            username = 'test',
-            email = 'test@test.com',
-            is_active = True,
-            is_staff = False,
-            is_superuser = False,
-        )
-        self.user.set_password('test')
-        self.user.save()
-        mail.outbox = []
-
-    def test_send_recovery_mail(self):
-        send_task("mail-recovery.password",
-            args = [settings.HOST, "Greenmine: password recovery.", self.user])
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, "Greenmine: password recovery.")
-
-    def test_send_registration_mail(self):
-        send_task("mail-new.registration",
-            args = [settings.HOST, "Greenmine: Welcome!", self.user])
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
+#class LowLevelEmailTests(TestCase):
+#    def setUp(self):
+#        self.user = User.objects.create(
+#            username = 'test',
+#            email = 'test@test.com',
+#            is_active = True,
+#            is_staff = False,
+#            is_superuser = False,
+#        )
+#        self.user.set_password('test')
+#        self.user.save()
+#        mail.outbox = []
+#
+#    def test_send_recovery_mail(self):
+#        send_task("mail-recovery.password",
+#            args = [settings.HOST, "Greenmine: password recovery.", self.user])
+#
+#        self.assertEqual(len(mail.outbox), 1)
+#        self.assertEqual(mail.outbox[0].subject, "Greenmine: password recovery.")
+#
+#    def test_send_registration_mail(self):
+#        send_task("mail-new.registration",
+#            args = [settings.HOST, "Greenmine: Welcome!", self.user])
+#
+#        self.assertEqual(len(mail.outbox), 1)
+#        self.assertEqual(mail.outbox[0].subject, "Greenmine: Welcome!")
 
 
 class UserMailTests(TestCase):

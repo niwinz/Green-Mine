@@ -11,7 +11,7 @@ mail_question_deleted = django.dispatch.Signal(providing_args=["question", "user
 
 mail_project_created = django.dispatch.Signal(providing_args=["project", "user"])
 mail_project_modified = django.dispatch.Signal(providing_args=["project", "user"])
-mail_project_delete = django.dispatch.Signal(providing_args=["project", "user"])
+mail_project_deleted = django.dispatch.Signal(providing_args=["project", "user"])
 
 mail_milestone_created = django.dispatch.Signal(providing_args=["milestone", "user"])
 mail_milestone_modified = django.dispatch.Signal(providing_args=["milestone", "user"])

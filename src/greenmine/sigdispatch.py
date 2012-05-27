@@ -3,7 +3,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from greenmine.models import Profile, UserStory, Task
+from greenmine.models import Profile, UserStory, Task, ProjectUserRole
 from django.utils import timezone
 
 @receiver(post_save, sender=User)
@@ -88,17 +88,46 @@ def mail_recovery_password(sender, user, **kwargs):
     send_task("send-mail", args = [subject, template, [user.email]])
 
 
-@receiver(signals.mail_milestone_create)
-def mail_milestone_create(sender, milestone, user):
-    pass
+@receiver(signals.mail_milestone_created)
+def mail_milestone_created(sender, milestone, user, **kwargs):
+    # TODO: optimize this query
+    participants_ids = ProjectUserRole.objects\
+        .filter(user=user, mail_milestone_created=True, project=milestone.project)\
+        .values_list('user__pk', flat=True)
 
+    participants = User.objects.filter(pk__in=participants_ids)
 
-#@receiver(signals.mail_question_created)
-#def mail_question_created(sender, question, **kwargs):
-#    send_task("mail-question.created", 
-#        args = [settings.HOST, ugettext(u"Greenmine: new question"), question])
-#
-#@receiver(signals.mail_question_assigned)
-#def mail_question_assigned(sender, question, **kwargs):
-#    send_task("mail-question.assigned",
-#        args = [settings.HOST, ugettext(u"Greenmine: question assigned."), question])
+    emails_list = []
+    subject = ugettext("Greenmine: sprint created")
+    for person in participants:
+        template = render_to_string("email/milestone.created.html", {
+            "user": person,
+            "current_host": settings.HOST,
+            "milestone": milestone,
+        })
+
+        emails_list.append([subject, template, [person.email]])
+
+    send_task("send-bulk-mail", args=[emails_list])
+
+@receiver(signals.mail_userstory_created)
+def mail_userstory_created(sender, us, user, **kwargs):
+    participants_ids = ProjectUserRole.objects\
+        .filter(user=user, mail_userstory_created=True, project=us.project)\
+        .values_list('user__pk', flat=True)
+
+    participants = User.objects.filter(pk__in=participants_ids)
+
+    emails_list = []
+    subject = ugettext("Greenmine: user story created")
+
+    for person in participants:
+        template = render_to_string("email/userstory.created.html", {
+            "user": person,
+            "current_host": settings.HOST,
+            "us": us,
+        })
+
+        emails_list.append([subject, template, [person.email]])
+
+    send_task("send-bulk-mail", args=[emails_list])

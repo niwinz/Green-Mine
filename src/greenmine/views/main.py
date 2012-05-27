@@ -815,7 +815,9 @@ class ProjectDelete(GenericView):
             ('project', ('view', 'edit', 'delete')),
         ])
         
-        signals.mail_project_delete(sender=self, project=project, user=request.user)
+        signals.mail_project_deleted\
+            .send(sender=self, project=project, user=request.user)
+
         project.delete()
 
         return self.render_to_ok({})
@@ -859,7 +861,8 @@ class MilestoneCreateView(GenericView):
             milestone.owner = request.user
             milestone.save()
 
-            signals.mail_milestone_create(sender=self, milestone=milestone, user=request.user)
+            signals.mail_milestone_created\
+                .send(sender=self, milestone=milestone, user=request.user)
 
             return self.render_redirect(project.get_backlog_url())
 
@@ -908,7 +911,7 @@ class MilestoneEditView(GenericView):
         if form.is_valid():
             milestone = form.save(commit=True)
 
-            signals.mail_milestone_edit.send(sender=self,
+            signals.mail_milestone_modified.send(sender=self,
                 milestone = milestone, user = request.user)
 
             messages.info(request, _(u"Milestone saved successful."))
@@ -931,7 +934,7 @@ class MilestoneDeleteView(GenericView):
             ('milestone', ('view', 'delete')),
         ])
 
-        sender.mail_milestone_delete.send(sender=self,
+        signals.mail_milestone_deleted.send(sender=self,
             milestone = milestone, user = request.user)
         
         # update all user stories, set milestone to None
@@ -1020,7 +1023,7 @@ class UserStoryCreateView(GenericView):
             instance.project = project
             instance.save()
 
-            signals.mail_userstory_create.send(sender=self, us=instance, user=request.user)
+            signals.mail_userstory_created.send(sender=self, us=instance, user=request.user)
             self.create_asociated_tasks(project, instance)
             
             messages.info(request, _(u'The user story was created correctly'))
@@ -1051,7 +1054,7 @@ class UserStoryCreateView(GenericView):
         models.Task.objects.bulk_create(tasks)
 
         for task in tasks:
-            signals.mail_task_create.send(sender=self,
+            signals.mail_task_created.send(sender=self,
                 task = task, user = self.request.user)
         
 
@@ -1091,7 +1094,7 @@ class UserStoryEdit(GenericView):
         form = forms.UserStoryForm(request.POST, instance=user_story)
         if form.is_valid():
             user_story = form.save(commit=True)
-            signals.mail_userstory_edit.send(sender=self, us=user_story, user=request.user)
+            signals.mail_userstory_modified.send(sender=self, us=user_story, user=request.user)
             messages.info(request, _(u'The user story has been successfully saved'))
             return self.render_redirect(user_story.get_view_url())
 
@@ -1117,7 +1120,7 @@ class UserStoryDeleteView(GenericView):
             ('userstory', ('view', 'edit', 'delete')),
         ])
 
-        signals.mail_userstory_delete.send(sender=self, us=user_story, user=request.user)
+        signals.mail_userstory_deleted.send(sender=self, us=user_story, user=request.user)
         user_story.delete()
 
         return self.render_to_ok()
@@ -1195,7 +1198,8 @@ class TaskCreateView(GenericView):
             task.project = project
             task.save()
 
-            signals.mail_task_create.send(sender=self, task=task, user=request.user)
+            signals.mail_task_created.send(sender=self, task=task, user=request.user)
+            # TODO: assigned
     
             if _from == 'dashboard':
                 return self.create_response_for_dashboard(form, task, project)
@@ -1333,7 +1337,7 @@ class TaskEdit(GenericView):
         if form.is_valid():
             task = form.save(commit=True)
 
-            signals.mail_task_edit.send(sender=self, task=task, user=request.user)
+            signals.mail_task_modified.send(sender=self, task=task, user=request.user)
             messages.info(request, _(u"The task has been saved!"))
             if next_url:
                 return self.render_redirect(next_url)
@@ -1363,7 +1367,7 @@ class TaskDelete(GenericView):
         ])
         
         task = get_object_or_404(project.tasks, ref=tref)
-        signals.mail_task_delete(sender=self, task=task, user=request.user)
+        signals.mail_task_deleted.send(sender=self, task=task, user=request.user)
         task.delete()
         
         return self.render_to_ok({})
@@ -1464,10 +1468,9 @@ class ProjectSettings(GenericView):
         form = forms.ProjectPersonalSettingsForm(request.POST, instance=pur)
 
         if form.is_valid():
-            pur.meta_email_settings = form.emails_data
-            pur.save()
-
+            pur = form.save(commit=True)
             messages.info(request, _(u"Project preferences saved successfull"))
+
             return self.render_redirect(project.get_settings_url())
 
         context = {
