@@ -533,6 +533,7 @@ class BacklogBurnUpView(GenericView):
             points_for_sprint.append(points_sum)
 
         total_points = sum(iter_points(project.user_stories.all()))
+
         sprints = []
         sprints.append(points_for_sprint)
         sprints.append(extra_points_team)
@@ -540,7 +541,9 @@ class BacklogBurnUpView(GenericView):
         
         context = {
             'sprints': sprints,
-            'total_points': total_points,
+            #'total_points': sum(iter_points(project.user_stories.all())),
+            'total_points': sum(iter_points(project.user_stories\
+                .exclude(Q(client_requirement=True) | Q(team_requirement=True)))),
             'total_sprints': extras.sprints,
         }
 
