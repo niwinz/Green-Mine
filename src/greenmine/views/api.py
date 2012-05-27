@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.generic import TemplateView, RedirectView, View
 from django.db.models import Q
 from django_gravatar.helpers import get_gravatar_url, has_gravatar
@@ -26,7 +27,7 @@ from greenmine.models import *
 from greenmine import models, forms, utils
 from greenmine.views.decorators import login_required
 from greenmine.views.generic import GenericView
-import datetime
+
 
 from django.core.cache import cache
 import uuid
@@ -146,7 +147,7 @@ class TaskAlterApiView(GenericView):
             else:
                 us.status = 'progress'
 
-            us.modified_date = datetime.datetime.now()
+            us.modified_date = now()
             us.save()
         
         return self.render_to_ok()

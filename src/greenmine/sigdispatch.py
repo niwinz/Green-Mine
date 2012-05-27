@@ -5,7 +5,6 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from greenmine.models import Profile, UserStory, Task
 from django.utils import timezone
-import datetime
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):

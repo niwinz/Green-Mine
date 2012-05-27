@@ -29,6 +29,9 @@ subjects = [
 class Command(BaseCommand):
     @transaction.commit_on_success
     def handle(self, *args, **options):
+        from django.core import management
+        management.call_command('flush', verbosity=0, interactive=False)
+        management.call_command('loaddata', 'development_users')
         users_counter = 0
 
         def create_user(counter):
@@ -40,16 +43,21 @@ class Command(BaseCommand):
             return user
            
         # projects
-        for x in xrange(5):
+        for x in xrange(3):
             # create project
             project = Project.objects.create(
-                name = 'FooProject%s' % (x),
-                description = 'Foo project description %s' % (x),
+                name = 'Project Example %s' % (x),
+                description = 'Project example %s description' % (x),
                 owner = random.choice(list(User.objects.all()[:1])),
                 public = True,
             )
             
             project.add_user(project.owner, "developer")
+
+            extras = project.get_extras()
+            extras.show_burndown = True
+            extras.sprints = 4
+            extras.save()
             
             # add random participants to project
             participants = []
@@ -60,40 +68,56 @@ class Command(BaseCommand):
                 project.add_user(participant, "developer")
                 users_counter += 1
 
-            now_date = now() - datetime.timedelta(20)
+            now_date = now() - datetime.timedelta(30)
             
             # create random milestones
             for y in xrange(2):
                 milestone = Milestone.objects.create(
                     project = project,
-                    name = 'Sprint 20120%s' % (y),
+                    name = 'Sprint %s' % (y),
                     owner = project.owner,
                     created_date = now_date,
                     modified_date = now_date,
-                    estimated_finish = now_date + datetime.timedelta(20)
+                    estimated_start = now_date,
+                    estimated_finish = now_date + datetime.timedelta(15)
                 )
 
-                now_date = now_date +  datetime.timedelta(20)
+                now_date = now_date +  datetime.timedelta(15)
                 
                 # create uss asociated to milestones
-                for z in xrange(random.randint(2, 6)):
+                for z in xrange(5):
                     us = UserStory.objects.create(
                         subject = lorem_ipsum.words(random.randint(4,9), common=False),
-                        priority = random.choice([1,2,3,4,5,6,7,8,12]),
-                        points = random.choice([1,2,3,5,10]),
+                        priority = 6,
+                        points = 3,
                         project = project,
                         owner = random.choice(participants),
                         description = lorem_ipsum.words(30, common=False),
                         milestone = milestone,
+                        status = 'completed',
                     )
+                    
+                    for w in xrange(3):
+                        task = Task.objects.create(
+                            subject = "Task %s" % (w),
+                            description = lorem_ipsum.words(30, common=False),
+                            project = project,
+                            owner = random.choice(participants),
+                            milestone = milestone,
+                            user_story = us,
+                            status = 'completed',
+                        )
 
             # created unassociated uss.
+
             for y in xrange(10):
                 us = UserStory.objects.create(
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
-                    priority = random.choice([1,2,3,4,5,6,7,8,12]),
-                    project = project,
-                    points = random.choice([1,2,3,5,10]),
+                    priority = 3,
+                    points = 3,
+                    status = 'open',
                     owner = random.choice(participants),
                     description = lorem_ipsum.words(30, common=False),
+                    milestone = None,
+                    project = project,
                 )

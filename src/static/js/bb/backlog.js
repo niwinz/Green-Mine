@@ -304,8 +304,6 @@ var LeftBlockView = Backbone.View.extend({
             }
 
             // Reload some views.
-            $this.options.stats_view.render();
-            $this.options.burndown_view.reload();
             $this.trigger('change');
             $this.reload();
         }, 'html');
