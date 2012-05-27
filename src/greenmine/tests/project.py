@@ -472,6 +472,7 @@ class UserStoriesTests(TestCase):
             name = 'test2 milestone',
             estimated_finish = self.now_date + datetime.timedelta(20),
         )
+        mail.outbox = []
 
     def tearDown(self):
         self.milestone1.delete()
@@ -523,6 +524,7 @@ class UserStoriesTests(TestCase):
         self.assertEqual(self.milestone2.user_stories.count(), 1)
         self.assertEqual(self.project2.user_stories.count(), 1)
         self.assertEqual(self.project2.tasks.count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_user_story_create(self):
         self.client.login(username="test2", password="test")
@@ -546,6 +548,7 @@ class UserStoriesTests(TestCase):
         self.assertEqual(self.milestone2.user_stories.count(), 0)
         self.assertEqual(self.project2.user_stories.count(), 1)
         self.assertEqual(self.project2.tasks.count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_user_story_create_bad_status(self):
         self.client.login(username="test2", password="test")

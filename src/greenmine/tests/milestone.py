@@ -37,6 +37,7 @@ class MilestoneRelatedTests(TestCase):
         ])
 
         self.client.login(username='test', password='test')
+        mail.outbox = []
 
     def tearDown(self):
         Task.objects.all().delete()
@@ -66,6 +67,7 @@ class MilestoneRelatedTests(TestCase):
 
     def test_create_milestone(self):
         project = Project.objects.get(name="test1", owner=self.user1)
+        project.add_user(self.user1, 'developer')
         post_params = {
             'name': 'sprint1',
             'estimated_finish': '20/01/2012',
@@ -78,6 +80,8 @@ class MilestoneRelatedTests(TestCase):
 
         milestone = project.milestones.get(name='sprint1')
         self.assertEqual(milestone.owner, self.user1)
+
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_stats_methods_0(self):
         project = Project.objects.get(name="test1", owner=self.user1)
@@ -127,7 +131,6 @@ class MilestoneRelatedTests(TestCase):
         self.assertEqual(milestone.total_points, '4.0')
         self.assertEqual(milestone.completed_points, '2.0')
         self.assertEqual(milestone.percentage_completed, '50.0')
-
 
     def test_assignation_task(self):
         project = Project.objects.get(name="test1", owner=self.user1)

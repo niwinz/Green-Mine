@@ -90,7 +90,6 @@ def mail_recovery_password(sender, user, **kwargs):
 
 @receiver(signals.mail_milestone_created)
 def mail_milestone_created(sender, milestone, user, **kwargs):
-    # TODO: optimize this query
     participants_ids = ProjectUserRole.objects\
         .filter(user=user, mail_milestone_created=True, project=milestone.project)\
         .values_list('user__pk', flat=True)
