@@ -432,16 +432,15 @@ class BacklogBurnDownView(GenericView):
 
         extras = project.get_extras()
         
-        points_sum = 0
+        points_sum, extra_points_sum = 0, 0
         points_for_sprint = [points_sum]
-        disponibility = []
-        extra_points = [0]
-        extra_points_sum = 0
+        disponibility, extra_points = [], [0]
 
         sprints_queryset = project.milestones.order_by('created_date')
+
         for i, sprint in enumerate(sprints_queryset, 1):
             usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
-            points_sum = sum(iter_points(usqs))
+            points_sum += sum(iter_points(usqs))
 
             extra_points_user_stories = models.UserStory.objects.filter(
                 created_date__gt=sprint.created_date, 
@@ -461,6 +460,7 @@ class BacklogBurnDownView(GenericView):
             extra_points.append(extra_points_sum)
 
             points_for_sprint.append(points_sum)
+            print points_sum
             disponibility.append(sprint.disponibility)
 
         context = {
