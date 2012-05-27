@@ -98,7 +98,7 @@ class TaskAlterApiView(GenericView):
     @login_required
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
-        task = get_object_or_404(project.tasks, ref=taskref)
+        task = get_object_or_404(project.tasks.select_for_update(), ref=taskref)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -124,7 +124,7 @@ class TaskAlterApiView(GenericView):
 
             else:
                 try:
-                    queryset = models.UserStory.objects.filter(pk=request.POST['us'])
+                    queryset = models.UserStory.objects.filter(pk=request.POST['us']).select_for_update()
                 except ValueError:
                     queryset = models.UserStory.objects.none()
 
@@ -136,8 +136,9 @@ class TaskAlterApiView(GenericView):
 
         task.save()
 
+        # Automatic control of user story status.
+
         for us in set(us_for_update):
-            # automatic control of user story status.
             total_tasks_count = us.tasks.count()
 
             if us.tasks.filter(status__in=['closed','completed']).count() == total_tasks_count:
