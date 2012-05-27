@@ -1199,7 +1199,9 @@ class TaskCreateView(GenericView):
             task.save()
 
             signals.mail_task_created.send(sender=self, task=task, user=request.user)
-            # TODO: assigned
+
+            if task.assigned_to != None:
+                signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
     
             if _from == 'dashboard':
                 return self.create_response_for_dashboard(form, task, project)
@@ -1329,15 +1331,20 @@ class TaskEdit(GenericView):
             ('task', ('view', 'edit')),
         ])
 
-        task = get_object_or_404(project.tasks, ref=tref)
+        task = get_object_or_404(project.tasks.select_for_update(), ref=tref)
         form = forms.TaskForm(request.POST, instance=task, project=project)
 
         next_url = request.GET.get('next', None)
 
+        _old_assigned_to_pk = task.assigned_to.pk if task.assigned_to else None
+
         if form.is_valid():
             task = form.save(commit=True)
-
             signals.mail_task_modified.send(sender=self, task=task, user=request.user)
+            
+            if task.assigned_to.pk != _old_assigned_to_pk:
+                signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
+
             messages.info(request, _(u"The task has been saved!"))
             if next_url:
                 return self.render_redirect(next_url)
@@ -1351,7 +1358,6 @@ class TaskEdit(GenericView):
         }
         
         return self.render_to_response(self.template_path, context)
-
 
 
 class TaskDelete(GenericView):

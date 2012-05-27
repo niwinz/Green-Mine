@@ -13,19 +13,6 @@ def user_post_save(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-#@receiver(post_save, sender=UserStory)
-#def us_post_save(sender, instance, created, **kwargs):
-#    if created:
-#        task = Task.objects.create(
-#            subject = instance.subject,
-#            description = instance.description,
-#            owner = instance.owner,
-#            milestone = instance.milestone,
-#            project = instance.project,
-#            user_story = instance,
-#        )
-
-
 @receiver(post_save, sender=Task)
 def task_post_save(sender, instance, created, **kwargs):
     if instance.user_story:
@@ -156,3 +143,15 @@ def mail_task_created(sender, task, user, **kwargs):
         emails_list.append([subject, template, [person.email]])
 
     send_task("send-bulk-mail", args=[emails_list])
+
+
+@receiver(signals.mail_task_assigned)
+def mail_task_assigned(sender, task, user, **kwargs):
+    template = render_to_string("email/task.assigned.html", {
+        "person": task.assigned_to,
+        "task": task,
+        "user": user
+    })
+    
+    subject = ugettext("Greenmine: task assigned")
+    send_task("send-mail", args = [subject, template, [task.assigned_to.email]])

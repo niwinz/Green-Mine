@@ -948,7 +948,7 @@ class TasksTests(TestCase):
             'priority': 3,
             'subject': 'test task',
             'description': 'test desc task',
-            'assigned_to': '',
+            'assigned_to': self.user2.pk,
             'type': 'task',
             'user_story': '',
             'milestone': self.milestone2.id,
@@ -960,6 +960,7 @@ class TasksTests(TestCase):
         mod_task = Task.objects.get(pk=task.pk)
         self.assertEqual(task.priority, mod_task.priority)
         self.assertEqual(mod_task.subject, 'test task')
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_task_delete(self):
         self.client.login(username="test2", password="test")

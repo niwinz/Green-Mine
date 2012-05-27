@@ -1,0 +1,6 @@
+<p>Hi {{ person.get_full_name }}!</p>
+
+<p>{{ user.get_full_name }} has been assigned the task to you on project {{ task.project }}: <br />
+    <blockquote><a href="{{ current_host }}{{ task.get_view_url }}">{{ task.subject }}</a></blockquote>
+</p>
+

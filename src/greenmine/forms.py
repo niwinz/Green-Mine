@@ -239,13 +239,12 @@ class ProjectForm(forms.ModelForm):
         return name
 
 
-from django.forms.forms import BoundField
-
-
 class ProjectPersonalSettingsForm(forms.ModelForm):
     class Meta:
         model = models.ProjectUserRole
-        exclude = ('project', 'user', 'role')
+        #exclude = ('project', 'user', 'role')
+        fields = ('mail_milestone_created', 'mail_task_created', 'mail_task_assigned', 
+            'mail_userstory_created',)
 
 
 class ProjectGeneralSettingsForm(forms.Form):
