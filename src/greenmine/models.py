@@ -370,6 +370,25 @@ class ProjectUserRole(models.Model):
     # email notification settings
     meta_email_settings = DictField(null=True, default={}, editable=False)
 
+    mail_project_created = models.BooleanField(default=False, blank=True)
+    mail_project_modified = models.BooleanField(default=False, blank=True)
+    mail_project_delete = mdoels.BooleanField(default=False, blank=True)
+
+    mail_milestone_creates = models.BooleanField(default=True)
+    mail_milestone_deleted = models.BooleanField(default=False)
+    mail_userstory_created = models.BooleanField(default=True)
+    mail_userstory_modified = models.BooleanField(default=False)
+    mail_userstory_deleted = models.BooleanField(default=False)
+    mail_task_created = models.BooleanField(default=True)
+    mail_task_assigned = models.BooleanField(default=False)
+    mail_task_deleted = models.BooleanField(default=False)
+    mail_question_created = models.BooleanField(default=False)
+    mail_question_assigned = models.BooleanField(default=True)
+    mail_question_deleted = models.BooleanField(default=False)
+    mail_document_created = models.BooleanField(default=True)
+    mail_document_deleted = models.BooleanField(default=False)
+    mail_wiki_created = models.BooleanField(default=False)
+
     def __repr__(self):
         return u"<Project-User-Relation-%s>" % (self.id)
 

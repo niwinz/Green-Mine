@@ -51,3 +51,54 @@ def user_story_post_save(sender, instance, created, **kwargs):
         instance.project.meta_category_list.append(category_str)
 
     instance.project.save()
+
+
+
+""" 
+Email signals handlers. 
+Abstraction layer for greenqueue. 
+"""
+
+from greenmine import signals
+from greenmine.utils import set_token
+from greenqueue import send_task
+from django.conf import settings
+from django.utils.translation import ugettext
+from django.template.loader import render_to_string
+
+@receiver(signals.mail_new_user)
+def mail_new_user(sender, user, **kwargs):
+    template = render_to_string("email/new.user.html", {
+        "user": user,
+        "token": set_token(user),
+        'current_host': settings.HOST,
+    })
+
+    subject = ugettext("Greenmine: wellcome!")
+    send_task("send-mail", args = [subject, template, [user.email]])
+
+@receiver(signals.mail_recovery_password)
+def mail_recovery_password(sender, user, **kwargs):
+    template = render_to_string("email/forgot.password.html", {
+        "user": user,
+        "token": set_token(user),
+        "current_host": settings.HOST,
+    })
+    subject = ugettext("Greenmine: password recovery.")
+    send_task("send-mail", args = [subject, template, [user.email]])
+
+
+@receiver(signals.mail_milestone_create)
+def mail_milestone_create(sender, milestone, user):
+    pass
+
+
+#@receiver(signals.mail_question_created)
+#def mail_question_created(sender, question, **kwargs):
+#    send_task("mail-question.created", 
+#        args = [settings.HOST, ugettext(u"Greenmine: new question"), question])
+#
+#@receiver(signals.mail_question_assigned)
+#def mail_question_assigned(sender, question, **kwargs):
+#    send_task("mail-question.assigned",
+#        args = [settings.HOST, ugettext(u"Greenmine: question assigned."), question])

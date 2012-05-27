@@ -27,7 +27,7 @@ from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
 from greenmine import models, forms
 from greenmine.utils import mail, iter_points
-from greenmine import permissions as perms
+from greenmine import permissions as perms, signals
 
 from greenmine.middleware import PermissionDeniedException
 from greenqueue import send_task
@@ -64,10 +64,8 @@ class RegisterView(GenericView):
             
             user.set_password(form.cleaned_data['password'])
             user.save()
-            
-            send_task("mail-new.registration",
-                args = [settings.HOST, ugettext("Greenmine: Welcome!"), user])
 
+            signals.mail_new_user.send(sender=self, user=user)
             messages.info(request, _(u"Validation message was sent successfully."))
 
             return self.render_redirect(reverse('web:login'))
@@ -144,11 +142,10 @@ class RememberPasswordView(GenericView):
         if form.is_valid():
             form.user.set_unusable_password()
             form.user.save()
-
-            send_task("mail-recovery.password",
-                args = [settings.HOST, ugettext("Greenmine: password recovery."), form.user])
-
+            
+            signals.mail_recovery_password.send(sender=self, user=form.user)
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
+
             return self.render_to_ok({'redirect_to':'/'})
 
         response = {'errors': form.errors}
@@ -163,14 +160,13 @@ class SendRecoveryPasswordView(GenericView):
     @login_required
     @staff_required
     def get(self, request, uid):
-        user = get_object_or_404(User, pk=uid)
+        user = get_object_or_404(User.objects.select_for_update(), pk=uid)
         user.set_unusable_password()
         user.save()
-
-        send_task("mail-recovery.password",
-            args = [settings.HOST, ugettext("Greenmine: password recovery."), user])
-
+        
+        signals.mail_recovery_password.send(sender=self, user=user)
         messages.info(request, _(u"Recovery password email are sended"))
+
         referer = request.META.get('HTTP_REFERER', reverse('web:users-edit', args=[uid]))
         return self.render_redirect(referer)
 
@@ -728,6 +724,8 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
             transaction.savepoint_rollback(sem)
             return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
         
+        signals.mail_project_created.send(sender=self, project=project, user=request.user)
+
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return self.render_to_ok({'redirect_to':reverse('web:projects')})
@@ -801,6 +799,8 @@ class ProjectEditView(UserRoleMixIn, GenericView):
             transaction.savepoint_rollback(sem)
             return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
         
+        signals.mail_project_modified.send(sender=self, project=project, user=request.user)
+
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
         return self.render_to_ok({'redirect_to':reverse('web:projects')})  
@@ -815,7 +815,9 @@ class ProjectDelete(GenericView):
             ('project', ('view', 'edit', 'delete')),
         ])
         
+        signals.mail_project_delete(sender=self, project=project, user=request.user)
         project.delete()
+
         return self.render_to_ok({})
 
 
@@ -856,6 +858,8 @@ class MilestoneCreateView(GenericView):
             milestone.project = project
             milestone.owner = request.user
             milestone.save()
+
+            signals.mail_milestone_create(sender=self, milestone=milestone, user=request.user)
 
             return self.render_redirect(project.get_backlog_url())
 
@@ -903,6 +907,10 @@ class MilestoneEditView(GenericView):
 
         if form.is_valid():
             milestone = form.save(commit=True)
+
+            signals.mail_milestone_edit.send(sender=self,
+                milestone = milestone, user = request.user)
+
             messages.info(request, _(u"Milestone saved successful."))
             return self.render_redirect(project.get_backlog_url())
 
@@ -922,6 +930,9 @@ class MilestoneDeleteView(GenericView):
             ('project', 'view'),
             ('milestone', ('view', 'delete')),
         ])
+
+        sender.mail_milestone_delete.send(sender=self,
+            milestone = milestone, user = request.user)
         
         # update all user stories, set milestone to None
         milestone.user_stories.all().update(milestone=None)
@@ -931,6 +942,7 @@ class MilestoneDeleteView(GenericView):
 
         # delete all tasks without user story
         milestone.tasks.filter(user_story__isnull=True).delete()
+        
         milestone.delete()
 
         return self.render_to_ok()
@@ -961,17 +973,6 @@ class UserStoryView(GenericView):
 
 class UserStoryCreateView(GenericView):
     template_name = "user-story-create.html"
-
-    #def send_emails(self, project):
-    #    participants = set([project.owner])
-    #    participants.update(
-    #        list(project.participants.all())
-    #    )
-
-    #    valid_participants = []
-    #    for participant in participants
-
-    #    mail.send_user_story_create_mail(participants)
 
     @login_required
     def get(self, request, pslug, mid=None):
@@ -1010,8 +1011,6 @@ class UserStoryCreateView(GenericView):
         else:
             milestone = None
 
-        #self.send_emails(project)
-
         form = forms.UserStoryForm(request.POST, initial={'milestone': milestone})
 
         if form.is_valid():
@@ -1021,6 +1020,7 @@ class UserStoryCreateView(GenericView):
             instance.project = project
             instance.save()
 
+            signals.mail_userstory_create.send(sender=self, us=instance, user=request.user)
             self.create_asociated_tasks(project, instance)
             
             messages.info(request, _(u'The user story was created correctly'))
@@ -1049,6 +1049,11 @@ class UserStoryCreateView(GenericView):
             tasks.append(task)
 
         models.Task.objects.bulk_create(tasks)
+
+        for task in tasks:
+            signals.mail_task_create.send(sender=self,
+                task = task, user = self.request.user)
+        
 
 class UserStoryEdit(GenericView):
     template_name = "user-story-edit.html"
@@ -1086,6 +1091,7 @@ class UserStoryEdit(GenericView):
         form = forms.UserStoryForm(request.POST, instance=user_story)
         if form.is_valid():
             user_story = form.save(commit=True)
+            signals.mail_userstory_edit.send(sender=self, us=user_story, user=request.user)
             messages.info(request, _(u'The user story has been successfully saved'))
             return self.render_redirect(user_story.get_view_url())
 
@@ -1111,7 +1117,9 @@ class UserStoryDeleteView(GenericView):
             ('userstory', ('view', 'edit', 'delete')),
         ])
 
+        signals.mail_userstory_delete.send(sender=self, us=user_story, user=request.user)
         user_story.delete()
+
         return self.render_to_ok()
 
 
@@ -1186,6 +1194,8 @@ class TaskCreateView(GenericView):
             task.owner = request.user
             task.project = project
             task.save()
+
+            signals.mail_task_create.send(sender=self, task=task, user=request.user)
     
             if _from == 'dashboard':
                 return self.create_response_for_dashboard(form, task, project)
@@ -1218,10 +1228,6 @@ class TaskCreateView(GenericView):
 
         return self.render_json(response)
         
-
-
-        
-
 
 class TaskView(GenericView):
     menu = ['tasks']
@@ -1325,7 +1331,9 @@ class TaskEdit(GenericView):
         next_url = request.GET.get('next', None)
 
         if form.is_valid():
-            form.save()
+            task = form.save(commit=True)
+
+            signals.mail_task_edit.send(sender=self, task=task, user=request.user)
             messages.info(request, _(u"The task has been saved!"))
             if next_url:
                 return self.render_redirect(next_url)
@@ -1355,6 +1363,7 @@ class TaskDelete(GenericView):
         ])
         
         task = get_object_or_404(project.tasks, ref=tref)
+        signals.mail_task_delete(sender=self, task=task, user=request.user)
         task.delete()
         
         return self.render_to_ok({})
@@ -1647,26 +1656,6 @@ class QuestionsCreateView(GenericView):
 
         return self.render_to_response(self.template_path, context)
 
-    def send_mails(self, project, question):
-        send_task('mail-question.created',
-            args = [
-                settings.HOST,
-                ugettext(u"Greenmine: new question"),
-                question,
-                project
-            ]
-        )
-
-        send_task('mail-question.assigned',
-            args = [
-                settings.HOST,
-                ugettext(u"Greenmine: question assigned."),
-                question,
-                question.assigned_to,
-            ]
-        )
-        
-    
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1683,9 +1672,10 @@ class QuestionsCreateView(GenericView):
             question.owner = request.user
             question.save()
 
-            self.send_mails(project, question)
-            messages.info(request, _(u"Question are created"))
+            signals.mail_question_created.send(sender=self, question=question)
+            signals.mail_question_assigned.send(sender=self, question=question)
 
+            messages.info(request, _(u"Question are created"))
             return self.render_redirect(question.get_view_url())
 
         context = {
@@ -1718,16 +1708,6 @@ class QuestionsEditView(GenericView):
         }
         return self.render_to_response(self.template_path, context)
     
-    def send_assignation_email(self, project, question):
-        send_task('mail-question.assigned',
-            args = [
-                settings.HOST,
-                ugettext(u"Greenmine: question assigned."),
-                question,
-                question.assigned_to,
-            ]
-        )
-
     @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1747,7 +1727,7 @@ class QuestionsEditView(GenericView):
             question.save()
 
             if question.assigned_to.pk != _old_assigned_to_pk:
-                self.send_assignation_email(project, question)
+                signals.mail_question_assigned.send(sender=self, question=question)
 
             messages.info(request, _(u"Quienstion are saved"))
             return self.render_redirect(question.get_view_url())
