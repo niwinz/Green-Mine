@@ -80,21 +80,25 @@ var BurndownView = Backbone.View.extend({
             {
                 data: d1,
                 lines: { show: true, fill: true },
-                points: { show: true }
+                points: { show: true },
+                color: '#eec446'
             },
             {
                 data: d2,
                 lines: { show: true, fill: true },
-                points: { show: true }
+                points: { show: true },
+                color: '#b6d9f2'
             },
             {
                 data: d3,
                 lines: { show: true, fill: true },
-                points: { show: true }
+                points: { show: true },
+                color: '#cb4b4b'
             },
             {
                 data: d4,
-                bars: { show: true }
+                bars: { show: true },
+                color: '#4da74d'
             }
         ], { xaxis: { ticks: ticks } });
     }
@@ -154,22 +158,26 @@ var BurnupView = Backbone.View.extend({
             {
                 data: d4,
                 lines: { show: true, fill: 1.0 },
-                points: { show: true }
+                points: { show: true },
+                color: '#cb4b4b'
             },
             {
                 data: d3,
                 lines: { show: true, fill: 1.0 },
-                points: { show: true }
+                points: { show: true },
+                color: '#ff77ff'
             },
             {
                 data: d1,
                 lines: { show: true, fill: 1.0 },
-                points: { show: true }
+                points: { show: true },
+                color: '#b6d9f2'
             },
             {
                 data: d2,
                 lines: { show: true, fill: 1.0 },
-                points: { show: true }
+                points: { show: true },
+                color: '#eec446'
             }
             ], { xaxis: { ticks: ticks }});
     }
