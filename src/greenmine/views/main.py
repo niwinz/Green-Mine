@@ -629,7 +629,7 @@ class DashboardView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
 
         try:
-            milestones = project.milestones.all()
+            milestones = project.milestones.order_by('-created_date')
             milestone = milestones.get(pk=mid) if mid is not None else milestones[0]
         except IndexError:
             messages.error(request, _("No milestones found"))
