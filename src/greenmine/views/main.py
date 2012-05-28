@@ -629,7 +629,7 @@ class DashboardView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
 
         try:
-            milestones = project.milestones.order_by('-created_date')
+            milestones = project.milestones.all()
             milestone = milestones.get(pk=mid) if mid is not None else milestones[0]
         except IndexError:
             messages.error(request, _("No milestones found"))
@@ -641,7 +641,7 @@ class DashboardView(GenericView):
         form = forms.TaskForm(project=project, initial={'milestone':milestone})
 
         context = {
-            'user_stories':milestone.user_stories.order_by('subject'),
+            'user_stories':milestone.user_stories.order_by('-priority', 'subject'),
             'milestones': milestones,
             'milestone':milestone,
             'project': project,
