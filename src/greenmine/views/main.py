@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, Http404
 from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
@@ -1454,7 +1454,13 @@ class ProjectSettings(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        pur = get_object_or_404(project.user_roles, user=request.user)
+        try:
+            pur = get_object_or_404(project.user_roles, user=request.user)
+        except Http404 as e:
+            if request.user.is_superuser:
+                return self.render_redirect(reverse("web:project-general-settings", args=[project.slug]))
+            else:
+                raise
 
         form = forms.ProjectPersonalSettingsForm(instance=pur)
 
