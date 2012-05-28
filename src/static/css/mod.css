@@ -7,9 +7,16 @@
 
 
 select {
-    height: 30px;
+    background: none repeat scroll 0 0 #FAFAFA;
+    border: 1px solid #AAAAAA;
+    border-radius: 3px 3px 3px 3px;
+    color: black;
+    font-size: 13px !important;
+    font-weight: bold;
+    padding: 3px;
+    height: 28px;
     max-width: 250px;
-    padding: 0px 5px 0px 5px;
+    padding: 3px;
 }
 
 input[type=button] {

@@ -54,7 +54,7 @@
     border-color: #F78181;
 }
 
-select {
+#dashboard-matrix table tbody td.task-col .task-container select {
     border: 1px solid #aaa;
     font-size: 11px !important;
     color: black; 
