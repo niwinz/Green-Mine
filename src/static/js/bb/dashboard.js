@@ -268,6 +268,8 @@ var DashboardView = Backbone.View.extend({
         $.post(url, data, function(data) {
             if (!data.valid) {
                 source_parent.append(source);
+            } else {
+                source.find("select.statuses").val(new_status_string);
             }
         }, 'json');
     },

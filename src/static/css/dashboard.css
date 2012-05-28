@@ -54,25 +54,32 @@
     border-color: #F78181;
 }
 
+select {
+    border: 1px solid #aaa;
+    font-size: 11px !important;
+    color: black; 
+    background: #fafafa;
+    padding: 2px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    font-weight: bold; 
+}
+
 #dashboard-matrix table tbody td.task-col .task-container .task { padding: 10px; }
 #dashboard-matrix table tbody td.task-col .task-container .task .icons { 
     overflow: hidden; 
     margin-top: 25px; 
 }
-#dashboard-matrix table tbody td.task-col .task-container .task .icons  .participants, 
-#dashboard-matrix table tbody td.task-col .task-container .task .icons  .assigned-to { 
-    font-size: 12px; 
-    font-weight: bold; 
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  select.participants {
     float:left;
+    margin-right: 10px;
+    margin-top: 7px;
 }
 
-#dashboard-matrix table tbody td.task-col .task-container .task .icons  select.statuses,
-#dashboard-matrix table tbody td.task-col .task-container .task .icons  div.current-status {
-    font-size: 12px;
-    font-weight: bold;
+#dashboard-matrix table tbody td.task-col .task-container .task .icons  select.statuses {
     float: left;
-    color #777;
-    margin-left: 10px;
+    margin-top: 7px;
 }
 
 #dashboard-matrix table tbody td.task-col .task-container .task .icons .task-edit {
@@ -133,3 +140,4 @@
 
 #create-task-dialog .form-field {
     width: 250px;
+}
