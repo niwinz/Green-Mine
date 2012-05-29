@@ -1,7 +1,9 @@
 # -* coding: utf-8 -*-
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -10,9 +12,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
 from greenmine.fields import DictField, ListField, WikiField
-from django.conf import settings
+from greenmine.utils import iter_points
 
-from django.utils import timezone
 import datetime
 import re
 
@@ -426,15 +427,7 @@ class Milestone(models.Model):
         Get total story points for this milestone.
         """
 
-        total = 0.0
-
-        for item in self.user_stories.exclude(points = -1):
-            if item.points == -2:
-                total += 0.5
-                continue
-
-            total += item.points
-
+        total = sum(iter_points(self.user_stories.all()))
         return "{0:.1f}".format(total)
 
     def get_points_done_at_date(self, date):
@@ -444,8 +437,11 @@ class Milestone(models.Model):
 
         total = 0.0
 
-        for item in self.user_stories.filter(status__in=['completed', 'closed']):
+        for item in self.user_stories.filter(status__in=settings.CLOSED_STATUSES):
             if item.tasks.filter(modified_date__lt=date).count() > 0:
+                if item.points == -1:
+                    continue
+
                 if item.points == -2:
                     total += 0.5
                     continue
@@ -460,15 +456,8 @@ class Milestone(models.Model):
         Get a total of completed points.
         """
 
-        total = 0.0
-
-        for item in self.user_stories.filter(status__in=['completed', 'closed']):
-            if item.points == -2:
-                total += 0.5
-                continue
-
-            total += item.points
-
+        queryset = self.user_stories.filter(status__in=settings.CLOSED_STATUSES)
+        total = sum(iter_points(queryset))
         return "{0:.1f}".format(total)
     
     @property
@@ -668,7 +657,7 @@ class UserStory(models.Model):
 
         if total_tasks_count == 0:
             self.status = 'open'
-        elif self.tasks.filter(status__in=['closed','completed']).count() == total_tasks_count:
+        elif self.tasks.filter(status__in=settings.CLOSED_STATUSES).count() == total_tasks_count:
             self.status = 'completed'
         elif self.tasks.filter(status='open').count() == total_tasks_count:
             self.status = 'open'

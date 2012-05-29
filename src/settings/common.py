@@ -185,7 +185,6 @@ INSTALLED_APPS = [
     'django_gravatar',
     'greenmine',
     'greenqueue',
-    'html5forms',
     'south',
 ]
 
@@ -275,3 +274,5 @@ DATE_INPUT_FORMATS = (
     '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
     '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
 )
+
+from .appdefaults import *
