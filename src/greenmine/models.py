@@ -176,6 +176,7 @@ class ProjectExtras(models.Model):
     sprints = models.IntegerField(default=1, blank=True, null=True)
     show_burndown = models.BooleanField(default=False, blank=True)
     show_burnup = models.BooleanField(default=False, blank=True)
+    show_sprint_burndown = models.BooleanField(default=False, blank=True)
     total_story_points = models.FloatField(default=None, null=True)
 
     def get_task_parse_re(self):
@@ -436,6 +437,23 @@ class Milestone(models.Model):
 
         return "{0:.1f}".format(total)
 
+    def get_points_done_at_date(self, date):
+        """
+        Get completed story points for this milestone before the date.
+        """
+
+        total = 0.0
+
+        for item in self.user_stories.filter(status__in=['completed', 'closed']):
+            if item.tasks.filter(modified_date__lt=date).count() > 0:
+                if item.points == -2:
+                    total += 0.5
+                    continue
+
+                total += item.points
+
+        return "{0:.1f}".format(total)
+
     @property
     def completed_points(self):
         """
@@ -472,6 +490,11 @@ class Milestone(models.Model):
     @models.permalink
     def get_dashboard_url(self):
         return ('web:dashboard', (),
+            {'pslug': self.project.slug, 'mid': self.id})
+
+    @models.permalink
+    def get_burndown_url(self):
+        return ('web:milestone-burndown', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink

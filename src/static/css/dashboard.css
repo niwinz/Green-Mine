@@ -141,3 +141,8 @@
 #create-task-dialog .form-field {
     width: 250px;
 }
+
+#sprint-burndown #sprint-burndown-graph {
+        height: 200px;
+}
+
