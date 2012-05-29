@@ -25,7 +25,6 @@ var StatsView = Backbone.View.extend({
 });
 
 /* Burndown */
-
 var BurndownModel = Backbone.Model.extend({
     url: function() {
         return this.get('view').$el.attr('url');

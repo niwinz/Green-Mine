@@ -14,6 +14,10 @@
         <br />
     </div>
 
+    <div id="sprint-burndown" url="{{ milestone.get_burndown_url }}" {% if project.extras.show_sprint_burndown %}show="on"{%endif%}>
+        <div id="sprint-burndown-graph" style="display:none"></div>
+    </div>
+
     <div class="matrix" id="dashboard-matrix">
         <table>
             <thead>

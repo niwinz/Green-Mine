@@ -36,6 +36,12 @@
         </div>
 
         <div class="form-field">
+            <label>{{ form.show_sprint_burndown.label }}</label>
+            {{ form.show_sprint_burndown.errors }}
+            {{ form.show_sprint_burndown }}
+        </div>
+
+        <div class="form-field">
             <label>{{ form.sprints.label }}</label>
             {{ form.sprints.errors }}
             {{ form.sprints }}
