@@ -139,17 +139,7 @@ class TaskAlterApiView(GenericView):
         # Automatic control of user story status.
 
         for us in set(us_for_update):
-            total_tasks_count = us.tasks.count()
-
-            if us.tasks.filter(status__in=['closed','completed']).count() == total_tasks_count:
-                us.status = 'completed'
-            elif us.tasks.filter(status='open').count() == total_tasks_count:
-                us.status = 'open'
-            else:
-                us.status = 'progress'
-
-            us.modified_date = now()
-            us.save()
+            us.update_status()
         
         return self.render_to_ok()
  
