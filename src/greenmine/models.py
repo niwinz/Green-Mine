@@ -640,6 +640,21 @@ class UserStory(models.Model):
     def tasks_closed(self):
         return self.tasks.filter(status__in=['workaround', 'needinfo','closed', 'posponed'])
 
+    def update_status(self):
+        total_tasks_count = self.tasks.count()
+
+        if total_tasks_count == 0:
+            self.status = 'open'
+        elif self.tasks.filter(status__in=['closed','completed']).count() == total_tasks_count:
+            self.status = 'completed'
+        elif self.tasks.filter(status='open').count() == total_tasks_count:
+            self.status = 'open'
+        else:
+            self.status = 'progress'
+
+        self.modified_date = timezone.now()
+        self.save()
+
 
 class Change(models.Model):
     change_type = models.IntegerField(choices=TASK_CHANGE_CHOICES)

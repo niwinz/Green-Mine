@@ -1337,6 +1337,7 @@ class TaskEdit(GenericView):
         next_url = request.GET.get('next', None)
 
         _old_assigned_to_pk = task.assigned_to.pk if task.assigned_to else None
+        _old_us = task.user_story
 
         if form.is_valid():
             task = form.save(commit=True)
@@ -1344,6 +1345,11 @@ class TaskEdit(GenericView):
             
             if task.assigned_to and task.assigned_to.pk != _old_assigned_to_pk:
                 signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
+
+            if _old_us and not task.user_story:
+                _old_us.update_status()
+            elif not _old_us and task.user_story:
+                task.user_story.update_status()
 
             messages.info(request, _(u"The task has been saved!"))
             if next_url:
