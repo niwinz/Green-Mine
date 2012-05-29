@@ -962,6 +962,41 @@ class TasksTests(TestCase):
         self.assertEqual(mod_task.subject, 'test task')
         self.assertEqual(len(mail.outbox), 1)
 
+    def test_task_edit_unassignation(self):
+        self.client.login(username="test2", password="test")
+
+        task = Task.objects.create(
+            status = 'open',
+            priority = 3,
+            subject = 'test',
+            description = 'test',
+            assigned_to = self.user2,
+            type = 'task',
+            user_story = None,
+            milestone = self.milestone2,
+            owner = self.user2,
+            project = self.project2,
+        )
+
+        post_params = {
+            'status': 'open',
+            'priority': 3,
+            'subject': 'test task',
+            'description': 'test desc task',
+            'assigned_to': '',
+            'type': 'task',
+            'user_story': '',
+            'milestone': self.milestone2.id,
+        }
+
+        response = self.client.post(task.get_edit_url(), post_params, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        mod_task = Task.objects.get(pk=task.pk)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(mod_task.assigned_to, None)
+
+
     def test_task_delete(self):
         self.client.login(username="test2", password="test")
 

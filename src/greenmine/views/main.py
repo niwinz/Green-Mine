@@ -1342,7 +1342,7 @@ class TaskEdit(GenericView):
             task = form.save(commit=True)
             signals.mail_task_modified.send(sender=self, task=task, user=request.user)
             
-            if task.assigned_to.pk != _old_assigned_to_pk:
+            if task.assigned_to and task.assigned_to.pk != _old_assigned_to_pk:
                 signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
 
             messages.info(request, _(u"The task has been saved!"))
