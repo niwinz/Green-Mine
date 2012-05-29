@@ -150,7 +150,8 @@ def mail_task_assigned(sender, task, user, **kwargs):
     template = render_to_string("email/task.assigned.html", {
         "person": task.assigned_to,
         "task": task,
-        "user": user
+        "user": user,
+        "current_host": settings.HOST,
     })
     
     subject = ugettext("Greenmine: task assigned")
