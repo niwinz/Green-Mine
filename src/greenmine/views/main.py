@@ -18,6 +18,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.timezone import now
+from datetime import timedelta
 
 from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -466,6 +467,34 @@ class BacklogBurnDownView(GenericView):
             #'total_points': sum(iter_points(project.user_stories.all())),
             'total_points': sum(iter_points(project.user_stories\
                 .exclude(Q(client_requirement=True) | Q(team_requirement=True)))),
+        }
+
+        return self.render_to_ok(context)
+
+class MilestoneBurndownView(GenericView):
+    @login_required
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(models.Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        points_done_on_date = [];
+        date = milestone.estimated_start
+        while date <= milestone.estimated_finish:
+            points_done_on_date.append(milestone.get_points_done_at_date(date))
+            date = date + timedelta(days=1)
+        points_done_on_date.append(milestone.get_points_done_at_date(date))
+
+        context = {
+            'points_done_on_date': points_done_on_date,
+            'sprint_points': milestone.total_points,
+            'begin_date': milestone.estimated_start,
+            'end_date': milestone.estimated_finish,
         }
 
         return self.render_to_ok(context)
@@ -1522,6 +1551,7 @@ class ProjectGeneralSettings(GenericView):
             'sprints': extras.sprints,
             'show_burndown': extras.show_burndown,
             'show_burnup': extras.show_burnup,
+            'show_sprint_burndown': extras.show_sprint_burndown,
             'total_story_points': extras.total_story_points,
         }
 
@@ -1544,6 +1574,7 @@ class ProjectGeneralSettings(GenericView):
         extras = project.get_extras()
         extras.sprints = form.cleaned_data['sprints']
         extras.show_burndown = form.cleaned_data['show_burndown']
+        extras.show_sprint_burndown = form.cleaned_data['show_sprint_burndown']
         extras.show_burnup = form.cleaned_data['show_burnup']
         extras.total_story_points = form.cleaned_data['total_story_points']
         extras.save()

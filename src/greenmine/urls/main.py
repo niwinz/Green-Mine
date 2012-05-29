@@ -83,6 +83,9 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/$',
         main.DashboardView.as_view(), name="dashboard"),
 
+    url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/burndown/$',
+        main.MilestoneBurndownView.as_view(), name="milestone-burndown"),
+
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$', 
         main.MilestoneCreateView.as_view(), name='milestone-create'),
     

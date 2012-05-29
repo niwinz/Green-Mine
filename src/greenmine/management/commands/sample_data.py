@@ -55,6 +55,7 @@ class Command(BaseCommand):
 
             extras = project.get_extras()
             extras.show_burndown = True
+            extras.show_sprint_burndown = True
             extras.sprints = 4
             extras.save()
             
