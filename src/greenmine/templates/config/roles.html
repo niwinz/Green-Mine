@@ -1,0 +1,91 @@
+{% extends "config/base.html" %}
+{% load url from future %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load gravatar %}
+
+
+{% block middle %}
+    {% include "config/middle-menu.html" %}
+{% endblock %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Roles" %}{% endblock %}
+
+{% block wrapper %}
+<div id="rolespage">
+    <div class="context-menu">
+        <ul>
+            <li><a class="filter-by-none" href="{{ milestone.get_tasks_url }}">
+                {% trans "Show all" %}</a></li>
+            <li><a class="filter-by-task" href="{{ milestone.get_tasks_url_filter_by_task }}">
+                {% trans "Show only tasks" %}</a></li>
+            <li><a class="filter-by-bug" href="{{ milestone.get_tasks_url_filter_by_bug }}">
+                {% trans "Show only bugs" %}</a></li>
+            <li><a class="new-milestone" href="{{ milestone.get_task_create_url }}">
+                {% trans "Create new task/bug" %}</a></li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+    <div class="left-block">
+        <div class="roles-list">
+            <div class="role-item head-title">
+                <div class="row title">
+                    <span><a href="#">{% trans "Role name" %}</a></span>
+                </div>
+                <div class="row rolepart">
+                    <span><a href="#">{% trans "Can view user stories" %}</a></span>
+                </div>
+                <div class="row metaicon">
+                    <span>{% trans "Actions" %}</span>
+                </div>
+            </div>
+            {% for role in roles %}
+            <div class="role-item" id="role-{{ role.pk }}">
+                <div class="row title">
+                    <span><a href="#">{{ role.name }}</a></span>
+                </div>
+                <div class="row rolepart">
+                    <span>{{ role.userstory_view|yesno }}</span>
+                </div>
+                <div class="row metaicon">
+                    <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
+                        deleteurl="{{ role.get_delete_url }}"></img>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>       
+    <div class="right-block">
+        <div class="role-form form-container">
+            <div class="form-legend">
+                <span>{% trans "Create role" %}</span>
+            </div>
+
+            <form action="." method="post">
+                <div class="form-field width100">
+                    <label>{{ form.name.label }}</label>
+                    {{ form.name }}
+                </div>
+                {% for field in form.boolean_fields %}
+                <div class="form-field">
+                    <label>{{ field.label }}</label> 
+                    {{ field }}
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="delete-role-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this milestone?" %}
+</div>
+{% endblock %}
+
+{% block top-headers %}
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/roles.css' %}" />
+{% endblock %}
+
+{% block bottom-headers %}
+<script type="text/javascript" src="{% static "js/bb/roles.js" %}"></script>
+{% endblock %}

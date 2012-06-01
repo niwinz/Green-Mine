@@ -1,0 +1,79 @@
+#rolespage {
+    overflow:hidden;
+}
+
+#rolespage .left-block,
+#rolespage .right-block {
+    float:left;
+}
+
+#rolespage .left-block {
+    width: 650px;
+    width: 70%;
+}
+
+#rolespage .left-block .roles-list {
+    padding: 5px;
+    min-height: 200px;
+}
+
+#rolespage .left-block .roles-list .role-item {
+    padding: 5px;
+    overflow: hidden;
+    border-bottom: 1px solid #eee;
+    padding-top: 8px;
+}
+
+#rolespage .left-block .roles-list .role-item .row {
+    float: left;
+    vertical-align: bottom;
+}
+
+#rolespage .left-block .roles-list .role-item:hover {
+    background-color: #f7f7f7;
+}
+
+#rolespage .left-block .roles-list .head-title a {
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+}
+
+#rolespage .left-block .roles-list .role-item .row.title { 
+    min-width: 400px;
+    width: 65%;
+}
+
+#rolespage .left-block .roles-list .role-item .row.metaicon {
+    float: right;
+}
+#rolespage .left-block .roles-list .role-item .row.metaicon img,
+#rolespage .left-block .roles-list .role-item .row { cursor: pointer; }
+
+
+#rolespage .right-block {
+    width: 325px;
+    width: 30%;
+}
+
+#rolespage .right-block .role-form {
+    margin-bottom: 10px;
+    background-color: #eee;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+#rolespage .left-block .user-story-stats {
+    padding: 7px;
+    border-bottom: 1px solid #EEE;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+#rolespage .right-block .role-form form {
+    overflow: hidden;
+}
+#rolespage .right-block .role-form form .form-field {
+    float: left;
+    width: 200px;
+    margin-bottom: 10px !important;
+}

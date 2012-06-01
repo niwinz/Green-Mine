@@ -61,6 +61,18 @@ class CharField(DjangoCharField):
         return attrs
 
 
+class RoleForm(forms.ModelForm):
+    class Meta(object):
+        model = Role
+        exclude = ('slug',)
+
+    @property
+    def boolean_fields(self):
+        for field in self:
+            if field.name != 'name':
+                yield field
+
+
 class DocumentForm(forms.Form):
     title = forms.CharField(max_length=200)
     document = forms.FileField(required=True)

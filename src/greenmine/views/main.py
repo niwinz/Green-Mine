@@ -2232,3 +2232,22 @@ class WikipageDeleteView(GenericView):
 
         return self.render_redirect(reverse('web:wiki-page',
             args = [context['project'].slug, 'home']))
+
+
+class RolesView(GenericView):
+    menu = ['roles']
+    template_path = 'config/roles.html'
+    
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+        roles = models.Role.objects.all()
+        form = forms.RoleForm()
+            
+        context = {
+            'roles': roles,
+            'form': form,
+            'project': project,
+        }
+
+        return self.render_to_response(self.template_path, context)

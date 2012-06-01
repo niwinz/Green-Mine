@@ -47,6 +47,9 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/edit/$',
         main.ProjectEditView.as_view(), name="project-edit"),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/roles/$',
+        main.RolesView.as_view(), name="roles"),
         
     # export
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/$', 

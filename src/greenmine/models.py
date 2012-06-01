@@ -161,6 +161,9 @@ class Role(models.Model):
     document_edit = models.BooleanField(default=True)
     document_delete = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return self.name
+
 
 class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
@@ -355,6 +358,10 @@ class Project(models.Model):
     @models.permalink
     def get_documents_url(self):
         return ('web:documents', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_roles_url(self):
+        return ('web:roles', (), {'pslug': self.slug})
 
 
 class Team(models.Model):
