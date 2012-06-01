@@ -9,20 +9,12 @@
     {% include "config/middle-menu.html" %}
 {% endblock %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Roles" %}{% endblock %}
-
 {% block wrapper %}
 <div id="rolespage">
     <div class="context-menu">
         <ul>
-            <li><a class="filter-by-none" href="{{ milestone.get_tasks_url }}">
-                {% trans "Show all" %}</a></li>
-            <li><a class="filter-by-task" href="{{ milestone.get_tasks_url_filter_by_task }}">
-                {% trans "Show only tasks" %}</a></li>
-            <li><a class="filter-by-bug" href="{{ milestone.get_tasks_url_filter_by_bug }}">
-                {% trans "Show only bugs" %}</a></li>
-            <li><a class="new-milestone" href="{{ milestone.get_task_create_url }}">
-                {% trans "Create new task/bug" %}</a></li>
+            <li><a class="new-role" href="">
+                {% trans "Create new role" %}</a></li>
         </ul>
     </div>
     {% include "messages.html" %}
