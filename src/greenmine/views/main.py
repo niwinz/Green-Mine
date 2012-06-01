@@ -485,6 +485,7 @@ class MilestoneBurndownView(GenericView):
 
         points_done_on_date = [];
         date = milestone.estimated_start
+
         while date <= milestone.estimated_finish:
             points_done_on_date.append(milestone.get_points_done_at_date(date))
             date = date + timedelta(days=1)

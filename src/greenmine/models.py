@@ -434,7 +434,6 @@ class Milestone(models.Model):
         """
         Get completed story points for this milestone before the date.
         """
-
         total = 0.0
 
         for item in self.user_stories.filter(status__in=settings.CLOSED_STATUSES):
