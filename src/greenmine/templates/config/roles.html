@@ -32,9 +32,6 @@
                 <div class="row title">
                     <span><a href="#">{% trans "Role name" %}</a></span>
                 </div>
-                <div class="row rolepart">
-                    <span><a href="#">{% trans "Can view user stories" %}</a></span>
-                </div>
                 <div class="row metaicon">
                     <span>{% trans "Actions" %}</span>
                 </div>
@@ -44,9 +41,6 @@
                 <div class="row title">
                     <span><a href="#">{{ role.name }}</a></span>
                 </div>
-                <div class="row rolepart">
-                    <span>{{ role.userstory_view|yesno }}</span>
-                </div>
                 <div class="row metaicon">
                     <img class="delete" src="{% static 'imgs/close-icon.png' %}" 
                         deleteurl="{{ role.get_delete_url }}"></img>
@@ -55,26 +49,6 @@
             {% endfor %}
         </div>
     </div>       
-    <div class="right-block">
-        <div class="role-form form-container">
-            <div class="form-legend">
-                <span>{% trans "Create role" %}</span>
-            </div>
-
-            <form action="." method="post">
-                <div class="form-field width100">
-                    <label>{{ form.name.label }}</label>
-                    {{ form.name }}
-                </div>
-                {% for field in form.boolean_fields %}
-                <div class="form-field">
-                    <label>{{ field.label }}</label> 
-                    {{ field }}
-                </div>
-                {% endfor %}
-            </form>
-        </div>
-    </div>
 </div>
 
 <div class="delete-role-dialog" style="display: none" title="{% trans "Are you sure?" %}">

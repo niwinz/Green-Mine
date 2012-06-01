@@ -9,7 +9,7 @@
 
 #rolespage .left-block {
     width: 650px;
-    width: 70%;
+    width: 99.5%;
 }
 
 #rolespage .left-block .roles-list {
@@ -27,6 +27,10 @@
 #rolespage .left-block .roles-list .role-item .row {
     float: left;
     vertical-align: bottom;
+}
+
+#rolespage .left-block .roles-list .role-item .row.rolepart {
+    width: 60px;
 }
 
 #rolespage .left-block .roles-list .role-item:hover {
