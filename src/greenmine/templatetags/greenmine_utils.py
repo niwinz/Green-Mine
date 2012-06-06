@@ -31,12 +31,12 @@ def tag_color(context, tag):
 
     return 'black'
 
-@register.inclusion_tag('dashboard-userstory-task.html', takes_context=True)
+@register.simple_tag(takes_context=True)
 def dashboard_task(context, task):
     template_context = {
         'task': task,
         'participants': context['participants'],
         'status_list': context['status_list'],
+        'project': context['project'],
     }
-    return template_context
-    
+    return render_to_string("dashboard-userstory-task.html", template_context)
