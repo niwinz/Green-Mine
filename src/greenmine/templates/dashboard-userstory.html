@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load cache %}
 {% load static %}
+{% load greenmine_utils %}
 
 <tr class="user-story-row row" id="user-story-{{ us.id }}" ref="{{ us.id }}" 
         create_task_url="{{ us.get_task_create_url }}">
@@ -22,17 +23,17 @@
     </td>
     <td class="task-col col open-task-col" tstatus="open">
         {% for task in us.tasks_new %}
-            {% include "dashboard-userstory-task.html" with task=task %}
+            {% dashboard_task task %}
         {% endfor %}
     </td>
     <td class="task-col col progress-task-col" tstatus="progress">
         {% for task in us.tasks_progress %}
-            {% include "dashboard-userstory-task.html" with task=task %}
+            {% dashboard_task task %}
         {% endfor %}
     </td>
     <td class="task-col col completed-task-col" tstatus="completed">
         {% for task in us.tasks_completed %}
-            {% include "dashboard-userstory-task.html" with task=task %}
+            {% dashboard_task task %}
         {% endfor %}
     </td>
     <td class="task-col col closed-task-col" tstatus="closed">

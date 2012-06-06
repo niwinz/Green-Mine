@@ -30,3 +30,13 @@ def tag_color(context, tag):
         return project_category_colors[ntagname]
 
     return 'black'
+
+@register.inclusion_tag('dashboard-userstory-task.html', takes_context=True)
+def dashboard_task(context, task):
+    template_context = {
+        'task': task,
+        'participants': context['participants'],
+        'status_list': context['status_list'],
+    }
+    return template_context
+    
