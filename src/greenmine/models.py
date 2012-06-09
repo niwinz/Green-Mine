@@ -100,7 +100,7 @@ def ref_uniquely(project, model, field='ref'):
     """
 
     import time
-    import baseconv
+    from django.utils import baseconv
 
     # this prevents concurrent and inconsistent references.
     time.sleep(0.1)

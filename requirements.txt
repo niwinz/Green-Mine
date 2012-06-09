@@ -10,4 +10,6 @@ pyzmq>=2.2
 sphinx>=1.1.3
 docutils>=0.9
 pygments>=1.5
--e git://github.com/niwibe/django-greenqueue.git#egg=django-greenqueue
+git+git://github.com/niwibe/django-greenqueue.git
+south>=0.7.5
+pytz

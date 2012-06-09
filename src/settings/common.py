@@ -25,6 +25,11 @@ LANGUAGES = (
     ('ru', _('Russian')),
 )
 
+if 'test' in sys.argv:
+    if "settings" not in ",".join(sys.argv):
+        print "Not settings specified. \nTry: python manage.py test --settings=settings.testing -v2 greenmine"
+        sys.exit(0)
+
 MANAGERS = ADMINS
 
 DISABLE_REGISTRATION = False
@@ -45,7 +50,6 @@ CACHES = {
         'LOCATION': 'unique-snowflake'
     }
 }
-
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptPasswordHasher',
@@ -88,11 +92,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+
+GREENQUEUE_BACKEND = 'greenqueue.backends.sync.SyncService'
+GREENQUEUE_WORKER_MANAGER = 'greenqueue.worker.sync.SyncManager'
+
 GREENQUEUE_TASK_MODULES = [
     'greenmine.async',
 ]
 
-GREENQUEUE_BACKEND = 'greenqueue.backends.sync.SyncService'
 
 SV_CSS_MENU_ACTIVE = 'selected'
 SV_CONTEXT_VARNAME = 'menu'
