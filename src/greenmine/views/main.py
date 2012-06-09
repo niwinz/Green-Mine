@@ -2054,6 +2054,8 @@ class UsFormInline(GenericView):
         return self.render_to_error(form.errors)
 
 
+from django.template.defaultfilters import slugify
+
 class WikiPageView(GenericView):
     menu = ['wiki']
     template_path = 'wiki-page.html'
@@ -2068,10 +2070,10 @@ class WikiPageView(GenericView):
         ])
         
         try:
-            wikipage = project.wiki_pages.get(slug=wslug)
+            wikipage = project.wiki_pages.get(slug=slugify(wslug))
         except models.WikiPage.DoesNotExist:
             return self.render_redirect(reverse('web:wiki-page-edit', 
-                args=[project.slug, wslug]))
+                args=[project.slug, slugify(wslug)]))
 
         context = {
             'project': project,
@@ -2094,7 +2096,7 @@ class WikiPageEditView(GenericView):
         ])
 
         try:
-            wikipage = project.wiki_pages.get(slug=wslug)
+            wikipage = project.wiki_pages.get(slug=slugify(wslug))
         except models.WikiPage.DoesNotExist:
             wikipage = None
 
@@ -2117,7 +2119,7 @@ class WikiPageEditView(GenericView):
         ])
 
         try:
-            wikipage = project.wiki_pages.get(slug=wslug)
+            wikipage = project.wiki_pages.get(slug=slugify(wslug))
         except models.WikiPage.DoesNotExist:
             wikipage = None
 
