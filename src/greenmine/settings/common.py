@@ -3,11 +3,17 @@
 from django.utils.translation import ugettext_lazy as _
 import os.path, sys, os
 
-PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
-PROJECT_ROOT = os.path.abspath(PROJECT_ROOT)
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
+)
 
-LOGS_PATH = os.path.join(PROJECT_ROOT, 'logs')
-BACKUP_PATH = os.path.join(PROJECT_ROOT, 'exports')
+OUT_PROJECT_ROOT = os.path.abspath(
+    os.path.join(PROJECT_ROOT, "..")
+)
+
+
+LOGS_PATH = os.path.join(OUT_PROJECT_ROOT, 'logs')
+BACKUP_PATH = os.path.join(OUT_PROJECT_ROOT, 'exports')
 
 if not os.path.exists(LOGS_PATH):
     os.mkdir(LOGS_PATH)
@@ -110,7 +116,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+MEDIA_ROOT = os.path.join(OUT_PROJECT_ROOT, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -121,7 +127,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = os.path.join(OUT_PROJECT_ROOT, 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -140,7 +146,7 @@ STATICFILES_DIRS = (
 )
 
 LOCALE_PATHS = (
-    os.path.join(PROJECT_ROOT, 'greenmine', 'locale'),
+    os.path.join(PROJECT_ROOT, 'locale'),
 )
 
 STATICFILES_FINDERS = [
@@ -163,7 +169,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'greenmine.middleware.PermissionMiddleware',
+    'greenmine.core.middleware.PermissionMiddleware',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -174,7 +180,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "greenmine.context.main",
+    "greenmine.core.context.main",
 ]
 
 ROOT_URLCONF = 'greenmine.urls'
@@ -195,7 +201,7 @@ INSTALLED_APPS = [
     'south',
 ]
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'greenmine.wsgi.application'
 
 LOGGING = {
     'version': 1,
@@ -275,7 +281,7 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'greenmine.Profile'
-FORMAT_MODULE_PATH = 'greenmine.formats'
+FORMAT_MODULE_PATH = 'greenmine.core.formats'
 DATE_INPUT_FORMATS = (
     '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',
     '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',

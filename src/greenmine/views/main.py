@@ -18,23 +18,22 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.timezone import now
-from datetime import timedelta
 
-from django.utils.encoding import force_unicode
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.cache import cache_page
 
 from greenmine.views.generic import GenericView
 from greenmine.views.decorators import login_required, staff_required
-from greenmine import models, forms
+from greenmine import models
+from greenmine.forms import base as forms
 from greenmine.utils import iter_points
-from greenmine import permissions as perms, signals
+from greenmine.core import signals
 
-from greenmine.middleware import PermissionDeniedException
 from greenqueue import send_task
 
 import os
 import re
+
+from datetime import timedelta
 
 class RegisterView(GenericView):
     template_path = 'register.html'

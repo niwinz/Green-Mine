@@ -3,12 +3,17 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from greenmine.models import Profile, UserStory, Task, ProjectUserRole
 from django.utils import timezone
+
+from greenmine.models import Profile, UserStory, Task, ProjectUserRole
+from greenmine.core.utils import normalize_tagname
+
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
-    """Create void user profile if instance is a new user. """
+    """
+    Create void user profile if instance is a new user.
+    """
     if created and not Profile.objects.filter(user=instance).exists():
         Profile.objects.create(user=instance)
 
@@ -20,7 +25,6 @@ def task_post_save(sender, instance, created, **kwargs):
         instance.user_story.save()
 
 
-from greenmine.utils import normalize_tagname
 
 @receiver(post_save, sender=UserStory)
 def user_story_post_save(sender, instance, created, **kwargs):
@@ -32,7 +36,6 @@ def user_story_post_save(sender, instance, created, **kwargs):
     if not instance.category or not instance.category.strip():
         return
 
-    # TODO: remove accents from category string.
     category_str = normalize_tagname(instance.category)
     if category_str not in instance.project.meta_category_list:
         instance.project.meta_category_list.append(category_str)
@@ -40,14 +43,9 @@ def user_story_post_save(sender, instance, created, **kwargs):
     instance.project.save()
 
 
+from greenmine.core import signals
+from greenmine.core.utils.auth import set_token
 
-""" 
-Email signals handlers. 
-Abstraction layer for greenqueue. 
-"""
-
-from greenmine import signals
-from greenmine.utils import set_token
 from greenqueue import send_task
 from django.conf import settings
 from django.utils.translation import ugettext
@@ -153,6 +151,6 @@ def mail_task_assigned(sender, task, user, **kwargs):
         "user": user,
         "current_host": settings.HOST,
     })
-    
+
     subject = ugettext("Greenmine: task assigned")
     send_task("send-mail", args = [subject, template, [task.assigned_to.email]])

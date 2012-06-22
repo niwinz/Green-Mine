@@ -11,8 +11,8 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
-from greenmine.fields import DictField, ListField, WikiField
-from greenmine.utils import iter_points
+from greenmine.core.fields import DictField, ListField, WikiField
+from greenmine.core.utils import iter_points
 
 import datetime
 import re
@@ -66,6 +66,7 @@ POINTS_CHOICES = (
     (20, u'20'),
     (40, u'40'),
 )
+
 
 TASK_COMMENT = 1
 TASK_STATUS_CHANGE = 2

@@ -1,36 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
-from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import render_to_string
-from django.template import RequestContext, loader
-from django.contrib import messages
-from django.db.utils import IntegrityError
+from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils.decorators import method_decorator
-from django.utils.timezone import now
-from django.views.generic import TemplateView, RedirectView, View
 from django.db.models import Q
+
 from django_gravatar.helpers import get_gravatar_url, has_gravatar
+
+from greenmine.models import *
+from greenmine import models
+from greenmine.views.decorators import login_required
+from greenmine.views.generic import GenericView
 
 import logging, re
 logger = logging.getLogger('greenmine')
 
-from greenmine.models import *
-from greenmine import models, forms, utils
-from greenmine.views.decorators import login_required
-from greenmine.views.generic import GenericView
-
-
-from django.core.cache import cache
-import uuid
 
 class UserListApiView(GenericView):
     """
@@ -50,8 +36,8 @@ class UserListApiView(GenericView):
         users_list = []
 
         for user in users:
-            users_list_item = {}
-            users_list_item['id'] = user.id
+            users_list_item = {'id': user.id}
+
             full_name = user.get_full_name()
             if full_name:
                 users_list_item['label'] = full_name
@@ -81,11 +67,11 @@ class I18NLangChangeApiView(GenericView):
                                     in dict(settings.LANGUAGES).keys():
             request.session['django_language'] = request.GET['lang']
             if request.META.get('HTTP_REFERER', ''):
-                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+                return self.render_redirect(request.META['HTTP_REFERER'])
             elif "next" in request.GET and request.GET['next']:
-                return HttpResponseRedirect(request.GET['next'])
+                return self.render_redirect(request.GET['next'])
 
-        return HttpResponseRedirect('/')
+        return self.render_redirect('/')
 
 
 class TaskAlterApiView(GenericView):

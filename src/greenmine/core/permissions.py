@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-from .models import Role, ProjectUserRole
+from greenmine.models import Role, ProjectUserRole
 
 def get_role(name):
     """

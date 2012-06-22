@@ -15,8 +15,8 @@ from django.db.utils import IntegrityError
 from django.utils.decorators import method_decorator
 from superview.views import SuperView as View
 
-from greenmine import permissions
-from greenmine.middleware import PermissionDeniedException
+from greenmine.core import permissions
+from greenmine.core.middleware import PermissionDeniedException
 
 
 class GenericView(View):

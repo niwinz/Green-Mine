@@ -14,7 +14,7 @@ def main(request):
         previous_url = request.META.get("HTTP_REFERER", u"/"),
         current_host = settings.HOST,
     )
-    
+
     # Put main_title into context
     tmp_main_title = 'Greenmine'
     context_extra['MAIN_TITLE'] = tmp_main_title
