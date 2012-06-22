@@ -49,13 +49,13 @@ class SimplePermissionMethodsTest(TestCase):
             user = user,
             role = role,
         )
-        
+
         self.assertTrue(perms.has_perms(user, project, [
             ('project', 'view'),
             ('milestone', 'view'),
             ('userstory', 'view'),
         ]))
-    
+
     def tearDown(self):
         ProjectUserRole.objects.all().delete()
         Project.objects.all().delete()
@@ -109,7 +109,7 @@ class ProjectRelatedTests(TestCase):
         project = Project.objects.get(name='test2')
         self.assertEqual(project.extras, None)
         self.assertNotEqual(project.get_extras(), None)
-    
+
         project = Project.objects.get(name='test2')
         self.assertNotEqual(project.extras, None)
 
@@ -139,7 +139,7 @@ class ProjectRelatedTests(TestCase):
     def test_home_projects_view(self):
         home_url = reverse('web:projects')
         response = self.client.get(home_url)
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['projects'].count(), 0)
 
@@ -183,7 +183,7 @@ class ProjectRelatedTests(TestCase):
 
         response = self.client.post(project.get_delete_url(), {})
         self.assertEqual(response.status_code, 200)
-        
+
         jdata = json.loads(response.content)
         self.assertIn("valid", jdata)
         self.assertTrue(jdata['valid'])
@@ -192,7 +192,7 @@ class ProjectRelatedTests(TestCase):
 
     def test_normal_user_projects(self):
         """
-        Permission tests, normal user only show 
+        Permission tests, normal user only show
         owned projects and participant.
         """
 
@@ -264,12 +264,12 @@ class ProjectRelatedTests(TestCase):
         project.save()
 
         project.add_user(self.user, 'developer')
-        
+
         response = self.client.get(reverse('web:project-edit', args=[project.slug]), follow=True)
 
         # expected one message
         self.assertEqual(len(response.context['messages']), 1)
-        
+
         # expected redirect
         self.assertEqual(response.redirect_chain, [('http://testserver/', 302)])
 
@@ -486,7 +486,7 @@ class UserStoriesTests(TestCase):
         self.client.login(username="test2", password="test")
         response = self.client.get(self.project2.get_backlog_url())
         self.assertEqual(response.status_code, 200)
-    
+
     def test_backlog_simple_view_without_permissions(self):
         self.client.login(username="test2", password="test")
         response = self.client.get(self.project1.get_backlog_url())
@@ -564,7 +564,7 @@ class UserStoriesTests(TestCase):
 
         response = self.client.post(self.milestone2.get_user_story_create_url(), post_params, follow=True)
         self.assertIn("form", response.context)
-        
+
         form_errors = dict(response.context['form'].errors)
         self.assertIn('description', form_errors)
         self.assertEqual(response.status_code, 200)
@@ -582,7 +582,7 @@ class UserStoriesTests(TestCase):
             'description': 'test desc us',
             'finish_date': '02/02/2012',
         }
-        
+
         response = self.client.post(self.milestone1.get_user_story_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -629,7 +629,7 @@ class UserStoriesTests(TestCase):
             'description': 'test desc us',
             'finish_date': '02/02/2012',
         }
-        
+
         response = self.client.post(user_story.get_edit_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -663,7 +663,7 @@ class UserStoriesTests(TestCase):
             'description': 'test desc us',
             'finish_date': '02/02/2012',
         }
-        
+
         response = self.client.post(user_story.get_edit_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -864,7 +864,7 @@ class TasksTests(TestCase):
 
     def test_task_create(self):
         self.client.login(username="test2", password="test")
-        
+
         post_params = {
             'status': 'open',
             'priority': 3,
@@ -878,7 +878,7 @@ class TasksTests(TestCase):
 
         response = self.client.post(self.milestone2.get_task_create_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         jdata = json.loads(response.content)
 
         self.assertTrue(jdata['success'])
@@ -887,7 +887,7 @@ class TasksTests(TestCase):
 
     def test_task_create_without_permissions_1(self):
         self.client.login(username="test2", password="test")
-        
+
         post_params = {
             'status': 'open',
             'priority': 3,
@@ -906,7 +906,7 @@ class TasksTests(TestCase):
 
     def test_task_create_without_permissions_2(self):
         self.client.login(username="test2", password="test")
-        
+
         post_params = {
             'status': 'open',
             'priority': 3,
@@ -991,7 +991,7 @@ class TasksTests(TestCase):
 
         response = self.client.post(task.get_edit_url(), post_params, follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         mod_task = Task.objects.get(pk=task.pk)
         self.assertEqual(len(mail.outbox), 0)
         self.assertEqual(mod_task.assigned_to, None)
@@ -1054,7 +1054,7 @@ class TasksTests(TestCase):
             owner = self.user2,
             project = self.project2,
         )
-        
+
         task2 = Task.objects.create(
             status = 'open',
             priority = 1,
@@ -1101,7 +1101,7 @@ class TasksTests(TestCase):
             owner = self.user2,
             project = self.project2,
         )
-        
+
         task2 = Task.objects.create(
             status = 'open',
             priority = 1,
@@ -1120,7 +1120,7 @@ class TasksTests(TestCase):
 
         tasks = response.context['tasks']
         self.assertEqual(tasks.count(), 1)
-        
+
         response = self.client.get(self.milestone2.get_tasks_url_filter_by_bug())
         self.assertEqual(response.status_code, 200)
 

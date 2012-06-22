@@ -97,7 +97,7 @@ class QuestionsRelatedTests(TestCase):
 
         ok = self.client.login(username="test3", password="test")
         self.assertTrue(ok)
-        
+
         response = self.client.post(url, post_params, follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -157,7 +157,7 @@ class QuestionsRelatedTests(TestCase):
 
     def test_question_edit_without_permissions(self):
         project = Project.objects.get(name='test1')
-        
+
         user3 = User.objects.create(
             username = 'test3',
             email = 'test3@test.com',
@@ -190,7 +190,7 @@ class QuestionsRelatedTests(TestCase):
 
         ok = self.client.login(username="test3", password="test")
         self.assertTrue(ok)
-        
+
         url = question.get_edit_url()
         response = self.client.post(url, post_params, follow=True)
         self.assertEqual(response.status_code, 403)
@@ -216,7 +216,7 @@ class QuestionsRelatedTests(TestCase):
             'closed': False,
             'assigned_to': self.user1.id,
         }
-        
+
         url = question.get_edit_url()
         response = self.client.post(url, post_params, follow=True)
         self.assertEqual(response.status_code, 200)
@@ -233,7 +233,7 @@ class QuestionsRelatedTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         mail.outbox = []
-        
+
         response = self.client.post(url, post_params, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [('http://testserver/test1/questions/test/view/', 302)])

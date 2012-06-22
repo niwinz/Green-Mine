@@ -3,7 +3,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.utils import IntegrityError
-from django.core import management  
+from django.core import management
 from django.contrib.webdesign import lorem_ipsum
 from django.utils.timezone import now
 
@@ -19,7 +19,7 @@ subjects = [
     "add tests for bulk operations",
     "create testsuite with matrix builds",
     "Lighttpd support",
-    "Lighttpd x-sendfile support", 
+    "Lighttpd x-sendfile support",
     "Added file copying and processing of images (resizing)",
     "Exception is thrown if trying to add a folder with existing name",
     "Feature/improved image admin",
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 email = 'foouser%d@foodomain.com' % (counter),
             )
             return user
-           
+
         # projects
         for x in xrange(3):
             # create project
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 owner = random.choice(list(User.objects.all()[:1])),
                 public = True,
             )
-            
+
             project.add_user(project.owner, "developer")
 
             extras = project.get_extras()
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             extras.show_sprint_burndown = True
             extras.sprints = 4
             extras.save()
-            
+
             # add random participants to project
             participants = []
             for t in xrange(random.randint(1, 2)):
@@ -69,7 +69,7 @@ class Command(BaseCommand):
                 users_counter += 1
 
             now_date = now() - datetime.timedelta(30)
-            
+
             # create random milestones
             for y in xrange(2):
                 milestone = Milestone.objects.create(
@@ -83,7 +83,7 @@ class Command(BaseCommand):
                 )
 
                 now_date = now_date +  datetime.timedelta(15)
-                
+
                 # create uss asociated to milestones
                 for z in xrange(5):
                     us = UserStory.objects.create(
@@ -96,7 +96,7 @@ class Command(BaseCommand):
                         milestone = milestone,
                         status = 'completed',
                     )
-                    
+
                     for w in xrange(3):
                         task = Task.objects.create(
                             subject = "Task %s" % (w),

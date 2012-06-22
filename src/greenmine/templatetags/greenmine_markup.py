@@ -31,7 +31,7 @@ def markdown_filter(value, project):
 
     res = markdown.markdown(
         value,
-        extensions = [wikilinks_extension, 'codehilite'], 
+        extensions = [wikilinks_extension, 'codehilite'],
         #extension_configs = {'wikilinks': [
         #                            ('base_url', '/'+project.slug+'/wiki/'),
         #                            ('end_url', ''),

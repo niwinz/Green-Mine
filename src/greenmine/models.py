@@ -62,6 +62,9 @@ POINTS_CHOICES = (
     (5, u'5'),
     (8, u'8'),
     (10, u'10'),
+    (15, u'15'),
+    (20, u'20'),
+    (40, u'40'),
 )
 
 TASK_COMMENT = 1
@@ -104,7 +107,7 @@ def ref_uniquely(project, model, field='ref'):
 
     # this prevents concurrent and inconsistent references.
     time.sleep(0.1)
-    
+
     new_timestamp = lambda: int("".join(str(time.time()).split(".")))
     while True:
         potential = baseconv.base62.encode(new_timestamp())
@@ -197,7 +200,7 @@ class Project(models.Model):
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     description = WikiField(blank=False)
-    
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
 
@@ -260,7 +263,7 @@ class Project(models.Model):
             user = user,
             role = permissions.get_role(role),
         )
-        
+
 
     """ Permalinks """
 
@@ -287,7 +290,7 @@ class Project(models.Model):
     def get_backlog_right_block_url(self):
         return ('web:project-backlog-right-block', (),
             {'pslug': self.slug})
-    
+
     @models.permalink
     def get_backlog_burndown_url(self):
         return ('web:project-backlog-burndown', (),
@@ -309,7 +312,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:project-edit', (), {'pslug': self.slug})        
+        return ('web:project-edit', (), {'pslug': self.slug})
 
     @models.permalink
     def get_delete_url(self):
@@ -326,16 +329,16 @@ class Project(models.Model):
     @models.permalink
     def get_export_rehash_url(self):
         return ('web:project-export-settings-rehash', (), {'pslug': self.slug})
-        
+
     @models.permalink
     def get_default_tasks_url(self):
-        return ('web:tasks-view', (), 
+        return ('web:tasks-view', (),
             {'pslug': self.slug, 'mid': self.default_milestone.id })
 
     @models.permalink
     def get_tasks_url(self):
         return ('web:tasks-view', (), {'pslug': self.slug})
-    
+
     @models.permalink
     def get_settings_url(self):
         return ('web:project-personal-settings', (), {'pslug': self.slug})
@@ -371,7 +374,7 @@ class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project", related_name="user_roles")
     user = models.ForeignKey("auth.User", related_name="user_roles")
     role = models.ForeignKey("Role", related_name="user_roles")
-    
+
     mail_milestone_created = models.BooleanField(default=True)
     mail_milestone_modified = models.BooleanField(default=False)
     mail_milestone_deleted = models.BooleanField(default=False)
@@ -458,13 +461,13 @@ class Milestone(models.Model):
         queryset = self.user_stories.filter(status__in=settings.CLOSED_STATUSES)
         total = sum(iter_points(queryset))
         return "{0:.1f}".format(total)
-    
+
     @property
     def percentage_completed(self):
         return "{0:.1f}".format(
             (float(self.completed_points) * 100) / float(self.total_points)
         )
-    
+
     @models.permalink
     def get_edit_url(self):
         return ('web:milestone-edit', (),
@@ -507,22 +510,22 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_tasks_url(self):
-        return ('web:tasks-view', (), 
+        return ('web:tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_tasks_url_filter_by_task(self):
-        return ('web:tasks-view', (), 
+        return ('web:tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'task'})
 
     @models.permalink
     def get_tasks_url_filter_by_bug(self):
-        return ('web:tasks-view', (), 
+        return ('web:tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'bug'})
 
     @models.permalink
     def get_task_create_url(self):
-        return ('web:task-create', (), 
+        return ('web:task-create', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     class Meta(object):
@@ -591,7 +594,7 @@ class UserStory(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
-    
+
     @models.permalink
     def get_assign_url(self):
         return ('web:assign-us', (),
@@ -617,11 +620,11 @@ class UserStory(models.Model):
     def get_edit_url(self):
         return ('web:user-story-edit', (),
             {'pslug': self.project.slug, 'iref': self.ref})
-            
+
     @models.permalink
     def get_edit_inline_url(self):
         return ('web:user-story-edit-inline', (),
-            {'pslug': self.project.slug, 'iref': self.ref})            
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_delete_url(self):
@@ -673,7 +676,7 @@ class Change(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     project = models.ForeignKey("Project", related_name="changes")
-    
+
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
@@ -723,7 +726,7 @@ class Task(models.Model):
 
     class Meta:
         unique_together = ('ref', 'project')
-    
+
     @property
     def has_noncolumn_status(self):
         return self.status in ['needinfo', 'workaround', 'posponed']
@@ -751,7 +754,7 @@ class Task(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:task-view', (), 
+        return ('web:task-view', (),
             {'pslug':self.project.slug, 'tref': self.ref})
 
     @models.permalink
@@ -762,7 +765,7 @@ class Task(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = timezone.now()
-            
+
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
 
@@ -825,7 +828,7 @@ class Question(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:questions-view', (), 
+        return ('web:questions-view', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
 
     @models.permalink
@@ -868,7 +871,7 @@ class WikiPage(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:wiki-page', (), 
+        return ('web:wiki-page', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
@@ -883,7 +886,7 @@ class WikiPage(models.Model):
 
     @models.permalink
     def get_history_view_url(self):
-        return ('web:wiki-page-history', (), 
+        return ('web:wiki-page-history', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
 
@@ -893,12 +896,12 @@ class WikiPageHistory(models.Model):
     content = WikiField(blank=True, null=True)
     created_date = models.DateTimeField()
     owner = models.ForeignKey("auth.User", related_name="wiki_page_historys")
-    
+
     # TODO: fix this permalink. this implementation is bad for performance.
 
     @models.permalink
     def get_history_view_url(self):
-        return ('web:wiki-page-history-view', (), 
+        return ('web:wiki-page-history-view', (),
             {'pslug': self.wikipage.project.slug, 'wslug': self.wikipage.slug, 'hpk': self.pk})
 
 

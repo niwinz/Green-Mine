@@ -53,7 +53,7 @@ class ProjectExportView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        
+
         context = {
             'project': project,
             'flist': models.ExportDirectoryCache.objects.all()
@@ -78,7 +78,7 @@ class RehashExportsDirectory(GenericView):
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
         models.ExportDirectoryCache.objects.all().delete()
-        
+
         for path, name, size in self.backup_file_list():
             models.ExportDirectoryCache.objects.create(
                 path = name,
@@ -119,7 +119,7 @@ class ProjectExportNow(GenericView):
         with io.open(filepath, 'w+b') as f:
             obj = self._clean_copy(project.__dict__)
             pickle.dump(obj, f, -1)
-        
+
         filename = 'project-owner.data'
         filepath = os.path.join(self.path, filename)
 
@@ -171,7 +171,7 @@ class ProjectExportNow(GenericView):
             shutil.rmtree(path)
 
         os.mkdir(path)
-        
+
         for user_story in project.user_stories.all():
             obj = self._clean_copy(user_story.__dict__)
             obj['watchers'] = [o.id for o in user_story.watchers.all().distinct()]
@@ -242,7 +242,7 @@ class ProjectExportNow(GenericView):
 
             with BinaryFile(filepath) as f:
                 pickle.dump(obj, f, -1)
-        
+
         for response in models.QuestionResponse.objects\
                         .filter(question__in=project.questions.all()):
             obj = self._clean_copy(question.__dict__)
@@ -275,7 +275,7 @@ class ProjectExportNow(GenericView):
 
             with BinaryFile(filepath) as f:
                 pickle.dump(obj, f, -1)
-        
+
         for fattached in models.WikiPageAttachment.objects\
                         .filter(wikipage__in=project.wiki_pages.all()):
 

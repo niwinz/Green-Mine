@@ -62,7 +62,7 @@ class RegisterView(GenericView):
                 is_staff = False,
                 is_superuser = False,
             )
-            
+
             user.set_password(form.cleaned_data['password'])
             user.save()
 
@@ -96,7 +96,7 @@ class AccountActivation(GenericView):
 
 class LoginView(GenericView):
     template_name = 'login.html'
-    
+
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         login_form = forms.LoginForm(request=request)
@@ -117,7 +117,7 @@ class LoginView(GenericView):
                     request.session['django_language'] = user_profile.default_language
 
                 return self.render_to_ok({'redirect_to':'/'})
-            
+
             return self.render_json_error(login_form.errors)
         return self.render_json({'error_msg':'Invalid request'}, ok=False)
 
@@ -130,20 +130,20 @@ class RememberPasswordView(GenericView):
     """
 
     template_name = 'remember-password.html'
-    
+
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         form = forms.ForgottenPasswordForm()
 
-        return self.render_to_response(self.template_name, 
+        return self.render_to_response(self.template_name,
             {'form': form})
-    
+
     def post(self, request):
         form = forms.ForgottenPasswordForm(request.POST)
         if form.is_valid():
             form.user.set_unusable_password()
             form.user.save()
-            
+
             signals.mail_recovery_password.send(sender=self, user=form.user)
             messages.info(request, _(u'He has sent an email with the link to retrieve your password'))
 
@@ -164,7 +164,7 @@ class SendRecoveryPasswordView(GenericView):
         user = get_object_or_404(User.objects.select_for_update(), pk=uid)
         user.set_unusable_password()
         user.save()
-        
+
         signals.mail_recovery_password.send(sender=self, user=user)
         messages.info(request, _(u"Recovery password email are sended"))
 
@@ -179,7 +179,7 @@ class PasswordChangeView(GenericView):
 
     template_path = 'password.html'
 
-    @login_required    
+    @login_required
     def get(self, request):
         form = forms.PasswordRecoveryForm()
         context = {'form': form}
@@ -255,10 +255,10 @@ class ProfileView(GenericView):
             request.user = form.save()
         except IntegrityError as e:
             transaction.savepoint_rollback(sem)
-            
+
             messages.error(request, _(u'Integrity error: %(e)s') % {'e':unicode(e)})
             return self.render_to_response(self.template_name, context)
-        
+
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Profile save success!'))
         return HttpResponseRedirect(reverse('web:profile'))
@@ -278,13 +278,13 @@ class HomeView(GenericView):
             page = int(request.GET.get('page', '1'))
         except ValueError:
             page = 1
-        
+
         if request.user.is_staff:
             projects = models.Project.objects.all()
         else:
             projects = request.user.projects.all() | \
                 request.user.projects_participant.all()
-        
+
         projects = projects.order_by('name').distinct()
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
@@ -304,7 +304,7 @@ class BacklogStats(GenericView):
         completed_points = sum(iter_points(completed))
 
         total_points = unassigned_points + assigned_points
-        
+
         try:
             percentage_assigned = (assigned_points * 100) / total_points
         except ZeroDivisionError:
@@ -336,7 +336,7 @@ class BacklogStats(GenericView):
         unassigned = project.user_stories\
             .filter(milestone__isnull=True)\
             .only('points')
-        
+
         assigned = project.user_stories\
             .filter(milestone__isnull=False)\
             .only('points')
@@ -369,7 +369,7 @@ class BacklogLeftBlockView(GenericView):
         unassigned = project.user_stories\
             .filter(milestone__isnull=True)\
             .order_by('-priority')
-        
+
         if "order_by" in request.GET:
             unassigned = unassigned.order_by(request.GET['order_by'])
 
@@ -382,7 +382,7 @@ class BacklogLeftBlockView(GenericView):
         response_context = {
             'html': loader.render_to_string(self.template_path, template_context)
         }
-        
+
         return self.render_to_ok(response_context)
 
 
@@ -429,7 +429,7 @@ class BacklogBurnDownView(GenericView):
         ])
 
         extras = project.get_extras()
-        
+
         points_sum, extra_points_sum = 0, 0
         points_for_sprint = [points_sum]
         disponibility, extra_points = [], [0]
@@ -441,7 +441,7 @@ class BacklogBurnDownView(GenericView):
             points_sum += sum(iter_points(usqs))
 
             extra_points_user_stories = models.UserStory.objects.filter(
-                created_date__gte=sprint.created_date, 
+                created_date__gte=sprint.created_date,
                 created_date__lte=sprint.estimated_finish
             )
 
@@ -512,7 +512,7 @@ class BacklogBurnUpView(GenericView):
         ])
 
         extras = project.get_extras()
-        
+
         points_sum = 0
         points_for_sprint = [points_sum]
         disponibility = []
@@ -527,7 +527,7 @@ class BacklogBurnUpView(GenericView):
             points_sum += sum(iter_points(usqs))
 
             extra_points_user_stories = models.UserStory.objects.filter(
-                created_date__gt=sprint.created_date, 
+                created_date__gt=sprint.created_date,
                 created_date__lt=sprint.estimated_finish
             )
 
@@ -541,7 +541,7 @@ class BacklogBurnUpView(GenericView):
             extra_points.append(extra_points_sum)
 
             extra_points_team_user_stories = models.UserStory.objects.filter(
-                created_date__gt=sprint.created_date, 
+                created_date__gt=sprint.created_date,
                 created_date__lt=sprint.estimated_finish
             )
 
@@ -564,7 +564,7 @@ class BacklogBurnUpView(GenericView):
         sprints.append(points_for_sprint)
         sprints.append(extra_points_team)
         sprints.append(extra_points)
-        
+
         context = {
             'sprints': sprints,
             #'total_points': sum(iter_points(project.user_stories.all())),
@@ -577,8 +577,8 @@ class BacklogBurnUpView(GenericView):
 
 
 class BacklogView(GenericView):
-    """ 
-    General dasboard view,  with all milestones and all tasks. 
+    """
+    General dasboard view,  with all milestones and all tasks.
     """
 
     template_name = 'backlog.html'
@@ -620,7 +620,7 @@ class TasksView(GenericView):
             ('userstory', 'view'),
             ('task', 'view'),
         ])
-        
+
         if mid is None:
             try:
                 return self.render_redirect(project.get_default_tasks_url())
@@ -694,41 +694,41 @@ class UserRoleMixIn(object):
                 continue
 
             user_role[user_rx_pos.group('userid')] = self.request.POST[post_key]
-        
+
         invalid_role = False
-        for role in user_role.values(): 
+        for role in user_role.values():
             try:
                 models.Role.objects.get(pk=role)
             except models.Role.DoesNotExist:
                 invalid_role = True
                 break
-            
+
         return {} if invalid_role else user_role
 
 
 class ProjectCreateView(UserRoleMixIn, GenericView):
     template_name = 'project-create.html'
     menu = ['projects']
-    
+
     @login_required
     def get(self, request):
         form = forms.ProjectForm()
         context = {'form':form, 'roles': models.Role.objects.all()}
         return self.render_to_response(self.template_name, context)
-    
+
     @login_required
     def post(self, request):
         form = forms.ProjectForm(request.POST)
-        
+
         context = {
-            'form': form, 
+            'form': form,
             'roles': models.Role.objects.all(),
         }
-        
+
         if not form.is_valid():
             response = {'errors': form.errors}
-            return self.render_to_error(response)                
-        
+            return self.render_to_error(response)
+
         sem = transaction.savepoint()
         try:
             user_role = self.parse_roles()
@@ -753,7 +753,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
         except Exception as e:
             transaction.savepoint_rollback(sem)
             return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
-        
+
         signals.mail_project_created.send(sender=self, project=project, user=request.user)
 
         transaction.savepoint_commit(sem)
@@ -770,16 +770,16 @@ class ProjectEditView(UserRoleMixIn, GenericView):
     menu = ["settings", "editproject"]
 
     @login_required
-    def get(self, request, pslug):		
+    def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
 
         if not self.check_role(request.user, project, [('project',('view', 'edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
 
         form = forms.ProjectForm(instance=project)
-        
+
         context = {
-            'form':form, 
+            'form':form,
             'roles': models.Role.objects.all(),
             'project': project
         }
@@ -791,19 +791,19 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
         if not self.check_role(request.user, project, [('project', ('view','edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
-        
+
         form = forms.ProjectForm(request.POST, instance=project)
-        
+
         context = {
-            'form': form, 
+            'form': form,
             'roles': models.Role.objects.all(),
             'project': project,
         }
-        
+
         if not form.is_valid():
             response = {'errors': form.errors}
-            return self.render_to_error(response)                
-        
+            return self.render_to_error(response)
+
         sem = transaction.savepoint()
 
         try:
@@ -828,12 +828,12 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         except Exception as e:
             transaction.savepoint_rollback(sem)
             return self.render_to_error({'messages': {'type':'error', 'msg': unicode(e)}})
-        
+
         signals.mail_project_modified.send(sender=self, project=project, user=request.user)
 
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return self.render_to_ok({'redirect_to':reverse('web:projects')})  
+        return self.render_to_ok({'redirect_to':reverse('web:projects')})
 
 
 class ProjectDelete(GenericView):
@@ -844,7 +844,7 @@ class ProjectDelete(GenericView):
         self.check_role(request.user, project, [
             ('project', ('view', 'edit', 'delete')),
         ])
-        
+
         signals.mail_project_deleted\
             .send(sender=self, project=project, user=request.user)
 
@@ -882,7 +882,7 @@ class MilestoneCreateView(GenericView):
             ('project', 'view'),
             ('milestone', ('view', 'create')),
         ])
-        
+
         form = forms.MilestoneForm(request.POST)
 
         if form.is_valid():
@@ -935,7 +935,7 @@ class MilestoneEditView(GenericView):
             ('project', 'view'),
             ('milestone', ('view', 'create')),
         ])
-        
+
         form = forms.MilestoneForm(request.POST, instance=milestone)
 
         if form.is_valid():
@@ -966,7 +966,7 @@ class MilestoneDeleteView(GenericView):
 
         signals.mail_milestone_deleted.send(sender=self,
             milestone = milestone, user = request.user)
-        
+
         # update all user stories, set milestone to None
         milestone.user_stories.all().update(milestone=None)
 
@@ -975,11 +975,11 @@ class MilestoneDeleteView(GenericView):
 
         # delete all tasks without user story
         milestone.tasks.filter(user_story__isnull=True).delete()
-        
+
         milestone.delete()
 
         return self.render_to_ok()
-        
+
 
 class UserStoryView(GenericView):
     template_name = "user-story-view.html"
@@ -995,7 +995,7 @@ class UserStoryView(GenericView):
             ('milestone', 'view'),
             ('userstory', 'view'),
         ])
-        
+
         context = {
             'user_story':user_story,
             'milestone':user_story.milestone,
@@ -1021,10 +1021,10 @@ class UserStoryCreateView(GenericView):
             milestone = get_object_or_404(project.milestones, pk=mid)
         else:
             milestone = None
-        
+
         form = forms.UserStoryForm(initial={'milestone': milestone})
         context = {
-            'form':form, 
+            'form':form,
             'project':project,
         }
         return self.render_to_response(self.template_name, context)
@@ -1055,12 +1055,12 @@ class UserStoryCreateView(GenericView):
 
             signals.mail_userstory_created.send(sender=self, us=instance, user=request.user)
             self.create_asociated_tasks(project, instance)
-            
+
             messages.info(request, _(u'The user story was created correctly'))
             return self.render_redirect(project.get_backlog_url())
-    
+
         context = {
-            'form':form, 
+            'form':form,
             'project':project,
         }
         return self.render_to_response(self.template_name, context)
@@ -1071,7 +1071,7 @@ class UserStoryCreateView(GenericView):
 
         for text in texts:
             task = models.Task(
-                user_story=user_story, 
+                user_story=user_story,
                 ref = models.ref_uniquely(project, user_story.__class__),
                 description = "",
                 project = project,
@@ -1086,7 +1086,7 @@ class UserStoryCreateView(GenericView):
         for task in tasks:
             signals.mail_task_created.send(sender=self,
                 task = task, user = self.request.user)
-        
+
 
 class UserStoryEdit(GenericView):
     template_name = "user-story-edit.html"
@@ -1138,12 +1138,12 @@ class UserStoryEdit(GenericView):
 
 class UserStoryDeleteView(GenericView):
     template_name = "user-story-delete.html"
-    
+
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
-        
+
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', ('view', 'edit')),
@@ -1174,7 +1174,7 @@ class TaskCreateView(GenericView):
             ('userstory', 'view'),
             ('task', ('view', 'create')),
         ])
-        
+
         if usref is not None:
             user_story = get_object_or_404(project.user_stories, ref=usref)
             milestone = user_story.milestone
@@ -1184,7 +1184,7 @@ class TaskCreateView(GenericView):
         else:
             return HttpResponseBadRequest()
 
-        form = forms.TaskForm(project=project, 
+        form = forms.TaskForm(project=project,
             initial={'milestone':milestone, 'user_story': user_story})
 
         context = {
@@ -1232,10 +1232,10 @@ class TaskCreateView(GenericView):
 
             if task.assigned_to != None:
                 signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
-    
+
             if _from == 'dashboard':
                 return self.create_response_for_dashboard(form, task, project)
-            
+
             messages.info(request, _(u"The task has been created with success!"))
             response = {}
 
@@ -1250,8 +1250,8 @@ class TaskCreateView(GenericView):
 
     def create_response_for_dashboard(self, form, task, project):
         html = loader.render_to_string("dashboard-userstory-task.html", {
-            'task':task, 
-            'project': project, 
+            'task':task,
+            'project': project,
             'participants': project.all_participants,
             'status_list': models.TASK_STATUS_CHOICES,
         })
@@ -1263,7 +1263,7 @@ class TaskCreateView(GenericView):
         }
 
         return self.render_json(response)
-        
+
 
 class TaskView(GenericView):
     menu = ['tasks']
@@ -1274,7 +1274,7 @@ class TaskView(GenericView):
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
         form = forms.CommentForm()
-        
+
         context = {
             'form': form,
             'task': task,
@@ -1282,17 +1282,17 @@ class TaskView(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-    
+
     @login_required
     def post(self, request, pslug, tref):
-        """ 
+        """
         Add comments method.
         """
 
         project = get_object_or_404(models.Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
         form = forms.CommentForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
             self.create_task_comment(request.user, project, task, form.cleaned_data)
             return self.render_redirect(task.get_view_url())
@@ -1303,7 +1303,7 @@ class TaskView(GenericView):
             'project': project,
         }
         return self.render_to_response(self.template_path, context)
-    
+
     @transaction.commit_on_success
     def create_task_comment(self, owner, project, task, cleaned_data):
         change_instance = models.Change(
@@ -1315,7 +1315,7 @@ class TaskView(GenericView):
         )
 
         change_instance.save()
-        
+
         if "attached_file" in cleaned_data:
             change_attachment = models.ChangeAttachment(
                 owner = owner,
@@ -1323,7 +1323,7 @@ class TaskView(GenericView):
                 attached_file = cleaned_data['attached_file']
             )
             change_attachment.save()
-    
+
 
 class TaskEdit(GenericView):
     template_path = 'task-edit.html'
@@ -1372,7 +1372,7 @@ class TaskEdit(GenericView):
         if form.is_valid():
             task = form.save(commit=True)
             signals.mail_task_modified.send(sender=self, task=task, user=request.user)
-            
+
             if task.assigned_to and task.assigned_to.pk != _old_assigned_to_pk:
                 signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
 
@@ -1392,7 +1392,7 @@ class TaskEdit(GenericView):
             'task': task,
             'form': form,
         }
-        
+
         return self.render_to_response(self.template_path, context)
 
 
@@ -1407,11 +1407,11 @@ class TaskDelete(GenericView):
             ('userstory', 'view'),
             ('task', ('view', 'edit', 'delete')),
         ])
-        
+
         task = get_object_or_404(project.tasks, ref=tref)
         signals.mail_task_deleted.send(sender=self, task=task, user=request.user)
         task.delete()
-        
+
         return self.render_to_ok({})
 
 
@@ -1444,7 +1444,7 @@ class AssignUserStory(GenericView):
         user_story.save()
 
         user_story.tasks.update(milestone=milestone)
-        
+
         context = {
             'us': user_story,
             'project': project,
@@ -1458,8 +1458,8 @@ class UnassignUserStory(GenericView):
     Unassign callback on backlog.
     """
 
-    template_name = 'user-story-item.html'   
-    
+    template_name = 'user-story-item.html'
+
     @login_required
     def post(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1474,7 +1474,7 @@ class UnassignUserStory(GenericView):
         user_story.milestone = None
         user_story.save()
         user_story.tasks.update(milestone=None)
-        
+
         context = {'us': user_story, 'project':project}
         return self.render_to_response(self.template_name, context)
 
@@ -1565,7 +1565,7 @@ class ProjectGeneralSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-    
+
     @transaction.commit_on_success
     def save_form(self, project, form):
         project.meta_category_color = form.colors_data
@@ -1595,7 +1595,7 @@ class ProjectGeneralSettings(GenericView):
 
             messages.info(request, _(u"Project preferences saved successfull"))
             return self.render_redirect(project.get_general_settings_url())
-        
+
 
         print dict(form.errors)
         context = {
@@ -1630,7 +1630,7 @@ class Documents(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-    
+
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1691,7 +1691,7 @@ class QuestionsListView(GenericView):
 class QuestionsCreateView(GenericView):
     template_path = 'questions-create.html'
     menu = ['questions']
-    
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1760,7 +1760,7 @@ class QuestionsEditView(GenericView):
             'question': question,
         }
         return self.render_to_response(self.template_path, context)
-    
+
     @login_required
     def post(self, request, pslug, qslug):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -1808,7 +1808,7 @@ class QuestionsView(GenericView):
 
         question = get_object_or_404(project.questions, slug=qslug)
         form = forms.QuestionResponseForm()
-        
+
         context = {
             'form': form,
             'project': project,
@@ -1867,7 +1867,7 @@ class QuestionsDeleteView(GenericView):
     def get(self, request, **kwargs):
         context = self.get_context()
         return self.render_to_response(self.template_path, context)
-    
+
     @login_required
     def post(self, request, **kwargs):
         context = self.get_context()
@@ -1878,7 +1878,7 @@ class QuestionsDeleteView(GenericView):
 class UserList(GenericView):
     template_path = 'config/users.html'
     menu = ['users']
-    
+
     @login_required
     @staff_required
     def get(self, request):
@@ -1886,7 +1886,7 @@ class UserList(GenericView):
             page = int(request.GET.get('page', '1'))
         except ValueError:
             page = 1
-        
+
         users = User.objects.all()
         paginator = Paginator(users, 20)
         page = paginator.page(page)
@@ -1939,7 +1939,7 @@ class UserCreateView(GenericView):
 class UserEditView(GenericView):
     template_path = 'config/users-edit.html'
     menu = ['users']
-    
+
     @login_required
     @staff_required
     def get(self, request, uid):
@@ -1957,7 +1957,7 @@ class UserEditView(GenericView):
     def post(self, request, uid):
         user = get_object_or_404(User, pk=uid)
         form = forms.UserEditForm(request.POST, instance=user)
-        
+
         if form.is_valid():
             form.save()
             messages.info(request, _(u"User saved succesful"))
@@ -2001,7 +2001,7 @@ class UsFormInline(GenericView):
     template_name = 'user-story-form-inline.html'
     us_template_name0 = 'user-story-item.html'
     us_template_name1 = 'milestone-item.html'
-    
+
     @login_required
     def get(self, request, pslug, iref):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -2031,14 +2031,14 @@ class UsFormInline(GenericView):
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         form = forms.UserStoryFormInline(request.POST, instance=user_story)
-        
+
         if form.is_valid():
             us = form.save(commit=True)
             context = {
                 'us': user_story,
                 'project': project,
             }
-            
+
             response_data = {}
             if us.milestone is not None:
                 response_data['action'] = 'assign'
@@ -2063,16 +2063,16 @@ class WikiPageView(GenericView):
     @login_required
     def get(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        
+
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('wiki', 'view'),
         ])
-        
+
         try:
             wikipage = project.wiki_pages.get(slug=slugify(wslug))
         except models.WikiPage.DoesNotExist:
-            return self.render_redirect(reverse('web:wiki-page-edit', 
+            return self.render_redirect(reverse('web:wiki-page-edit',
                 args=[project.slug, slugify(wslug)]))
 
         context = {
@@ -2089,7 +2089,7 @@ class WikiPageEditView(GenericView):
     @login_required
     def get(self, request, pslug, wslug):
         project = get_object_or_404(models.Project, slug=pslug)
-        
+
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('wiki', ('view', 'create', 'edit')),
@@ -2136,7 +2136,7 @@ class WikiPageEditView(GenericView):
                     created_date = old_wikipage.created_date,
                 )
                 history_entry.save()
-            
+
             if not wikipage_new.slug:
                 wikipage_new.slug = models.slugify_uniquely(wslug, wikipage_new.__class__)
 
@@ -2181,7 +2181,7 @@ class WikiPageHistory(GenericView):
 class WikiPageHistoryView(GenericView):
     menu = ['wiki']
     template_path = 'wiki-page-history-view.html'
-    
+
     @login_required
     def get(self, request, pslug, wslug, hpk):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -2193,7 +2193,7 @@ class WikiPageHistoryView(GenericView):
 
         wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
         history_entry = get_object_or_404(wikipage.history_entries, pk=hpk)
-        
+
         context = {
             'project': project,
             'wikipage': wikipage,
@@ -2225,7 +2225,7 @@ class WikipageDeleteView(GenericView):
     def get(self, request, **kwargs):
         context = self.get_context()
         return self.render_to_response(self.template_path, context)
-    
+
     @login_required
     def post(self, request, **kwargs):
         context = self.get_context()

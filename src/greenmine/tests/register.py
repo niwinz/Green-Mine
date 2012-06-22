@@ -44,12 +44,12 @@ class UserRelatedTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         user = User.objects.get(username='test')
-        
+
         self.assertTrue(user.get_profile())
-    
+
         self.assertTrue(user.has_usable_password())
         self.assertFalse(user.is_active)
-        
+
         # expected send 1 email
         self.assertEqual(len(mail.outbox), 1)
 
@@ -58,7 +58,7 @@ class UserRelatedTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [('http://testserver/login/', 302)])
-        
+
         user = User.objects.get(username='test')
         self.assertTrue(user.is_active)
         self.assertEqual(user.get_profile().token, None)
@@ -82,14 +82,14 @@ class UserRelatedTests(TestCase):
         }
 
         login_url = reverse('web:login')
-        response = self.client.post(login_url, post_params, 
+        response = self.client.post(login_url, post_params,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
         self.assertEqual(response.status_code, 200)
 
         jdata = json.loads(response.content)
         self.assertTrue(jdata['valid'])
-    
+
     def test_password_change(self):
         user = self.create_sample_user()
         change_password_url = reverse('web:profile-password')
@@ -104,7 +104,7 @@ class UserRelatedTests(TestCase):
 
         ok = self.client.login(username='test', password='fooo')
         self.assertTrue(ok)
-        
+
         response = self.client.post(change_password_url, post_params, follow=True)
         self.assertEqual(response.redirect_chain, [('http://testserver/profile/', 302)])
 

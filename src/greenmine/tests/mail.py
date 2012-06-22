@@ -85,17 +85,17 @@ class UserMailTests(TestCase):
 
     def test_send_recovery_password_by_staff(self):
         url = reverse("web:users-recovery-password", args=[self.user2.pk])
-        
+
         ok = self.client.login(username="test1", password="test")
         self.assertTrue(ok)
-        
+
         # pre test
         self.assertTrue(self.user2.is_active)
         self.assertEqual(self.user2.get_profile().token, None)
 
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         # expected redirect
         self.assertEqual(response.redirect_chain, [('http://testserver/users/2/edit/', 302)])
 

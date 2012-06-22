@@ -34,8 +34,8 @@ class AsyncMailSender(object):
         else:
             mailobj = EmailMessage(**kwargs)
             self.__queue__.put(mailobj, False)
-        
-    def queue_size(self):   
+
+    def queue_size(self):
         return self.__queue__.qsize()
 
 send_mail = AsyncMailSender()

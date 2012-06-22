@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     url(r'^activate/(?P<token>[\d\w\-]+)/$',
         main.AccountActivation.as_view(), name='activate'),
 
-    url(r'^profile/$', 
+    url(r'^profile/$',
         main.ProfileView.as_view(), name='profile'),
 
     url(r'^profile/password/change/$',
@@ -33,13 +33,13 @@ urlpatterns = patterns('',
     url(r'^users/(?P<uid>\d+)/send/recovery/password/',
         main.SendRecoveryPasswordView.as_view(), name='users-recovery-password'),
 
-    url(r'^project/create/$', 
+    url(r'^project/create/$',
         main.ProjectCreateView.as_view(), name='project-create'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/delete/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/delete/$',
         main.ProjectDelete.as_view(), name='project-delete'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/settings/personal/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/personal/$',
         main.ProjectSettings.as_view(), name='project-personal-settings'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/general/$',
@@ -47,37 +47,37 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/edit/$',
         main.ProjectEditView.as_view(), name="project-edit"),
-        
+
     # export
-    url(r'^(?P<pslug>[\w\d\-]+)/settings/export/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/export/$',
         export.ProjectExportView.as_view(), name="project-export-settings"),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/settings/export/now/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/settings/export/now/$',
         export.ProjectExportNow.as_view(), name="project-export-settings-now"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/settings/export/rehash/',
         export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
-        
+
     # web
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/$',
         main.BacklogView.as_view(), name='project-backlog'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/stats/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/stats/$',
         main.BacklogStats.as_view(), name='project-backlog-stats'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/left-block/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/left-block/$',
         main.BacklogLeftBlockView.as_view(), name='project-backlog-left-block'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/right-block/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/right-block/$',
         main.BacklogRightBlockView.as_view(), name='project-backlog-right-block'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/burndown/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/burndown/$',
         main.BacklogBurnDownView.as_view(), name='project-backlog-burndown'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/backlog/burnup/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/backlog/burnup/$',
         main.BacklogBurnUpView.as_view(), name='project-backlog-burnup'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/dashboard/$',
         main.DashboardView.as_view(), name="dashboard"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/$',
@@ -86,41 +86,41 @@ urlpatterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/dashboard/(?P<mid>(?:\d+|unassigned))/burndown/$',
         main.MilestoneBurndownView.as_view(), name="milestone-burndown"),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/milestone/create/$',
         main.MilestoneCreateView.as_view(), name='milestone-create'),
-    
+
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/edit/$',
         main.MilestoneEditView.as_view(), name='milestone-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/delete/$',
         main.MilestoneDeleteView.as_view(), name='milestone-delete'),
-    
+
     # Documents
     url(r'^(?P<pslug>[\w\d\-]+)/documents/$',
         main.Documents.as_view(), name='documents'),
-    
+
     # Documents
     url(r'^(?P<pslug>[\w\d\-]+)/documents/(?P<docid>\d+)/delete/$',
         main.DocumentsDelete.as_view(), name='documents-delete'),
 
     # Questions
-    url(r'^(?P<pslug>[\w\d\-]+)/questions/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/$',
         main.QuestionsListView.as_view(), name='questions'),
-    
-    url(r'^(?P<pslug>[\w\d\-]+)/questions/create/$', 
+
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/create/$',
         main.QuestionsCreateView.as_view(), name='questions-create'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/view/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/view/$',
         main.QuestionsView.as_view(), name='questions-view'),
 
-    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/edit/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/edit/$',
         main.QuestionsEditView.as_view(), name='questions-edit'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/questions/(?P<qslug>[\w\d\-]+)/delete/$',
         main.QuestionsDeleteView.as_view(), name='questions-delete'),
 
     # User storys
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$', 
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/create/$',
         main.UserStoryCreateView.as_view(), name='user-story-create'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/(?P<mid>\d+)/user-story/create/',
@@ -128,16 +128,16 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit/$',
         main.UserStoryEdit.as_view(), name='user-story-edit'),
-        
+
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/edit-inline/$',
-        main.UsFormInline.as_view(), name='user-story-edit-inline'),        
+        main.UsFormInline.as_view(), name='user-story-edit-inline'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/delete/$',
         main.UserStoryDeleteView.as_view(), name='user-story-delete'),
-    
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$', 
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\w\d]+)/$',
         main.UserStoryView.as_view(), name='user-story'),
-    
+
     # Task
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
         main.TaskCreateView.as_view(), name='task-create'),
@@ -153,21 +153,21 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/delete/$',
         main.TaskDelete.as_view(), name='task-delete'),
-    
+
     # tasks/bugs view
     url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
-    
+
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
         main.TasksView.as_view(), name='tasks-view'),
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/filter-by/(?P<filter_by>\w+)/$',
         main.TasksView.as_view(), name='tasks-view'),
 
-    url(r'^password/recovery/(?P<token>[\d\w\-]+)/$', 
+    url(r'^password/recovery/(?P<token>[\d\w\-]+)/$',
         main.PasswordRecoveryView.as_view(), name='password-recovery'),
-        
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',   
+
+    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/unassign/$',
         main.UnassignUserStory.as_view(), name="unassign-us"),
 
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/assign/$',
@@ -175,7 +175,7 @@ urlpatterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/$',
         main.WikiPageView.as_view(), name='wiki-page'),
-    
+
     url(r'^(?P<pslug>[\w\d\-]+)/wiki/(?P<wslug>[\d\w\-]+)/history/$',
         main.WikiPageHistory.as_view(), name='wiki-page-history'),
 

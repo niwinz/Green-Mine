@@ -42,7 +42,7 @@ class UserListApiView(GenericView):
     def get(self, request):
         if "term" not in request.GET:
             return self.render_to_ok({'list':[]})
-        
+
         term = request.GET['term']
         users = models.User.objects.filter(
             Q(username__istartswith=term) | Q(first_name__istartswith=term) | Q(last_name__istartswith=term)
@@ -72,7 +72,7 @@ class UserListApiView(GenericView):
 
 
 class I18NLangChangeApiView(GenericView):
-    """ 
+    """
     View for set language.
     """
 
@@ -84,17 +84,17 @@ class I18NLangChangeApiView(GenericView):
                 return HttpResponseRedirect(request.META['HTTP_REFERER'])
             elif "next" in request.GET and request.GET['next']:
                 return HttpResponseRedirect(request.GET['next'])
-        
+
         return HttpResponseRedirect('/')
 
 
 class TaskAlterApiView(GenericView):
-    """ 
-    Api view for alter task status, priority and other 
-    minor modifications. 
+    """
+    Api view for alter task status, priority and other
+    minor modifications.
     This is used on dashboard drag and drop.
     """
-    
+
     @login_required
     def post(self, request, pslug, taskref):
         project = get_object_or_404(models.Project, slug=pslug)
@@ -106,7 +106,7 @@ class TaskAlterApiView(GenericView):
             ('userstory', ('view', 'edit')),
             ('task', ('view', 'edit')),
         ])
-        
+
         status = request.POST.get('status', '')
         if status not in dict(TASK_STATUS_CHOICES).keys():
             return self.render_to_error({"error_message": "invalid status"})
@@ -116,7 +116,7 @@ class TaskAlterApiView(GenericView):
 
         if "us" in request.POST:
             us_pk = request.POST['us']
-            
+
             if len(us_pk.strip()) == 0:
                 if task.user_story:
                     us_for_update.append(task.user_story)
@@ -140,9 +140,9 @@ class TaskAlterApiView(GenericView):
 
         for us in set(us_for_update):
             us.update_status()
-        
+
         return self.render_to_ok()
- 
+
 
 class TaskReasignationsApiView(GenericView):
     @login_required
@@ -156,13 +156,13 @@ class TaskReasignationsApiView(GenericView):
             ('userstory', ('view', 'edit')),
             ('task', ('view', 'edit')),
         ])
-        
+
         userid = request.POST.get('userid', '')
         if not userid:
             task.assigned_to = None
             task.save()
             return self.render_to_ok()
-        
+
         queryset = project.all_participants.filter(pk=userid)
         user = len(queryset) == 1 and queryset.get() or None
 

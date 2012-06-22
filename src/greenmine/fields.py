@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2011 Andrei Antoukh <niwi@niwi.be>
-# License: BSD-3 
+# License: BSD-3
 
 from django.db import models
 from base64 import b64encode, b64decode
@@ -19,7 +19,7 @@ class DictField(models.Field):
     __metaclass__ = models.SubfieldBase
     __prefix__ = "pickle_dict::"
     __pickleproto__ = -1
-    
+
     def to_python(self, value):
         if isinstance(value, dict):
             return value
@@ -35,14 +35,14 @@ class DictField(models.Field):
                 value = self.__prefix__ + b64encode(pickle.dumps(value, protocol=self.__pickleproto__))
             else:
                 raise TypeError('This field can only store dictionaries.')
-        
+
         return value
 
-    def get_internal_type(self): 
+    def get_internal_type(self):
         return 'TextField'
 
     def value_to_string(self, obj):
-        if not obj: 
+        if not obj:
             return ""
 
         value = getattr(obj, self.attname)
@@ -66,7 +66,7 @@ class ListField(models.Field):
     def to_python(self, value):
         if isinstance(value, (list,tuple)):
             return value
-        
+
         if isinstance(value, (str, unicode)) and value.startswith(self.__prefix__):
             local_value = value[len(self.__prefix__):]
             return pickle.loads(b64decode(str(local_value)))
@@ -86,7 +86,7 @@ class ListField(models.Field):
         return 'TextField'
 
     def value_to_string(self, obj):
-        if not obj: 
+        if not obj:
             return ""
 
         value = getattr(obj, self.attname)
@@ -128,6 +128,7 @@ class CSVField(models.TextField):
         field_class = "django.db.models.fields.TextField"
         args, kwargs = introspector(self)
         return (field_class, args, kwargs)
+
 
 class WikiField(models.TextField):
     __metaclass__ = models.SubfieldBase

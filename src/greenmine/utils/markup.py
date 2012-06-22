@@ -25,7 +25,7 @@ class CodeBlock(Directive):
 
     def run(self):
         code = u'\n'.join(self.content)
-        
+
         literal = nodes.literal_block(code, code)
         literal['classes'] = ['brush: java;']
 

@@ -33,7 +33,7 @@ class AdminProjectsView(GenericView):
             page = int(self.request.GET.get('page', '1'))
         except ValueError:
             page = 1
-        
+
         projects = models.Project.objects.all()
         paginator = Paginator(projects, 20)
         page = paginator.page(page)
@@ -83,7 +83,7 @@ class AdminProjectsView(GenericView):
             else:
                 qsuser = qs[0]
                 big_map['users'][user.object.id] = qs[0].id
-        
+
         # fix project json
         projects = zfile.read('project.json')
         pdata = json.loads(projects)
@@ -103,7 +103,7 @@ class AdminProjectsView(GenericView):
         if models.Project.objects.filter(slug=project.object.slug).exists():
             messages.error(self.request, _(u"The project already exists, aborted."))
             return
-        
+
         project.object.id = None
         project.save()
 
@@ -181,7 +181,7 @@ class AdminProjectsView(GenericView):
             big_map['tsk'][old_id] = task.object.id
 
         messages.info(self.request, _(u"Backup successfully restored."))
-    
+
     @login_required
     def dispatch(self, *args, **kwargs):
         return super(AdminProjectsView, self).dispatch(*args, **kwargs)
