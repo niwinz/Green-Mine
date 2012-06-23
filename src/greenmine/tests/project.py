@@ -137,7 +137,7 @@ class ProjectRelatedTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_home_projects_view(self):
-        home_url = reverse('web:projects')
+        home_url = reverse('projects')
         response = self.client.get(home_url)
 
         self.assertEqual(response.status_code, 200)
@@ -153,7 +153,7 @@ class ProjectRelatedTests(TestCase):
             'user_{0}'.format(self.user.id): '1',
         }
 
-        project_create_url = reverse('web:project-create')
+        project_create_url = reverse('project-create')
         response = self.client.post(project_create_url, post_params, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -169,7 +169,7 @@ class ProjectRelatedTests(TestCase):
             'user_{0}'.format(self.user.id): '1',
         }
 
-        project_create_url = reverse('web:project-create')
+        project_create_url = reverse('project-create')
         response = self.client.post(project_create_url, post_params, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -211,7 +211,7 @@ class ProjectRelatedTests(TestCase):
             Project(name='test3', description='test3', owner=user1, slug='test3'),
         ])
 
-        home_url = reverse('web:projects')
+        home_url = reverse('projects')
         response = self.client.get(home_url)
 
         self.assertEqual(response.status_code, 200)
@@ -229,7 +229,7 @@ class ProjectRelatedTests(TestCase):
             'user_{0}'.format(self.user.id): '2',
         }
 
-        project_edit_url = reverse('web:project-edit', args=[project.slug])
+        project_edit_url = reverse('project-edit', args=[project.slug])
         response = self.client.post(project_edit_url, post_params)
         self.assertEqual(response.status_code, 200)
 
@@ -265,7 +265,7 @@ class ProjectRelatedTests(TestCase):
 
         project.add_user(self.user, 'developer')
 
-        response = self.client.get(reverse('web:project-edit', args=[project.slug]), follow=True)
+        response = self.client.get(reverse('project-edit', args=[project.slug]), follow=True)
 
         # expected one message
         self.assertEqual(len(response.context['messages']), 1)

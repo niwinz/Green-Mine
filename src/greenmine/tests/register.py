@@ -39,7 +39,7 @@ class UserRelatedTests(TestCase):
             'password2': '123123',
         }
 
-        register_url = reverse('web:register')
+        register_url = reverse('register')
         response = self.client.post(register_url, register_params)
         self.assertEqual(response.status_code, 302)
 
@@ -53,7 +53,7 @@ class UserRelatedTests(TestCase):
         # expected send 1 email
         self.assertEqual(len(mail.outbox), 1)
 
-        activate_url = reverse('web:activate', args=[user.get_profile().token])
+        activate_url = reverse('activate', args=[user.get_profile().token])
         response = self.client.get(activate_url, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -65,7 +65,7 @@ class UserRelatedTests(TestCase):
 
     def test_profile_view(self):
         user = self.create_sample_user()
-        url = reverse("web:profile")
+        url = reverse("profile")
 
         ok = self.client.login(username='test', password='fooo')
         self.assertTrue(ok)
@@ -81,7 +81,7 @@ class UserRelatedTests(TestCase):
             'password': 'fooo',
         }
 
-        login_url = reverse('web:login')
+        login_url = reverse('login')
         response = self.client.post(login_url, post_params,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
@@ -92,7 +92,7 @@ class UserRelatedTests(TestCase):
 
     def test_password_change(self):
         user = self.create_sample_user()
-        change_password_url = reverse('web:profile-password')
+        change_password_url = reverse('profile-password')
 
         post_params = {
             'password': 'fofo',
@@ -115,7 +115,7 @@ class UserRelatedTests(TestCase):
             'first_name': 'Caco',
         }
 
-        profile_url = reverse('web:profile')
+        profile_url = reverse('profile')
 
         response = self.client.post(profile_url, post_params, follow=True)
         self.assertEqual(response.redirect_chain, [('http://testserver/login/', 302)])

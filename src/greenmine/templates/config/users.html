@@ -9,7 +9,7 @@
 <div id="users">
     <div class="context-menu">
         <ul>
-            <li><a class="new-us" href="{% url 'web:users-create' %}">{% trans "New user" %}</a></li>
+            <li><a class="new-us" href="{% url 'users-create' %}">{% trans "New user" %}</a></li>
         </ul>
     </div>
 
@@ -20,7 +20,7 @@
         <div class="user-module">
             <div class="user-header">
                 <div class="main-header-row">
-                    <a href="{% url 'web:users-view' uid=user.id %}">
+                    <a href="{% url 'users-view' uid=user.id %}">
                         {% if user.get_full_name %}
                             <span class="title">{{ user.get_full_name }}</span>
                         {% else %}

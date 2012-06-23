@@ -11,13 +11,13 @@
 <div class="show-module">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{% url 'web:users' %}">
+            <li><a class="new-milestone" href="{% url 'users' %}">
                 {% trans "Return" %}</a>
             </li>
-            <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'users-edit' uid=uobj.id %}">
                 {% trans "Edit this user" %}</a>
             </li>
-            <li><a class="new-milestone" href="{% url 'web:users-delete' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'users-delete' uid=uobj.id %}">
                 {% trans "Delete this user" %}</a>
             </li>
         </ul>

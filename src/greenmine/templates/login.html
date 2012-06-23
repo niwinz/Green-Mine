@@ -19,10 +19,10 @@
             </div>
             
             <p class="forgot-pass">
-                <a href="{% url 'web:remember-password' %}">{% trans "Forgot your password?" %}</a>
+                <a href="{% url 'remember-password' %}">{% trans "Forgot your password?" %}</a>
                 {% if not register_disabled %}
                 <br />
-                <a id="open-forgotten-password-form" href="{% url 'web:register' %}">{% trans "Register" %}</a>
+                <a id="open-forgotten-password-form" href="{% url 'register' %}">{% trans "Register" %}</a>
                 {% endif %}
             </p>
 

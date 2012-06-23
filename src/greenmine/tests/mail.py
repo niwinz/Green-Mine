@@ -60,7 +60,7 @@ class UserMailTests(TestCase):
         mail.outbox = []
 
     def test_remember_password(self):
-        url = reverse("web:remember-password")
+        url = reverse("remember-password")
 
         post_params = {'email': 'test2@test.com'}
         response = self.client.post(url, post_params, follow=True)
@@ -72,7 +72,7 @@ class UserMailTests(TestCase):
         self.assertTrue(jdata['valid'])
 
     def test_remember_password_not_exists(self):
-        url = reverse("web:remember-password")
+        url = reverse("remember-password")
 
         post_params = {'email': 'test2@testa.com'}
         response = self.client.post(url, post_params, follow=True)
@@ -84,7 +84,7 @@ class UserMailTests(TestCase):
         self.assertFalse(jdata['valid'])
 
     def test_send_recovery_password_by_staff(self):
-        url = reverse("web:users-recovery-password", args=[self.user2.pk])
+        url = reverse("users-recovery-password", args=[self.user2.pk])
 
         ok = self.client.login(username="test1", password="test")
         self.assertTrue(ok)
@@ -109,7 +109,7 @@ class UserMailTests(TestCase):
         self.assertFalse(self.user2.has_usable_password())
         self.assertNotEqual(self.user2.get_profile().token, None)
 
-        url = reverse('web:password-recovery', args=[self.user2.get_profile().token])
+        url = reverse('password-recovery', args=[self.user2.get_profile().token])
 
         post_params = {
             'password': '123123',

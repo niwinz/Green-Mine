@@ -47,7 +47,7 @@ class RegisterView(GenericView):
 
     def post(self, request):
         if settings.DISABLE_REGISTRATION:
-            return self.render_redirect(reverse('web:register'))
+            return self.render_redirect(reverse('register'))
 
         form = forms.RegisterForm(request.POST)
         if form.is_valid():
@@ -67,7 +67,7 @@ class RegisterView(GenericView):
             signals.mail_new_user.send(sender=self, user=user)
             messages.info(request, _(u"Validation message was sent successfully."))
 
-            return self.render_redirect(reverse('web:login'))
+            return self.render_redirect(reverse('login'))
 
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
@@ -89,7 +89,7 @@ class AccountActivation(GenericView):
         except models.Profile.DoesNotExist:
             messages.error(request, _(u"Invalid token"))
 
-        return self.render_redirect(reverse("web:login"))
+        return self.render_redirect(reverse("login"))
 
 
 class LoginView(GenericView):
@@ -166,7 +166,7 @@ class SendRecoveryPasswordView(GenericView):
         signals.mail_recovery_password.send(sender=self, user=user)
         messages.info(request, _(u"Recovery password email are sended"))
 
-        referer = request.META.get('HTTP_REFERER', reverse('web:users-edit', args=[uid]))
+        referer = request.META.get('HTTP_REFERER', reverse('users-edit', args=[uid]))
         return self.render_redirect(referer)
 
 
@@ -190,7 +190,7 @@ class PasswordChangeView(GenericView):
             request.user.set_password(form.cleaned_data['password'])
             request.user.save()
             messages.info(request, _(u"Password changed!"))
-            return self.render_redirect(reverse('web:profile'))
+            return self.render_redirect(reverse('profile'))
 
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
@@ -214,7 +214,7 @@ class PasswordRecoveryView(GenericView):
             profile_queryset = models.Profile.objects.filter(token=token)
             if not profile_queryset:
                 messages.error(request, _(u'Token has expired, try again'))
-                return self.render_redirect(reverse('web:login'))
+                return self.render_redirect(reverse('login'))
 
             profile = profile_queryset.get()
             user = profile.user
@@ -225,7 +225,7 @@ class PasswordRecoveryView(GenericView):
             profile.save()
 
             messages.info(request, _(u'The password has been successfully restored.'))
-            return self.render_redirect(reverse('web:login'))
+            return self.render_redirect(reverse('login'))
 
         context = {'form':form}
         return self.render_to_response(self.template_name, context)
@@ -259,7 +259,7 @@ class ProfileView(GenericView):
 
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Profile save success!'))
-        return HttpResponseRedirect(reverse('web:profile'))
+        return HttpResponseRedirect(reverse('profile'))
 
 
 class HomeView(GenericView):
@@ -421,7 +421,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return self.render_to_ok({'redirect_to':reverse('web:projects')})
+        return self.render_to_ok({'redirect_to':reverse('projects')})
 
     @login_required
     def dispatch(self, *args, **kwargs):
@@ -496,7 +496,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
         transaction.savepoint_commit(sem)
         messages.info(request, _(u'Project %(pname)s is successful saved.') % {'pname':project.name})
-        return self.render_to_ok({'redirect_to':reverse('web:projects')})
+        return self.render_to_ok({'redirect_to':reverse('projects')})
 
 
 class ProjectDelete(GenericView):
@@ -1157,7 +1157,7 @@ class ProjectSettings(GenericView):
             pur = get_object_or_404(project.user_roles, user=request.user)
         except Http404 as e:
             if request.user.is_superuser:
-                return self.render_redirect(reverse("web:project-general-settings", args=[project.slug]))
+                return self.render_redirect(reverse("project-general-settings", args=[project.slug]))
             else:
                 raise
 
@@ -1593,7 +1593,7 @@ class UserCreateView(GenericView):
         form = forms.UserEditForm(request.POST)
         if form.is_valid():
             user = form.save(commit=True)
-            return self.render_redirect(reverse('web:users-view', args=[user.id]))
+            return self.render_redirect(reverse('users-view', args=[user.id]))
 
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
@@ -1624,7 +1624,7 @@ class UserEditView(GenericView):
         if form.is_valid():
             form.save()
             messages.info(request, _(u"User saved succesful"))
-            return self.render_redirect(reverse('web:users-edit', args=[user.id]))
+            return self.render_redirect(reverse('users-edit', args=[user.id]))
 
         contex = {
             'uobj': user,
@@ -1652,7 +1652,7 @@ class UserDelete(GenericView):
     def post(self, request, uid):
         context = self.get_context()
         context['uobj'].delete()
-        return self.render_redirect(reverse('web:users'))
+        return self.render_redirect(reverse('users'))
 
 
 class UsFormInline(GenericView):
@@ -1735,7 +1735,7 @@ class WikiPageView(GenericView):
         try:
             wikipage = project.wiki_pages.get(slug=slugify(wslug))
         except models.WikiPage.DoesNotExist:
-            return self.render_redirect(reverse('web:wiki-page-edit',
+            return self.render_redirect(reverse('wiki-page-edit',
                 args=[project.slug, slugify(wslug)]))
 
         context = {
@@ -1895,5 +1895,5 @@ class WikipageDeleteView(GenericView):
         context['wikipage'].history_entries.all().delete()
         context['wikipage'].delete()
 
-        return self.render_redirect(reverse('web:wiki-page',
+        return self.render_redirect(reverse('wiki-page',
             args = [context['project'].slug, 'home']))

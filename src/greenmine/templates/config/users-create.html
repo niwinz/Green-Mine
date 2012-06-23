@@ -11,7 +11,7 @@
 <div id="my-profile">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{% url 'web:users' %}">
+            <li><a class="new-milestone" href="{% url 'users' %}">
                 {% trans "Return" %}</a>
             </li>
         </ul>
@@ -22,7 +22,7 @@
             <span>{% trans "Create user:" %}</span>
         </div>
         <form id="edit-profile-form" method="post" enctype="multipart/form-data"
-            action="{% url 'web:users-create' %}" class="inline">
+            action="{% url 'users-create' %}" class="inline">
             {% csrf_token %}
             <div class="form-field">
                 <label>{{ form.first_name.label }}</label>

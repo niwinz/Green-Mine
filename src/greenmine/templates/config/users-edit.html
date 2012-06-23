@@ -12,13 +12,13 @@
 <div id="my-profile">
     <div class="context-menu">
         <ul>
-            <li><a class="new-milestone" href="{% url 'web:users-view' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'users-view' uid=uobj.id %}">
                 {% trans "Return" %}</a>
             </li>
-            <li><a class="new-milestone" href="{% url 'web:users-edit' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'users-edit' uid=uobj.id %}">
                 {% trans "Edit this user" %}</a>
             </li>
-            <li><a class="new-milestone" href="{% url 'web:users-delete' uid=uobj.id %}">
+            <li><a class="new-milestone" href="{% url 'users-delete' uid=uobj.id %}">
                 {% trans "Delete this user" %}</a>
             </li>
         </ul>
@@ -84,7 +84,7 @@
             </div>
             <div class="width100 float-left">
                 <input class="btn01" type="submit" value="{% trans "Save" %}" />
-                <a href="{% url 'web:users-recovery-password' uid=uobj.id %}" class="btn01">{% trans "Send password recovery mail" %}</a>
+                <a href="{% url 'users-recovery-password' uid=uobj.id %}" class="btn01">{% trans "Send password recovery mail" %}</a>
                 <span class="ajax-loader"></span>
             </div>
         </form>

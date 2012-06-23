@@ -50,7 +50,7 @@ class WikiRelatedTests(TestCase):
         project = Project.objects.get(name='test1')
         project.add_user(self.user1, "developer")
 
-        url = reverse('web:wiki-page-edit', args=[project.slug, 'test'])
+        url = reverse('wiki-page-edit', args=[project.slug, 'test'])
 
         params = {
             'content': 'test content',
@@ -73,7 +73,7 @@ class WikiRelatedTests(TestCase):
             owner = self.user1,
         )
 
-        url = reverse('web:wiki-page-edit', args=[project.slug, wp.slug])
+        url = reverse('wiki-page-edit', args=[project.slug, wp.slug])
         params = {
             'content': 'test2',
         }
@@ -122,7 +122,7 @@ class WikiRelatedTests(TestCase):
         project.add_user(self.user1, "developer")
         project.add_user(user3, "observer")
 
-        url = reverse('web:wiki-page-edit', args=[project.slug, "test"])
+        url = reverse('wiki-page-edit', args=[project.slug, "test"])
         params = {'content': 'test'}
 
         ok = self.client.login(username="test3", password="test")
