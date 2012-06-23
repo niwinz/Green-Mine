@@ -13,14 +13,14 @@ register = template.Library()
 from docutils.parsers.rst import directives
 import markdown
 
-from greenmine.utils.markup import CodeBlock
-
-from .plugin_wikilinks import WikiLinkExtension, makeExtension
-
+from greenmine.core.utils.markup import CodeBlock
 directives.register_directive('code-block', CodeBlock)
 
 def rst_filter(value, project):
     return restructuredtext(value)
+
+
+from .plugin_wikilinks import WikiLinkExtension, makeExtension
 
 def markdown_filter(value, project):
     wikilinks_extension = makeExtension([

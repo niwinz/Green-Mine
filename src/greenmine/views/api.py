@@ -11,8 +11,8 @@ from django_gravatar.helpers import get_gravatar_url, has_gravatar
 
 from greenmine.models import *
 from greenmine import models
-from greenmine.views.decorators import login_required
-from greenmine.views.generic import GenericView
+from greenmine.core.decorators import login_required
+from greenmine.core.generic import GenericView
 
 import logging, re
 logger = logging.getLogger('greenmine')

@@ -2,9 +2,9 @@
 {% load i18n %}
 
 <ul class="right-menu menu-item">
-    <li><a href="{% url 'web:projects' %}" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
+    <li><a href="{% url 'projects' %}" class="{{ menu.in_projects }}">{% trans "Projects" %}</a></li>
     {% if user.is_staff %}
-    <li><a href="{% url 'web:users' %}" class="{{ menu.in_users }}">{% trans "Users" %}</a></li>
+    <li><a href="{% url 'users' %}" class="{{ menu.in_users }}">{% trans "Users" %}</a></li>
     {% endif %}
     {% if menu.in_projects == "" and menu.in_users == "" %}
         {% if user.is_superuser or project.owner == user or user in project.participants.all %}

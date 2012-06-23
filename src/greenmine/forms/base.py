@@ -11,8 +11,7 @@ from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
 from greenmine.models import *
-from greenmine import models
-from greenmine.widgets import WikiWidget
+from greenmine.core.widgets import WikiWidget
 
 import json
 
@@ -47,13 +46,13 @@ class CharField(DjangoCharField):
 
         if "class" not in attrs:
             attrs['class'] = ''
-        
+
         current_clases = attrs['class'].split()
         if self.required:
             attrs['required'] = 'required'
             if "required" not in current_clases:
                 current_clases.append('required')
-        
+
         if self._widget_type:
             widget.input_type = self._widget_type
 
@@ -85,7 +84,7 @@ class LoginForm(forms.Form):
         if "username" in cleaned_data and "password" in cleaned_data:
             from django.contrib.auth import authenticate, login
             self._user = authenticate(
-                username = cleaned_data['username'], 
+                username = cleaned_data['username'],
                 password = cleaned_data['password']
             )
             if not self._user:
@@ -107,13 +106,13 @@ class LoginForm(forms.Form):
 class RegisterForm(forms.Form):
     username = forms.CharField(max_length=200, min_length=4,
         required=True, label=_(u'Username'))
-    first_name = forms.CharField(max_length=200, 
+    first_name = forms.CharField(max_length=200,
         required=True, label=_(u"First name"))
     last_name = forms.CharField(max_length=200,
         required=True, label=_(u"Last name"))
     email = forms.EmailField(max_length=200,
         required=True, label=_(u"Email"))
-    
+
     password = forms.CharField(max_length=200, widget=forms.PasswordInput,
         label=_(u'Enter your new password'))
     password2 = forms.CharField(max_length=200, widget=forms.PasswordInput,
@@ -121,7 +120,7 @@ class RegisterForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
         if "username" in cleaned_data:
             username = cleaned_data['username']
             try:
@@ -139,17 +138,17 @@ class RegisterForm(forms.Form):
                 )
                 del cleaned_data['password2']
                 del cleaned_data['password']
-        
+
         return cleaned_data
 
 
 class ForgottenPasswordForm(forms.Form):
-    email = CharField(max_length=200, min_length=4, 
+    email = CharField(max_length=200, min_length=4,
         required=True, type='text', label=_(u'E-Mail'))
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        if "email" in cleaned_data: 
+        if "email" in cleaned_data:
             try:
                 self.user = User.objects.get(email=cleaned_data['email'])
             except User.DoesNotExist:
@@ -158,7 +157,7 @@ class ForgottenPasswordForm(forms.Form):
                 )
                 del cleaned_data['email']
                 return cleaned_data
-            
+
         return cleaned_data
 
 
@@ -225,13 +224,13 @@ class UserEditForm(ProfileForm):
 
 class ProjectForm(forms.ModelForm):
     class Meta:
-        model = models.Project
+        model = Project
         fields = ('name', 'description')
 
     def clean_name(self):
         name = self.cleaned_data['name']
         if self.instance is None:
-            projectqs = models.Project.objects.filter(name=name)
+            projectqs = Project.objects.filter(name=name)
 
             if projectqs.count() > 0:
                 raise forms.ValidationError("Project name is already taken.")
@@ -241,17 +240,17 @@ class ProjectForm(forms.ModelForm):
 
 class ProjectPersonalSettingsForm(forms.ModelForm):
     class Meta:
-        model = models.ProjectUserRole
+        model = ProjectUserRole
         #exclude = ('project', 'user', 'role')
-        fields = ('mail_milestone_created', 'mail_task_created', 'mail_task_assigned', 
+        fields = ('mail_milestone_created', 'mail_task_created', 'mail_task_assigned',
             'mail_userstory_created',)
 
 
 class ProjectGeneralSettingsForm(forms.Form):
     colors_hidden = forms.CharField(max_length=5000, required=False,
         widget=forms.HiddenInput)
-    
-    markup = forms.ChoiceField(required=True,  choices=models.MARKUP_TYPE)
+
+    markup = forms.ChoiceField(required=True,  choices=MARKUP_TYPE)
 
     sprints = forms.IntegerField(required=False)
     show_burndown = forms.BooleanField(required=False)
@@ -265,7 +264,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
         self.colors_data = {}
         if 'colors_hidden' in cleaned_data and cleaned_data['colors_hidden'].strip():
             self.colors_data = json.loads(cleaned_data['colors_hidden'])
@@ -278,7 +277,7 @@ class ProjectGeneralSettingsForm(forms.Form):
 
 class MilestoneForm(forms.ModelForm):
     class Meta:
-        model = models.Milestone
+        model = Milestone
         fields = ('name', 'estimated_start', 'estimated_finish', 'disponibility')
 
     def __init__(self, *args, **kwargs):
@@ -289,21 +288,21 @@ class MilestoneForm(forms.ModelForm):
 
 class UserStoryForm(forms.ModelForm):
     class Meta:
-        model = models.UserStory
+        model = UserStory
         fields = ('priority', 'points', 'category', 'subject', 'description',
                 'finish_date', 'client_requirement', 'team_requirement')
 
 
 class UserStoryFormInline(forms.ModelForm):
     class Meta:
-        model = models.UserStory
+        model = UserStory
         fields = ('priority', 'points', 'status', 'category',
             'tested', 'finish_date', 'milestone')
 
 
 class QuestionCreateForm(forms.ModelForm):
     class Meta:
-        model = models.Question
+        model = Question
         exclude = ('project', 'owner', 'slug')
 
     def __init__(self, *args, **kwargs):
@@ -318,17 +317,17 @@ class QuestionCreateForm(forms.ModelForm):
 
 class QuestionResponseForm(forms.ModelForm):
     class Meta:
-        model = models.QuestionResponse
+        model = QuestionResponse
         exclude = ('owner', 'question', 'modified_date',)
 
 
 class CommentForm(forms.Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(CommentForm, self).__init__(*args, **kwargs)
-    
+
 
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -343,7 +342,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         fields = ('status', 'priority', 'subject','milestone',
             'description', 'assigned_to','type', 'user_story')
-        model = models.Task
+        model = Task
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -357,5 +356,5 @@ class TaskForm(forms.ModelForm):
 
 class WikiPageEditForm(forms.ModelForm):
     class Meta:
-        model = models.WikiPage
+        model = WikiPage
         fields = ('content',)

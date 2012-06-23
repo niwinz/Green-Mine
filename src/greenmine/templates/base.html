@@ -15,7 +15,7 @@
 <div id="menu">
     <ul>
         <li>
-            <a href="{% url "web:profile" %}">
+            <a href="{% url "profile" %}">
                 {% if user.get_full_name %}
                     {{ user.get_full_name }}
                 {% else %}
@@ -23,7 +23,7 @@
                 {% endif %}
             </a>
         </li>
-        <li><a href="{% url "web:auth_logout" %}">{% trans "Logout" %}</a></li>
+        <li><a href="{% url "auth_logout" %}">{% trans "Logout" %}</a></li>
     </ul>
 </div>
 

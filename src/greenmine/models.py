@@ -270,95 +270,95 @@ class Project(models.Model):
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:dashboard', (), {'pslug': self.slug})
+        return ('dashboard', (), {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_url(self):
-        return ('web:project-backlog', (),
+        return ('project-backlog', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_stats_url(self):
-        return ('web:project-backlog-stats', (),
+        return ('project-backlog-stats', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_left_block_url(self):
-        return ('web:project-backlog-left-block', (),
+        return ('project-backlog-left-block', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_right_block_url(self):
-        return ('web:project-backlog-right-block', (),
+        return ('project-backlog-right-block', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_burndown_url(self):
-        return ('web:project-backlog-burndown', (),
+        return ('project-backlog-burndown', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_burnup_url(self):
-        return ('web:project-backlog-burnup', (),
+        return ('project-backlog-burnup', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_milestone_create_url(self):
-        return ('web:milestone-create', (),
+        return ('milestone-create', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_userstory_create_url(self):
-        return ('web:user-story-create', (), {'pslug': self.slug})
+        return ('user-story-create', (), {'pslug': self.slug})
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:project-edit', (), {'pslug': self.slug})
+        return ('project-edit', (), {'pslug': self.slug})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:project-delete', (), {'pslug': self.slug})
+        return ('project-delete', (), {'pslug': self.slug})
 
     @models.permalink
     def get_export_url(self):
-        return ('web:project-export-settings', (), {'pslug': self.slug})
+        return ('project-export-settings', (), {'pslug': self.slug})
 
     @models.permalink
     def get_export_now_url(self):
-        return ('web:project-export-settings-now', (), {'pslug': self.slug})
+        return ('project-export-settings-now', (), {'pslug': self.slug})
 
     @models.permalink
     def get_export_rehash_url(self):
-        return ('web:project-export-settings-rehash', (), {'pslug': self.slug})
+        return ('project-export-settings-rehash', (), {'pslug': self.slug})
 
     @models.permalink
     def get_default_tasks_url(self):
-        return ('web:tasks-view', (),
+        return ('tasks-view', (),
             {'pslug': self.slug, 'mid': self.default_milestone.id })
 
     @models.permalink
     def get_tasks_url(self):
-        return ('web:tasks-view', (), {'pslug': self.slug})
+        return ('tasks-view', (), {'pslug': self.slug})
 
     @models.permalink
     def get_settings_url(self):
-        return ('web:project-personal-settings', (), {'pslug': self.slug})
+        return ('project-personal-settings', (), {'pslug': self.slug})
 
     @models.permalink
     def get_general_settings_url(self):
-        return ('web:project-general-settings', (), {'pslug': self.slug})
+        return ('project-general-settings', (), {'pslug': self.slug})
 
     @models.permalink
     def get_questions_url(self):
-        return ('web:questions', (), {'pslug': self.slug})
+        return ('questions', (), {'pslug': self.slug})
 
     @models.permalink
     def get_questions_create_url(self):
-        return ('web:questions-create', (), {'pslug': self.slug})
+        return ('questions-create', (), {'pslug': self.slug})
 
     @models.permalink
     def get_documents_url(self):
-        return ('web:documents', (), {'pslug': self.slug})
+        return ('documents', (), {'pslug': self.slug})
 
 
 class Team(models.Model):
@@ -471,32 +471,32 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:milestone-edit', (),
+        return ('milestone-edit', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:milestone-delete', (),
+        return ('milestone-delete', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_dashboard_url(self):
-        return ('web:dashboard', (),
+        return ('dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_burndown_url(self):
-        return ('web:milestone-burndown', (),
+        return ('milestone-burndown', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_user_story_create_url(self):
-        return ('web:user-story-create', (),
+        return ('user-story-create', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_ml_detail_url(self):
-        return ('web:milestone-dashboard', (),
+        return ('milestone-dashboard', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
@@ -511,22 +511,22 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_tasks_url(self):
-        return ('web:tasks-view', (),
+        return ('tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_tasks_url_filter_by_task(self):
-        return ('web:tasks-view', (),
+        return ('tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'task'})
 
     @models.permalink
     def get_tasks_url_filter_by_bug(self):
-        return ('web:tasks-view', (),
+        return ('tasks-view', (),
             {'pslug': self.project.slug, 'mid': self.id, 'filter_by':'bug'})
 
     @models.permalink
     def get_task_create_url(self):
-        return ('web:task-create', (),
+        return ('task-create', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     class Meta(object):
@@ -598,12 +598,12 @@ class UserStory(models.Model):
 
     @models.permalink
     def get_assign_url(self):
-        return ('web:assign-us', (),
+        return ('assign-us', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_unassign_url(self):
-        return ('web:unassign-us', (),
+        return ('unassign-us', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
@@ -614,27 +614,27 @@ class UserStory(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:user-story', (),
+        return ('user-story', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:user-story-edit', (),
+        return ('user-story-edit', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_edit_inline_url(self):
-        return ('web:user-story-edit-inline', (),
+        return ('user-story-edit-inline', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:user-story-delete', (),
+        return ('user-story-delete', (),
             {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_task_create_url(self):
-        return ('web:task-create', (),
+        return ('task-create', (),
             {'pslug': self.project.slug, 'usref': self.ref})
 
     """ Propertys """
@@ -734,7 +734,7 @@ class Task(models.Model):
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:task-edit', (), {
+        return ('task-edit', (), {
             'pslug': self.project.slug,
             'tref': self.ref
         })
@@ -755,12 +755,12 @@ class Task(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:task-view', (),
+        return ('task-view', (),
             {'pslug':self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:task-delete', (),
+        return ('task-delete', (),
             {'pslug':self.project.slug, 'tref': self.ref})
 
     def save(self, *args, **kwargs):
@@ -802,7 +802,7 @@ class Document(models.Model):
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:documents-delete', (),
+        return ('documents-delete', (),
             {'pslug': self.project.slug, 'docid': self.pk})
 
 
@@ -829,17 +829,17 @@ class Question(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:questions-view', (),
+        return ('questions-view', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:questions-edit', (),
+        return ('questions-edit', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:questions-delete', (),
+        return ('questions-delete', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
 
     def save(self, *args, **kwargs):
@@ -872,22 +872,22 @@ class WikiPage(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('web:wiki-page', (),
+        return ('wiki-page', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
     def get_edit_url(self):
-        return ('web:wiki-page-edit', (),
+        return ('wiki-page-edit', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
     def get_delete_url(self):
-        return ('web:wiki-page-delete', (),
+        return ('wiki-page-delete', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
     def get_history_view_url(self):
-        return ('web:wiki-page-history', (),
+        return ('wiki-page-history', (),
             {'pslug': self.project.slug, 'wslug': self.slug})
 
 
@@ -902,7 +902,7 @@ class WikiPageHistory(models.Model):
 
     @models.permalink
     def get_history_view_url(self):
-        return ('web:wiki-page-history-view', (),
+        return ('wiki-page-history-view', (),
             {'pslug': self.wikipage.project.slug, 'wslug': self.wikipage.slug, 'hpk': self.pk})
 
 

@@ -6,6 +6,9 @@ from django.conf import settings
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
+
+from greenmine.core.utils import normalize_tagname
+
 register = template.Library()
 
 @register.filter(name="hsize")
@@ -18,7 +21,6 @@ def human_size(value):
     return mark_safe(response)
 
 
-from greenmine.utils import normalize_tagname
 
 @register.assignment_tag(takes_context=True)
 def tag_color(context, tag):

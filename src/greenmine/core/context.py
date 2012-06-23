@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from urlparse import urlparse
 
-from . import version
+from greenmine import version
 
 def main(request):
     context_extra = dict(

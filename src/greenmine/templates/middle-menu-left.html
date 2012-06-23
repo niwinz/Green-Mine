@@ -8,6 +8,6 @@
     <li><a href="{{ project.get_tasks_url }}" class="{{ menu.in_tasks }}">{% trans "Issues/Tasks" %}</a></li>
     <li><a href="{{ project.get_questions_url }}" class="{{ menu.in_questions }}">{% trans "Questions" %}</a></li>
     <li><a href="{{ project.get_documents_url }}" class="{{ menu.in_documents }}">{% trans "Documents" %}</a></li>
-    <li><a href="{% url 'web:wiki-page' pslug=project.slug wslug='home' %}" class="{{ menu.in_wiki }}">{% trans "Wiki" %}</a></li>
+    <li><a href="{% url 'wiki-page' pslug=project.slug wslug='home' %}" class="{{ menu.in_wiki }}">{% trans "Wiki" %}</a></li>
     {% endif %}
 </ul>
