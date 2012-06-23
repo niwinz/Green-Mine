@@ -6,10 +6,10 @@ from greenqueue.core import Library
 register = Library()
 
 from django.template import loader
-from greenmine.utils import set_token
 from django.utils import translation
 from django.core import mail
 
+from greenmine.core.utils.auth import set_token
 
 @register.task(name='send-mail')
 def send_mail(subject, body, to):

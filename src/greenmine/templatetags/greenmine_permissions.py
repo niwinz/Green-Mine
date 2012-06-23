@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
-from greenmine import permissions
+from greenmine.core import permissions
 
 register = template.Library()
 

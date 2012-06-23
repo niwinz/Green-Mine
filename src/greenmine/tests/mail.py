@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from ..models import *
 
-from greenmine import permissions as perms
 from django.utils import timezone
 import datetime
 import json
