@@ -103,7 +103,7 @@ GREENQUEUE_BACKEND = 'greenqueue.backends.sync.SyncService'
 GREENQUEUE_WORKER_MANAGER = 'greenqueue.worker.sync.SyncManager'
 
 GREENQUEUE_TASK_MODULES = [
-    'greenmine.async',
+    'greenmine.core.mail.async_tasks',
 ]
 
 
