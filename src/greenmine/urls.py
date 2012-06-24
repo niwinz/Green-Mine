@@ -16,6 +16,7 @@ from greenmine.views import export
 from greenmine.views import dashboard
 from greenmine.views import backlog
 from greenmine.views import issues
+from greenmine.views import tasks
 
 api_urlpatterns = patterns('',
     url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
@@ -89,22 +90,16 @@ main_patterns = patterns('',
     url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<iref>[\d\w]+)/assign/$',
         main.AssignUserStory.as_view(), name="assign-us"),
 
+    #url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
+    #    main.TaskEdit.as_view(), name='task-edit'),
+)
 
-    # Task
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/create/$',
-        main.TaskCreateView.as_view(), name='task-create'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/user-story/(?P<usref>[\w\d]+)/task/create/$',
-        main.TaskCreateView.as_view(), name='task-create'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
-        main.TaskEdit.as_view(), name='task-edit'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/view/$',
-        main.TaskView.as_view(), name='task-view'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/delete/$',
-        main.TaskDelete.as_view(), name='task-delete'),
+tasks_patterns = patterns('',
+    url(r'^$', tasks.TaskList.as_view(), name='tasks-list'),
+    url(r'^create/$', tasks.CreateTask.as_view(), name='tasks-create'),
+    url(r'^(?P<tref>[\w\d]+)/view/$', tasks.TaskView.as_view(), name='tasks-view'),
+    url(r'^(?P<tref>[\w\d]+)/delete/$', tasks.TaskDelete.as_view(), name='tasks-delete'),
+    url(r'^(?P<tref>[\w\d]+)/send/comment/$', tasks.TaskSendComment.as_view(), name='tasks-send-comment'),
 )
 
 issues_patterns = patterns('',
@@ -113,7 +108,6 @@ issues_patterns = patterns('',
     url(r'^(?P<tref>[\w\d]+)/view/$', issues.IssueView.as_view(), name='issues-view'),
     url(r'^(?P<tref>[\w\d]+)/send/comment/$', issues.IssueSendComment.as_view(), name='issues-send-comment'),
 )
-
 
 project_settings_patterns = patterns('',
     url(r'^personal/$', main.ProjectSettings.as_view(), name='project-personal-settings'),
@@ -185,6 +179,7 @@ urlpatterns = patterns('',
     url(r"^(?P<pslug>[\w\d\-]+)/documents/", include(documents_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/questions/", include(questions_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/issues/", include(issues_patterns)),
+    url(r"^(?P<pslug>[\w\d\-]+)/tasks/", include(tasks_patterns)),
 
     url(r"^", include(main_patterns)),
     url(r"^api/", include(api_urlpatterns, namespace='api')),

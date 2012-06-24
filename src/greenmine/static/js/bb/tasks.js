@@ -40,18 +40,17 @@ Greenmine.TaskView = Backbone.View.extend({
         this.$el.html(Greenmine.template(this.model.toJSON()));
         this.$el.attr({
             'data-id':this.model.get('id'),
-            'id': "issue_" + this.model.get('id')
+            'id': "task_" + this.model.get('id')
         });
         return this;
     }
 });
 
-Greenmine.IssuesView = Backbone.View.extend({
+Greenmine.TasksView = Backbone.View.extend({
     events: {
         "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
-        "click .context-menu a.filter-issue": "changeStatus"
-        //"click .milestones .milestone-item a": "changeMilestone"
+        "click .context-menu a.filter-task": "changeStatus"
     },
 
     el: $("#dashboard"),
@@ -62,7 +61,7 @@ Greenmine.IssuesView = Backbone.View.extend({
         Greenmine.taskCollection.on("remove", this.deleteIssue);
 
         this.lightbox = new Greenmine.Lightbox({
-            el: $("#delete-issue-dialog")
+            el: $("#delete-task-dialog")
         });
 
         this._milestone_id = this.$el.data('milestone');
@@ -115,7 +114,7 @@ Greenmine.IssuesView = Backbone.View.extend({
     },
 
     reload: function(post_data) {
-        var url = this.$el.data('issues-url');
+        var url = this.$el.data('tasks-url');
 
         if (post_data === undefined) {
             post_data = {};
@@ -131,23 +130,23 @@ Greenmine.IssuesView = Backbone.View.extend({
     deleteIssueClick: function(event) {
         event.preventDefault();
         var target = $(event.currentTarget).closest('.un-us-item');
-        var issue = Greenmine.taskCollection.get(target.data('id'));
+        var task = Greenmine.taskCollection.get(target.data('id'));
 
-        this.lightbox.setReference(issue);
+        this.lightbox.setReference(task);
         this.lightbox.open();
         this.lightbox.on('delete', this.deleteIssue);
     },
 
-    addIssue: function(issue) {
-        var view = new Greenmine.TaskView({model:issue});
-        this.$("#issue-list-body").append(view.render().el);
+    addIssue: function(task) {
+        var view = new Greenmine.TaskView({model:task});
+        this.$("#task-list-body").append(view.render().el);
     },
 
-    deleteIssue: function(issue) {
+    deleteIssue: function(task) {
         var self = this;
-        $.post(issue.get('delete_url'), {}, function(data) {
+        $.post(task.get('delete_url'), {}, function(data) {
             if (data.valid) {
-                var selector = "#issue_" + issue.get('id');
+                var selector = "#task_" + task.get('id');
                 self.$(selector).remove();
             }
         }, 'json');
@@ -155,7 +154,7 @@ Greenmine.IssuesView = Backbone.View.extend({
     
     reset: function() {
         var self = this;
-        this.$("#issue-list-body").html("");
+        this.$("#task-list-body").html("");
         Greenmine.taskCollection.each(function(item) {
             self.addIssue(item);
         });

@@ -29,8 +29,11 @@ class IssueList(GenericView):
     template_name = 'issues.html'
     menu = ['issues']
 
+    def get_query_set(self, milestone):
+        return milestone.tasks.filter(type="bug")
+
     def filter_issues(self, milestone, order_by=None, status=None):
-        issues = milestone.tasks.filter(type="bug")
+        issues = self.get_query_set(milestone)
 
         if status is not None:
             issues = issues.exclude(status=status)
@@ -142,7 +145,7 @@ class CreateIssue(GenericView):
         }
         form = IssueCreateForm(request.POST, project=project, initial=initial_data)
         if not form.is_valid():
-            return self.render_to_error(form.errors)
+            return self.render_json_error(form.errors)
 
         issue = form.save(commit=False)
         issue.type = 'bug'
@@ -209,4 +212,3 @@ class IssueSendComment(GenericView):
         })
 
         return self.render_to_ok({"html":html})
-

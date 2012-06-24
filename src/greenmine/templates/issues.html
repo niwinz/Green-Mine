@@ -4,16 +4,18 @@
 {% load i18n %}
 {% load rawinclude greenmine_utils %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Tasks" %}{% endblock %}
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Issues" %}{% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" class="tasks-ds" data-issues-url="{{ current_url }}"
+<div id="dashboard" class="tasks-ds" data-tasks-url="{{ current_url }}"
         data-milestone="{{ milestone.id }}">
     <div class="context-menu">
         <ul>
-            <li><a class="filter-issue" data-type="" href="">{% trans "Show all" %}</a></li>
-            <li><a class="filter-issue" data-type="closed" href="">{% trans "Hide closed" %}</a></li>
-            <li><a class="new-milestone" href="{% url 'issues-create' pslug=project.slug %}?milestone={{ milestone.pk }}">{% trans "Create new task/bug" %}</a></li>
+            <li><a class="filter-task" data-type="" href="">{% trans "Show all" %}</a></li>
+            <li><a class="filter-task" data-type="closed" href="">{% trans "Hide closed" %}</a></li>
+            <li><a class="new-milestone" href="{% url 'issues-create' pslug=project.slug %}?milestone={{ milestone.pk }}">
+                {% trans "Create new issue" %}
+            </a></li>
         </ul>
     </div>
     {% include "messages.html" %}
@@ -33,7 +35,7 @@
                     <span>{% trans "Actions" %}</span>
                 </div>
             </div>
-            <div id="issue-list-body"></div>
+            <div id="task-list-body"></div>
         </div>
     </div>       
     <div class="right-block">
@@ -49,9 +51,9 @@
     </div>
 </div>
 
-<div id="delete-issue-dialog" class="lightbox-dialog">
+<div id="delete-task-dialog" class="lightbox-dialog">
     <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-        {% trans "Are you sure you want to delete this issue?" %}
+        {% trans "Are you sure you want to delete this?" %}
     </p>
     <p>
         <ul class="options">
@@ -68,13 +70,13 @@
 {% endblock %}
 
 {% block bottom-headers %}
-{% raw_include "dot/issue-include.html" %}
+{% raw_include "dot/task-include.html" %}
 {% to_json tasks as tasks_json %}
 
 <script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
-<script type="text/javascript" src="{% static "js/bb/issues.js" %}"></script>
+<script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
 <script type="text/javascript">
-Greenmine.issuesView = new Greenmine.IssuesView();
+Greenmine.issuesView = new Greenmine.TasksView();
 Greenmine.taskCollection.reset({{ tasks_json }});
 </script>
 {% endblock %}

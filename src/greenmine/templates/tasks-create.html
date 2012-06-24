@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% load url from future %}
+{% load greenmine_utils %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Task" %}{% endblock %}
+
+{% block wrapper %}
+<div class="user-story-create form-container" id="task-create">
+    <div class="form-legend">
+        <span>{% trans "Task Create:" %}</span>
+    </div>
+
+    <form action="{{ full_current_url }}" method="post" class="inline">
+        {% csrf_token %}
+        <div class="form-field">
+            <label>{{ form.subject.label }}</label>
+            {{ form.subject.errors }}
+            {{ form.subject }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.status.label }}</label>
+            {{ form.status.errors }}
+            {{ form.status }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.priority.label }}</label>
+            {{ form.priority.errors }}
+            {{ form.priority }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.user_story.label }}</label>
+            {{ form.user_story.errors }}
+            {{ form.user_story }}
+        </div>
+        <div class="form-field">
+            <label>{{ form.assigned_to.label }}</label>
+            {{ form.assigned_to.errors }}
+            {{ form.assigned_to }}
+        </div>
+        <div class="form-field width100">
+            <label>{{ form.description.label }}</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        <div class="form-field width100 float-left">
+           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+           {% comment %}
+           <input type="submit" value="{% trans "Save & create other" %}" class="btn01"></input>
+           {% endcomment %}
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block bottom-headers %}
+<script type="text/javascript" src="{% static "js/bb/task.js" %}"></script>
+{% include "modules/wikiwidget.html" %}
+{% endblock %}

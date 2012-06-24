@@ -252,7 +252,7 @@ Kaleidos.Form = Backbone.View.extend({
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                this.trigger("error", jqXHR, textStatus, errorThrown);
+                self.trigger("error", jqXHR, textStatus, errorThrown);
                 if (opts.error !== undefined) {
                     opts.error(jqXHR, textStatus, errorThrown);
                 }

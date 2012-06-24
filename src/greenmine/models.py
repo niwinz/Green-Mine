@@ -340,8 +340,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_tasks_url(self):
-        # TODO: deprecated
-        return ('tasks-view', (), {'pslug': self.slug})
+        return ('tasks-list', (), {'pslug': self.slug})
 
     @models.permalink
     def get_issues_url(self):
@@ -770,8 +769,12 @@ class Task(models.Model):
 
     @models.permalink
     def get_delete_url(self):
-        return ('task-delete', (),
-            {'pslug':self.project.slug, 'tref': self.ref})
+
+        return ('tasks-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
+        if self.type == "bug":
+            return None
+        else:
+            return None
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -781,7 +784,6 @@ class Task(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
-
 
     def to_dict(self):
         self_dict = {
