@@ -48,7 +48,10 @@ Greenmine.TaskView = Backbone.View.extend({
 
 Greenmine.IssuesView = Backbone.View.extend({
     events: {
-        "click .un-us-item img.delete": "deleteIssueClick"
+        "click .un-us-item img.delete": "deleteIssueClick",
+        "click .un-us-item.head-title .row a": "changeOrder",
+        "click .context-menu a.filter-issue": "changeStatus",
+        "click .milestones .milestone-item a": "changeMilestone"
     },
 
     el: $("#dashboard"),
@@ -61,6 +64,68 @@ Greenmine.IssuesView = Backbone.View.extend({
         this.lightbox = new Greenmine.Lightbox({
             el: $("#delete-issue-dialog")
         });
+
+        this._milestone_id = this.$el.data('milestone');
+        this._order = "created_date";
+        this._order_mod = "-";
+        this._status = "closed";
+    },
+
+    changeOrder: function(event) {
+        event.preventDefault();
+        var target = $(event.currentTarget);
+        
+        if (this._order == target.data('type')) {
+            if (this._order_mod == '-') {
+                this._order_mod = '';
+            } else {
+                this._order_mod = '-';
+            }
+        } else {
+            this._order = target.data('type');
+            this._order_mod = '-';
+        }
+        
+        this.reload();
+    },
+
+    changeMilestone: function(event) {
+        event.preventDefault();
+        var target = $(event.currentTarget).closest('.milestone-item');
+        this._milestone_id = target.data('id');
+        this.reload();
+    },
+
+    changeStatus: function(event) {
+        event.preventDefault();
+        var target = $(event.currentTarget);
+        this._status = target.data('type');
+        this.reload();
+    },
+
+    collectPostData: function() {
+        var current = {
+            "order_by": this._order_mod + this._order,
+            "milestone": this._milestone_id,
+        }
+        if (this._status.length > 0) {
+            current['status'] = this._status;
+        }
+        return current;
+    },
+
+    reload: function(post_data) {
+        var url = this.$el.data('issues-url');
+
+        if (post_data === undefined) {
+            post_data = {};
+        }
+
+        var postdata = _.extend({}, this.collectPostData(), post_data);
+
+        $.post(url, postdata, function(data) {
+            Greenmine.taskCollection.reset(data.tasks);
+        }, 'json');
     },
 
     deleteIssueClick: function(event) {
@@ -90,6 +155,7 @@ Greenmine.IssuesView = Backbone.View.extend({
     
     reset: function() {
         var self = this;
+        this.$("#issue-list-body").html("");
         Greenmine.taskCollection.each(function(item) {
             self.addIssue(item);
         });

@@ -14,6 +14,7 @@ from datetime import timedelta
 from greenmine import models
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
+from greenmine.forms.issues import IssueFilterForm
 
 
 class IssueList(GenericView):
@@ -28,7 +29,7 @@ class IssueList(GenericView):
         issues = milestone.tasks.filter(type="bug")
 
         if status is not None:
-            issues = issues.filter(status=status)
+            issues = issues.exclude(status=status)
 
         if order_by is None:
             issues = issues.order_by('-created_date')
@@ -68,7 +69,7 @@ class IssueList(GenericView):
             return self.render_redirect(project.get_backlog_url())
 
         selected_milestone = milestones[0]
-        tasks = self.filter_issues(selected_milestone)
+        tasks = self.filter_issues(selected_milestone, status="closed")
 
         context = {
             'project': project,
@@ -89,3 +90,17 @@ class IssueList(GenericView):
             ('userstory', 'view'),
             ('task', 'view'),
         ])
+
+        form = IssueFilterForm(request.POST, project=project)
+        if not form.is_valid():
+            return self.render_to_error(form.errors)
+
+        milestone = form.cleaned_data['milestone']
+        status = form.cleaned_data['status'] or None
+        order_by = form.cleaned_data['order_by']
+
+        filtered_tasks = list(self.filter_issues(milestone, order_by, status))
+
+        return self.render_to_ok({
+            "tasks": filtered_tasks,
+        })

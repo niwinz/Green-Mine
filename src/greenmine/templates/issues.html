@@ -7,17 +7,13 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Tasks" %}{% endblock %}
 
 {% block wrapper %}
-<div id="dashboard" class="tasks-ds" rel="{{ project.get_milestones_list_api_url }}">
+<div id="dashboard" class="tasks-ds" data-issues-url="{{ current_url }}"
+        data-milestone="{{ milestone.id }}">
     <div class="context-menu">
         <ul>
-            <li><a class="filter-by-none" href="">
-                {% trans "Show all" %}</a></li>
-            <li><a class="filter-by-task" href="">
-                {% trans "Show only tasks" %}</a></li>
-            <li><a class="filter-by-bug" href="">
-                {% trans "Show only bugs" %}</a></li>
-            <li><a class="new-milestone" href="">
-                {% trans "Create new task/bug" %}</a></li>
+            <li><a class="filter-issue" data-type="" href="">{% trans "Show all" %}</a></li>
+            <li><a class="filter-issue" data-type="closed" href="">{% trans "Hide closed" %}</a></li>
+            <li><a class="new-milestone" href="">{% trans "Create new task/bug" %}</a></li>
         </ul>
     </div>
     {% include "messages.html" %}
@@ -25,16 +21,13 @@
         <div class="unassigned-us">
             <div class="un-us-item head-title">
                 <div class="row title">
-                    <span><a href="">{% trans "Subject" %}</a></span>
-                </div>
-                <div class="row type">
-                    <span><a href="">{% trans "Type" %}</a></span>
+                    <span><a href="" data-type="subject">{% trans "Subject" %}</a></span>
                 </div>
                 <div class="row status">
-                    <span><a href="">{% trans "Status" %}</a></span>
+                    <span><a href="" data-type="status">{% trans "Status" %}</a></span>
                 </div>
                 <div class="row milestone">
-                    <span><a href="">{% trans "Assigned to" %}</a></span>
+                    <span><a href="" data-type="assigned_to">{% trans "Assigned to" %}</a></span>
                 </div>
                 <div class="row metaicon">
                     <span>{% trans "Actions" %}</span>
@@ -46,9 +39,9 @@
     <div class="right-block">
         <div class="milestones simple-list">
             {% for ml in milestones %}
-            <div class="milestone-item simple {% if ml == milestone %}selected{% endif %}">
+            <div class="milestone-item simple {% if ml == milestone %}selected{% endif %}" data-id="{{ ml.id }}">
                 <div class="milestone-title">
-                    <a class="text" href="" data-id="{{ ml.id }}">{{ ml.name|capfirst }}</a>
+                    <a class="text" href="">{{ ml.name|capfirst }}</a>
                 </div>
             </div>
             {% endfor %}
@@ -67,7 +60,6 @@
         </ul>
     </p>
 </div>
-<div id="overlay"></div>
 {% endblock %}
 
 
