@@ -17,3 +17,24 @@ class IssueFilterForm(forms.Form):
         super(IssueFilterForm, self).__init__(*args, **kwargs)
         self.fields['milestone'].queryset = self.project.milestones.all()
 
+
+class IssueCreateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.project = kwargs.pop('project')
+        super(IssueCreateForm, self).__init__(*args, **kwargs)
+
+        self.fields['assigned_to'].queryset = self.project\
+            .all_participants.order_by('first_name', 'last_name')
+
+        self.fields['milestone'].queryset = self.project\
+            .milestones.order_by('-created_date')
+
+    class Meta:
+        model = models.Task
+        fields = (
+            'milestone',
+            'priority',
+            'subject',
+            'description',
+            'assigned_to',
+        )

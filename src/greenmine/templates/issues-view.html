@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+{% load greenmine_utils %}
+{% load greenmine_markup %}
+{% load i18n %}
+{% load gravatar %}
+
+{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Task" %}{% endblock %}
+
+{% block wrapper %}
+<div id="user-story-module" class="show-module">
+    <div class="context-menu">
+        <ul>
+            <li><a class="new-milestone" href="{{ task.get_edit_url }}?next={{ current_url }}">
+                {% trans "Edit this task" %}</a>
+            </li>
+            <li><a class="new-milestone" href="{{ task.get_delete_url }}">
+                {% trans "Delete this task" %}</a>
+            </li>
+        </ul>
+    </div>
+    {% include "messages.html" %}
+    <div class="inline">
+        <div class="form-field">
+            <span class="label">{% trans "Subject" %}</span>
+            <span>{{ task.subject }}</span>
+        </div>
+        <div class="form-field">
+            <span class="label">{% trans "Status" %}</span>
+            <span>{{ task.get_status_display }}</span>
+        </div> 
+        <div class="form-field">
+            <span class="label">{% trans "Tested" %}</span>
+            <span>{{ user_story.tested|yesno }}</span>
+        </div>
+        {% if task.finish_date %}
+        <div class="form-field">
+            <span class="label">{% trans "Finish date" %}</span>
+            <span>{{ .finish_date|date:"DATE_FORMAT" }}</span>
+        </div>
+        {% endif %}
+
+        {% if task.description %}
+        <div class="form-field width100">
+            <span class="label">{% trans "Description" %}</span>
+            <div class="wiki-content">
+            {{ task.description|markup:project }}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% comment %}
+        {% with files=task.attached_files.all %}
+            {% if files|length > 0 %}
+            <b>TODO</b>
+            <div class="form-field width100">
+                <span class="label">Ficheros</span>
+                <ul>
+                    <li><a href="">Fichero 1 (1 mb)</a></li>
+                    <li><a href="">Fichero 2 (2 mb)</a></li>
+                    <li><a href="">Fichero 3 (2 mb)</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% endcomment %}
+    </div>
+
+    <div class="user-story-responses task-changes">
+        <h3>{% trans "Changes history:" %}</h3>
+        <div class="changes-list">
+            {% for change in task.changes.all %}
+            <div class="change-item">
+                <div class="change-title">
+                    {% with tuntil=change.created_date|timeuntil %}
+{% blocktrans with tuntil=tuntil name=change.owner.get_full_name %}
+Changed {{ tuntil }} ago by {{ name }}
+{% endblocktrans %}
+                    {% endwith %}
+                </div>
+                <div class="change-content">
+                    {% if change.change_type != 1 %}
+                    <ul>
+                        <li>{{ change }}</li>
+                    </ul>
+                    {% else %}
+                    <div class="comment">
+                        {{ change.data.comment|markup:project }}
+                    </div>
+                    <div class="comment-attachments">
+                        {% with files=change.attachments.all %}
+                        {% if files|length > 0 %}
+                        <p>
+                            {% for file in files %}
+                                {% if file.attached_file %}
+                                    <a href="{{ file.attached_file.url }}">
+                                        {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="form-container response-form">
+        <form enctype="multipart/form-data" method="post" action="">
+            {% csrf_token %}
+            <div class="form-row">
+                <label>{% trans "Write your comment:" %}</label>
+                {{ form.description.errors }}
+                {{ form.description }}
+            </div>
+            <div class="form-row">
+                {{ form.attached_file.label }}
+                {{ form.attached_file.errors }}
+                {{ form.attached_file }}
+            </div>
+            <div class="form-row submit-row">
+                <input type="submit" class="btn01" value="{% trans "Send comment" %}" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

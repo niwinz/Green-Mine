@@ -3,6 +3,8 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
+
 from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
@@ -338,7 +340,12 @@ class Project(models.Model):
 
     @models.permalink
     def get_tasks_url(self):
+        # TODO: deprecated
         return ('tasks-view', (), {'pslug': self.slug})
+
+    @models.permalink
+    def get_issues_url(self):
+        return ('issues-list', (), {'pslug': self.slug})
 
     @models.permalink
     def get_settings_url(self):
@@ -501,6 +508,7 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_create_task_url(self):
+        # TODO: deprecated
         return ('api:task-create', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
@@ -755,8 +763,10 @@ class Task(models.Model):
 
     @models.permalink
     def get_view_url(self):
-        return ('task-view', (),
-            {'pslug':self.project.slug, 'tref': self.ref})
+        if self.type == "bug":
+            return ('issues-view', (), {'pslug':self.project.slug, 'tref': self.ref})
+        else:
+            return ('task-view', (), {'pslug':self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_delete_url(self):
@@ -771,6 +781,23 @@ class Task(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
+
+
+    def to_dict(self):
+        self_dict = {
+            'id': self.pk,
+            'view_url': self.get_view_url(),
+            'delete_url': self.get_delete_url(),
+            'subject': self.subject,
+            'type': self.get_type_display(),
+            'status': self.get_status_display(),
+        }
+        if self.assigned_to:
+            self_dict['assigned_to'] = self.assigned_to.get_full_name()
+        else:
+            self_dict['assigned_to'] = ugettext(u"Unassigned")
+
+        return self_dict
 
 
 

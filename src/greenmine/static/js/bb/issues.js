@@ -32,7 +32,7 @@ Greenmine.TaskView = Backbone.View.extend({
         "class": "un-us-item"
     },
 
-    initialize: function() {
+    Initialize: function() {
         _.bindAll(this);
     },
 
@@ -50,8 +50,8 @@ Greenmine.IssuesView = Backbone.View.extend({
     events: {
         "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
-        "click .context-menu a.filter-issue": "changeStatus",
-        "click .milestones .milestone-item a": "changeMilestone"
+        "click .context-menu a.filter-issue": "changeStatus"
+        //"click .milestones .milestone-item a": "changeMilestone"
     },
 
     el: $("#dashboard"),

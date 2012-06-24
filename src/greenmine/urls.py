@@ -115,8 +115,13 @@ main_patterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/filter-by/(?P<filter_by>\w+)/$',
         main.TasksView.as_view(), name='tasks-view'),
+)
 
-    url(r'^(?P<pslug>[\w\d\-]+)/issues/$', issues.IssueList.as_view(), name='issues-list'),
+issues_patterns = patterns('',
+    url(r'^$', issues.IssueList.as_view(), name='issues-list'),
+    url(r'^create/$', issues.CreateIssue.as_view(), name='issues-create'),
+    url(r'^(?P<tref>[\w\d]+)/view/$', issues.IssueView.as_view(), name='issues-view'),
+    url(r'^(?P<tref>[\w\d]+)/send/comment/$', issues.IssueSendComment.as_view(), name='issues-send-comment'),
 )
 
 
@@ -189,6 +194,7 @@ urlpatterns = patterns('',
     url(r"^(?P<pslug>[\w\d\-]+)/settings/", include(project_settings_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/documents/", include(documents_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/questions/", include(questions_patterns)),
+    url(r"^(?P<pslug>[\w\d\-]+)/issues/", include(issues_patterns)),
 
     url(r"^", include(main_patterns)),
     url(r"^api/", include(api_urlpatterns, namespace='api')),

@@ -13,7 +13,7 @@
         <ul>
             <li><a class="filter-issue" data-type="" href="">{% trans "Show all" %}</a></li>
             <li><a class="filter-issue" data-type="closed" href="">{% trans "Hide closed" %}</a></li>
-            <li><a class="new-milestone" href="">{% trans "Create new task/bug" %}</a></li>
+            <li><a class="new-milestone" href="{% url 'issues-create' pslug=project.slug %}?milestone={{ milestone.pk }}">{% trans "Create new task/bug" %}</a></li>
         </ul>
     </div>
     {% include "messages.html" %}
@@ -41,7 +41,7 @@
             {% for ml in milestones %}
             <div class="milestone-item simple {% if ml == milestone %}selected{% endif %}" data-id="{{ ml.id }}">
                 <div class="milestone-title">
-                    <a class="text" href="">{{ ml.name|capfirst }}</a>
+                    <a class="text" href="{{ current_url }}?milestone={{ ml.pk }}">{{ ml.name|capfirst }}</a>
                 </div>
             </div>
             {% endfor %}
