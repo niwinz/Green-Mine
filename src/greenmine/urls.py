@@ -18,6 +18,7 @@ from greenmine.views import backlog
 from greenmine.views import issues
 from greenmine.views import tasks
 
+
 api_urlpatterns = patterns('',
     url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
 
@@ -168,7 +169,6 @@ wiki_patterns = patterns('',
     url(r'^(?P<wslug>[\d\w\-]+)/edit/$', main.WikiPageEditView.as_view(), name='wiki-page-edit'),
     url(r'^(?P<wslug>[\d\w\-]+)/delete/$', main.WikipageDeleteView.as_view(), name='wiki-page-delete'),
 )
-
 
 urlpatterns = patterns('',
     url(r"^(?P<pslug>[\w\d\-]+)/backlog/", include(backlog_patterns)),
