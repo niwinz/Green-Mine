@@ -95,7 +95,7 @@ main_patterns = patterns('',
 )
 
 tasks_patterns = patterns('',
-    url(r'^$', tasks.TaskList.as_view(), name='tasks-list'),
+    #url(r'^$', tasks.TaskList.as_view(), name='tasks-list'),
     url(r'^create/$', tasks.CreateTask.as_view(), name='tasks-create'),
     url(r'^(?P<tref>[\w\d]+)/view/$', tasks.TaskView.as_view(), name='tasks-view'),
     url(r'^(?P<tref>[\w\d]+)/delete/$', tasks.TaskDelete.as_view(), name='tasks-delete'),

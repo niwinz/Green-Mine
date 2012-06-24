@@ -21,14 +21,14 @@ from greenmine.forms.base import CommentForm
 
 from .issues import IssueList
 
-class TaskList(IssueList):
-    template_name = 'tasks.html'
-    menu = ['tasks']
-
-    def get_query_set(self, milestone):
-        user_stories = milestone.user_stories.all()
-        return milestone.tasks.filter(type="task")
-
+#class TaskList(IssueList):
+#    template_name = 'tasks.html'
+#    menu = ['tasks']
+#
+#    def get_query_set(self, milestone):
+#        user_stories = milestone.user_stories.all()
+#        return milestone.tasks.filter(type="task")
+#
 
 class CreateTask(GenericView):
     template_name = "tasks-create.html"
