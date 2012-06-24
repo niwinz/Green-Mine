@@ -1,0 +1,14 @@
+/* Lightbox dialog */
+
+.lightbox-dialog {
+    display: none;
+    padding: 30px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 3px;
+}
+
+.lightbox-dialog ul.options li {
+    display: inline;
+    padding-right: 10px;
+}

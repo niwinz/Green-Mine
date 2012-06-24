@@ -47,30 +47,30 @@ var settings_handlers = function() {
 };
 
 var tasks_issues_handlers = function() {
-    $(".unassigned-us").on('click', '.un-us-item img.delete', function(event) {
-        var self = $(this);
-        var buttons = {};
+    //$(".unassigned-us").on('click', '.un-us-item img.delete', function(event) {
+    //    var self = $(this);
+    //    var buttons = {};
 
-        buttons[gettext('Delete')] = function() {
-            var delete_url = self.attr('deleteurl');
-            $.post(delete_url, {}, function(data) {
-                if(data.valid) { 
-                    self.parents('.un-us-item').remove();
-                }
-            }, 'json');
-            $(this).dialog('close');
-        };
-        buttons[gettext('Cancel')] = function() {
-            $(this).dialog('close');
-        };
+    //    buttons[gettext('Delete')] = function() {
+    //        var delete_url = self.attr('deleteurl');
+    //        $.post(delete_url, {}, function(data) {
+    //            if(data.valid) { 
+    //                self.parents('.un-us-item').remove();
+    //            }
+    //        }, 'json');
+    //        $(this).dialog('close');
+    //    };
+    //    buttons[gettext('Cancel')] = function() {
+    //        $(this).dialog('close');
+    //    };
 
-        $(".delete-milestone-dialog").dialog({
-            modal: true,
-            width: '220px',
-            buttons: buttons
-        });
-        event.preventDefault();
-    });
+    //    $(".delete-milestone-dialog").dialog({
+    //        modal: true,
+    //        width: '220px',
+    //        buttons: buttons
+    //    });
+    //    event.preventDefault();
+    //});
 };
 
 var user_story_handlers = function() {

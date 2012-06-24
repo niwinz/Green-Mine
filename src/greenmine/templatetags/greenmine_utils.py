@@ -42,3 +42,14 @@ def dashboard_task(context, task):
         'project': context['project'],
     }
     return render_to_string("dashboard-userstory-task.html", template_context)
+
+
+from superview.utils import LazyEncoder
+import json
+
+@register.assignment_tag(name="to_json")
+def to_json_tag(tasks):
+    if not isinstance(tasks, (list, tuple)):
+        tasks = tuple(tasks)
+    json_data = json.dumps(tasks, cls=LazyEncoder, sort_keys=False)
+    return mark_safe(json_data)

@@ -15,6 +15,7 @@ from greenmine.views import config
 from greenmine.views import export
 from greenmine.views import dashboard
 from greenmine.views import backlog
+from greenmine.views import issues
 
 api_urlpatterns = patterns('',
     url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
@@ -114,6 +115,8 @@ main_patterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/filter-by/(?P<filter_by>\w+)/$',
         main.TasksView.as_view(), name='tasks-view'),
+
+    url(r'^(?P<pslug>[\w\d\-]+)/issues/$', issues.IssueList.as_view(), name='issues-list'),
 )
 
 

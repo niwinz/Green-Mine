@@ -1,40 +1,88 @@
-{% extends "base_base.html" %}
 {% load url from future %}
-{% load i18n %}
+{% load i18n staticfiles rawinclude %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ MAIN_TITLE }}</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/general.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/mod.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/markitup/skins/simple/style.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/wiki.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="{% static 'colorbox/example1/colorbox.css' %}" type="text/css" media="handheld, all" />
+    {% block top-headers %}{% endblock %}
 
-{% get_current_language as LANGUAGE_CODE %}
-{% get_available_languages as LANGUAGES %}
-{% get_current_language_bidi as LANGUAGE_BIDI %}
-
-{% block top-headers %}{% endblock %}
-{% block bottom-headers %}{% endblock %}
-{% block title %}{{ block.super }}{% endblock %}
-
-{% block middle-box %}
-<!-- Global menu -->
-<div id="menu">
-    <ul>
-        <li>
-            <a href="{% url "profile" %}">
-                {% if user.get_full_name %}
-                    {{ user.get_full_name }}
-                {% else %}
-                    {{ user.username }}
-                {% endif %}
-            </a>
-        </li>
-        <li><a href="{% url "auth_logout" %}">{% trans "Logout" %}</a></li>
-    </ul>
-</div>
-
-<!-- Page menu -->
-<div class="main-menu">
-    {% block middle %}
-        {% include "middle-menu-left.html" %}
-        {% include "middle-menu-right.html" %}
+    {% get_current_language as LANGUAGE_CODE %}
+    {% get_available_languages as LANGUAGES %}
+    {% get_current_language_bidi as LANGUAGE_BIDI %}
+</head>
+<body>
+    <div id="head">
+        <h1>{% block title %}<a href="/">{{ MAIN_TITLE }}</a>{% endblock %}</h1>
+    </div>
+    
+    {% block middle-box %}
+    <!-- Global menu -->
+    <div id="menu">
+        <ul>
+            <li>
+                <a href="{% url "profile" %}">
+                    {% if user.get_full_name %}
+                        {{ user.get_full_name }}
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                </a>
+            </li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Logout" %}</a></li>
+        </ul>
+    </div>
+    
+    <!-- Page menu -->
+    <div class="main-menu">
+        {% block middle %}
+            {% include "middle-menu-left.html" %}
+            {% include "middle-menu-right.html" %}
+        {% endblock %}
+    </div>
+    <div id="wrapper">{% block wrapper %}{% endblock %}</div>
+    
     {% endblock %}
-</div>
-<div id="wrapper">
-    {% block wrapper %}{% endblock %}
-</div>
-{% endblock %}
+    
+    <div id="footer">
+        <p>
+            {% for code, name in LANGUAGES %}
+            <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ code }}</a>
+            {% endfor %}
+            | Powered by Greenmine © 2012 | {% trans "Version" %}: {{ version }}
+        </p>
+    </div>
+
+    <script type="text/javascript" src="{% url "jsi18n" %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui-1.8.16.custom.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.json-2.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.django.patch.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/kaleidos.form.validator.js' %}"></script>
+    <script type="text/javascript" src="{% static 'colorbox/jquery.colorbox-min.js' %}"></script>
+    
+    <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.flot.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bb/backbone-form.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/backbone-lightbox.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/markitup/jquery.markitup.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/markitup/sets/markdown/set.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/markitup/sets/rest/set.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/general.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/messages.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+    {% block bottom-headers %}{% endblock %}
+</body>
+</html>
