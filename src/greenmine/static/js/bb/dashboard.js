@@ -39,7 +39,7 @@ var CreateTaskDialog = Backbone.View.extend({
         _.bindAll(this, 'show', 'onFormSubmit', 'onFormSubmitSuccess', 'onClose', 'onSaveClicked');
         this.form = this.$("form");
         this.form.find('input[name=createother]').val('off');
-        this.form_view = new Form({el: this.form});
+        this.form_view = new Kaleidos.Form({el: this.form});
     },
 
     onSaveClicked: function(event) {

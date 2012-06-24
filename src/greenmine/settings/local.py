@@ -42,6 +42,10 @@ GREENQUEUE_BACKEND = 'greenqueue.backends.zeromq.ZMQService'
 #GREENQUEUE_BACKEND = 'greenqueue.backends.rabbitmq.RabbitMQService'
 GREENQUEUE_WORKER_MANAGER = 'greenqueue.worker.process.ProcessManager'
 
+GREENQUEUE_BACKEND = 'greenqueue.backends.sync.SyncService'
+GREENQUEUE_WORKER_MANAGER = 'greenqueue.worker.sync.SyncManager'
+
+
 #GREENQUEUE_RABBITMQ_USERNAME = 'test'
 #GREENQUEUE_RABBITMQ_PASSWORD = 'test'
 #GREENQUEUE_RABBITMQ_VHOST = '/test'

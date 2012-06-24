@@ -12,6 +12,7 @@ from django.db import transaction
 
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
+from greenmine.core import signals
 from greenmine import models
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
@@ -32,24 +33,6 @@ class TaskList(IssueList):
 class CreateTask(GenericView):
     template_name = "tasks-create.html"
     menu = ['tasks']
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-            ('task', ('view', 'create')),
-        ])
-
-        form = TaskCreateForm(project=project)
-
-        return self.render_to_response(self.template_name, {
-            "form": form,
-            "project": project,
-        })
 
     @login_required
     @transaction.commit_on_success
@@ -73,19 +56,31 @@ class CreateTask(GenericView):
         task.owner = request.user
         task.save()
 
-        #milestone_pk = task.user_story.milestone \
-        #    and task.user_story.milestone.pk \
-        #    or request.GET.get('milestone', None) \
-        #    or project.milestones.order_by('-created_date')[0].pk
+        signals.mail_task_created.send(sender=self, task=task, user=request.user)
 
-        redirect_to = reverse('tasks-list', args=[project.slug])
-        return self.render_to_ok({"task": task.to_dict(), 'redirect_to':redirect_to})
+        if task.assigned_to != None:
+            signals.mail_task_assigned.send(sender=self, task=task, user=request.user)
 
+        html = loader.render_to_string("dashboard-userstory-task.html", {
+            'task':task,
+            'project': project,
+            'participants': project.all_participants,
+            'status_list': models.TASK_STATUS_CHOICES,
+        })
+
+        response = {
+            'task': task.to_dict(),
+            'html': html,
+            'status': task.status,
+            'userStory': task.user_story.id if task.user_story else None,
+        }
+
+        return self.render_json(response)
 
 
 class TaskView(GenericView):
     menu = ['tasks']
-    template_path = 'task-view.html'
+    template_path = 'tasks-view.html'
 
     @login_required
     def get(self, request, pslug, tref):
@@ -100,47 +95,6 @@ class TaskView(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-
-    @login_required
-    def post(self, request, pslug, tref):
-        """
-        Add comments method.
-        """
-
-        project = get_object_or_404(models.Project, slug=pslug)
-        task = get_object_or_404(project.tasks, ref=tref)
-        form = forms.CommentForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            self.create_task_comment(request.user, project, task, form.cleaned_data)
-            return self.render_redirect(task.get_view_url())
-
-        context = {
-            'form': form,
-            'task': task,
-            'project': project,
-        }
-        return self.render_to_response(self.template_path, context)
-
-    @transaction.commit_on_success
-    def create_task_comment(self, owner, project, task, cleaned_data):
-        change_instance = models.Change(
-            change_type = models.TASK_COMMENT,
-            owner = owner,
-            content_object = task,
-            project = project,
-            data = {'comment': cleaned_data['description']},
-        )
-
-        change_instance.save()
-
-        if "attached_file" in cleaned_data:
-            change_attachment = models.ChangeAttachment(
-                owner = owner,
-                change = change_instance,
-                attached_file = cleaned_data['attached_file']
-            )
-            change_attachment.save()
 
 
 class TaskEdit(GenericView):

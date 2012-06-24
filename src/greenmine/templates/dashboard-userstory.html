@@ -5,7 +5,7 @@
 {% load greenmine_utils %}
 
 <tr class="user-story-row row" id="user-story-{{ us.id }}" ref="{{ us.id }}" 
-        create_task_url="{{ us.get_task_create_url }}">
+        create_task_url="{% url 'tasks-create' pslug=project.slug %}">
     <td class="user-story-col col">
         <div class="user-story-container">
             <div class="user-story">

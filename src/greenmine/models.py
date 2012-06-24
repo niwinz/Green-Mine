@@ -765,11 +765,10 @@ class Task(models.Model):
         if self.type == "bug":
             return ('issues-view', (), {'pslug':self.project.slug, 'tref': self.ref})
         else:
-            return ('task-view', (), {'pslug':self.project.slug, 'tref': self.ref})
+            return ('tasks-view', (), {'pslug':self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_delete_url(self):
-
         return ('tasks-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
         if self.type == "bug":
             return None

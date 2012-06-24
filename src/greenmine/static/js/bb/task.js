@@ -63,6 +63,10 @@ Greenmine.IssueView = Backbone.View.extend({
     }
 });
 
+Greenmine.TaskView = Greenmine.IssueView.extend({
+    el: $("#tasks-view")
+});
+
 if ($("#task-create").length) {
     new Greenmine.TaskCreateView();
 }
