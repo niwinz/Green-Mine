@@ -11,73 +11,57 @@
  *  * 21-05-2012 - First public version. (0.1)
  *  * 22-05-2012 - Add global errors. (0.2)
  *               - Add higlight field.
+ *  * 28-05-2012 - Add ie fixes. (0.3)
+ *               - Add ie ajax upload files. (very experimental)
+ *  * 24-06-2012 - Remove client validation. (0.4)
+ *               - Add envents
+ *               - Code improvements.
+ *               - Add Kaleidos namespace.
  *
  *
  * Author: Andrei Antoukh <andrei.antoukh@kaleidos.net>
  * License: BSD
- * Version: 0.2
+ * Version: 0.4
 */
 
 if (window.gettext === undefined) {
     window.gettext = function(data) { return data; }
 }
 
-var Form = Backbone.View.extend({
+/* Create namespace if not exists */
+if (window.Kaleidos === undefined) {
+    window.Kaleidos = {};
+}
+
+Kaleidos.Form = Backbone.View.extend({
+
+    defaults: {
+        'resetOnInit': false,
+        'clearOnInit': false,
+        'fieldErrorsOnGlobalBox': false,
+        'higlight': 'error-field'
+    },
+    
     /* CONSTRUCTOR
      * 
      * This method by default need one parameter: `el`.
-     * Aditionally, you can pass others:
-     *
-     *   `errors`
-     *
-     *      aditional errors messages.
-     *
-     *  `clearOnInit`
-     *
-     *      with this parameter to true, on create a form view instance
-     *      clears all error list.
-     *
-     *  `resetOnInit`
-     *      
-     *      same as `clearOnInit` but reset form.
-     *
-     *  `fieldErrorsOnGlobalBox`
-    */ 
-
-    defaultHiglightClass: 'error-field',
-
-    defaultFormErrors: {
-        'required': gettext('This field is required.'),
-        'maxlength': gettext('Field contents  exceeds the maximum size allowed.'),
-        'minlength': gettext('The label is smaller than allowed.')
-    },
-
+     * Aditionally, you can pass all that defined on defaults dict. */
 
     initialize: function() {
-        _.bindAll(this, 'validate', 'clear', 'setErrors', 'collectData', 'submit',
-                'success', 'error', 'reset', 'getXhr', 'fields', 'uploadProgress', 
-                'setErrorsFieldsStandatd', 'setErrorsFieldsOnGlobalBox', 'setErrorsGlobal');
+        _.bindAll(this);
 
-        if (this.options.clearOnInit) {
+        var options = _.extend({}, this.defaults, this.options);
+        this.options = options;
+
+        if (options.clearOnInit) {
             this.clear();
         }
 
-        if (this.options.resetOnInit) {
+        if (options.resetOnInit) {
             this.reset();
         }
 
-
         this.globalErrorsBox = null;
-        this.errors = {}
-        
-        _.extend(this.errors, this.defaultFormErrors)
-        if (this.options.errors == undefined) {
-            _.extend(this.errors, this.options.errors);
-        }
-        
-        if (this.options.higlight === undefined) {
-            this.options.higlight = this.defaultHiglightClass;
-        }
     },
 
     /* 
@@ -131,6 +115,65 @@ var Form = Backbone.View.extend({
         }
     },
 
+    ieSubmitFallback: function(opts) {
+        var url = opts.url || this.$el.attr('action');
+        var type = opts.type || this.$el.attr('type') || 'post';
+
+
+        // Remove old iframe
+        this.$el.parent().find("#upload_iframe").remove();
+        
+        // Create new iframe
+        var iframe = document.createElement("iframe");
+        iframe.setAttribute("id", "upload_iframe");
+        iframe.setAttribute("name", "upload_iframe");
+        iframe.setAttribute("width", "0");
+        iframe.setAttribute("height", "0");
+        iframe.setAttribute("border", "0");
+        iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+
+        this.el.parentNode.appendChild(iframe);
+        this.$el.attr('target', 'upload_iframe');
+
+        var iframeId = document.getElementById("upload_iframe");
+        
+        var eventHandler = function () {
+            var content = null;
+            if (iframeId.detachEvent) iframeId.detachEvent("onload", eventHandler);
+            else iframeId.removeEventListener("load", eventHandler, false);
+ 
+            // Message from server...
+            if (iframeId.contentDocument) {
+                content = iframeId.contentDocument.body.innerText;
+            } else if (iframeId.contentWindow) {
+                content = iframeId.contentWindow.document.body.innerText;
+            } else if (iframeId.document) {
+                content = iframeId.document.body.innerText;
+            }
+
+            if (content.length > 0) {
+                var data = content;
+
+                if (opts.dataType === "json") {
+                    data = JSON.parse(content);
+                }
+
+                this.trigger("success", JSON.parse(content));
+                if (opts.success !== undefined) {
+                    opts.success(data);
+                }
+            }
+ 
+            // Del the iframe...
+            setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
+        }
+ 
+        if (iframeId.addEventListener) iframeId.addEventListener("load", eventHandler, true);
+        if (iframeId.attachEvent) iframeId.attachEvent("onload", eventHandler);
+
+        this.el.submit();
+    },
+
     /* submit(opts):  Makes ajax submit of the asociated form
      * 
      * Posible params:
@@ -166,54 +209,74 @@ var Form = Backbone.View.extend({
             opts = {};
         }
 
-        var success = opts.success || this.success;
-        var error = opts.error || this.error;
+        opts = _.extend({}, this.defaults, this.options, opts);
+
+        if (opts.ignoreFiles === undefined) {
+            if (this.options.ignoreFiles !== undefined) {
+                opts.ignoreFiles = this.options.ignoreFiles;
+            }
+        }
+
+        var has_files = false;
+        var is_ie = false;
+
+        if (this.$("input[type=file]").length > 0) {
+            has_files = true;
+        }
+        
+        // Check IE
+        if (navigator.appVersion.indexOf("MSIE") != -1) {
+            is_ie = true;
+
+            if (has_files && !opts.ignoreFiles) {
+                return this.ieSubmitFallback(opts);
+            }
+        }
+
         var url = opts.url || this.$el.attr('action');
         var type = opts.type || this.$el.attr('type') || 'post';
         var dataType = opts.dataType || 'json';
         var enctype = opts.enctype || this.$el.attr('enctype') || false;
         var jquery_lowlevel_opts = opts.jqueryOpts || {};
 
+        var self = this;
+
         var ajax_params = {
             url: url,
             type: type,
-            success: success,
-            error: error,
             dataType: dataType,
-            xhr: this.getXhr,
+            success: function(data) {
+                self.trigger("success", data);
+                if (opts.success !== undefined) {
+                    opts.success(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                this.trigger("error", jqXHR, textStatus, errorThrown);
+                if (opts.error !== undefined) {
+                    opts.error(jqXHR, textStatus, errorThrown);
+                }
+            }
         };
+
+        if (!is_ie) _.extend(ajax_params, {xhr: this.getXhr});
 
         if (opts.data !== undefined) {
             ajax_params['data'] = opts.data;
         } else {
-            ajax_params['data'] = this.collectData();
+            ajax_params['data'] = this.collectData(opts);
         }
-        
+
         if (enctype && enctype == 'multipart/form-data') {
             ajax_params['processData'] = false;
             ajax_params['contentType'] = false;
         }
 
-        _.extend(ajax_params, jquery_lowlevel_opts);
+        ajax_params = _.extend(ajax_params, jquery_lowlevel_opts);
+
         return $.ajax(ajax_params);
     },
 
-    /*
-     * Fallback method for onsuccess submit.
-    */
-
-    success: function(data) {
-        if (typeof data === "object" && data.errors && data.errors.form) {
-            this.setErrors(this.errors.form);
-        }
-    },
-    
-    /* 
-     * Fallback method for onerror submit 
-    */
-
-    error: function() {},
-    
     /* collectData(opts)
      *
      * Collects form data. If form has attribute 'enctype' and is equal to 'multipart/form-data'
@@ -229,13 +292,25 @@ var Form = Backbone.View.extend({
     
     collectData: function(opts) {
         if (opts === undefined) { opts = {}; }
-        if (opts.forceSerialize === undefined) { opts.forceSerialize = false; }
-        
-        if (this.$el.attr('enctype') === 'multipart/form-data' && !opts.forceSerialize) {
-            return new FormData(this.el);
-        } else {
-            return this.$el.serialize();
+        opts = _.extend({}, this.defaults, this.options, opts);
+
+        if (opts.forceSerialize === undefined) { 
+            if (this.options.forceSerialize !== undefined) {
+                opt.forceSerialize = this.options.forceSerialize;
+            } else {
+                opts.forceSerialize = false; 
+            }
         }
+        
+        if (!opts.ignoreFiles) {
+            if (this.$el.attr('enctype') === 'multipart/form-data' && !opts.forceSerialize) {
+                if (window.FormData !== undefined) {
+                    return new FormData(this.el);
+                }
+            }
+        }
+
+        return this.$el.serialize();
     },
     
     /* PRIVATE METHOD
@@ -252,33 +327,6 @@ var Form = Backbone.View.extend({
         return _fields;
     },
     
-    /*
-     * Validate with javascript some fields
-     *
-     * TODO: NOT IMPLEMENTED, UNDER DEVELOPMENT.
-    */
-
-    validate: function() {
-        var required_fields = _.filter(this.fields(), function(item) {
-            return item.hasClass('required');
-        });
-
-        var errors = {};
-        var has_errors = false;
-
-        _.each(required_fields, function(item) {
-            if (item.val() == "") {
-                errors[item.attr('name')] = this.errors['required'];
-                has_errors = true;
-            }
-        });
-        
-        if (has_errors) {
-            this.setErrors(errors);
-        }
-        return has_errors;
-    },
-
     searchField: function(key) {
         return this.$("[name='" + key + "']");
     },
@@ -341,7 +389,6 @@ var Form = Backbone.View.extend({
             field.addClass(this.options.higlight);
         }
     },
-
 
     /* setErrors(errors)
      *

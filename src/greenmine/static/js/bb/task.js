@@ -1,4 +1,9 @@
-var TaskCreateView = Backbone.View.extend({
+if (window.Greenmine === undefined) {
+    window.Greenmine = {};
+}
+
+Greenmine.TaskCreateView = Backbone.View.extend({
+    // DEPRECATED
     el: $("#task-create"),
 
     events: {
@@ -7,7 +12,7 @@ var TaskCreateView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'onFormSubmit', 'onSubmitSuccess');
-        this.form = new Form({el:this.$("form")});
+        this.form = new Kaleidos.Form({el:this.$("form")});
     },
 
     onFormSubmit: function(event) {
@@ -29,4 +34,35 @@ var TaskCreateView = Backbone.View.extend({
     }
 });
 
-$(function() { new TaskCreateView(); });
+/* Issue detail view */
+Greenmine.IssueView = Backbone.View.extend({
+    el: $("#issues-view"),
+
+    events: {
+        "submit .response-form form": "onFormSubmit"
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+        this.form = new Kaleidos.Form({el:this.$(".response-form form")});
+    },
+
+    onFormSubmit: function(event) {
+        event.preventDefault();
+
+        this.form.submit({success:this.onSubmitSuccess});
+    },
+
+    onSubmitSuccess: function(data) {
+        if (!data.valid) {
+            return;
+        }
+
+        this.$(".task-changes .changes-list").append(data.html);
+        this.form.reset();
+    }
+});
+
+if ($("#task-create").length) {
+    new Greenmine.TaskCreateView();
+}

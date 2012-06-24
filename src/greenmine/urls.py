@@ -105,16 +105,6 @@ main_patterns = patterns('',
 
     url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/delete/$',
         main.TaskDelete.as_view(), name='task-delete'),
-
-    # tasks/bugs view
-    url(r'^(?P<pslug>[\w\d\-]+)/task/list/$',
-        main.TasksView.as_view(), name='tasks-view'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/$',
-        main.TasksView.as_view(), name='tasks-view'),
-
-    url(r'^(?P<pslug>[\w\d\-]+)/milestone/(?P<mid>\d+)/task/list/filter-by/(?P<filter_by>\w+)/$',
-        main.TasksView.as_view(), name='tasks-view'),
 )
 
 issues_patterns = patterns('',

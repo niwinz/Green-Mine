@@ -200,5 +200,13 @@ class IssueSendComment(GenericView):
             change_attachment = models.ChangeAttachment.objects.create(
                 owner = request.user,
                 change = change_instance,
-                attached_file = cleaned_data['attached_file'],
+                attached_file = form.cleaned_data['attached_file'],
             )
+
+        html = loader.render_to_string("issues-view-change-part.html", {
+            "change": change_instance,
+            "project": project,
+        })
+
+        return self.render_to_ok({"html":html})
+

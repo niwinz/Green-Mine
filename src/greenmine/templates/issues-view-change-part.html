@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load greenmine_utils %}
+{% load greenmine_markup %}
+
+<div class="change-item">
+    <div class="change-title">
+        {% with tuntil=change.created_date|timeuntil %}
+{% blocktrans with tuntil=tuntil name=change.owner.get_full_name %}
+Changed {{ tuntil }} ago by {{ name }}
+{% endblocktrans %}
+        {% endwith %}
+    </div>
+    <div class="change-content">
+        {% if change.change_type != 1 %}
+        <ul>
+            <li>{{ change }}</li>
+        </ul>
+        {% else %}
+        <div class="comment">
+            {{ change.data.comment|markup:project }}
+        </div>
+        <div class="comment-attachments">
+            {% with files=change.attachments.all %}
+            {% if files|length > 0 %}
+            <p>
+                {% for file in files %}
+                    {% if file.attached_file %}
+                        <a href="{{ file.attached_file.url }}">
+                            {{ file.attached_file.name }} ( {{file.attached_file.size|hsize }} )
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </p>
+            {% endif %}
+            {% endwith %}
+        </div>
+        {% endif %}
+    </div>
+</div>
