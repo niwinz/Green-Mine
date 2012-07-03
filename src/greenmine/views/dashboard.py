@@ -11,6 +11,9 @@ from greenmine import models
 
 from ..forms.dashboard import ApiForm as DashboardApiForm
 
+# TODO:
+# * quick task creation
+
 class MilestoneBurndownView(GenericView):
     @login_required
     def get(self, request, pslug, mid):
@@ -81,15 +84,12 @@ class DashboardView(GenericView):
         context = {
             'user_stories': user_stories,
             'tasks': tasks,
-
-            #'milestones': milestones,
             'milestone':milestone,
             'project': project,
         }
 
         context.update(self.get_general_context(project))
         return self.render_to_response(self.template_name, context)
-
 
 
 class DashboardApiView(GenericView):
