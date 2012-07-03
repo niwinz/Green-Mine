@@ -32,10 +32,6 @@ Greenmine.TaskView = Backbone.View.extend({
         "class": "un-us-item"
     },
 
-    Initialize: function() {
-        _.bindAll(this);
-    },
-
     render: function() {
         this.$el.html(Greenmine.template(this.model.toJSON()));
         this.$el.attr({
@@ -54,7 +50,7 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     el: $("#dashboard"),
-    
+
     initialize: function() {
         _.bindAll(this);
         Greenmine.taskCollection.on("reset", this.reset);
@@ -73,7 +69,7 @@ Greenmine.TasksView = Backbone.View.extend({
     changeOrder: function(event) {
         event.preventDefault();
         var target = $(event.currentTarget);
-        
+
         if (this._order == target.data('type')) {
             if (this._order_mod == '-') {
                 this._order_mod = '';
@@ -84,7 +80,7 @@ Greenmine.TasksView = Backbone.View.extend({
             this._order = target.data('type');
             this._order_mod = '-';
         }
-        
+
         this.reload();
     },
 
@@ -151,7 +147,7 @@ Greenmine.TasksView = Backbone.View.extend({
             }
         }, 'json');
     },
-    
+
     reset: function() {
         var self = this;
         this.$("#task-list-body").html("");

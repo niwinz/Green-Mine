@@ -1,0 +1,21 @@
+<script id="userstory-template" type="template/dot">
+    <td class="user-story-col col">
+        <div class="user-story-container">
+            <div class="user-story">
+                <div class="description">
+                    <a href="{{=it.viewUrl }}">{{=it.subject }}</a>
+                </div>
+                <div class="icons">
+                    <div class="points">{{=it.pointsDisplay }}</div>
+                    <div class="new-task" href="#">
+                        <img src="/static/imgs/plus-icon.png" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td class="task-col col open-task-col" data-status="open"></td>
+    <td class="task-col col progress-task-col" data-status="progress"></td>
+    <td class="task-col col completed-task-col" data-status="completed"></td>
+    <td class="task-col col closed-task-col" data-status="closed"></td>
+</script>

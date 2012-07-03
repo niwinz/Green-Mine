@@ -5,107 +5,85 @@ var stats = {
     'closed': gettext('Closed'),
 };
 
+var Greenmine = {}
 
-var UserStory = Backbone.Model.extend({});
-var UserStoryCollection = Backbone.Collection.extend({
-    model: UserStory
+Greenmine.UserStory = Backbone.Model.extend({});
+Greenmine.UserStoryCollection = Backbone.Collection.extend({
+    model: Greenmine.UserStory
+});
+
+Greenmine.Task = Backbone.Model.extend({});
+Greenmine.TaskCollection = Backbone.Collection.extend({
+    model: Greenmine.Task
 });
 
 
-var UserStoryView = Backbone.View.extend({
-    tagName: 'tr',
+Greenmine.UserStoryView = Backbone.View.extend({
+    tagName: "tr",
+
+    attributes: {
+        'class': 'user-story-row row'
+    },
 
     initialize: function() {
-        _.bindAll(this, 'render');
-        this.model.bind('change', this.render);
-        this.model.bind('reset', this.render);
+        _.bindAll(this);
     },
 
     render: function() {
-        this.$el.replaceWith(this.model.get('html'));
+        this.$el.html(Greenmine.usTemplate(this.model.toJSON()));
+        this.$el.attr('id', 'user-story-' + this.model.get('id'));
+        this.$el.attr('data-id', this.model.get('id'));
         return this;
     }
 });
 
+Greenmine.TaskView = Backbone.View.extend({
+    tagName: "div",
 
-var CreateTaskDialog = Backbone.View.extend({
-    events: {
-        "submit form": "onFormSubmit",
-        "click .form-field input[type=submit].save": "onSaveClicked",
-        "click .form-field input[type=submit].save-and-create-other": "onSaveClicked"
+    attributes: {
+        "class": "task-container non-closed-task",
+        "draggable": "true",
     },
 
-    initialize: function() {
-        _.bindAll(this, 'show', 'onFormSubmit', 'onFormSubmitSuccess', 'onClose', 'onSaveClicked');
-        this.form = this.$("form");
-        this.form.find('input[name=createother]').val('off');
-        this.form_view = new Kaleidos.Form({el: this.form});
-    },
-
-    onSaveClicked: function(event) {
-        event.preventDefault();
-
-        var target = $(event.currentTarget);
-        if (target.hasClass('save-and-create-other')){
-            this.$("form input[name=createother]").val('on');
-        } else {
-            this.$("form input[name=createother]").val('off');
-        }
-        this.$('form').submit();
-    },
-
-    onFormSubmit: function(event) {
-        event.preventDefault();
-        this.form_view.submit({success: this.onFormSubmitSuccess});
-    },
-
-    onFormSubmitSuccess: function(data) {
-        if (data.success && data.userStory) {
-            var userstory = $("#user-story-" + data.userStory);
-            var task = $(data.html);
-            this.trigger('new-task', userstory, task, data.status);
-
-            if (this.$("form input[name=createother]").val() == 'on') {
-                this.partialClear();
-            } else {
-                $.colorbox.close();
-            }
-        } else {
-            this.form_view.setErrors(data.errors);
-        }
-    },
-
-    partialClear: function() {
-        this.$('form #id_description').val('');
-        this.$('form #id_subject').val('');
-    },
-
-    show: function(target) {
-        this.$el.removeClass('hidden');
-
-        var userstory = target.closest(".user-story-row");
-        var url = userstory.attr('create_task_url');
-        var id = userstory.attr('ref');
-
-        this.$('form').attr('action', url);
-        this.$('form #id_user_story').val(id);
-        this.partialClear();
-
-        target.colorbox({
-            inline:true,
-            width: '960px',
-            onCleanup: this.onClose
+    render: function() {
+        var context = this.model.toJSON();
+        context = _.extend(context, {
+            'participants': Greenmine.participants,
+            'statuses': Greenmine.statuses
         });
+
+        this.$el.html(Greenmine.taskTemplate(context));
+        this.$el.attr('id', 'task-' +  this.model.get('id'));
+        this.$el.attr('data-id',  this.model.get('id'));
+        this.$el.attr('data-status', this.model.get('status'));
+        return this;
     },
 
-    onClose: function(){
-        this.$el.addClass('hidden');
+    setStatus: function(stat) {
+        this.$el.attr('data-status', stat);
+        var status_node = this.$('.statuses');
+        status_node.val(stat);
+
+        this.model.set('status', stat);
+    },
+
+    setUserStory: function(us) {
+        this.model.set('us', us);
+    },
+
+    setAssigation: function(person) {
+        this.model.set("assignedTo", person);
     }
 });
-        
+
+Greenmine.usCollection = new Greenmine.UserStoryCollection();
+Greenmine.taskCollection = new Greenmine.TaskCollection();
+
+Greenmine.usTemplate = doT.template($("#userstory-template").html());
+Greenmine.taskTemplate = doT.template($("#userstory-task-template").html());
 
 
-var DashboardView = Backbone.View.extend({
+Greenmine.DashboardView = Backbone.View.extend({
     el: $("#dashboard-matrix"),
 
     events: {
@@ -115,93 +93,57 @@ var DashboardView = Backbone.View.extend({
         "drop .task-col": "onDrop",
 
         "change .task-col .task-container .icons .participants": "assignationChangeSelect",
-        "change .task-col .task-container .icons .statuses": "statusChangeChange",
-        "click .user-story-row .user-story-container .new-task": "onNewTaskClick"
+        "change .task-col .task-container .icons .statuses": "statusChangeChange"
+        //"click .user-story-row .user-story-container .new-task": "onNewTaskClick"
     },
 
     initialize: function() {
-        _.bindAll(this, 'render', 'addOne', 'addAll', 'onDrop',
-                        'onDragOver', 'onDragLeave', 'onDragStart',
-                        'assignationChangeSelect', 'statusChangeChange',
-                        'onNewTaskClick', 'addTask');
+        _.bindAll(this);
+
+        Greenmine.usCollection.on("reset", this.resetUserStories);
+        Greenmine.taskCollection.on("reset", this.resetTasks);
+
+        this.tasks = [];
+        this.uss = [];
+    },
+
+    resetUserStories: function() {
         var self = this;
-
-        this.user_stories = new UserStoryCollection();
-        this.user_stories_views = new Array();
-
-        _(this.$("tr.user-story-row")).each(function(item) {
-            var item = $(item);
-            var model_instance = new UserStory({html: item.html(), id: item.attr('ref')})
-            var view_instance = new UserStoryView({model:model_instance});
-            
-            self.user_stories.add(model_instance);
-            self.user_stories_views.push(view_instance);
-        })
-
-        this.user_stories.bind('add', this.addOne);
-        this.create_task_dialog = new CreateTaskDialog({el: $("#create-task-dialog")});
-        this.create_task_dialog.on('new-task', this.addTask);
-    },
-    
-    onNewTaskClick: function(event) {
-        var target = $(event.currentTarget);
-        this.create_task_dialog.show(target);
+        self.uss = [];
+        Greenmine.usCollection.each(function(item) {
+            self.addUserStory(item);
+        });
     },
 
-    addTask: function(userstorydom, taskdom, tstatus) { 
-        if (stats[tstatus] === undefined) {
-            tstatus = 'closed';
-        }
+    addUserStory: function(item) {
+        var view = new Greenmine.UserStoryView({model:item});
+        this.$("tbody").append(view.render().el);
+    },
 
-        var coldom = _.find(userstorydom.find('.task-col'), function(item) {
-            return $(item).attr('tstatus') == tstatus;
+    resetTasks: function() {
+        var self = this;
+        self.tasks = [];
+        Greenmine.taskCollection.each(function(item) {
+            self.addTask(item);
+        });
+    },
+
+    addTask: function(item) {
+        var view = new Greenmine.TaskView({model:item});
+
+        var usdom = this.$("#user-story-" + item.get("us"));
+        var column = _.find(usdom.find(".task-col"), function(element) {
+            return $(element).data('status') == item.get('fakeStatus');
         });
 
-        if (coldom !== undefined) {
-            $(coldom).append(taskdom);
-        }
-    },
-
-    statusChangeChange: function(event) {
-        var target = $(event.currentTarget);
-        var selected_status_key = target.val()
-        var selected_status_text = target.find('option:selected').html();
-
-        var userstory = target.closest('.user-story-row');
-        var task = target.closest('.task-container');
-
-        task.removeClass('non-closed-task');
-        var self = this;
-        
-        var post_callback = function() {
-            self.addTask(userstory, task, selected_status_key);
-            task.attr('current_status', selected_status_key);
-        };
-
-        var url = task.attr('alter_url');
-        var data = {'status': selected_status_key};
-
-        $.post(url, data, function(data) {
-            if (data.valid) { post_callback(); }
-        }, 'json');
-    },
-
-    assignationChangeSelect: function(event) {
-        var self = $(event.currentTarget);
-        var selected_person_id = self.val();
-        var selected_person_name = self.find('option:selected').html();
-        var url = self.closest(".task-container").attr('reasign_url');
-
-        $.post(url, {userid:selected_person_id}, function(data) {
-            if (data.valid) {
-            }
-        }, 'json');
+        $(column).append(view.render().el);
+        this.tasks.push(view);
     },
 
     onDragStart: function(event) {
         var self = $(event.currentTarget);
         event.originalEvent.dataTransfer.effectAllowed = 'copy';
-        event.originalEvent.dataTransfer.setData('source_id', self.attr('id'));
+        event.originalEvent.dataTransfer.setData('id', self.data('id'));
     },
 
     onDragLeave: function(event) {
@@ -215,90 +157,123 @@ var DashboardView = Backbone.View.extend({
         event.originalEvent.dataTransfer.dropEffect = 'copy';
         event.preventDefault();
         var self = $(event.currentTarget);
-        
+
         if (!self.hasClass("drag-over")) {
             self.addClass("drag-over");
         }
     },
 
     onDrop: function(event) {
-        var self = $(event.currentTarget);
-        
-        if (self.hasClass('drag-over')) {
-            self.removeClass('drag-over');
+        var column = $(event.currentTarget);
+
+        if (column.hasClass('drag-over')) {
+            column.removeClass('drag-over');
         }
 
-        var source_id = event.originalEvent.dataTransfer.getData('source_id');
-        var source = $("#" + source_id);
-        var current_source_status = source.attr('current_status');
-        var source_parent = source.closest('td');
+        var id = event.originalEvent.dataTransfer.getData('id');
+        var task_view = _.find(this.tasks, function(taskview) {
+            return taskview.model.get('id') == id;
+        });
 
-        var userstory = self.closest('tr');
-        var userstory_id = userstory.attr('ref');
+        var userstory = column.closest('tr');
 
-        var status_node = source.find('.current-status');
         var new_status_string = null;
-
-        if (stats[current_source_status] === undefined) {
-            new_status_string = current_source_status;
+        if (stats[task_view.model.get('status')] === undefined) {
+            new_status_string = task_view.model.get('status');
         } else {
-            new_status_string = self.attr('tstatus');
-
-            // Remove some classes added on status change
-            source.removeClass('non-closed-task');
-            source.attr('current_status', new_status_string);
-
-            // Set new status and new status representation text
-            status_node.attr('status', new_status_string);
-            status_node.html(stats[new_status_string]);
+            new_status_string = column.data('status');
         }
 
-        // Move dom
-        self.append(source);
+        task_view.setStatus(new_status_string);
+        task_view.setUserStory(userstory.data('id'));
+        column.append(task_view.$el);
 
-        var url = source.attr('alter_url');
-        var data = {
-            'status': new_status_string
-        };
+        var apiUrl = this.$el.data('api-url');
 
-        if (userstory_id) {
-            data['us'] = userstory_id;
+        var postData = {
+            "status": new_status_string,
+            "us": userstory.data('id'),
+            "task":  id,
+            "assignation": task_view.model.get('assignedTo')
         }
 
-        $.post(url, data, function(data) {
-            if (!data.valid) {
-                source_parent.append(source);
-            } else {
-                source.find("select.statuses").val(new_status_string);
-            }
+        $.post(apiUrl, postData, function(response) {
+            console.log(response);
         }, 'json');
     },
 
-    addOne: function(item) {
-        var view = new UserStoryView({model:item});
-        this.$("table tbody").append(view.render().el);
+    assignationChangeSelect: function(event) {
+        var target = $(event.currentTarget);
+        var selected_person_id = target.val();
+
+        var task_dom = target.closest(".task-container");
+        var us_dom = task_dom.closest("tr.user-story-row");
+
+        var task_view = _.find(this.tasks, function(taskview) {
+            return taskview.model.get('id') == task_dom.data('id');
+        });
+
+        task_view.setAssigation(selected_person_id);
+
+        var postData = {
+            "assignation": selected_person_id,
+            "task": task_dom.data('id'),
+            "status": task_dom.data('status'),
+            "us": us_dom.data('id')
+        };
+
+        var apiUrl = this.$el.data('api-url');
+
+        $.post(apiUrl, postData, function(response) {
+            console.log(response);
+        }, 'json');
     },
 
-    addAll: function() {
-        this.user_stories.each(this.addOne);
-    },
+    statusChangeChange: function(event) {
+        var target = $(event.currentTarget);
+        var selected_status_key = target.val()
 
-    render: function() {},
+        var task_dom = target.closest(".task-container");
+        var us_dom = task_dom.closest("tr.user-story-row");
+
+        var task_view = _.find(this.tasks, function(taskview) {
+            return taskview.model.get('id') == task_dom.data('id');
+        });
+
+        var postData = {
+            "assignation": task_view.model.get('assignedTo'),
+            "task": task_dom.data('id'),
+            "status": selected_status_key,
+            "us": us_dom.data('id')
+        };
+
+        task_view.setStatus(selected_status_key);
+
+        var apiUrl = this.$el.data('api-url');
+
+        $.post(apiUrl, postData, function(response) {
+            if (!response.success) return;
+            var column = _.find(us_dom.find(".task-col"), function(element) {
+                return $(element).data('status') == response.task.fakeStatus;
+            });
+            $(column).append(task_view.$el);
+        }, 'json');
+    }
 });
 
-var SprintBurndownModel = Backbone.Model.extend({
+Greenmine.SprintBurndownModel = Backbone.Model.extend({
     url: function() {
         return this.get('view').$el.attr('url');
     }
 });
 
-var SprintBurndownView = Backbone.View.extend({
+Greenmine.SprintBurndownView = Backbone.View.extend({
     el: $("#sprint-burndown"),
 
     initialize: function() {
         _.bindAll(this, 'render', 'reload');
         if (this.$el.attr('show') === 'on') {
-            this.model = new SprintBurndownModel({'view':this});
+            this.model = new Greenmine.SprintBurndownModel({'view':this});
             this.model.fetch({success:this.render});
         }
     },
@@ -350,7 +325,3 @@ var SprintBurndownView = Backbone.View.extend({
         );
     }
 });
-
-
-var sprintBurndown = new SprintBurndownView();
-var dashboard = new DashboardView();

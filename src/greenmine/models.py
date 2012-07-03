@@ -589,6 +589,15 @@ class UserStory(models.Model):
     class Meta:
         unique_together = ('ref', 'project')
 
+    def to_dict(self):
+        return {
+            "id": self.pk,
+            "ref": self.ref,
+            "subject": self.subject,
+            "viewUrl": self.get_view_url(),
+            "pointsDisplay": self.get_points_display(),
+        }
+
     def __repr__(self):
         return u"<UserStory %s>" % (self.id)
 
@@ -736,6 +745,12 @@ class Task(models.Model):
         unique_together = ('ref', 'project')
 
     @property
+    def fake_status(self):
+        if self.has_noncolumn_status:
+            return "closed"
+        return self.status
+
+    @property
     def has_noncolumn_status(self):
         return self.status in ['needinfo', 'workaround', 'posponed']
 
@@ -787,16 +802,16 @@ class Task(models.Model):
     def to_dict(self):
         self_dict = {
             'id': self.pk,
-            'view_url': self.get_view_url(),
-            'delete_url': self.get_delete_url(),
+            'viewUrl': self.get_view_url(),
+            'deleteUrl': self.get_delete_url(),
             'subject': self.subject,
             'type': self.get_type_display(),
-            'status': self.get_status_display(),
+            'statusDisplay': self.get_status_display(),
+            'status': self.status,
+            'fakeStatus': self.fake_status,
+            'us': self.user_story.pk,
+            'assignedTo': self.assigned_to and self.assigned_to.pk or "",
         }
-        if self.assigned_to:
-            self_dict['assigned_to'] = self.assigned_to.get_full_name()
-        else:
-            self_dict['assigned_to'] = ugettext(u"Unassigned")
 
         return self_dict
 

@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/mod.css" type="text/css" media="handheld, all" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/markitup/skins/simple/style.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/wiki.css" type="text/css" media="handheld, all" />
-    <link rel="stylesheet" href="{% static 'colorbox/example1/colorbox.css' %}" type="text/css" media="handheld, all" />
     {% block top-headers %}{% endblock %}
 
     {% get_current_language as LANGUAGE_CODE %}
@@ -21,7 +20,7 @@
     <div id="head">
         <h1>{% block title %}<a href="/">{{ MAIN_TITLE }}</a>{% endblock %}</h1>
     </div>
-    
+
     {% block middle-box %}
     <!-- Global menu -->
     <div id="menu">
@@ -38,7 +37,7 @@
             <li><a href="{% url "auth_logout" %}">{% trans "Logout" %}</a></li>
         </ul>
     </div>
-    
+
     <!-- Page menu -->
     <div class="main-menu">
         {% block middle %}
@@ -47,9 +46,9 @@
         {% endblock %}
     </div>
     <div id="wrapper">{% block wrapper %}{% endblock %}</div>
-    
+
     {% endblock %}
-    
+
     <div id="footer">
         <p>
             {% for code, name in LANGUAGES %}
@@ -64,15 +63,13 @@
     <script type="text/javascript" src="{% url "jsi18n" %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui-1.8.16.custom.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.json-2.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.django.patch.js' %}"></script>
-    
-    <!-- substitute this with backbone-lightbox -->
-    <script type="text/javascript" src="{% static 'colorbox/jquery.colorbox-min.js' %}"></script>
-    
-    <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
+
     <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+
     <script type="text/javascript" src="{% static 'js/jquery.flot.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/backbone-form.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/backbone-lightbox.js' %}"></script>

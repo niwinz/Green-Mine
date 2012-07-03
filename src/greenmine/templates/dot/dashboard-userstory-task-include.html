@@ -1,0 +1,24 @@
+<script id="userstory-task-template" type="template/dot">
+    <div class="task">
+        <div class="description">
+            <a>{{=it.subject }}</a>
+        </div>
+        <div class="icons">
+            <select class="participants">
+                {{ _.each(it.participants, function(item) { }}
+                <option value="{{=item.id }}" {{ if (item.id == it.assignedTo ) { }}selected{{ } }}>{{=item.name }}</option>
+                {{ }); }}
+            </select>
+            <select class="statuses">
+                {{ _.each(it.statuses, function(item) { }}
+                <option value="{{=item.id }}" {{ if (item.id == it.status ) { }}selected{{ } }}>{{=item.name }}</option>
+                {{ }); }}
+            </select>
+            <div class="task-edit">
+                <a href="{{=it.viewUrl }}">
+                    <img src="/static/imgs/plus-icon.png" />
+                </a>
+            </div>
+        </div>
+    </div>
+</script>

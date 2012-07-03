@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
-{% load i18n %}
-{% load cache %}
-{% load static %}
+{% load rawinclude greenmine_utils static cache i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Dashboard" %} {% endblock %}
 
@@ -18,7 +16,7 @@
         <div id="sprint-burndown-graph" style="display:none"></div>
     </div>
 
-    <div class="matrix" id="dashboard-matrix">
+    <div class="matrix" id="dashboard-matrix" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
         <table>
             <thead>
                 <tr class="header-row row">
@@ -39,15 +37,12 @@
                     </td>
                 </tr>
             </thead>
-            <tbody>
-                {% for us in user_stories %}
-                    {% include "dashboard-userstory.html" with us=us %}
-                {% endfor %}
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
+{% comment %}
 <div id="create-task-dialog" class="user-story-create form-container hidden">
     <div class="form-legend">
         <span>{% trans "Task Create:" %}</span>
@@ -103,7 +98,7 @@
         </div>
     </form>
 </div>
-
+{% endcomment %}
 {% endblock %}
 
 {% block top-headers %}
@@ -111,5 +106,25 @@
 {% endblock %}
 
 {% block bottom-headers %}
+{% raw_include "dot/dashboard-userstory-include.html" %}
+{% raw_include "dot/dashboard-userstory-task-include.html" %}
+
+{% to_json user_stories as user_stories_json %}
+{% to_json tasks as tasks_json %}
+{% to_json statuses as statuses_json %}
+{% to_json participants as participants_json %}
+
+<script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/bb/dashboard.js" %}"></script>
+
+<script type="text/javascript">
+Greenmine.statuses = {{ statuses_json }};
+Greenmine.participants = {{ participants_json }};
+
+Greenmine.dashboard = new Greenmine.DashboardView()
+Greenmine.burndown = new Greenmine.SprintBurndownView();
+
+Greenmine.usCollection.reset({{ user_stories_json }});
+Greenmine.taskCollection.reset({{ tasks_json }});
+</script>
 {% endblock %}

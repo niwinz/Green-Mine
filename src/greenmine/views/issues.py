@@ -23,7 +23,7 @@ from greenmine.forms.base import CommentForm
 
 class IssueList(GenericView):
     """
-    Tasks/Bugs view.
+    Issues list view.
     """
 
     template_name = 'issues.html'

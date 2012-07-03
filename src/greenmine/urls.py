@@ -21,15 +21,8 @@ from greenmine.views import tasks
 
 api_urlpatterns = patterns('',
     url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
-
-    url(r'^project/(?P<pslug>[\w\d\-]+)/task/(?P<taskref>[\w\d]+)/alter/$',
-        api.TaskAlterApiView.as_view(), name="task-alter"),
-
     url(r'^i18n/lang/$', api.I18NLangChangeApiView.as_view(),
         name='i18n-setlang'),
-
-    url(r'^project/(?P<pslug>[\w\d\-]+)/task/(?P<taskref>[\w\d]+)/reassingn/$',
-        api.TaskReasignationsApiView.as_view(), name='task-reassing'),
 )
 
 main_patterns = patterns('',
@@ -96,7 +89,6 @@ main_patterns = patterns('',
 )
 
 tasks_patterns = patterns('',
-    #url(r'^$', tasks.TaskList.as_view(), name='tasks-list'),
     url(r'^create/$', tasks.CreateTask.as_view(), name='tasks-create'),
     url(r'^(?P<tref>[\w\d]+)/view/$', tasks.TaskView.as_view(), name='tasks-view'),
     url(r'^(?P<tref>[\w\d]+)/delete/$', tasks.TaskDelete.as_view(), name='tasks-delete'),
@@ -134,9 +126,10 @@ backlog_patterns = patterns('',
 
 dashboard_patterns = patterns('',
     url(r'^$',dashboard.DashboardView.as_view(), name="dashboard"),
-    url(r'^(?P<mid>(?:\d+|unassigned))/$', dashboard.DashboardView.as_view(), name="dashboard"),
-    url(r'^(?P<mid>(?:\d+|unassigned))/burndown/$',
+    url(r'^(?P<mid>(?:\d+))/$', dashboard.DashboardView.as_view(), name="dashboard"),
+    url(r'^(?P<mid>(?:\d+))/burndown/$',
         dashboard.MilestoneBurndownView.as_view(), name="milestone-burndown"),
+    url(r'^api/$', dashboard.DashboardApiView.as_view(), name="dashboard-api"),
 )
 
 milestone_patterns = patterns('',

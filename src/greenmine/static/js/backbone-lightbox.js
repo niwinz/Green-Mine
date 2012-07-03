@@ -1,7 +1,7 @@
 if (window.Kaleidos === undefined) {
     window.Kaleidos = {};
 }
-    
+
 Kaleidos.Lightbox = Backbone.View.extend({
     defaults: {
         width: 600,
@@ -23,11 +23,12 @@ Kaleidos.Lightbox = Backbone.View.extend({
         iframeHeight: '',
         iframeSourceTarget: false,
         ajaxSource: false,
-        ajaxSourceTarget: false,
+        ajaxSourceTarget: false
     },
 
     events: {
-        'click a.close': 'onCloseClicked'
+        'click a.close-lightbox': 'onCloseClicked',
+        'click a.accept-lightbox': 'onAcceptClicked'
     },
 
     initialize: function() {
@@ -40,16 +41,28 @@ Kaleidos.Lightbox = Backbone.View.extend({
         if (this.settings.overlay !== false) {
             this.settings.overlay = $(this.settings.overlay);
         }
+        if (this._initialize !== undefined) {
+            this._initialize();
+        }
+        this.trigger('initialize', this);
     },
-    
+
     onCloseClicked: function(event) {
         event.preventDefault();
-        this.close();
+        this.close(false);
+    },
+
+    onAcceptClicked: function(event) {
+        event.preventDefault();
+        this.close(true);
     },
 
     onClose: function()  {
         if (this.settings.overlay) {
             this.settings.overlay.unbind('click');
+        }
+        if (this._onClose !== undefined) {
+            this._onClose();
         }
     },
 
@@ -59,7 +72,8 @@ Kaleidos.Lightbox = Backbone.View.extend({
                 'height': $(document).height(),
                 'width': $(window).width(),
                 'background': this.settings.background,
-                'opacity': this.settings.opacity
+                'opacity': this.settings.opacity,
+                'position': 'absolute'
             });
 
             var self = this;
@@ -67,17 +81,17 @@ Kaleidos.Lightbox = Backbone.View.extend({
                 self.close();
             });
         }
-                
+
         this.$el.css('z-index', 95);
-        
+
         if (!this.first_load || this.settings.forceReload){
             if (this.source == 'iframe' && this.settings.iframeSource) {
                 var iframe = $(document.createElement('iframe')).attr({
-                    'src': this.settings.iframeSource, 
-                    'width': this.settings.iframeWidth, 
+                    'src': this.settings.iframeSource,
+                    'width': this.settings.iframeWidth,
                     'height': this.settings.iframeHeight
                 });
-                
+
                 if (this.settings.iframeSourceTarget) {
                     this.settings.iframeSourceTarget.html(iframe);
                 } else {
@@ -93,7 +107,7 @@ Kaleidos.Lightbox = Backbone.View.extend({
             });
 
             var top, left;
-                            
+
             if(this.overrideTop) {
                 top = this.settings.overrideTop;
             } else {
@@ -112,7 +126,7 @@ Kaleidos.Lightbox = Backbone.View.extend({
             }else{
                 left = ($(document).width()/2)-(this.settings.width/2);
             }
-            
+
             this.$el.css({
                 'display': 'none',
                 'visibility': 'visible',
@@ -120,8 +134,9 @@ Kaleidos.Lightbox = Backbone.View.extend({
                 'top': top,
                 'z-index': 1002
             });
-            
+
             this.first_load = true;
+
         }
 
         var self = this;
@@ -136,11 +151,19 @@ Kaleidos.Lightbox = Backbone.View.extend({
             this.$el.show();
             this.trigger('load');
         }
+
+        if (this._onOpen !== undefined) {
+            this._onOpen();
+        }
     },
 
-    open: function() {
-        if (this.settings.source == 'ajax' 
-                && this.settings.ajaxSource 
+    open: function(options) {
+        if (this._open !== undefined) {
+            this._open(options);
+        }
+
+        if (this.settings.source == 'ajax'
+                && this.settings.ajaxSource
                 && (!this.first_load || this.settings.forceReload)) {
 
             this.$("#ajax-loader").css({
@@ -163,17 +186,21 @@ Kaleidos.Lightbox = Backbone.View.extend({
                     }
 
                     self.trigger('ajax-end', self);
-                    self.trigger('open');
+                    self.trigger('open', options);
                 }
             });
         } else {
-            this.trigger('open');
+            this.trigger('open', options);
         }
     },
 
-    close: function(){
+    close: function(ok){
+        if (ok === undefined) {
+            ok = false;
+        }
+
         this.$("#ajax-loader").hide();
-        this.trigger('close', this);
+        this.trigger('close', this, ok);
 
         if (this.settings.fadeOut) {
             if (this.settings.overlay) {
@@ -185,6 +212,10 @@ Kaleidos.Lightbox = Backbone.View.extend({
                 this.settings.overlay.hide();
             }
             this.$el.hide();
+        }
+
+        if (this._close !== undefined) {
+            this._close(ok);
         }
     }
 });
