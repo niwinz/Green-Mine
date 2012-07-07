@@ -334,15 +334,6 @@ class Project(models.Model):
         return ('project-export-settings-rehash', (), {'pslug': self.slug})
 
     @models.permalink
-    def get_default_tasks_url(self):
-        return ('tasks-view', (),
-            {'pslug': self.slug, 'mid': self.default_milestone.id })
-
-    @models.permalink
-    def get_tasks_url(self):
-        return ('tasks-list', (), {'pslug': self.slug})
-
-    @models.permalink
     def get_issues_url(self):
         return ('issues-list', (), {'pslug': self.slug})
 
@@ -756,24 +747,12 @@ class Task(models.Model):
 
     @models.permalink
     def get_edit_url(self):
-        return ('task-edit', (), {
-            'pslug': self.project.slug,
-            'tref': self.ref
-        })
-
-    @models.permalink
-    def get_alter_api_url(self):
-        return ('api:task-alter', (), {
-            'pslug': self.project.slug,
-            'taskref': self.ref
-        })
-
-    @models.permalink
-    def get_reassign_api_url(self):
-        return ('api:task-reassing', (), {
-            'pslug': self.project.slug,
-            'taskref': self.ref
-        })
+        if self.type == 'bug':
+            return ('issues-edit', (),
+                {'pslug': self.project.slug, 'tref': self.ref})
+        else:
+            return ('tasks-edit', (),
+                {'pslug': self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_view_url(self):
@@ -784,6 +763,7 @@ class Task(models.Model):
 
     @models.permalink
     def get_delete_url(self):
+        # FIXME
         return ('tasks-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
         if self.type == "bug":
             return None

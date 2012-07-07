@@ -99,6 +99,7 @@ issues_patterns = patterns('',
     url(r'^$', issues.IssueList.as_view(), name='issues-list'),
     url(r'^create/$', issues.CreateIssue.as_view(), name='issues-create'),
     url(r'^(?P<tref>[\w\d]+)/view/$', issues.IssueView.as_view(), name='issues-view'),
+    url(r'^(?P<tref>[\w\d]+)/edit/$', issues.EditIssue.as_view(), name='issues-edit'),
     url(r'^(?P<tref>[\w\d]+)/send/comment/$', issues.IssueSendComment.as_view(), name='issues-send-comment'),
 )
 

@@ -159,6 +159,57 @@ class CreateIssue(GenericView):
         return self.render_to_ok({"task": issue.to_dict(), 'redirect_to':redirect_to})
 
 
+class EditIssue(GenericView):
+    template_name = "issues-edit.html"
+
+    @login_required
+    def get(self, request, pslug, tref):
+        project = get_object_or_404(models.Project, slug=pslug)
+        issue = get_object_or_404(project.tasks, ref=tref)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'create')),
+        ])
+
+        form = IssueCreateForm(project=project, instance=issue)
+        return self.render_to_response(self.template_name, {
+            "form": form,
+            "project": project,
+        })
+
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(models.Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+            ('task', ('view', 'create')),
+        ])
+
+        initial_data = {
+            "milestone": request.GET.get('milestone', None),
+        }
+        form = IssueCreateForm(request.POST, project=project, initial=initial_data)
+        if not form.is_valid():
+            return self.render_json_error(form.errors)
+
+        issue = form.save(commit=False)
+        issue.type = 'bug'
+        issue.project = project
+        issue.owner = request.user
+        issue.save()
+
+        redirect_to = reverse('issues-list', args=[project.slug]) \
+            + "?milestone={0}".format(issue.milestone.pk)
+
+        return self.render_to_ok({"task": issue.to_dict(), 'redirect_to':redirect_to})
+
+
 class IssueView(GenericView):
     template_name = "issues-view.html"
     menu = ['issues']
