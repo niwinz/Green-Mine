@@ -29,7 +29,7 @@ Developers How-To:
 ------------------
 
 As a first step, download the latest version of the repository and follow the instructions::
-    
+
     git clone git://github.com/niwibe/Green-Mine.git greenmine
     cd greenmine/src
     python manage.py migrate greenmine 0001 --fake
@@ -41,7 +41,7 @@ The ``development_users`` fixture, by default inserts two users: ``andrei`` and 
 have superuser flag set to ``True`` and password is ``123123``.
 
 For run tests::
-    
+
     python manage.py test -v2 greenmine
 
 

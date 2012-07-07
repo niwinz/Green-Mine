@@ -1,4 +1,4 @@
-{% extends "base_base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% load url from future %}
 {% load i18n %}
@@ -17,7 +17,6 @@
                 <label>{{ form.password.label }}</label>
                 {{ form.password }}
             </div>
-            
             <p class="forgot-pass">
                 <a href="{% url 'remember-password' %}">{% trans "Forgot your password?" %}</a>
                 {% if not register_disabled %}
@@ -25,10 +24,9 @@
                 <a id="open-forgotten-password-form" href="{% url 'register' %}">{% trans "Register" %}</a>
                 {% endif %}
             </p>
-
             <div class="form-field">
                 <input class="btn01" type="submit" value="{% trans "Login" %}" />
-                <span class="ajax-loader"></span>        
+                <span class="ajax-loader"></span>
             </div>
         </fieldset>
     </form>

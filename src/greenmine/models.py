@@ -809,8 +809,8 @@ class Task(models.Model):
             'statusDisplay': self.get_status_display(),
             'status': self.status,
             'fakeStatus': self.fake_status,
-            'us': self.user_story.pk,
-            'assignedTo': self.assigned_to and self.assigned_to.pk or "",
+            'us': self.user_story and self.user_story.pk or None,
+            'assignedTo': self.assigned_to and self.assigned_to.pk or None,
         }
 
         return self_dict

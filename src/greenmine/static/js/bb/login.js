@@ -7,7 +7,7 @@ var LoginView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'onFormSubmit', 'onSubmitSuccess');
-        this.form = new Form({el:this.$("form")});
+        this.form = new Kaleidos.Form({el:this.$("form")});
     },
 
     onFormSubmit: function(event) {

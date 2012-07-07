@@ -1,15 +1,15 @@
 <script type="template/dot" id="task-template">
     <div class="row title">
-        <span><a href="{{=it.view_url }}">{{=it.subject }}</a></span>
+        <span><a href="{{=it.viewUrl }}">{{=it.subject }}</a></span>
     </div>
     <div class="row status">
         <span>{{=it.status }}</span>
     </div>
     <div class="row milestone">
-        <span><a href="">{{=it.assigned_to }}</a></span>
+        <span><a href="">{{=it.assignedTo }}</a></span>
     </div>
     <div class="row metaicon">
-        <img class="delete" src="/static/imgs/close-icon.png" 
-            deleteurl="{{=it.delete_url }}"></img>
+        <img class="delete" src="/static/imgs/close-icon.png"
+            deleteurl="{{=it.deleteUrl }}"></img>
     </div>
 </script>
