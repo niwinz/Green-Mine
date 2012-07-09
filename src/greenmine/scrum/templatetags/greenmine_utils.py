@@ -6,7 +6,6 @@ from django.conf import settings
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
-
 from greenmine.core.utils import normalize_tagname
 
 register = template.Library()
@@ -42,7 +41,6 @@ def dashboard_task(context, task):
         'project': context['project'],
     }
     return render_to_string("dashboard-userstory-task.html", template_context)
-
 
 from superview.utils import LazyEncoder
 import json

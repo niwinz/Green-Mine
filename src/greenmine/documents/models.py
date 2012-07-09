@@ -8,14 +8,6 @@ from greenmine.core.fields import WikiField
 from greenmine.core.utils.slug import slugify_uniquely as slugify
 
 
-class TemporalFile(models.Model):
-    attached_file = models.FileField(upload_to="temporal_files",
-        max_length=1000, null=True, blank=True)
-
-    owner = models.ForeignKey('auth.User', related_name='tmpfiles')
-    created_date = models.DateTimeField(auto_now_add=True)
-
-
 class Document(models.Model):
     title = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=200, blank=True)
@@ -24,7 +16,7 @@ class Document(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
 
-    project = models.ForeignKey('Project', related_name='documents')
+    project = models.ForeignKey('scrum.Project', related_name='documents')
     owner = models.ForeignKey('auth.User', related_name='documents')
     attached_file = models.FileField(upload_to="documents",
         max_length=1000, null=True, blank=True)

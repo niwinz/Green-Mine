@@ -206,6 +206,7 @@ INSTALLED_APPS = [
     'rawinclude',
     'greenqueue',
     'south',
+    'superview',
 ]
 
 WSGI_APPLICATION = 'greenmine.wsgi.application'
