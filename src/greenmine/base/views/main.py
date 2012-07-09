@@ -29,6 +29,7 @@ from greenmine.base.models import *
 from greenmine.scrum.models import *
 
 from greenmine.forms import base as forms
+from greenmine.questions.forms import *
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
 
@@ -1161,7 +1162,7 @@ class QuestionsCreateView(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
-        form = forms.QuestionCreateForm(project=project)
+        form = QuestionCreateForm(project=project)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1178,7 +1179,7 @@ class QuestionsCreateView(GenericView):
     @login_required
     def post(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
-        form = forms.QuestionCreateForm(request.POST, project=project)
+        form = QuestionCreateForm(request.POST, project=project)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1218,7 +1219,7 @@ class QuestionsEditView(GenericView):
         ])
 
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionCreateForm(instance=question, project=project)
+        form = QuestionCreateForm(instance=question, project=project)
 
         context = {
             'form': form,
@@ -1237,7 +1238,7 @@ class QuestionsEditView(GenericView):
         ])
 
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionCreateForm(request.POST, instance=question, project=project)
+        form = QuestionCreateForm(request.POST, instance=question, project=project)
 
         _old_assigned_to_pk = question.assigned_to.pk
 
@@ -1273,7 +1274,7 @@ class QuestionsView(GenericView):
         ])
 
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionResponseForm()
+        form = QuestionResponseForm()
 
         context = {
             'form': form,
@@ -1293,7 +1294,7 @@ class QuestionsView(GenericView):
         ])
 
         question = get_object_or_404(project.questions, slug=qslug)
-        form = forms.QuestionResponseForm(request.POST)
+        form = QuestionResponseForm(request.POST)
 
         if form.is_valid():
             response = form.save(commit=False)
