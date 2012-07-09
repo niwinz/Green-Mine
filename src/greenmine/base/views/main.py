@@ -28,8 +28,9 @@ from greenmine.core.decorators import login_required, staff_required
 from greenmine.base.models import *
 from greenmine.scrum.models import *
 
-from greenmine.forms import base as forms
+from greenmine.forms.base import *
 from greenmine.questions.forms import *
+
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
 
@@ -45,7 +46,7 @@ class RegisterView(GenericView):
         if settings.DISABLE_REGISTRATION:
             messages.warning(request, _(u"Registration system is disabled."))
 
-        form = forms.RegisterForm()
+        form = RegisterForm()
         context = {'form':form}
         return self.render_to_response(self.template_path, context)
 
@@ -53,7 +54,7 @@ class RegisterView(GenericView):
         if settings.DISABLE_REGISTRATION:
             return self.render_redirect(reverse('register'))
 
-        form = forms.RegisterForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = User(
                 username = form.cleaned_data['username'],
@@ -101,7 +102,7 @@ class LoginView(GenericView):
 
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
-        login_form = forms.LoginForm(request=request)
+        login_form = LoginForm(request=request)
 
         context = {
             'form': login_form,
@@ -111,7 +112,7 @@ class LoginView(GenericView):
         return self.render_to_response(self.template_name, context)
 
     def post(self, request):
-        login_form = forms.LoginForm(request.POST, request=request)
+        login_form = LoginForm(request.POST, request=request)
         if request.is_ajax():
             if login_form.is_valid():
                 user_profile = login_form._user.get_profile()
@@ -135,13 +136,13 @@ class RememberPasswordView(GenericView):
 
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
-        form = forms.ForgottenPasswordForm()
+        form = ForgottenPasswordForm()
 
         return self.render_to_response(self.template_name,
             {'form': form})
 
     def post(self, request):
-        form = forms.ForgottenPasswordForm(request.POST)
+        form = ForgottenPasswordForm(request.POST)
         if form.is_valid():
             form.user.set_unusable_password()
             form.user.save()
@@ -183,13 +184,13 @@ class PasswordChangeView(GenericView):
 
     @login_required
     def get(self, request):
-        form = forms.PasswordRecoveryForm()
+        form = PasswordRecoveryForm()
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
 
     @login_required
     def post(self, request):
-        form = forms.PasswordRecoveryForm(request.POST)
+        form = PasswordRecoveryForm(request.POST)
         if form.is_valid():
             request.user.set_password(form.cleaned_data['password'])
             request.user.save()
@@ -208,12 +209,12 @@ class PasswordRecoveryView(GenericView):
     template_name = "password_recovery.html"
 
     def get(self, request, token):
-        form = forms.PasswordRecoveryForm()
+        form = PasswordRecoveryForm()
         context = {'form':form}
         return self.render_to_response(self.template_name, context)
 
     def post(self, request, token):
-        form = forms.PasswordRecoveryForm(request.POST)
+        form = PasswordRecoveryForm(request.POST)
         if form.is_valid():
             profile_queryset = Profile.objects.filter(token=token)
             if not profile_queryset:
@@ -240,13 +241,13 @@ class ProfileView(GenericView):
 
     @login_required
     def get(self, request):
-        form = forms.ProfileForm(instance=request.user)
+        form = ProfileForm(instance=request.user)
         context = {'form':form}
         return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request):
-        form = forms.ProfileForm(request.POST, request.FILES, instance=request.user)
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
         context = {'form':form}
 
         if not form.is_valid():
@@ -329,13 +330,13 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
     @login_required
     def get(self, request):
-        form = forms.ProjectForm()
+        form = ProjectForm()
         context = {'form':form, 'roles': Role.objects.all()}
         return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request):
-        form = forms.ProjectForm(request.POST)
+        form = ProjectForm(request.POST)
 
         context = {
             'form': form,
@@ -393,7 +394,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         if not self.check_role(request.user, project, [('project',('view', 'edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
 
-        form = forms.ProjectForm(instance=project)
+        form = ProjectForm(instance=project)
 
         context = {
             'form':form,
@@ -409,7 +410,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
         if not self.check_role(request.user, project, [('project', ('view','edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
 
-        form = forms.ProjectForm(request.POST, instance=project)
+        form = ProjectForm(request.POST, instance=project)
 
         context = {
             'form': form,
@@ -483,7 +484,7 @@ class MilestoneCreateView(GenericView):
             ('milestone', ('view', 'edit', 'create')),
         ])
 
-        form = forms.MilestoneForm(initial={'estimated_start': now()})
+        form = MilestoneForm(initial={'estimated_start': now()})
         context = {
             'form': form,
             'project': project,
@@ -500,7 +501,7 @@ class MilestoneCreateView(GenericView):
             ('milestone', ('view', 'create')),
         ])
 
-        form = forms.MilestoneForm(request.POST)
+        form = MilestoneForm(request.POST)
 
         if form.is_valid():
             milestone = form.save(commit=False)
@@ -534,7 +535,7 @@ class MilestoneEditView(GenericView):
             ('milestone', ('view', 'edit', 'create')),
         ])
 
-        form = forms.MilestoneForm(instance=milestone)
+        form = MilestoneForm(instance=milestone)
 
         context = {
             'form': form,
@@ -553,7 +554,7 @@ class MilestoneEditView(GenericView):
             ('milestone', ('view', 'create')),
         ])
 
-        form = forms.MilestoneForm(request.POST, instance=milestone)
+        form = MilestoneForm(request.POST, instance=milestone)
 
         if form.is_valid():
             milestone = form.save(commit=True)
@@ -639,7 +640,7 @@ class UserStoryCreateView(GenericView):
         else:
             milestone = None
 
-        form = forms.UserStoryForm(initial={'milestone': milestone})
+        form = UserStoryForm(initial={'milestone': milestone})
         context = {
             'form':form,
             'project':project,
@@ -661,7 +662,7 @@ class UserStoryCreateView(GenericView):
         else:
             milestone = None
 
-        form = forms.UserStoryForm(request.POST, initial={'milestone': milestone})
+        form = UserStoryForm(request.POST, initial={'milestone': milestone})
 
         if form.is_valid():
             instance = form.save(commit=False)
@@ -719,7 +720,7 @@ class UserStoryEdit(GenericView):
             ('userstory', ('view', 'edit')),
         ])
 
-        form = forms.UserStoryForm(instance=user_story)
+        form = UserStoryForm(instance=user_story)
         context = {
             'project': project,
             'user_story': user_story,
@@ -738,7 +739,7 @@ class UserStoryEdit(GenericView):
             ('userstory', ('view', 'edit')),
         ])
 
-        form = forms.UserStoryForm(request.POST, instance=user_story)
+        form = UserStoryForm(request.POST, instance=user_story)
         if form.is_valid():
             user_story = form.save(commit=True)
             signals.mail_userstory_modified.send(sender=self, us=user_story, user=request.user)
@@ -801,7 +802,7 @@ class TaskCreateView(GenericView):
         else:
             return HttpResponseBadRequest()
 
-        form = forms.TaskForm(project=project,
+        form = TaskForm(project=project,
             initial={'milestone':milestone, 'user_story': user_story})
 
         context = {
@@ -833,7 +834,7 @@ class TaskCreateView(GenericView):
         else:
             return HttpResponseBadRequest()
 
-        form = forms.TaskForm(request.POST, project=project,
+        form = TaskForm(request.POST, project=project,
             initial={'milestone':milestone, 'user_story': user_story})
 
         next_url = request.GET.get('next', None)
@@ -965,7 +966,7 @@ class ProjectSettings(GenericView):
             else:
                 raise
 
-        form = forms.ProjectPersonalSettingsForm(instance=pur)
+        form = ProjectPersonalSettingsForm(instance=pur)
 
         context = {
             'categorys': self.create_category_choices(project),
@@ -980,7 +981,7 @@ class ProjectSettings(GenericView):
     def post(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
         pur = get_object_or_404(project.user_roles, user=request.user)
-        form = forms.ProjectPersonalSettingsForm(request.POST, instance=pur)
+        form = ProjectPersonalSettingsForm(request.POST, instance=pur)
 
         if form.is_valid():
             pur = form.save(commit=True)
@@ -1023,7 +1024,7 @@ class ProjectGeneralSettings(GenericView):
             'total_story_points': extras.total_story_points,
         }
 
-        form = forms.ProjectGeneralSettingsForm(initial=initial)
+        form = ProjectGeneralSettingsForm(initial=initial)
 
         context = {
             'categorys': self.create_category_choices(project),
@@ -1055,7 +1056,7 @@ class ProjectGeneralSettings(GenericView):
             ('project', ('view', 'edit')),
         ])
 
-        form = forms.ProjectGeneralSettingsForm(request.POST)
+        form = ProjectGeneralSettingsForm(request.POST)
 
         if form.is_valid():
             self.save_form(project, form)
@@ -1093,7 +1094,7 @@ class Documents(GenericView):
         context = {
             'documents': documents,
             'project': project,
-            'form': forms.DocumentForm(),
+            'form': DocumentForm(),
         }
 
         return self.render_to_response(self.template_path, context)
@@ -1106,7 +1107,7 @@ class Documents(GenericView):
             ('project', 'view'),
         ])
 
-        form = forms.DocumentForm(request.POST, request.FILES)
+        form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             document = Document.objects.create(
                 title = form.cleaned_data['title'],
@@ -1387,14 +1388,14 @@ class UserCreateView(GenericView):
     @login_required
     @staff_required
     def get(self, request):
-        form = forms.UserEditForm()
+        form = UserEditForm()
         context = {'form': form}
         return self.render_to_response(self.template_path, context)
 
     @login_required
     @staff_required
     def post(self, request):
-        form = forms.UserEditForm(request.POST)
+        form = UserEditForm(request.POST)
         if form.is_valid():
             user = form.save(commit=True)
             return self.render_redirect(reverse('users-view', args=[user.id]))
@@ -1411,7 +1412,7 @@ class UserEditView(GenericView):
     @staff_required
     def get(self, request, uid):
         user = get_object_or_404(User, pk=uid)
-        form = forms.UserEditForm(instance=user)
+        form = UserEditForm(instance=user)
 
         context = {
             'uobj': user,
@@ -1423,7 +1424,7 @@ class UserEditView(GenericView):
     @staff_required
     def post(self, request, uid):
         user = get_object_or_404(User, pk=uid)
-        form = forms.UserEditForm(request.POST, instance=user)
+        form = UserEditForm(request.POST, instance=user)
 
         if form.is_valid():
             form.save()
@@ -1481,7 +1482,7 @@ class UsFormInline(GenericView):
 
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
-        form = forms.UserStoryFormInline(instance=user_story)
+        form = UserStoryFormInline(instance=user_story)
         context = {'form': form}
         return self.render_to_response(self.template_name, context)
 
@@ -1497,7 +1498,7 @@ class UsFormInline(GenericView):
 
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
-        form = forms.UserStoryFormInline(request.POST, instance=user_story)
+        form = UserStoryFormInline(request.POST, instance=user_story)
 
         if form.is_valid():
             us = form.save(commit=True)
