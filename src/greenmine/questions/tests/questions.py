@@ -12,6 +12,7 @@ from greenmine.questions.models import *
 
 
 class QuestionsRelatedTests(TestCase):
+    fixtures = ['initial_data']
     def setUp(self):
         self.user1 = User.objects.create(
             username = 'test',

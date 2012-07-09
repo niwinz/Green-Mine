@@ -1,4 +1,5 @@
 from django.db import models
+from greenmine.core.utils.slug import slugify_uniquely
 from greenmine.wiki.fields import WikiField
 
 class Question(models.Model):
