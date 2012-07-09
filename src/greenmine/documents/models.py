@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
-from greenmine.core.fields import WikiField
+from greenmine.wiki.fields import WikiField
 from greenmine.core.utils.slug import slugify_uniquely as slugify
 
 
