@@ -199,6 +199,7 @@ INSTALLED_APPS = [
 
     'greenmine.base',
     'greenmine.scrum',
+    'greenmine.taggit',
 
     'django_gravatar',
     'rawinclude',
