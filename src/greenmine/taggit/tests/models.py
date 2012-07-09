@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 from django.db import models
 
-from ..managers import TaggableManager
+from ..managers import TaggableManager, TagManager
 from ..models import (TaggedItemBase, GenericTaggedItemBase, TaggedItem,
     TagBase, Tag)
 
@@ -12,6 +12,7 @@ class Food(models.Model):
     name = models.CharField(max_length=50)
 
     tags = TaggableManager()
+    objects = TagManager()
 
     def __unicode__(self):
         return self.name

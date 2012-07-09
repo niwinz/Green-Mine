@@ -9,8 +9,13 @@ from django.db.models.related import RelatedObject
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
+from django.db import connection, models
+from django.db.models.query import QuerySet
+from django.utils.translation import ugettext_lazy as _
+qn = connection.ops.quote_name
+
 from .forms import TagField
-from .models import TaggedItem, GenericTaggedItemBase
+from .models import TaggedItem, GenericTaggedItemBase, Tag
 from .utils import require_instance_manager
 
 
@@ -22,6 +27,87 @@ class TaggableRel(ManyToManyRel):
         self.multiple = True
         self.through = None
 
+
+class TagManager(models.Manager):
+
+    def tags_for_queryset(self, queryset, counts=True, min_count=None):
+        """
+        Based on django-testing
+
+        Obtain a list of tags associated with instances of a model
+        contained in the given queryset.
+
+        If ``counts`` is True, a ``count`` attribute will be added to
+        each tag, indicating how many times it has been used against
+        the Model class in question.
+
+        If ``min_count`` is given, only tags which have a ``count``
+        greater than or equal to ``min_count`` will be returned.
+        Passing a value for ``min_count`` implies ``counts=True``.
+        """
+
+        compiler = queryset.query.get_compiler(using='default')
+        extra_joins = ' '.join(compiler.get_from_clause()[0][1:])
+        where, params = queryset.query.where.as_sql(
+            compiler.quote_name_unless_alias, compiler.connection
+        )
+
+        if where:
+            extra_criteria = 'AND %s' % where
+        else:
+            extra_criteria = ''
+        return self._get_usage(queryset.model, counts, min_count, extra_joins, extra_criteria, params)
+
+
+    def _get_usage(self, model, counts=False, min_count=None, extra_joins=None, extra_criteria=None, params=None):
+        """
+        Perform the custom SQL query for ``usage_for_model`` and
+        ``usage_for_queryset``.
+        """
+        if min_count is not None: counts = True
+
+        model_table = qn(model._meta.db_table)
+        model_pk = '%s.%s' % (model_table, qn(model._meta.pk.column))
+
+        query = """
+        SELECT DISTINCT %(tag)s.id, %(tag)s.name%(count_sql)s
+        FROM
+            %(tag)s
+            INNER JOIN %(tagged_item_alias)s
+                ON %(tag)s.id = %(tagged_item)s.tag_id
+            INNER JOIN %(model)s
+                ON %(tagged_item)s.object_id = %(model_pk)s
+            %%s
+        WHERE %(tagged_item)s.content_type_id = %(content_type_id)s
+            %%s
+        GROUP BY %(tag)s.id, %(tag)s.name
+        %%s
+        ORDER BY %(tag)s.name ASC""" % {
+            'tag': qn(Tag._meta.db_table),
+            'count_sql': counts and (', COUNT(%s)' % model_pk) or '',
+            'tagged_item_alias': qn(TaggedItem._meta.db_table) + " tagged_item_alias",
+            'tagged_item': "tagged_item_alias",
+            'model': model_table,
+            'model_pk': model_pk,
+            'content_type_id': ContentType.objects.get_for_model(model).pk,
+        }
+
+        min_count_sql = ''
+        if min_count is not None:
+            min_count_sql = 'HAVING COUNT(%s) >= %%s' % model_pk
+            params.append(min_count)
+
+        cursor = connection.cursor()
+
+        cursor.execute(query % (extra_joins, extra_criteria, min_count_sql), params)
+        tags = []
+        for row in cursor.fetchall():
+            t = Tag(*row[:2])
+            if counts:
+                t.count = row[2]
+            tags.append(t)
+
+        return tags
 
 class TaggableManager(RelatedField):
     def __init__(self, verbose_name=_("Tags"),

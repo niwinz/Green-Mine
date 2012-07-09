@@ -96,10 +96,11 @@ class BacklogLeftBlockView(GenericView):
                 unassigned = unassigned.filter(tags__in=tag_filter)
 
         unassigned = unassigned.select_related()
+
         template_context = {
             'project': project,
             'unassigned_us': unassigned,
-            'tags': get_tags_for_queryset(unassigned),
+            'tags': UserStory.objects.tags_for_queryset(unassigned),
         }
 
         response_context = {

@@ -16,10 +16,10 @@
 </div>
 
 <div class="un-us-item">
-    <div class="row tag-selector">
+    <div class="row title tag-selector">
         {% for tag in tags%}
-            <span class="category" category="{{ tag.tags }}">
-                TODO-id:{{ tag.tags }} : {{tag.count}}
+            <span class="category" category="{{ tag.id }}">
+                {{ tag }} {{tag.count}}
             </span>
         {% endfor %}
     </div>
