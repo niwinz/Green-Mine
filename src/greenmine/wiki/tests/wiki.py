@@ -6,10 +6,13 @@ from django.core.urlresolvers import reverse
 import json
 
 from django.contrib.auth.models import User
-from ..models import *
+from greenmine.scrum.models import *
+from greenmine.base.models import *
+from greenmine.wiki.models import *
 
 
 class WikiRelatedTests(TestCase):
+    fixtures = ['initial_data']
     def setUp(self):
         self.user1 = User.objects.create(
             username = 'test',

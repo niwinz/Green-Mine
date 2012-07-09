@@ -9,7 +9,7 @@ js_info_dict = {
     'packages': ('greenmine',),
 }
 
-from greenmine.views import api
+#from greenmine.views import api
 from greenmine.base.views import main
 from greenmine.base.views import config
 from greenmine.base.views import export

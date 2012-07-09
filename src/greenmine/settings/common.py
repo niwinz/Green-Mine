@@ -199,13 +199,12 @@ INSTALLED_APPS = [
 
     'greenmine.base',
     'greenmine.scrum',
+    'greenmine.wiki',
     'greenmine.taggit',
 
     'django_gravatar',
     'rawinclude',
     'greenqueue',
-    'greenmine.wiki',
-    'greenmine.scrum',
     'south',
 ]
 

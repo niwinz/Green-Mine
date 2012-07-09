@@ -2,7 +2,7 @@ from django.db import models
 from .fields import WikiField
 
 class WikiPage(models.Model):
-    project = models.ForeignKey('Project', related_name='wiki_pages')
+    project = models.ForeignKey('scrum.Project', related_name='wiki_pages')
     slug = models.SlugField(max_length=500, db_index=True)
     content = WikiField(blank=False, null=True)
     owner = models.ForeignKey("auth.User", related_name="wiki_pages", null=True)
