@@ -1,44 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, Http404
-from django.core.cache import cache
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from __future__ import absolute_import
+
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import render_to_string
-from django.template import RequestContext, loader
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.db.utils import IntegrityError
+from django.shortcuts import get_object_or_404
+from django.template import loader
 from django.db import transaction
-from django.db.models import Q
-from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.utils.timezone import now
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from greenmine.core.generic import GenericView
-from greenmine.core.decorators import login_required, staff_required
+from ..core.generic import GenericView
+from ..core.decorators import login_required
+from ..core import signals
+from ..scrum.models import Project
 
-# Temporal imports
-from greenmine.base.models import *
-from greenmine.scrum.models import *
-
-from greenmine.forms.base import *
-from greenmine.questions.forms import *
-from greenmine.scrum.forms.project import *
-from greenmine.scrum.forms.milestone import *
-from greenmine.core.utils import iter_points
-from greenmine.core import signals
-
-import os
-import re
+from .models import Document
+from .forms import DocumentForm
 
 from datetime import timedelta
+import os, re
 
 
 class Documents(GenericView):
