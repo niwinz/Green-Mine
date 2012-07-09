@@ -9,8 +9,10 @@ from django.db.models import Q
 
 from django_gravatar.helpers import get_gravatar_url, has_gravatar
 
-from greenmine.models import *
-from greenmine import models
+# Temporal imports
+from greenmine.base.models import *
+from greenmine.scrum.models import *
+
 from greenmine.core.decorators import login_required
 from greenmine.core.generic import GenericView
 
@@ -30,7 +32,7 @@ class UserListApiView(GenericView):
             return self.render_to_ok({'list':[]})
 
         term = request.GET['term']
-        users = models.User.objects.filter(
+        users = User.objects.filter(
             Q(username__istartswith=term) | Q(first_name__istartswith=term) | Q(last_name__istartswith=term)
         )
         users_list = []
