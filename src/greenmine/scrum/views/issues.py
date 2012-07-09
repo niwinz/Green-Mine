@@ -18,6 +18,7 @@ from greenmine.core.utils import iter_points
 
 from greenmine.scrum.forms.issues import IssueFilterForm, IssueCreateForm
 from greenmine.forms.base import CommentForm
+from greenmine.scrum.models import *
 
 
 class IssueList(GenericView):
