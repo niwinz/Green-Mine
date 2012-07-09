@@ -7,8 +7,8 @@ from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
 
 from ..models import *
+from ..forms.dashboard import ApiForm as DashboardApiForm
 
-from greenmine.forms.dashboard import ApiForm as DashboardApiForm
 from datetime import timedelta
 
 # TODO:
