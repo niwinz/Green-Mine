@@ -1,4 +1,11 @@
-from greenmine.base.utils.slugify import slugify_uniquely as slugify
+from greenmine.core.utils.slug import slugify_uniquely
+from greenmine.core.generic import GenericView
+from greenmine.core.decorators import login_required, staff_required
+from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
+from greenmine.scrum.models import *
+from greenmine.wiki.models import *
+from greenmine.wiki.forms import *
 
 class WikiPageView(GenericView):
     menu = ['wiki']
@@ -6,7 +13,7 @@ class WikiPageView(GenericView):
 
     @login_required
     def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -15,7 +22,7 @@ class WikiPageView(GenericView):
 
         try:
             wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
+        except WikiPage.DoesNotExist:
             return self.render_redirect(reverse('wiki-page-edit',
                 args=[project.slug, slugify(wslug)]))
 
@@ -32,7 +39,7 @@ class WikiPageEditView(GenericView):
 
     @login_required
     def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -41,10 +48,10 @@ class WikiPageEditView(GenericView):
 
         try:
             wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
+        except WikiPage.DoesNotExist:
             wikipage = None
 
-        form = forms.WikiPageEditForm(instance=wikipage)
+        form = WikiPageEditForm(instance=wikipage)
 
         context = {
             'form': form,
@@ -55,7 +62,7 @@ class WikiPageEditView(GenericView):
 
     @login_required
     def post(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -64,16 +71,16 @@ class WikiPageEditView(GenericView):
 
         try:
             wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
+        except WikiPage.DoesNotExist:
             wikipage = None
 
-        form = forms.WikiPageEditForm(request.POST, instance=wikipage)
+        form = WikiPageEditForm(request.POST, instance=wikipage)
         if form.is_valid():
             wikipage_new = form.save(commit=False)
 
             if wikipage is not None:
-                old_wikipage = models.WikiPage.objects.get(pk=wikipage.pk)
-                history_entry = models.WikiPageHistory(
+                old_wikipage = WikiPage.objects.get(pk=wikipage.pk)
+                history_entry = WikiPageHistory(
                     wikipage = old_wikipage,
                     content = old_wikipage.content,
                     owner = old_wikipage.owner,
@@ -82,7 +89,7 @@ class WikiPageEditView(GenericView):
                 history_entry.save()
 
             if not wikipage_new.slug:
-                wikipage_new.slug = models.slugify_uniquely(wslug, wikipage_new.__class__)
+                wikipage_new.slug = slugify_uniquely(wslug, wikipage_new.__class__)
 
             if not wikipage_new.project_id:
                 wikipage_new.project = project
@@ -98,37 +105,13 @@ class WikiPageEditView(GenericView):
         return self.render_to_response(self.template_path, context)
 
 
-class WikiPageHistory(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page-history.html'
-
-    @login_required
-    def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', 'view'),
-        ])
-
-        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
-
-        context = {
-            'entries': wikipage.history_entries.order_by('created_date'),
-            'wikipage': wikipage,
-            'project': project,
-        }
-
-        return self.render_to_response(self.template_path, context)
-
-
 class WikiPageHistoryView(GenericView):
     menu = ['wiki']
     template_path = 'wiki-page-history-view.html'
 
     @login_required
     def get(self, request, pslug, wslug, hpk):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -150,7 +133,7 @@ class WikipageDeleteView(GenericView):
     template_path = 'wiki-page-delete.html'
 
     def get_context(self):
-        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+        project = get_object_or_404(Project, slug=self.kwargs['pslug'])
 
         self.check_role(self.request.user, project, [
             ('project', 'view'),

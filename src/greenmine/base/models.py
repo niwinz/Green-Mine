@@ -67,4 +67,4 @@ class Role(models.Model):
     document_delete = models.BooleanField(default=True)
 
 
-#from . import sigdispatch
+from . import sigdispatch

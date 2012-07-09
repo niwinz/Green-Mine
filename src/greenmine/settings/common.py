@@ -186,7 +186,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ROOT_URLCONF = 'greenmine.urls'
 
 TEMPLATE_DIRS = [
-    #os.path.join(project_root, "templates"),
+    os.path.join(PROJECT_ROOT, "templates"),
 ]
 
 INSTALLED_APPS = [
@@ -200,12 +200,15 @@ INSTALLED_APPS = [
     'greenmine.base',
     'greenmine.scrum',
     'greenmine.wiki',
+    'greenmine.documents',
     'greenmine.taggit',
+    'greenmine.questions',
 
     'django_gravatar',
     'rawinclude',
     'greenqueue',
     'south',
+    'superview',
 ]
 
 WSGI_APPLICATION = 'greenmine.wsgi.application'
@@ -287,7 +290,7 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'greenmine.Profile'
+AUTH_PROFILE_MODULE = 'base.Profile'
 FORMAT_MODULE_PATH = 'greenmine.core.formats'
 DATE_INPUT_FORMATS = (
     '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',

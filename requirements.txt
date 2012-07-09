@@ -1,4 +1,4 @@
-django-superview>=0.2
+django>=1.4
 python-dateutil==1.5
 py-bcrypt>=0.2
 lxml>=2.3.3
@@ -13,3 +13,4 @@ pygments>=1.5
 git+git://github.com/niwibe/django-greenqueue.git
 south>=0.7.5
 pytz
+git+git://github.com/kaleidos/django-superview.git

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load wiki_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Wiki" %}{% endblock %}

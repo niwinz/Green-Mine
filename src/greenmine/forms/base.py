@@ -10,6 +10,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
+from greenmine.questions.models import *
 from greenmine.wiki.widgets import WikiWidget
 from greenmine.base.models import *
 from greenmine.scrum.models import *
@@ -286,27 +287,6 @@ class UserStoryFormInline(forms.ModelForm):
             'tested', 'finish_date', 'milestone')
 
 
-class QuestionCreateForm(forms.ModelForm):
-    class Meta:
-        model = Question
-        exclude = ('project', 'owner', 'slug')
-
-    def __init__(self, *args, **kwargs):
-        project = kwargs.pop('project')
-        super(QuestionCreateForm, self).__init__(*args, **kwargs)
-
-        participants = set([project.owner.pk])
-        participants.update([x.pk for x in project.participants.only('pk').all()])
-
-        self.fields['assigned_to'].queryset = User.objects.filter(pk__in=participants)
-
-
-class QuestionResponseForm(forms.ModelForm):
-    class Meta:
-        model = QuestionResponse
-        exclude = ('owner', 'question', 'modified_date',)
-
-
 class CommentForm(forms.Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
@@ -338,9 +318,3 @@ class TaskForm(forms.ModelForm):
             self._errors['user_story'] = self.error_class([_(u"You need select one milestone or user story")])
 
         return cleaned_data
-
-
-class WikiPageEditForm(forms.ModelForm):
-    class Meta:
-        model = WikiPage
-        fields = ('content',)

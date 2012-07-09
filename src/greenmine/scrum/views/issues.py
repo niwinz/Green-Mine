@@ -13,12 +13,12 @@ from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
 
 from datetime import timedelta
-from greenmine import models
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
 
-from greenmine.forms.issues import IssueFilterForm, IssueCreateForm
+from greenmine.scrum.forms.issues import IssueFilterForm, IssueCreateForm
 from greenmine.forms.base import CommentForm
+from greenmine.scrum.models import *
 
 
 class IssueList(GenericView):

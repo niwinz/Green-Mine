@@ -4,7 +4,7 @@ class WikiField(models.TextField):
     __metaclass__ = models.SubfieldBase
 
     def formfield(self, **kwargs):
-        from greenmine.forms.base import WikiFormField
+        from greenmine.wiki.forms import WikiFormField
         # This is a fairly standard way to set up some defaults
         # while letting the caller override them.
         defaults = {'form_class': WikiFormField}
