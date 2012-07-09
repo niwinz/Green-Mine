@@ -1,4 +1,4 @@
-from greenmine.base.utils.slugify import slugify_uniquely as slugify
+from greenmine.core.utils.slug import slugify_uniquely as slugify
 
 class WikiPageView(GenericView):
     menu = ['wiki']
