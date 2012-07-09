@@ -24,7 +24,7 @@
         <div class="form-field">
             <span class="label">{% trans "Priority" %}</span>
             <span>{{ user_story.get_priority_display }}</span>
-        </div> 
+        </div>
         <div class="form-field">
             <span class="label">{% trans "Story points" %}</span>
             <span>{{ user_story.get_points_display }}</span>
@@ -42,6 +42,13 @@
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
             <span>{{ user_story.finish_date|date:"DATE_FORMAT" }}</span>
+        </div>
+        {% endif %}
+
+        {% if user_story.tags %}
+        <div class="form-field">
+            <span class="label">{% trans "Tags" %}</span>
+            <span>{{ user_story.tags.all }}</span>
         </div>
         {% endif %}
 
@@ -106,7 +113,7 @@
         {% endwith %}
 
         <div class="form-field width100" style="min-height: 30px">
-            <a href="{{ user_story.get_task_create_url }}?next={{ current_url }}" 
+            <a href="{{ user_story.get_task_create_url }}?next={{ current_url }}"
                 class="btn01 float-right">{% trans "Create task" %}</a>
         </div>
     </div>

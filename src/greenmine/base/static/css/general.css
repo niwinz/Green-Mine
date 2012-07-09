@@ -28,7 +28,7 @@ legend{font-weight:bold;}
 fieldset{padding: 20px;}
 .fsborder{border: 1px solid #EFEFEF;}
 .btn01{
-    background-color:#458745; 
+    background-color:#458745;
     padding: 7px 15px; font-size: 15px; color: #FFF; font-weight:bold; text-decoration: none;
     cursor: pointer; margin-right: 5px; border-radius: 8px; border: 0; line-height: 20px; float: left;
     margin-top: 2px;
@@ -40,10 +40,10 @@ label.error{color: red;}
 label, span.label{font-size: 15px; font-weight: bold; display:block; width:100%;}
 
 form input[type="text"], form input[type="password"], form textarea, form input[type="file"]{
-    width: 284px; 
-    clear: left; 
+    width: 284px;
+    clear: left;
     display: block;
-    padding: 2px; 
+    padding: 2px;
     font-size: 14px;
     height: 24px;
 }
@@ -64,11 +64,11 @@ ul.list {
     padding-left: 10px;
 }
 #wrapper{
-    min-width:980px; 
+    min-width:980px;
     width:90%;
-    background-color:#FFF; 
-    padding: 10px; 
-    margin: 10px auto 0 auto; 
+    background-color:#FFF;
+    padding: 10px;
+    margin: 10px auto 0 auto;
     overflow: hidden;
     border: 1px solid #ddd;
     border-radius:2px;
@@ -90,7 +90,7 @@ div.main-menu ul.menu-item {
 div.main-menu ul.menu-item li {
     display: inline;
 }
-div.main-menu ul.menu-item li a { 
+div.main-menu ul.menu-item li a {
     text-decoration: none;
 }
 
@@ -144,20 +144,20 @@ div.main-menu ul.right-menu li {
 .pagination{margin-top: 20px;}
 .pagination li{display: inline; margin-right: 5px;}
 .pagination .selected a{color: #000;}
-#user-project{width:100%; float: left; margin: 20px 0;} 
+#user-project{width:100%; float: left; margin: 20px 0;}
 #user-project .table01{max-height: 600px; overflow: auto; display:block;}
 #user-project .users-added{width: 515px; float: left;}
 #user-project .users-roles{padding-left: 20px; width: 390px; float: left;}
 #user-project fieldset{padding: 20px; margin-bottom: 15px;}
 .messages-container ul.messages {
-    padding: 10px 0; 
-    margin: 10px 0; 
+    padding: 10px 0;
+    margin: 10px 0;
     background-color: #EFEFEF;
     border:1px solid #eee;
 }
 .messages-container ul.messages li {
-    font-weight: bold; 
-    color: #000; 
+    font-weight: bold;
+    color: #000;
     margin-left: 10px;
 }
 .messages-container ul.messages li.info{color: #458745;}
@@ -253,12 +253,12 @@ div.main-menu ul.right-menu li {
     width: 60px;
 }
 
-#dashboard .left-block .unassigned-us .un-us-item .row.title { 
+#dashboard .left-block .unassigned-us .un-us-item .row.title {
     min-width: 400px;
     width: 65%;
 }
 
-#dashboard .left-block .unassigned-us .un-us-item .row.type { 
+#dashboard .left-block .unassigned-us .un-us-item .row.type {
     width: 70px;
 }
 #dashboard .left-block .unassigned-us .un-us-item .row.title span.category {
@@ -267,6 +267,7 @@ div.main-menu ul.right-menu li {
     display: inline-block;
     padding: 2px 5px;
     border-radius: 2px;
+    background: #000000;
 }
 
 #dashboard .left-block .unassigned-us .un-us-item .row.priority {
@@ -314,8 +315,8 @@ div.main-menu ul.right-menu li {
     outline: 1px solid #ddd;
 }
 
-#dashboard .right-block .milestone-item .milestone-title { 
-    overflow: hidden; 
+#dashboard .right-block .milestone-item .milestone-title {
+    overflow: hidden;
     border-bottom: 1px dotted white;
     margin-bottom: 6px;
 }
@@ -417,12 +418,12 @@ div.fieldset div.field-inline {
 /* base */
 
 #head{
-    line-height: 35px; 
-    background-color: #458745; 
-    float: left; 
-    padding: 0 25px; 
-    position: absolute; 
-    top: 0; 
+    line-height: 35px;
+    background-color: #458745;
+    float: left;
+    padding: 0 25px;
+    position: absolute;
+    top: 0;
     left: 0;
 }
 #head h1 {
@@ -468,7 +469,7 @@ div.fieldset div.field-inline {
     padding: 6px;
 }
 
-.user-story-task-item .box-row { 
+.user-story-task-item .box-row {
     float: left;
     min-width: 300px;
 }
@@ -536,7 +537,7 @@ ul.errorlist li {
     font-family: monospace;
 }
 
-.show-module .us-tasks .us-task-item .row.title { 
+.show-module .us-tasks .us-task-item .row.title {
     width: 380px;
 }
 
@@ -585,7 +586,7 @@ ul.errorlist li {
 .tooltip{background-color: #000; border-radius: 4px; padding: 10px 20px;}
 .tooltip p{color: #FFF;}
 .tooltip-backlog a{color: #FFF; font-weight: bold;}
-.select-enable{cursor: pointer; opacity: 0.5;} 
+.select-enable{cursor: pointer; opacity: 0.5;}
 .select-enable:hover{opacity: 1;}
 #lightbox-backlog{background-color: #458745; padding: 8px; border-radius: 2px;}
 #lightbox-backlog ul{background-color: #FFF; padding: 8px; border-radius: 2px;}
@@ -594,7 +595,7 @@ ul.errorlist li {
 #overlay {display: none; left: 0; position: absolute; top: 0; z-index: 90;}
 
 .form-field.category-field div.sub-item-field {
-    float: left; 
+    float: left;
     display: inline;
 }
 .us-form-inline{
@@ -606,8 +607,8 @@ ul.errorlist li {
     margin-bottom: 15px;
 }
 .us-form-inline div.form-field{
-    float: left; 
-    width: 100%; 
+    float: left;
+    width: 100%;
     margin-bottom: 13px;
 }
 
