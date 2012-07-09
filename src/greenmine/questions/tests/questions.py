@@ -6,7 +6,9 @@ from django.core.urlresolvers import reverse
 import json
 
 from django.contrib.auth.models import User
-from ..models import *
+from greenmine.base.models import *
+from greenmine.scrum.models import *
+from greenmine.questions.models import *
 
 
 class QuestionsRelatedTests(TestCase):
