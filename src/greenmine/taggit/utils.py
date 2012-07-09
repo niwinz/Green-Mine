@@ -3,6 +3,18 @@ from __future__ import absolute_import
 
 from django.utils.encoding import force_unicode
 from django.utils.functional import wraps
+from django.db.models import Count
+
+from .models import TaggedItem
+
+
+def get_tags_for_queryset(queryset, tags_attribute='tags'):
+    """
+    Given a queryset and a taggint atributte returns a list with the form
+    [{'count': number_of_tagged_items, 'tags_attribute': 'id_of the tag'}]
+    [{'count': 3, 'tags': 1}, {'count': 2, 'tags': 2}, {'count': 1, 'tags': 3}]
+    """
+    return queryset.values(tags_attribute).annotate(count=Count(tags_attribute)).order_by('-count')
 
 
 def parse_tags(tagstring):

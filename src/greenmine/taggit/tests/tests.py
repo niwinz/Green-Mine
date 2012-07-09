@@ -17,7 +17,7 @@ from .models import (Food, Pet, HousePet, DirectFood, DirectPet,
     DirectHousePet, TaggedPet, CustomPKFood, CustomPKPet, CustomPKHousePet,
     TaggedCustomPKPet, OfficialFood, OfficialPet, OfficialHousePet,
     OfficialThroughModel, OfficialTag, Photo, Movie, Article)
-from ..utils import parse_tags, edit_string_for_tags
+from ..utils import parse_tags, edit_string_for_tags, get_tags_for_queryset
 
 
 class BaseTaggingTest(object):
@@ -60,6 +60,7 @@ class BaseTaggingTest(object):
 class BaseTaggingTestCase(TestCase, BaseTaggingTest):
     pass
 
+
 class BaseTaggingTransactionTestCase(TransactionTestCase, BaseTaggingTest):
     pass
 
@@ -90,17 +91,21 @@ class TagModelTestCase(BaseTaggingTransactionTestCase):
             "category-awesome-1"
         ], attr="slug")
 
+
 class TagModelDirectTestCase(TagModelTestCase):
     food_model = DirectFood
     tag_model = Tag
+
 
 class TagModelCustomPKTestCase(TagModelTestCase):
     food_model = CustomPKFood
     tag_model = Tag
 
+
 class TagModelOfficialTestCase(TagModelTestCase):
     food_model = OfficialFood
     tag_model = OfficialTag
+
 
 class TaggableManagerTestCase(BaseTaggingTestCase):
     food_model = Food
@@ -297,6 +302,7 @@ class TaggableManagerDirectTestCase(TaggableManagerTestCase):
     housepet_model = DirectHousePet
     taggeditem_model = TaggedPet
 
+
 class TaggableManagerCustomPKTestCase(TaggableManagerTestCase):
     food_model = CustomPKFood
     pet_model = CustomPKPet
@@ -307,6 +313,7 @@ class TaggableManagerCustomPKTestCase(TaggableManagerTestCase):
         # TODO with a charfield pk, pk is never None, so taggit has no way to
         # tell if the instance is saved or not
         pass
+
 
 class TaggableManagerOfficialTestCase(TaggableManagerTestCase):
     food_model = OfficialFood
@@ -380,13 +387,16 @@ class TaggableFormTestCase(BaseTaggingTestCase):
         ff = tm.formfield()
         self.assertRaises(ValidationError, ff.clean, "")
 
+
 class TaggableFormDirectTestCase(TaggableFormTestCase):
     form_class = DirectFoodForm
     food_model = DirectFood
 
+
 class TaggableFormCustomPKTestCase(TaggableFormTestCase):
     form_class = CustomPKFoodForm
     food_model = CustomPKFood
+
 
 class TaggableFormOfficialTestCase(TaggableFormTestCase):
     form_class = OfficialFoodForm
@@ -476,3 +486,30 @@ class TagStringParseTestCase(UnitTestCase):
         self.assertEqual(edit_string_for_tags([plain, spaces, comma]), u'"com,ma", "spa ces", plain')
         self.assertEqual(edit_string_for_tags([plain, comma]), u'"com,ma", plain')
         self.assertEqual(edit_string_for_tags([comma, spaces]), u'"com,ma", "spa ces"')
+
+
+class QuerySetTestCase(BaseTaggingTestCase):
+    food_model = Food
+    pet_model = Pet
+    housepet_model = HousePet
+    taggeditem_model = TaggedItem
+    tag_model = Tag
+
+    def test_add_tag(self):
+        apple = self.food_model.objects.create(name="apple")
+        apple.tags.add('green', 'red')
+
+        pear = self.food_model.objects.create(name="pear")
+        pear.tags.add('green', 'black')
+
+        melon = self.food_model.objects.create(name="melon")
+        melon.tags.add('green')
+
+        tomato = self.food_model.objects.create(name="tomato")
+        tomato.tags.add('red')
+
+        tags_for_queryset = get_tags_for_queryset(self.food_model.objects.all())
+        valid_response = [{'count': 3, 'tags': 1}, {'count': 2, 'tags': 2}, {'count': 1, 'tags': 3}]
+        for i in range(len(valid_response)):
+            self.assertEqual(valid_response[i]['count'], tags_for_queryset[i]['count'])
+            self.assertEqual(valid_response[i]['tags'], tags_for_queryset[i]['tags'])
