@@ -22,8 +22,8 @@
         </div>
     </div>
     <div class="form-field">
-        <label>{{ form.category.label }}</label>
-        {{ form.category }}
+        <label>{{ form.tags.label }}</label>
+        {{ form.tags }}
     </div>
     <div class="form-field">
         <label>{{ form.tested.label }}</label>
@@ -33,7 +33,7 @@
         <label>{{ form.finished_date.label }}</label>
         {{ form.finished_date }}
     </div>
-    
+
     <input type="submit" class="btn01 user-story-inline-submit" value="{% trans "Save" %}" />
     <a href="" class="btn01 user-story-inline-cancel">{% trans "Cancel" %}</a>
 </form>

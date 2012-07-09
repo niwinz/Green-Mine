@@ -5,12 +5,20 @@
 <div class="un-us-item" draggable="true" id="un-us-item-{{ us.id }}" ref="{{ us.ref }}"
     assignurl="{{ us.get_assign_url }}" unassignurl="{{ us.get_unassign_url }}">
     <div class="row title">
-        {% if us.category %}
-        {% tag_color us.category as result_color %}
-        <span class="category" style="background-color: {{ result_color }}">
-            {{ us.category|capfirst }}
-        </span>
-        {% endif %}
+
+        {% with us.tags.all as us_tags%}
+
+            {% if us_tags %}
+            {{ us_tags }}
+            {% comment %}
+            {% tag_color us.category as result_color %}
+            <span class="category" style="background-color: {{ result_color }}">
+                {{ us.category|capfirst }}
+            </span>
+            {% endcomment %}
+            {% endif %}
+        {% endwith %}
+
         <span><a href="{{ us.get_view_url }}">{{ us.subject|truncatechars:85 }}</a></span>
     </div>
     <div class="row points">

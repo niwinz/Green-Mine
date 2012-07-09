@@ -15,6 +15,7 @@ from greenmine.core.utils.slug import slugify_uniquely, ref_uniquely
 from greenmine.core.fields import DictField, ListField
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
+from greenmine.taggit.managers import TaggableManager
 
 from .choices import *
 
@@ -70,6 +71,7 @@ class Project(models.Model):
 
     meta_category_list = ListField(null=True, default=[], editable=False)
     meta_category_color = DictField(null=True, default={}, editable=False)
+
     markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
 
     extras = models.OneToOneField("ProjectExtras", related_name="project", null=True, default=None)
@@ -406,7 +408,7 @@ class UserStory(models.Model):
     status = models.CharField(max_length=50,
         choices=US_STATUS_CHOICES, db_index=True, default="open")
 
-    category = models.CharField(max_length=200, null=True, blank=True)
+    tags = TaggableManager()
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
