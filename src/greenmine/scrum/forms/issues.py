@@ -9,7 +9,7 @@ class IssueFilterForm(forms.Form):
     status = forms.ChoiceField(choices=TASK_STATUS_CHOICES, required=False)
 
     milestone = forms.ModelChoiceField(
-        queryset = models.Milestone.objects.none(),
+        queryset = Milestone.objects.none(),
         empty_label = None
     )
 
@@ -31,7 +31,7 @@ class IssueCreateForm(forms.ModelForm):
             .milestones.order_by('-created_date')
 
     class Meta:
-        model = models.Task
+        model = Task
         fields = (
             'milestone',
             'priority',
