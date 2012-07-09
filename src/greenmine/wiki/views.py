@@ -1,4 +1,4 @@
-from greenmine.core.utils.slug import slugify_uniquely as slugify
+from greenmine.core.utils.slug import slugify_uniquely
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required, staff_required
 from django.shortcuts import get_object_or_404
