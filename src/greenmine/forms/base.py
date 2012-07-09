@@ -11,24 +11,9 @@ from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
 from greenmine.models import *
-from greenmine.core.widgets import WikiWidget
+from wiki.widgets import WikiWidget
 
 import json
-
-class WikiFormField(DjangoCharField):
-    def __init__(self, *args, **kwargs):
-        self.widget = WikiWidget
-        super(WikiFormField, self).__init__(*args, **kwargs)
-
-    def widget_attrs(self, widget):
-        attrs = super(WikiFormField, self).widget_attrs(widget)
-        if "class" not in attrs:
-            attrs['class'] = ''
-        current_clases = attrs['class'].split()
-        current_clases.append('wiki_field')
-        attrs['class'] = ' '.join(current_clases)
-        return attrs
-
 
 class CharField(DjangoCharField):
     """ jQuery-validator friendly charfield """

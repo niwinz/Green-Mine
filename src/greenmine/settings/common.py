@@ -199,6 +199,8 @@ INSTALLED_APPS = [
     'rawinclude',
     'greenmine',
     'greenqueue',
+    'greenmine.wiki',
+    'greenmine.scrum',
     'south',
 ]
 
