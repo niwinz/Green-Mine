@@ -198,6 +198,7 @@ INSTALLED_APPS = [
     'django_gravatar',
     'rawinclude',
     'greenmine',
+    'greenmine.taggit',
     'greenqueue',
     'south',
 ]
