@@ -6,119 +6,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
 from django.utils import timezone
-from django.core.files.storage import FileSystemStorage
-from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
+from greenmine.core.utils.slug import slugify_uniquely, ref_uniquely
 from greenmine.core.fields import DictField, ListField
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
 
+from .choices import *
+
 import datetime
 import re
-
-ORG_ROLE_CHOICES = (
-    ('owner', _(u'Owner')),
-    ('developer', _(u'Developer')),
-)
-
-MARKUP_TYPE = (
-    ('md', _(u'Markdown')),
-    ('rst', _('Restructured Text')),
-)
-
-US_STATUS_CHOICES = (
-    ('open', _(u'New')),
-    ('progress', _(u'In progress')),
-    ('completed', _(u'Ready for test')),
-    ('closed', _(u'Closed')),
-)
-
-TASK_PRIORITY_CHOICES = (
-    (1, _(u'Low')),
-    (3, _(u'Normal')),
-    (5, _(u'High')),
-)
-
-
-TASK_TYPE_CHOICES = (
-    ('bug', _(u'Bug')),
-    ('task', _(u'Task')),
-)
-
-TASK_STATUS_CHOICES = US_STATUS_CHOICES + (
-    ('workaround', _(u"Workaround")),
-    ('needinfo', _(u"Needs info")),
-    ('posponed', _(u"Posponed")),
-)
-
-POINTS_CHOICES = (
-    (-1, u'?'),
-    (0, u'0'),
-    (-2, u'1/2'),
-    (1, u'1'),
-    (2, u'2'),
-    (3, u'3'),
-    (5, u'5'),
-    (8, u'8'),
-    (10, u'10'),
-    (15, u'15'),
-    (20, u'20'),
-    (40, u'40'),
-)
-
-
-TASK_COMMENT = 1
-TASK_STATUS_CHANGE = 2
-TASK_PRIORITY_CHANGE = 3
-TASK_ASSIGNATION_CHANGE = 4
-
-TASK_CHANGE_CHOICES = (
-    (TASK_COMMENT, _(u"Task comment")),
-    (TASK_STATUS_CHANGE, _(u"Task status change")),
-    (TASK_PRIORITY_CHANGE, _(u"Task prioriy change")),
-    (TASK_ASSIGNATION_CHANGE, _(u"Task assignation change")),
-)
-
-def slugify_uniquely(value, model, slugfield="slug"):
-    """
-    Returns a slug on a name which is unique within a model's table
-    self.slug = SlugifyUniquely(self.name, self.__class__)
-    """
-    suffix = 0
-    potential = base = slugify(value)
-    if len(potential) == 0:
-        potential = 'null'
-    while True:
-        if suffix:
-            potential = "-".join([base, str(suffix)])
-        if not model.objects.filter(**{slugfield: potential}).count():
-            return potential
-        suffix += 1
-
-
-def ref_uniquely(project, model, field='ref'):
-    """
-    Returns a unique reference code based on base64 and time.
-    """
-
-    import time
-    from django.utils import baseconv
-
-    # this prevents concurrent and inconsistent references.
-    time.sleep(0.1)
-
-    new_timestamp = lambda: int("".join(str(time.time()).split(".")))
-    while True:
-        potential = baseconv.base62.encode(new_timestamp())
-        params = {field: potential, 'project': project}
-        if not model.objects.filter(**params).exists():
-            return potential
-
-        time.sleep(0.0002)
 
 
 class ProjectManager(models.Manager):
