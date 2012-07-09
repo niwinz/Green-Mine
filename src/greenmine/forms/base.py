@@ -47,16 +47,6 @@ class CharField(DjangoCharField):
         return attrs
 
 
-class DocumentForm(forms.Form):
-    title = forms.CharField(max_length=200)
-    document = forms.FileField(required=True)
-
-    def __init__(self, *args, **kwargs):
-        super(DocumentForm, self).__init__(*args, **kwargs)
-        self.fields['title'].widget.attrs['required'] = 'true'
-        self.fields['document'].widget.attrs['required'] = 'true'
-
-
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=200, min_length=4, label=_(u'Username'))
     password = forms.CharField(max_length=200, min_length=4, label=_(u'Password'), widget=forms.PasswordInput)
@@ -209,112 +199,9 @@ class UserEditForm(ProfileForm):
                   'is_active', 'is_staff', 'is_superuser')
 
 
-class ProjectForm(forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = ('name', 'description')
-
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        if self.instance is None:
-            projectqs = Project.objects.filter(name=name)
-
-            if projectqs.count() > 0:
-                raise forms.ValidationError("Project name is already taken.")
-
-        return name
-
-
-class ProjectPersonalSettingsForm(forms.ModelForm):
-    class Meta:
-        model = ProjectUserRole
-        #exclude = ('project', 'user', 'role')
-        fields = ('mail_milestone_created', 'mail_task_created', 'mail_task_assigned',
-            'mail_userstory_created',)
-
-
-class ProjectGeneralSettingsForm(forms.Form):
-    colors_hidden = forms.CharField(max_length=5000, required=False,
-        widget=forms.HiddenInput)
-
-    markup = forms.ChoiceField(required=True,  choices=MARKUP_TYPE)
-
-    sprints = forms.IntegerField(required=False)
-    show_burndown = forms.BooleanField(required=False)
-    show_burnup = forms.BooleanField(required=False)
-    show_sprint_burndown = forms.BooleanField(required=False)
-    total_story_points = forms.FloatField(required=False)
-
-
-    def _validate_colors(self, data):
-        return True
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-
-        self.colors_data = {}
-        if 'colors_hidden' in cleaned_data and cleaned_data['colors_hidden'].strip():
-            self.colors_data = json.loads(cleaned_data['colors_hidden'])
-            if not self._validate_colors(self.colors_data):
-                self._errors['colors_hidden'] = self.error_class([_(u"Invalid data")])
-                del cleaned_data['colors_hidden']
-
-        return cleaned_data
-
-
-class MilestoneForm(forms.ModelForm):
-    class Meta:
-        model = Milestone
-        fields = ('name', 'estimated_start', 'estimated_finish', 'disponibility')
-
-    def __init__(self, *args, **kwargs):
-        super(MilestoneForm, self).__init__(*args, **kwargs)
-        self.fields['estimated_finish'].widget.attrs.update({'autocomplete':'off'})
-        self.fields['estimated_start'].widget.attrs.update({'autocomplete':'off'})
-
-
-class UserStoryForm(forms.ModelForm):
-    class Meta:
-        model = UserStory
-        fields = ('priority', 'points', 'category', 'subject', 'description',
-                'finish_date', 'client_requirement', 'team_requirement')
-
-
-class UserStoryFormInline(forms.ModelForm):
-    class Meta:
-        model = UserStory
-        fields = ('priority', 'points', 'status', 'category',
-            'tested', 'finish_date', 'milestone')
-
-
 class CommentForm(forms.Form):
     description = forms.CharField(max_length=2000, widget=forms.Textarea, required=True)
     attached_file = forms.FileField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(CommentForm, self).__init__(*args, **kwargs)
-
-
-class TaskForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.project = kwargs.pop('project', None)
-
-        super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['user_story'].queryset = self.project.user_stories.order_by('subject')
-        self.fields['assigned_to'].queryset = self.project\
-            .all_participants.order_by('first_name', 'last_name')
-        self.fields['milestone'].queryset = self.project.milestones.order_by('-created_date')
-
-    class Meta:
-        fields = ('status', 'priority', 'subject','milestone',
-            'description', 'assigned_to','type', 'user_story')
-        model = Task
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-
-        if "milestone" not in cleaned_data and "user_story" not in cleaned_data:
-            self._errors['milestone'] = self.error_class([_(u"You need select one milestone or user story")])
-            self._errors['user_story'] = self.error_class([_(u"You need select one milestone or user story")])
-
-        return cleaned_data
