@@ -19,11 +19,11 @@ from greenmine.scrum.views import issues
 from greenmine.scrum.views import tasks
 
 
-api_urlpatterns = patterns('',
-    url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
-    url(r'^i18n/lang/$', api.I18NLangChangeApiView.as_view(),
-        name='i18n-setlang'),
-)
+#api_urlpatterns = patterns('',
+#    url(r'^autocomplete/user/list/$', api.UserListApiView.as_view(), name='user-list'),
+#    url(r'^i18n/lang/$', api.I18NLangChangeApiView.as_view(),
+#        name='i18n-setlang'),
+#)
 
 main_patterns = patterns('',
     url(r'^$', main.HomeView.as_view(), name='projects'),
@@ -176,7 +176,7 @@ urlpatterns = patterns('',
     url(r"^(?P<pslug>[\w\d\-]+)/tasks/", include(tasks_patterns)),
 
     url(r"^", include(main_patterns)),
-    url(r"^api/", include(api_urlpatterns, namespace='api')),
+    #url(r"^api/", include(api_urlpatterns, namespace='api')),
 
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jsi18n'),
 )
