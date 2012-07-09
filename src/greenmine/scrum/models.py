@@ -218,7 +218,7 @@ class Project(models.Model):
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project", related_name="user_roles")
     user = models.ForeignKey("auth.User", related_name="user_roles")
-    role = models.ForeignKey("base.Role", related_name="user_roles")
+    role = models.ForeignKey("profile.Role", related_name="user_roles")
 
     mail_milestone_created = models.BooleanField(default=True)
     mail_milestone_modified = models.BooleanField(default=False)
