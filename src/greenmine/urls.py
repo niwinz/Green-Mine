@@ -9,10 +9,10 @@ js_info_dict = {
     'packages': ('greenmine',),
 }
 
-from greenmine.views import api
+#from greenmine.views import api
 from greenmine.base.views import main
 from greenmine.base.views import config
-from greenmine.base.views import export
+#from greenmine.base.views import export
 from greenmine.scrum.views import dashboard
 from greenmine.scrum.views import backlog
 from greenmine.scrum.views import issues
@@ -109,9 +109,9 @@ project_settings_patterns = patterns('',
     url(r'^edit/$', main.ProjectEditView.as_view(), name="project-edit"),
 
     # export (not finished)
-    url(r'^export/$', export.ProjectExportView.as_view(), name="project-export-settings"),
-    url(r'^export/now/$', export.ProjectExportNow.as_view(), name="project-export-settings-now"),
-    url(r'^export/rehash/', export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
+    #url(r'^export/$', export.ProjectExportView.as_view(), name="project-export-settings"),
+    #url(r'^export/now/$', export.ProjectExportNow.as_view(), name="project-export-settings-now"),
+    #url(r'^export/rehash/', export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
 )
 
 

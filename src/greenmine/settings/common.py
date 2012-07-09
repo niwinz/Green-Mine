@@ -44,7 +44,7 @@ DEFAULT_TASK_PARSER_RE = "^\s*Task\:(.+)$"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'database.sqlite'), # Or path to database file if using sqlite3.
+        'NAME': os.path.join(OUT_PROJECT_ROOT, 'database.sqlite'), # Or path to database file if using sqlite3.
         'OPTIONS': {'timeout': 20}
     }
 }
@@ -199,6 +199,7 @@ INSTALLED_APPS = [
 
     'greenmine.base',
     'greenmine.scrum',
+    'greenmine.wiki',
     'greenmine.taggit',
 
     'django_gravatar',

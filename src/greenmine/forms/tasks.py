@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from greenmine import models
+from greenmine.base.models import *
+from greenmine.scrum.models import *
 
 class TaskCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

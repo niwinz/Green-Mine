@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required, staff_required
 from greenmine import models
+from greenmine.wiki import models as wiki_models
 
 import datetime
 import subprocess
@@ -268,7 +269,7 @@ class ProjectExportNow(GenericView):
             with BinaryFile(filepath) as f:
                 pickle.dump(obj, f, -1)
 
-        for fattached in models.WikiPageAttachment.objects\
+        for fattached in wiki_models.WikiPageAttachment.objects\
                         .filter(wikipage__in=project.wiki_pages.all()):
 
             obj = self._clean_copy(fattached.__dict__)

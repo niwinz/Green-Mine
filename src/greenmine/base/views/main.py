@@ -24,7 +24,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required, staff_required
 
-from greenmine import models
+# Temporal imports
+from greenmine.base.models import *
+from greenmine.scrum.models import *
+
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
@@ -76,7 +79,7 @@ class RegisterView(GenericView):
 class AccountActivation(GenericView):
     def get(self, request, token):
         try:
-            profile = models.Profile.objects.get(token=token)
+            profile = Profile.objects.get(token=token)
             profile.user.is_active = True
             profile.token = None
 
@@ -86,7 +89,7 @@ class AccountActivation(GenericView):
             messages.info(request, _(u"User %(username)s is now activated!") % \
                 {'username': profile.user.username})
 
-        except models.Profile.DoesNotExist:
+        except Profile.DoesNotExist:
             messages.error(request, _(u"Invalid token"))
 
         return self.render_redirect(reverse("login"))
@@ -211,7 +214,7 @@ class PasswordRecoveryView(GenericView):
     def post(self, request, token):
         form = forms.PasswordRecoveryForm(request.POST)
         if form.is_valid():
-            profile_queryset = models.Profile.objects.filter(token=token)
+            profile_queryset = Profile.objects.filter(token=token)
             if not profile_queryset:
                 messages.error(request, _(u'Token has expired, try again'))
                 return self.render_redirect(reverse('login'))
@@ -278,7 +281,7 @@ class HomeView(GenericView):
             page = 1
 
         if request.user.is_staff:
-            projects = models.Project.objects.all()
+            projects = Project.objects.all()
         else:
             projects = request.user.projects.all() | \
                 request.user.projects_participant.all()
@@ -311,8 +314,8 @@ class UserRoleMixIn(object):
         invalid_role = False
         for role in user_role.values():
             try:
-                models.Role.objects.get(pk=role)
-            except models.Role.DoesNotExist:
+                Role.objects.get(pk=role)
+            except Role.DoesNotExist:
                 invalid_role = True
                 break
 
@@ -326,7 +329,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
     @login_required
     def get(self, request):
         form = forms.ProjectForm()
-        context = {'form':form, 'roles': models.Role.objects.all()}
+        context = {'form':form, 'roles': Role.objects.all()}
         return self.render_to_response(self.template_name, context)
 
     @login_required
@@ -335,7 +338,7 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
 
         context = {
             'form': form,
-            'roles': models.Role.objects.all(),
+            'roles': Role.objects.all(),
         }
 
         if not form.is_valid():
@@ -357,10 +360,10 @@ class ProjectCreateView(UserRoleMixIn, GenericView):
             project.save()
 
             for userid, role in user_role.iteritems():
-                models.ProjectUserRole.objects.create(
+                ProjectUserRole.objects.create(
                     project = project,
-                    user = models.User.objects.get(pk=userid),
-                    role = models.Role.objects.get(pk=role),
+                    user = User.objects.get(pk=userid),
+                    role = Role.objects.get(pk=role),
                 )
 
         except Exception as e:
@@ -384,7 +387,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         if not self.check_role(request.user, project, [('project',('view', 'edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
@@ -393,14 +396,14 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
         context = {
             'form':form,
-            'roles': models.Role.objects.all(),
+            'roles': Role.objects.all(),
             'project': project
         }
         return self.render_to_response(self.template_name, context)
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         if not self.check_role(request.user, project, [('project', ('view','edit'))], exception=None):
             return self.redirect_referer(_(u"You are not authorized to access here!"))
@@ -409,7 +412,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
         context = {
             'form': form,
-            'roles': models.Role.objects.all(),
+            'roles': Role.objects.all(),
             'project': project,
         }
 
@@ -429,13 +432,13 @@ class ProjectEditView(UserRoleMixIn, GenericView):
                 })
 
             project = form.save()
-            models.ProjectUserRole.objects.filter(project=project).delete()
+            ProjectUserRole.objects.filter(project=project).delete()
 
             for userid, role in user_role.iteritems():
-                models.ProjectUserRole.objects.create(
+                ProjectUserRole.objects.create(
                     project = project,
                     user = User.objects.get(pk=userid),
-                    role = models.Role.objects.get(pk=role)
+                    role = Role.objects.get(pk=role)
                 )
 
         except Exception as e:
@@ -452,7 +455,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 class ProjectDelete(GenericView):
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', ('view', 'edit', 'delete')),
@@ -472,7 +475,7 @@ class MilestoneCreateView(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -489,7 +492,7 @@ class MilestoneCreateView(GenericView):
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -522,7 +525,7 @@ class MilestoneEditView(GenericView):
 
     @login_required
     def get(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
         self.check_role(request.user, project, [
@@ -541,7 +544,7 @@ class MilestoneEditView(GenericView):
 
     @login_required
     def post(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
         self.check_role(request.user, project, [
@@ -569,7 +572,7 @@ class MilestoneEditView(GenericView):
 
 class MilestoneDeleteView(GenericView):
     def post(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
         self.check_role(request.user, project, [
@@ -600,7 +603,7 @@ class UserStoryView(GenericView):
     @login_required
     def get(self, request, pslug, iref):
         """ View US Detail """
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         self.check_role(request.user, project, [
@@ -622,7 +625,7 @@ class UserStoryCreateView(GenericView):
 
     @login_required
     def get(self, request, pslug, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -644,7 +647,7 @@ class UserStoryCreateView(GenericView):
 
     @login_required
     def post(self, request, pslug, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -683,9 +686,9 @@ class UserStoryCreateView(GenericView):
         tasks = []
 
         for text in texts:
-            task = models.Task(
+            task = Task(
                 user_story=user_story,
-                ref = models.ref_uniquely(project, user_story.__class__),
+                ref = ref_uniquely(project, user_story.__class__),
                 description = "",
                 project = project,
                 milestone = user_story.milestone,
@@ -694,7 +697,7 @@ class UserStoryCreateView(GenericView):
             )
             tasks.append(task)
 
-        models.Task.objects.bulk_create(tasks)
+        Task.objects.bulk_create(tasks)
 
         for task in tasks:
             signals.mail_task_created.send(sender=self,
@@ -706,7 +709,7 @@ class UserStoryEdit(GenericView):
 
     @login_required
     def get(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         self.check_role(request.user, project, [
@@ -725,7 +728,7 @@ class UserStoryEdit(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         self.check_role(request.user, project, [
@@ -754,7 +757,7 @@ class UserStoryDeleteView(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 
         self.check_role(request.user, project, [
@@ -776,7 +779,7 @@ class TaskCreateView(GenericView):
 
     @login_required
     def get(self, request, pslug, usref=None, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         if usref is not None and mid is not None:
             return HttpResponseBadRequest()
@@ -808,7 +811,7 @@ class TaskCreateView(GenericView):
 
     @login_required
     def post(self, request, pslug, usref=None, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         if usref is None and mid is None:
             return HttpResponseBadRequest()
@@ -866,7 +869,7 @@ class TaskCreateView(GenericView):
             'task':task,
             'project': project,
             'participants': project.all_participants,
-            'status_list': models.TASK_STATUS_CHOICES,
+            'status_list': TASK_STATUS_CHOICES,
         })
 
         response = {
@@ -890,7 +893,7 @@ class AssignUserStory(GenericView):
         if "mid" not in request.POST:
             return self.render_to_error()
 
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -925,7 +928,7 @@ class UnassignUserStory(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -952,7 +955,7 @@ class ProjectSettings(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         try:
             pur = get_object_or_404(project.user_roles, user=request.user)
         except Http404 as e:
@@ -974,7 +977,7 @@ class ProjectSettings(GenericView):
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         pur = get_object_or_404(project.user_roles, user=request.user)
         form = forms.ProjectPersonalSettingsForm(request.POST, instance=pur)
 
@@ -1003,7 +1006,7 @@ class ProjectGeneralSettings(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         extras = project.get_extras()
 
         self.check_role(request.user, project, [
@@ -1045,7 +1048,7 @@ class ProjectGeneralSettings(GenericView):
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', ('view', 'edit')),
@@ -1078,7 +1081,7 @@ class Documents(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1096,7 +1099,7 @@ class Documents(GenericView):
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1104,7 +1107,7 @@ class Documents(GenericView):
 
         form = forms.DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            document = models.Document.objects.create(
+            document = Document.objects.create(
                 title = form.cleaned_data['title'],
                 owner = request.user,
                 project = project,
@@ -1122,7 +1125,7 @@ class Documents(GenericView):
 class DocumentsDelete(GenericView):
     @login_required
     def post(self, request, pslug, docid):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         document = get_object_or_404(project.documents, pk=docid)
 
         document.delete()
@@ -1134,7 +1137,7 @@ class QuestionsListView(GenericView):
     menu = ['questions']
 
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         questions = project.questions.order_by('-created_date')
 
         self.check_role(request.user, project, [
@@ -1157,7 +1160,7 @@ class QuestionsCreateView(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         form = forms.QuestionCreateForm(project=project)
 
         self.check_role(request.user, project, [
@@ -1174,7 +1177,7 @@ class QuestionsCreateView(GenericView):
 
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         form = forms.QuestionCreateForm(request.POST, project=project)
 
         self.check_role(request.user, project, [
@@ -1207,7 +1210,7 @@ class QuestionsEditView(GenericView):
 
     @login_required
     def get(self, request, pslug, qslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1226,7 +1229,7 @@ class QuestionsEditView(GenericView):
 
     @login_required
     def post(self, request, pslug, qslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1262,7 +1265,7 @@ class QuestionsView(GenericView):
 
     @login_required
     def get(self, request, pslug, qslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1282,7 +1285,7 @@ class QuestionsView(GenericView):
 
     @login_required
     def post(self, request, pslug, qslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1311,7 +1314,7 @@ class QuestionsDeleteView(GenericView):
     template_path = 'questions-delete.html'
 
     def get_context(self):
-        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
+        project = get_object_or_404(Project, slug=self.kwargs['pslug'])
 
         self.check_role(self.request.user, project, [
             ('project', 'view'),
@@ -1467,7 +1470,7 @@ class UsFormInline(GenericView):
 
     @login_required
     def get(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1483,7 +1486,7 @@ class UsFormInline(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -1515,185 +1518,3 @@ class UsFormInline(GenericView):
             return self.render_to_ok(response_data)
 
         return self.render_to_error(form.errors)
-
-
-from django.template.defaultfilters import slugify
-
-class WikiPageView(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page.html'
-
-    @login_required
-    def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', 'view'),
-        ])
-
-        try:
-            wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
-            return self.render_redirect(reverse('wiki-page-edit',
-                args=[project.slug, slugify(wslug)]))
-
-        context = {
-            'project': project,
-            'wikipage': wikipage,
-        }
-        return self.render_to_response(self.template_path, context)
-
-
-class WikiPageEditView(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page-edit.html'
-
-    @login_required
-    def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', ('view', 'create', 'edit')),
-        ])
-
-        try:
-            wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
-            wikipage = None
-
-        form = forms.WikiPageEditForm(instance=wikipage)
-
-        context = {
-            'form': form,
-            'project': project,
-        }
-
-        return self.render_to_response(self.template_path, context)
-
-    @login_required
-    def post(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', ('view', 'create', 'edit')),
-        ])
-
-        try:
-            wikipage = project.wiki_pages.get(slug=slugify(wslug))
-        except models.WikiPage.DoesNotExist:
-            wikipage = None
-
-        form = forms.WikiPageEditForm(request.POST, instance=wikipage)
-        if form.is_valid():
-            wikipage_new = form.save(commit=False)
-
-            if wikipage is not None:
-                old_wikipage = models.WikiPage.objects.get(pk=wikipage.pk)
-                history_entry = models.WikiPageHistory(
-                    wikipage = old_wikipage,
-                    content = old_wikipage.content,
-                    owner = old_wikipage.owner,
-                    created_date = old_wikipage.created_date,
-                )
-                history_entry.save()
-
-            if not wikipage_new.slug:
-                wikipage_new.slug = models.slugify_uniquely(wslug, wikipage_new.__class__)
-
-            if not wikipage_new.project_id:
-                wikipage_new.project = project
-
-            wikipage_new.owner = request.user
-            wikipage_new.save()
-            return self.render_redirect(wikipage_new.get_view_url())
-
-        context = {
-            'form': form,
-            'project': project,
-        }
-        return self.render_to_response(self.template_path, context)
-
-
-class WikiPageHistory(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page-history.html'
-
-    @login_required
-    def get(self, request, pslug, wslug):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', 'view'),
-        ])
-
-        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
-
-        context = {
-            'entries': wikipage.history_entries.order_by('created_date'),
-            'wikipage': wikipage,
-            'project': project,
-        }
-
-        return self.render_to_response(self.template_path, context)
-
-
-class WikiPageHistoryView(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page-history-view.html'
-
-    @login_required
-    def get(self, request, pslug, wslug, hpk):
-        project = get_object_or_404(models.Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', 'view'),
-        ])
-
-        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
-        history_entry = get_object_or_404(wikipage.history_entries, pk=hpk)
-
-        context = {
-            'project': project,
-            'wikipage': wikipage,
-            'history_entry': history_entry,
-        }
-        return self.render_to_response(self.template_path, context)
-
-
-class WikipageDeleteView(GenericView):
-    template_path = 'wiki-page-delete.html'
-
-    def get_context(self):
-        project = get_object_or_404(models.Project, slug=self.kwargs['pslug'])
-
-        self.check_role(self.request.user, project, [
-            ('project', 'view'),
-            ('wiki', ('view', 'delete')),
-        ])
-
-        wikipage = get_object_or_404(project.wiki_pages, slug=self.kwargs['wslug'])
-
-        context = {
-            'project': project,
-            'wikipage': wikipage,
-        }
-        return context
-
-    @login_required
-    def get(self, request, **kwargs):
-        context = self.get_context()
-        return self.render_to_response(self.template_path, context)
-
-    @login_required
-    def post(self, request, **kwargs):
-        context = self.get_context()
-        context['wikipage'].history_entries.all().delete()
-        context['wikipage'].delete()
-
-        return self.render_redirect(reverse('wiki-page',
-            args = [context['project'].slug, 'home']))
