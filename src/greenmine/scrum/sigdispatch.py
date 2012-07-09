@@ -5,7 +5,8 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from greenmine.models import Profile, UserStory, Task, ProjectUserRole
+from greenmine.profile.models import Profile
+from greenmine.scrum.models import UserStory, Task, ProjectUserRole
 from greenmine.core.utils import normalize_tagname
 
 
@@ -14,23 +15,6 @@ def task_post_save(sender, instance, created, **kwargs):
     if instance.user_story:
         instance.user_story.modified_date = timezone.now()
         instance.user_story.save()
-
-
-@receiver(post_save, sender=UserStory)
-def user_story_post_save(sender, instance, created, **kwargs):
-    """
-    Auto update meta_category_list on project instance for
-    performance improvements.
-    """
-
-    if not instance.category or not instance.category.strip():
-        return
-
-    category_str = normalize_tagname(instance.category)
-    if category_str not in instance.project.meta_category_list:
-        instance.project.meta_category_list.append(category_str)
-
-    instance.project.save()
 
 
 from greenmine.core import signals
