@@ -287,7 +287,7 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'greenmine.Profile'
+AUTH_PROFILE_MODULE = 'base.Profile'
 FORMAT_MODULE_PATH = 'greenmine.core.formats'
 DATE_INPUT_FORMATS = (
     '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',
