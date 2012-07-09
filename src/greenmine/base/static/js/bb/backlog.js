@@ -209,12 +209,17 @@ var LeftBlockView = Backbone.View.extend({
 
         /* Ordering */
         "click .unassigned-us .head-title .row a": "on_order_link_clicked",
+
+        /*Tag filtering */
+        "click .row.tag-selector .category": "on_tag_filter_clicked",
+
     },
 
     initialize: function() {
         _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
 
         this.options.order_by = "-priority";
+        this.options.tag_filter = "";
 
         this.model = new LeftBlockModel({view:this});
         this.model.fetch({success: this.render});
@@ -227,21 +232,23 @@ var LeftBlockView = Backbone.View.extend({
 
     fetch_url: function() {
         var base_url = this.$el.attr('url');
-        return base_url + "?order_by=" + this.options.order_by;
+        base_url += "?order_by=" + this.options.order_by;
+        base_url += "&tags=" + this.options.tag_filter;
+        return base_url;
     },
 
     /*
-     * Reload state fetching new content from server. 
+     * Reload state fetching new content from server.
     */
 
-    reload: function() {    
+    reload: function() {
         this.model.fetch({success:this.render});
     },
 
     on_order_link_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
-        
+
         var order_by = self.attr('order_by');
         var opt_key = "backlog_order_by_" + order_by + "_opt";
         var opt = localStorage.getItem(opt_key)
@@ -257,13 +264,27 @@ var LeftBlockView = Backbone.View.extend({
         this.model.fetch({success:this.render});
     },
 
-    /* 
-     * On click to delete button on unassigned user story list. 
+    on_tag_filter_clicked: function(event) {
+        event.preventDefault();
+        var self = $(event.currentTarget);
+
+        var tag_filter = self.attr('category');
+        var opt_key = "backlog_tag_filter_" + tag_filter + "_opt";
+        var opt = localStorage.getItem(opt_key)
+
+        this.options.tag_filter = tag_filter;
+        localStorage.setItem(opt_key, "");
+
+        this.model.fetch({success:this.render});
+    },
+
+    /*
+     * On click to delete button on unassigned user story list.
     */
 
     onUserStoryDeleteClick: function(event) {
         event.preventDefault();
-        
+
         var target = $(event.currentTarget);
         var self = this;
         var buttons = {};
@@ -292,7 +313,7 @@ var LeftBlockView = Backbone.View.extend({
         if (self.hasClass('drag-over')) {
             self.removeClass('drag-over');
         }
-        
+
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
         var unassign_url = source.attr('unassignurl');
@@ -316,7 +337,7 @@ var LeftBlockView = Backbone.View.extend({
         }, 'html');
 
     },
-    
+
     left_block_dragleave: function(event) {
         var self = $(event.currentTarget);
         if (self.hasClass('drag-over')) {
@@ -324,7 +345,7 @@ var LeftBlockView = Backbone.View.extend({
         }
         event.preventDefault();
     },
-    
+
     left_block_dragover: function(event) {
         var self = $(event.currentTarget);
         event.originalEvent.dataTransfer.dropEffect = 'copy';
@@ -383,7 +404,7 @@ var LeftBlockView = Backbone.View.extend({
                     for(var i=0; i<value.length; i++){
                         $(document.createElement('li')).html(value[i]).appendTo(ul);
                     }
-                    
+
                     form.find('[name='+index+']').before(ul);
                 });
             }
@@ -470,14 +491,14 @@ var RightBlockView = Backbone.View.extend({
             target.find(".us-item-empty").remove()
             target.find(".milestone-userstorys").append(data_object);
             source.remove()
-            
+
             self.trigger('change');
         }, 'html');
     },
 
     milestones_dragstart: function(event) {
         var self = $(event.currentTarget);
-        event.originalEvent.dataTransfer.effectAllowed = 'copy'; 
+        event.originalEvent.dataTransfer.effectAllowed = 'copy';
         event.originalEvent.dataTransfer.setData('source_id', self.attr('id'));
     },
 
@@ -498,7 +519,7 @@ var RightBlockView = Backbone.View.extend({
         };
 
         buttons[gettext('Cancel')] = function() {
-            $(this).dialog('close'); 
+            $(this).dialog('close');
         };
 
         $(".delete-milestone-dialog").dialog({
@@ -514,7 +535,7 @@ var Backlog = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
-        
+
         var stats_view = new StatsView();
         var burndown_view = new BurndownView();
         var burnup_view = new BurnupView();
@@ -555,7 +576,7 @@ var Backlog = Backbone.View.extend({
         var items = _.filter(this.$(".un-us-item"), function(item) {
             return !$(item).hasClass("head-title");
         });
-        
+
         var total_limit = parseFloat(this.$el.attr('total_story_points'));
         if (_.isNaN(total_limit)) {
             return;
@@ -563,7 +584,7 @@ var Backlog = Backbone.View.extend({
 
         //console.log(total_limit, this.assignedPoints(), total_limit - this.assignedPoints());
         var total_limit = total_limit - this.assignedPoints();
-        
+
         if (total_limit <= 0) {
             this.$(".head-title").addClass("limit-line");
         } else {

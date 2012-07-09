@@ -2,7 +2,7 @@
 <div class="un-us-item head-title">
     <div class="row title">
         <span>
-            <a href="#" order_by="category">{% trans "Category" %}</a> / 
+            <a href="#" order_by="category">{% trans "Category" %}</a> /
             <a href="#" order_by="subject">{% trans "Subject" %}</a>
         </span>
     </div>
@@ -14,6 +14,19 @@
     </div>
     <div class="row metaicon"></div>
 </div>
+
+<div class="un-us-item">
+    <div class="row tag-selector">
+        {% for tag in tags%}
+            <span class="category" category="{{ tag.tags }}">
+                TODO-id:{{ tag.tags }} : {{tag.count}}
+            </span>
+        {% endfor %}
+    </div>
+</div>
+
+
+
 {% for us in unassigned_us %}
 {% include "user-story-item.html" with us=us %}
 {% endfor %}
