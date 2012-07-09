@@ -156,7 +156,7 @@ questions_patterns = patterns('',
 
 wiki_patterns = patterns('',
     url(r'^(?P<wslug>[\d\w\-]+)/$', wiki.WikiPageView.as_view(), name='wiki-page'),
-    url(r'^(?P<wslug>[\d\w\-]+)/history/$', wiki.WikiPageHistory.as_view(), name='wiki-page-history'),
+    url(r'^(?P<wslug>[\d\w\-]+)/history/$', wiki.WikiPageHistoryView.as_view(), name='wiki-page-history'),
 
     url(r'^(?P<wslug>[\d\w\-]+)/history/(?P<hpk>\d+)/$',
         wiki.WikiPageHistoryView.as_view(), name='wiki-page-history-view'),
