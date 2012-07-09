@@ -9,7 +9,7 @@ js_info_dict = {
     'packages': ('greenmine',),
 }
 
-#from greenmine.views import api
+from greenmine.base.views import api
 from greenmine.base.views import main
 from greenmine.base.views import config
 #from greenmine.base.views import export
@@ -17,6 +17,7 @@ from greenmine.scrum.views import dashboard
 from greenmine.scrum.views import backlog
 from greenmine.scrum.views import issues
 from greenmine.scrum.views import tasks
+from greenmine.wiki import views as wiki
 
 
 api_urlpatterns = patterns('',
@@ -154,14 +155,14 @@ questions_patterns = patterns('',
 
 
 wiki_patterns = patterns('',
-    url(r'^(?P<wslug>[\d\w\-]+)/$', main.WikiPageView.as_view(), name='wiki-page'),
-    url(r'^(?P<wslug>[\d\w\-]+)/history/$', main.WikiPageHistory.as_view(), name='wiki-page-history'),
+    url(r'^(?P<wslug>[\d\w\-]+)/$', wiki.WikiPageView.as_view(), name='wiki-page'),
+    url(r'^(?P<wslug>[\d\w\-]+)/history/$', wiki.WikiPageHistory.as_view(), name='wiki-page-history'),
 
     url(r'^(?P<wslug>[\d\w\-]+)/history/(?P<hpk>\d+)/$',
-        main.WikiPageHistoryView.as_view(), name='wiki-page-history-view'),
+        wiki.WikiPageHistoryView.as_view(), name='wiki-page-history-view'),
 
-    url(r'^(?P<wslug>[\d\w\-]+)/edit/$', main.WikiPageEditView.as_view(), name='wiki-page-edit'),
-    url(r'^(?P<wslug>[\d\w\-]+)/delete/$', main.WikipageDeleteView.as_view(), name='wiki-page-delete'),
+    url(r'^(?P<wslug>[\d\w\-]+)/edit/$', wiki.WikiPageEditView.as_view(), name='wiki-page-edit'),
+    url(r'^(?P<wslug>[\d\w\-]+)/delete/$', wiki.WikipageDeleteView.as_view(), name='wiki-page-delete'),
 )
 
 urlpatterns = patterns('',

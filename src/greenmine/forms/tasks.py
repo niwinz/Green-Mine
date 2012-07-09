@@ -17,7 +17,7 @@ class TaskCreateForm(forms.ModelForm):
         self.fields['user_story'].required = True
 
     class Meta:
-        model = models.Task
+        model = Task
         fields = (
             'user_story',
             'priority',
