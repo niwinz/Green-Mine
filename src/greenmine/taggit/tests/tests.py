@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from unittest import TestCase as UnitTestCase
 
 import django
@@ -6,15 +9,15 @@ from django.core.exceptions import ValidationError
 from django.db import connection
 from django.test import TestCase, TransactionTestCase
 
-from taggit.managers import TaggableManager
-from taggit.models import Tag, TaggedItem
-from taggit.tests.forms import (FoodForm, DirectFoodForm, CustomPKFoodForm,
+from ..managers import TaggableManager
+from ..models import Tag, TaggedItem
+from .forms import (FoodForm, DirectFoodForm, CustomPKFoodForm,
     OfficialFoodForm)
-from taggit.tests.models import (Food, Pet, HousePet, DirectFood, DirectPet,
+from .models import (Food, Pet, HousePet, DirectFood, DirectPet,
     DirectHousePet, TaggedPet, CustomPKFood, CustomPKPet, CustomPKHousePet,
     TaggedCustomPKPet, OfficialFood, OfficialPet, OfficialHousePet,
     OfficialThroughModel, OfficialTag, Photo, Movie, Article)
-from taggit.utils import parse_tags, edit_string_for_tags
+from ..utils import parse_tags, edit_string_for_tags
 
 
 class BaseTaggingTest(object):

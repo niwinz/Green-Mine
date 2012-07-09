@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django import forms
 
-from taggit.tests.models import Food, DirectFood, CustomPKFood, OfficialFood
+from .models import Food, DirectFood, CustomPKFood, OfficialFood
 
 
 class FoodForm(forms.ModelForm):

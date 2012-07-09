@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.views.generic.list_detail import object_list
 
-from taggit.models import TaggedItem, Tag
+from .models import TaggedItem, Tag
 
 
 def tagged_object_list(request, slug, queryset, **kwargs):

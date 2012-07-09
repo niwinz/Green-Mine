@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django.db import models
 
-from taggit.managers import TaggableManager
-from taggit.models import (TaggedItemBase, GenericTaggedItemBase, TaggedItem,
+from ..managers import TaggableManager
+from ..models import (TaggedItemBase, GenericTaggedItemBase, TaggedItem,
     TagBase, Tag)
 
 

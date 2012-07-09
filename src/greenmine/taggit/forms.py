@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django import forms
 from django.utils.translation import ugettext as _
 
-from taggit.utils import parse_tags, edit_string_for_tags
+from .utils import parse_tags, edit_string_for_tags
 
 
 class TagWidget(forms.TextInput):

@@ -1,3 +1,8 @@
+from django.forms.fields import CharField as DjangoCharField
+from greenmine.wiki.widgets import WikiWidget
+from django import forms
+from greenmine.wiki.models import WikiPage
+
 class WikiFormField(DjangoCharField):
     def __init__(self, *args, **kwargs):
         self.widget = WikiWidget
@@ -11,3 +16,9 @@ class WikiFormField(DjangoCharField):
         current_clases.append('wiki_field')
         attrs['class'] = ' '.join(current_clases)
         return attrs
+
+
+class WikiPageEditForm(forms.ModelForm):
+    class Meta:
+        model = WikiPage
+        fields = ('content',)
