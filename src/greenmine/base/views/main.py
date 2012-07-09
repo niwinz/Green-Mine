@@ -671,6 +671,9 @@ class UserStoryCreateView(GenericView):
             instance.project = project
             instance.save()
 
+            #TODO: review this save_m2m
+            form.save_m2m()
+
             signals.mail_userstory_created.send(sender=self, us=instance, user=request.user)
             self.create_asociated_tasks(project, instance)
 

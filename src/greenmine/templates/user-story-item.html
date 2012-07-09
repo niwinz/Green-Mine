@@ -9,7 +9,11 @@
         {% with us.tags.all as us_tags%}
 
             {% if us_tags %}
-            {{ us_tags }}
+            {% for us_tag in us_tags %}
+            <span class="category">
+                {{ us_tag }}
+            </span>
+            {% endfor %}
             {% comment %}
             {% tag_color us.category as result_color %}
             <span class="category" style="background-color: {{ result_color }}">
