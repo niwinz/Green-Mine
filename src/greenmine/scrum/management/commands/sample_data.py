@@ -9,7 +9,8 @@ from django.utils.timezone import now
 
 import random, sys, datetime
 
-from greenmine.models import *
+from greenmine.base.models import *
+from greenmine.scrum.models import *
 
 subjects = [
     "Fixing templates for Django 1.2.",
