@@ -190,14 +190,18 @@ TEMPLATE_DIRS = [
 ]
 
 INSTALLED_APPS = [
+    # Django base applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'greenmine.base',
+    'greenmine.scrum',
+
     'django_gravatar',
     'rawinclude',
-    'greenmine',
     'greenqueue',
     'south',
 ]
