@@ -21,6 +21,7 @@ internapi_urlpatterns = patterns('',
         name='i18n-setlang'),
 )
 
+# FIXME: project administration is pending to refactor.
 main_patterns = patterns('',
     url(r'^$', main.HomeView.as_view(), name='projects'),
     url(r'^users/$', main.UserList.as_view(), name='users'),
