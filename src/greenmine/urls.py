@@ -10,13 +10,13 @@ js_info_dict = {
 }
 
 from greenmine.views import api
-from greenmine.views import main
-from greenmine.views import config
-from greenmine.views import export
-from greenmine.views import dashboard
-from greenmine.views import backlog
-from greenmine.views import issues
-from greenmine.views import tasks
+from greenmine.base.views import main
+from greenmine.base.views import config
+from greenmine.base.views import export
+from greenmine.scrum.views import dashboard
+from greenmine.scrum.views import backlog
+from greenmine.scrum.views import issues
+from greenmine.scrum.views import tasks
 
 
 api_urlpatterns = patterns('',
