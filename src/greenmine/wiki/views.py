@@ -2,6 +2,7 @@ from greenmine.base.utils.slugify import slugify_uniquely as slugify
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required, staff_required
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 from greenmine.scrum.models import *
 from greenmine.wiki.models import *
 from greenmine.wiki.forms import *
@@ -101,30 +102,6 @@ class WikiPageEditView(GenericView):
             'form': form,
             'project': project,
         }
-        return self.render_to_response(self.template_path, context)
-
-
-class WikiPageHistory(GenericView):
-    menu = ['wiki']
-    template_path = 'wiki-page-history.html'
-
-    @login_required
-    def get(self, request, pslug, wslug):
-        project = get_object_or_404(Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('wiki', 'view'),
-        ])
-
-        wikipage = get_object_or_404(project.wiki_pages, slug=wslug)
-
-        context = {
-            'entries': wikipage.history_entries.order_by('created_date'),
-            'wikipage': wikipage,
-            'project': project,
-        }
-
         return self.render_to_response(self.template_path, context)
 
 
