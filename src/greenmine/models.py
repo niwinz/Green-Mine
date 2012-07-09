@@ -55,39 +55,6 @@ def ref_uniquely(project, model, field='ref'):
         return Project.objects.filter(pk__in=queryset)
 
 
-
-class TemporalFile(models.Model):
-    attached_file = models.FileField(upload_to="temporal_files",
-        max_length=1000, null=True, blank=True)
-
-    owner = models.ForeignKey('auth.User', related_name='tmpfiles')
-    created_date = models.DateTimeField(auto_now_add=True)
-
-
-class Document(models.Model):
-    title = models.CharField(max_length=150)
-    slug = models.SlugField(unique=True, max_length=200, blank=True)
-    description = WikiField(blank=True)
-
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now_add=True)
-
-    project = models.ForeignKey('Project', related_name='documents')
-    owner = models.ForeignKey('auth.User', related_name='documents')
-    attached_file = models.FileField(upload_to="documents",
-        max_length=1000, null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_uniquely(self.title, self.__class__)
-        super(Document, self).save(*args, **kwargs)
-
-    @models.permalink
-    def get_delete_url(self):
-        return ('documents-delete', (),
-            {'pslug': self.project.slug, 'docid': self.pk})
-
-
 class Question(models.Model):
     subject = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=250, blank=True)
