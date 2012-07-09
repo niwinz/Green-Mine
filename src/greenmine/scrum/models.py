@@ -13,7 +13,8 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UserManager
 
-from greenmine.core.fields import DictField, ListField, WikiField
+from greenmine.core.fields import DictField, ListField
+from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
 
 import datetime
