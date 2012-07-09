@@ -15,12 +15,12 @@ class MilestoneForm(forms.ModelForm):
 class UserStoryForm(forms.ModelForm):
     class Meta:
         model = UserStory
-        fields = ('priority', 'points', 'category', 'subject', 'description',
+        fields = ('priority', 'points', 'subject', 'description',
                 'finish_date', 'client_requirement', 'team_requirement')
 
 
 class UserStoryFormInline(forms.ModelForm):
     class Meta:
         model = UserStory
-        fields = ('priority', 'points', 'status', 'category',
+        fields = ('priority', 'points', 'status',
             'tested', 'finish_date', 'milestone')
