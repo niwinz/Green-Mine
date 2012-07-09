@@ -18,7 +18,10 @@ from django.db import transaction
 
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
-from greenmine import models
+# Temporal imports
+from greenmine.base.models import *
+from greenmine.scrum.models import *
+
 
 from django.core import serializers
 
@@ -33,7 +36,7 @@ class AdminProjectExport(GenericView):
                                                 use_natural_keys=True)
 
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         tmpfile = StringIO()
         zfile = zipfile.ZipFile(tmpfile, 'a')
@@ -44,11 +47,11 @@ class AdminProjectExport(GenericView):
         user_stories = self.serialize(project.user_stories.all())
 
         tasks  = self.serialize(project.tasks.all())
-        pur_qs = models.ProjectUserRole.objects.filter(project=project)
+        pur_qs = ProjectUserRole.objects.filter(project=project)
         u_qs = pur_qs.values_list('user_id', flat=True)
 
         user_role = self.serialize(pur_qs)
-        user = self.serialize(models.User.objects.filter(id__in=u_qs))
+        user = self.serialize(User.objects.filter(id__in=u_qs))
 
         zfile.writestr('project.json', project_data)
         zfile.writestr('milestones.json', milestones_data)
