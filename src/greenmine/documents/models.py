@@ -1,13 +1,11 @@
 # -* coding: utf-8 -*-
-
-from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 
 from greenmine.core.fields import WikiField
+from greenmine.core.utils.slug import slugify_uniquely as slugify
 
 
 class TemporalFile(models.Model):
@@ -16,6 +14,7 @@ class TemporalFile(models.Model):
 
     owner = models.ForeignKey('auth.User', related_name='tmpfiles')
     created_date = models.DateTimeField(auto_now_add=True)
+
 
 class Document(models.Model):
     title = models.CharField(max_length=150)
@@ -32,7 +31,7 @@ class Document(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify_uniquely(self.title, self.__class__)
+            self.slug = slugify(self.title, self.__class__)
         super(Document, self).save(*args, **kwargs)
 
     @models.permalink
