@@ -186,7 +186,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ROOT_URLCONF = 'greenmine.urls'
 
 TEMPLATE_DIRS = [
-    #os.path.join(project_root, "templates"),
+    os.path.join(PROJECT_ROOT, "templates"),
 ]
 
 INSTALLED_APPS = [
