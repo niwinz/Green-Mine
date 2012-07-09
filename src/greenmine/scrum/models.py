@@ -83,7 +83,6 @@ TASK_CHANGE_CHOICES = (
     (TASK_ASSIGNATION_CHANGE, _(u"Task assignation change")),
 )
 
-
 def slugify_uniquely(value, model, slugfield="slug"):
     """
     Returns a slug on a name which is unique within a model's table
@@ -316,7 +315,7 @@ class Project(models.Model):
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project", related_name="user_roles")
     user = models.ForeignKey("auth.User", related_name="user_roles")
-    role = models.ForeignKey("Role", related_name="user_roles")
+    role = models.ForeignKey("base.Role", related_name="user_roles")
 
     mail_milestone_created = models.BooleanField(default=True)
     mail_milestone_modified = models.BooleanField(default=False)

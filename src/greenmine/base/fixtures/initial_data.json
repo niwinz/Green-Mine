@@ -1,7 +1,8 @@
+w
 [
     {
         "pk": 1,
-        "model": "greenmine.role",
+        "model": "base.role",
         "fields": {
             "name": "Developer",
             "slug": "developer",
@@ -32,7 +33,7 @@
     },
     {
         "pk": 2,
-        "model": "greenmine.role",
+        "model": "base.role",
         "fields": {
             "name": "Product Owner",
             "slug": "product-owner",
@@ -63,7 +64,7 @@
     },
     {
         "pk": 3,
-        "model": "greenmine.role",
+        "model": "base.role",
         "fields": {
             "name": "Observer",
             "slug": "observer",
