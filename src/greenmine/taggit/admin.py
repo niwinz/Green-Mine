@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django.contrib import admin
 
-from taggit.models import Tag, TaggedItem
+from .models import Tag, TaggedItem
 
 
 class TaggedItemInline(admin.StackedInline):

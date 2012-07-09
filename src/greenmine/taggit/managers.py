@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from django.contrib.contenttypes.generic import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -6,24 +9,9 @@ from django.db.models.related import RelatedObject
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
-from taggit.forms import TagField
-from taggit.models import TaggedItem, GenericTaggedItemBase
-from taggit.utils import require_instance_manager
-
-
-try:
-    all
-except NameError:
-    # 2.4 compat
-    try:
-        from django.utils.itercompat import all
-    except ImportError:
-        # 1.1.X compat
-        def all(iterable):
-            for item in iterable:
-                if not item:
-                    return False
-            return True
+from .forms import TagField
+from .models import TaggedItem, GenericTaggedItemBase
+from .utils import require_instance_manager
 
 
 class TaggableRel(ManyToManyRel):

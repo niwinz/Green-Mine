@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import django
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
@@ -90,10 +93,7 @@ class ItemBase(models.Model):
 
 
 class TaggedItemBase(ItemBase):
-    if django.VERSION < (1, 2):
-        tag = models.ForeignKey(Tag, related_name="%(class)s_items")
-    else:
-        tag = models.ForeignKey(Tag, related_name="%(app_label)s_%(class)s_items")
+    tag = models.ForeignKey(Tag, related_name="%(app_label)s_%(class)s_items")
 
     class Meta:
         abstract = True
