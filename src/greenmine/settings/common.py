@@ -75,7 +75,7 @@ TIME_ZONE = 'Europe/Madrid'
 LANGUAGE_CODE = 'en'
 USE_I18N = True
 USE_L10N = True
-LOGIN_URL='/login/'
+LOGIN_URL='/auth/login/'
 USE_TZ = True
 
 #SESSION BACKEND
@@ -198,6 +198,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'greenmine.base',
+    'greenmine.profile',
     'greenmine.scrum',
     'greenmine.wiki',
     'greenmine.documents',
@@ -290,7 +291,7 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'base.Profile'
+AUTH_PROFILE_MODULE = 'profile.Profile'
 FORMAT_MODULE_PATH = 'greenmine.core.formats'
 DATE_INPUT_FORMATS = (
     '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%b %d %Y',

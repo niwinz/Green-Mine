@@ -28,23 +28,6 @@ from greenmine.wiki import views as wiki
 
 main_patterns = patterns('',
     url(r'^$', main.HomeView.as_view(), name='projects'),
-    url(r'^login/$', main.LoginView.as_view(), name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
-    url(r'^remember-password/$', main.RememberPasswordView.as_view(), name='remember-password'),
-
-    url(r'^register/$', main.RegisterView.as_view(), name='register'),
-    url(r'^activate/(?P<token>[\d\w\-]+)/$',
-        main.AccountActivation.as_view(), name='activate'),
-
-    url(r'^profile/$',
-        main.ProfileView.as_view(), name='profile'),
-
-    url(r'^profile/password/change/$',
-        main.PasswordChangeView.as_view(), name='profile-password'),
-
-    url(r'^password/recovery/(?P<token>[\d\w\-]+)/$',
-        main.PasswordRecoveryView.as_view(), name='password-recovery'),
-
     url(r'^users/$', main.UserList.as_view(), name='users'),
     url(r'^users/create/$', main.UserCreateView.as_view(), name='users-create'),
     url(r'^users/(?P<uid>\d+)/view/$', main.UserView.as_view(), name='users-view'),
@@ -176,6 +159,7 @@ urlpatterns = patterns('',
     url(r"^(?P<pslug>[\w\d\-]+)/issues/", include(issues_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/tasks/", include(tasks_patterns)),
 
+    url(r"^auth/", include("greenmine.profile.urls")),
     url(r"^", include(main_patterns)),
     #url(r"^api/", include(api_urlpatterns, namespace='api')),
 
