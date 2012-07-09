@@ -27,7 +27,7 @@ class CreateTask(GenericView):
     @login_required
     @transaction.commit_on_success
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -55,7 +55,7 @@ class CreateTask(GenericView):
             'task':task,
             'project': project,
             'participants': project.all_participants,
-            'status_list': models.TASK_STATUS_CHOICES,
+            'status_list': TASK_STATUS_CHOICES,
         })
 
         response = {
@@ -74,7 +74,7 @@ class TaskView(GenericView):
 
     @login_required
     def get(self, request, pslug, tref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
         form = forms.CommentForm()
 
@@ -92,7 +92,7 @@ class TaskEdit(GenericView):
 
     @login_required
     def get(self, request, pslug, tref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -114,7 +114,7 @@ class TaskEdit(GenericView):
 
     @login_required
     def post(self, request, pslug, tref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -161,7 +161,7 @@ class TaskEdit(GenericView):
 class TaskDelete(GenericView):
     @login_required
     def post(self, request, pslug, tref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -181,7 +181,7 @@ class TaskSendComment(GenericView):
     @login_required
     @transaction.commit_on_success
     def post(self, request, pslug, tref):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
 
         form = CommentForm(request.POST, request.FILES)
@@ -189,8 +189,8 @@ class TaskSendComment(GenericView):
         if not form.is_valid():
             return self.render_to_error(form.errors)
 
-        change_instance = models.Change.objects.create(
-            change_type = models.TASK_COMMENT,
+        change_instance = Change.objects.create(
+            change_type = TASK_COMMENT,
             owner = request.user,
             content_object = task,
             project = project,
@@ -198,7 +198,7 @@ class TaskSendComment(GenericView):
         )
 
         if "attached_file" in form.cleaned_data:
-            change_attachment = models.ChangeAttachment.objects.create(
+            change_attachment = ChangeAttachment.objects.create(
                 owner = request.user,
                 change = change_instance,
                 attached_file = form.cleaned_data['attached_file'],

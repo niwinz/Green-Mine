@@ -6,10 +6,10 @@ from django.db import transaction
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
 
-from datetime import timedelta
-from greenmine import models
+from ..models import *
 
-from ..forms.dashboard import ApiForm as DashboardApiForm
+from greenmine.forms.dashboard import ApiForm as DashboardApiForm
+from datetime import timedelta
 
 # TODO:
 # * quick task creation
@@ -17,7 +17,7 @@ from ..forms.dashboard import ApiForm as DashboardApiForm
 class MilestoneBurndownView(GenericView):
     @login_required
     def get(self, request, pslug, mid):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
         milestone = get_object_or_404(project.milestones, pk=mid)
 
         self.check_role(request.user, project, [
@@ -57,7 +57,7 @@ class DashboardView(GenericView):
         statuses = [{
             "name": x[1],
             "id": x[0]
-        } for x in models.TASK_STATUS_CHOICES]
+        } for x in TASK_STATUS_CHOICES]
 
         return {
             "participants": [{'name': ugettext("Unassigned"), "id":""}] + participants,
@@ -66,7 +66,7 @@ class DashboardView(GenericView):
 
     @login_required
     def get(self, request, pslug, mid=None):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         try:
             milestones = project.milestones.order_by('-created_date')
@@ -79,7 +79,7 @@ class DashboardView(GenericView):
             milestone.user_stories.order_by('-priority', 'subject')]
 
         tasks = [x.to_dict() for x in
-            models.Task.objects.filter(type="task", user_story__pk__in=[y['id'] for y in user_stories])]
+            Task.objects.filter(type="task", user_story__pk__in=[y['id'] for y in user_stories])]
 
         context = {
             'user_stories': user_stories,
@@ -96,7 +96,7 @@ class DashboardApiView(GenericView):
     @transaction.commit_on_success
     @login_required
     def post(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -114,13 +114,13 @@ class DashboardApiView(GenericView):
 
         try:
             task = project.tasks.get(pk=form.cleaned_data['task'])
-        except models.Task.DoesNotExist:
+        except Task.DoesNotExist:
             return self.render_json({"messages": ["task does not exists"]}, ok=False)
 
         if "us" in form.cleaned_data and form.cleaned_data['us']:
             try:
                 userstory = project.user_stories.get(pk=form.cleaned_data['us'])
-            except models.UserStory.DoesNotExist:
+            except UserStory.DoesNotExist:
                 return self.render_json({"messages": ["user story does not exists"]}, ok=False)
 
             task.user_story = userstory

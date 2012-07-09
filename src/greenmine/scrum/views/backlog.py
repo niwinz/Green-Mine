@@ -8,9 +8,10 @@ from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
 
 from datetime import timedelta
-from greenmine import models
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
+
+from ..models import *
 
 
 class BacklogStats(GenericView):
@@ -74,7 +75,7 @@ class BacklogLeftBlockView(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -112,7 +113,7 @@ class BacklogRightBlockView(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -136,7 +137,7 @@ class BacklogRightBlockView(GenericView):
 class BacklogBurnDownView(GenericView):
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -156,7 +157,7 @@ class BacklogBurnDownView(GenericView):
             usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
             points_sum += sum(iter_points(usqs))
 
-            extra_points_user_stories = models.UserStory.objects.filter(
+            extra_points_user_stories = UserStory.objects.filter(
                 created_date__gte=sprint.created_date,
                 created_date__lte=sprint.estimated_finish
             )
@@ -191,7 +192,7 @@ class BacklogBurnDownView(GenericView):
 class BacklogBurnUpView(GenericView):
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -214,7 +215,7 @@ class BacklogBurnUpView(GenericView):
             usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
             points_sum += sum(iter_points(usqs))
 
-            extra_points_user_stories = models.UserStory.objects.filter(
+            extra_points_user_stories = UserStory.objects.filter(
                 created_date__gt=sprint.created_date,
                 created_date__lt=sprint.estimated_finish
             )
@@ -228,7 +229,7 @@ class BacklogBurnUpView(GenericView):
             extra_points_sum += sum(iter_points(extra_points_user_stories))
             extra_points.append(extra_points_sum)
 
-            extra_points_team_user_stories = models.UserStory.objects.filter(
+            extra_points_team_user_stories = UserStory.objects.filter(
                 created_date__gt=sprint.created_date,
                 created_date__lt=sprint.estimated_finish
             )
@@ -274,7 +275,7 @@ class BacklogView(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
