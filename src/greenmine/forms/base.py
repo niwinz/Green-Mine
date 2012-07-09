@@ -10,8 +10,9 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 from django.forms.fields import CharField as DjangoCharField
 
-from greenmine.models import *
 from greenmine.core.widgets import WikiWidget
+from greenmine.base.models import *
+from greenmine.scrum.models import *
 
 import json
 
