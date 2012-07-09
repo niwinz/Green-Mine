@@ -9,21 +9,11 @@ from greenmine.models import Profile, UserStory, Task, ProjectUserRole
 from greenmine.core.utils import normalize_tagname
 
 
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, created, **kwargs):
-    """
-    Create void user profile if instance is a new user.
-    """
-    if created and not Profile.objects.filter(user=instance).exists():
-        Profile.objects.create(user=instance)
-
-
 @receiver(post_save, sender=Task)
 def task_post_save(sender, instance, created, **kwargs):
     if instance.user_story:
         instance.user_story.modified_date = timezone.now()
         instance.user_story.save()
-
 
 
 @receiver(post_save, sender=UserStory)
