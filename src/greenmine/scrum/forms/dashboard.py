@@ -7,7 +7,7 @@ from greenmine.base.models import *
 from greenmine.scrum.models import *
 
 class ApiForm(forms.Form):
-    status = forms.ChoiceField(choices=models.TASK_STATUS_CHOICES, required=False)
+    status = forms.ChoiceField(choices=TASK_STATUS_CHOICES, required=False)
     us = forms.IntegerField(required=False)
     assignation = forms.IntegerField(required=False)
     task = forms.IntegerField(required=False)

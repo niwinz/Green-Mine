@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from greenmine import models
+from greenmine.base.models import *
+from greenmine.scrum.models import *
 
 class IssueFilterForm(forms.Form):
     order_by = forms.CharField(max_length=20) # TODO: conver to choice field
-    status = forms.ChoiceField(choices=models.TASK_STATUS_CHOICES, required=False)
+    status = forms.ChoiceField(choices=TASK_STATUS_CHOICES, required=False)
 
     milestone = forms.ModelChoiceField(
-        queryset = models.Milestone.objects.none(),
+        queryset = Milestone.objects.none(),
         empty_label = None
     )
 
@@ -30,7 +31,7 @@ class IssueCreateForm(forms.ModelForm):
             .milestones.order_by('-created_date')
 
     class Meta:
-        model = models.Task
+        model = Task
         fields = (
             'milestone',
             'priority',
