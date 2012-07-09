@@ -30,6 +30,8 @@ from greenmine.scrum.models import *
 
 from greenmine.forms import base as forms
 from greenmine.questions.forms import *
+from greenmine.scrum.forms.project import *
+from greenmine.scrum.forms.milestone import *
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
 
@@ -483,7 +485,7 @@ class MilestoneCreateView(GenericView):
             ('milestone', ('view', 'edit', 'create')),
         ])
 
-        form = forms.MilestoneForm(initial={'estimated_start': now()})
+        form = MilestoneForm(initial={'estimated_start': now()})
         context = {
             'form': form,
             'project': project,

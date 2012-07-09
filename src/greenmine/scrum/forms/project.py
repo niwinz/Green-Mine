@@ -1,4 +1,4 @@
-from django import foms
+from django import forms
 from greenmine.scrum.models import *
 
 class ProjectForm(forms.ModelForm):

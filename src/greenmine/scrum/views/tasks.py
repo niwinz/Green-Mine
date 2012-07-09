@@ -13,7 +13,6 @@ from django.db import transaction
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
 from greenmine.core import signals
-from greenmine import models
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
 from greenmine.scrum.forms.tasks import TaskCreateForm
