@@ -14,3 +14,6 @@ git+git://github.com/niwibe/django-greenqueue.git
 south>=0.7.5
 pytz
 git+git://github.com/kaleidos/django-superview.git
+
+git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
+whoosh>=2.3.2
