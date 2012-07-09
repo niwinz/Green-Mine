@@ -51,9 +51,11 @@
 
     <div id="footer">
         <p>
+            {% comment %}
             {% for code, name in LANGUAGES %}
-            <a href="{% url 'api:i18n-setlang' %}?lang={{ code }}">{{ code }}</a>
+            <a href="{% url 'i18n-setlang' %}?lang={{ code }}">{{ code }}</a>
             {% endfor %}
+            {% endcomment %}
             | Powered by Greenmine © 2012 | {% trans "Version" %}: {{ version }}
         </p>
     </div>
