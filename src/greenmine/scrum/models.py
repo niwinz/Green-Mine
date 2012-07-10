@@ -15,7 +15,7 @@ from greenmine.core.utils.slug import slugify_uniquely, ref_uniquely
 from greenmine.core.fields import DictField, ListField
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
-from greenmine.taggit.managers import TaggableManager, TagManager
+from greenmine.taggit.managers import TaggableManager
 
 from .choices import *
 
@@ -421,8 +421,6 @@ class UserStory(models.Model):
 
     client_requirement = models.BooleanField(default=False)
     team_requirement = models.BooleanField(default=False)
-
-    objects = TagManager()
 
     class Meta:
         unique_together = ('ref', 'project')
