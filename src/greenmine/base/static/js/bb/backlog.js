@@ -99,7 +99,11 @@ var BurndownView = Backbone.View.extend({
                 bars: { show: true },
                 color: '#4da74d'
             }
-        ], { xaxis: { ticks: ticks } });
+        ],
+        {
+            xaxis: { ticks: ticks },
+            grid: { borderWidth: 0 }
+        });
     }
 });
 
@@ -178,7 +182,11 @@ var BurnupView = Backbone.View.extend({
                 points: { show: true },
                 color: '#eec446'
             }
-            ], { xaxis: { ticks: ticks }});
+        ],
+        {
+            xaxis: { ticks: ticks },
+            grid: { borderWidth: 0 }
+        });
     }
 });
 

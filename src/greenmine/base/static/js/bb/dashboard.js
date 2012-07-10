@@ -319,9 +319,10 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
                 lines: { show: true, fill: true },
                 points: { show: true }
             }
-            ], {
-                xaxis: { ticks: ticks }
-            }
-        );
+        ],
+        {
+            xaxis: { ticks: ticks },
+            grid: { borderWidth: 0 }
+        });
     }
 });
