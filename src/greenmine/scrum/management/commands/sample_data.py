@@ -132,11 +132,11 @@ class Command(BaseCommand):
                 bug = Task.objects.create(
                     project = project,
                     type = "bug",
-                    subject = lorem_ipsum.words(random.randint(1,5)),
-                    description = lorem_ipsum.words(random.randint(1,15)),
+                    subject = lorem_ipsum.words(random.randint(1,5), common=False),
+                    description = lorem_ipsum.words(random.randint(1,15), common=False),
                     owner = project.owner,
                 )
 
-                for tag in lorem_ipsum.words(random.randint(1,5), common=False).split(" "):
+                for tag in lorem_ipsum.words(random.randint(1,5), common=True).split(" "):
                     bug.tags.add(tag)
 

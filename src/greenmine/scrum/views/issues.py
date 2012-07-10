@@ -45,7 +45,9 @@ class IssueList(GenericView):
         if order_by is None:
             issues = issues.order_by('-created_date')
         else:
-            issues = issues.order_by(order_by)
+            pass
+            #TODO: fix
+            #~ issues = issues.order_by(order_by)
 
         if tags:
             for tag in tags:
@@ -68,9 +70,8 @@ class IssueList(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-        milestone_pk = request.GET.get('milestone', None)
 
+        project = get_object_or_404(Project, slug=pslug)
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', 'view'),
@@ -78,55 +79,51 @@ class IssueList(GenericView):
             ('task', 'view'),
         ])
 
-        milestones = project.milestones.order_by('-created_date')
-        if len(milestones) == 0:
-            messages.error(request, _("No milestones found"))
-            return self.render_redirect(project.get_backlog_url())
+        form = IssueFilterForm(request.GET, project=project)
+        valid_form = form.is_valid()
+        if valid_form:
+            milestone = form.cleaned_data['milestone']
+            status = form.cleaned_data['status'] or None
+            order_by = form.cleaned_data['order_by']
+            selected_tags = form.cleaned_data['tags']
 
-        if milestone_pk:
-            selected_milestone = get_object_or_404(milestones, pk=milestone_pk)
+            tasks = self.filter_issues(project, milestone, order_by, status, selected_tags)
+            tags = self.get_tag_dicts(tasks, [tag.id for tag in selected_tags])
         else:
-            selected_milestone = None
+            #TODO: error?
+            tasks = []
+            tags = []
 
-        tasks = self.filter_issues(project, milestone=selected_milestone, status="closed")
+        if request.is_ajax():
+            if not valid_form:
+                return self.render_to_error(form.errors)
 
-        context = {
-            'project': project,
-            'milestones': list(milestones),
-            'milestone': selected_milestone,
-            'tasks': (task.to_dict() for task in tasks),
-            'tags': tuple(self.get_tag_dicts(tasks)),
-        }
+            return self.render_to_ok({
+                "tasks": [task.to_dict() for task in tasks],
+                'tags': tags,
+            })
+        else:
+            milestones = project.milestones.order_by('-created_date')
+            if len(milestones) == 0:
+                messages.error(request, _("No milestones found"))
+                return self.render_redirect(project.get_backlog_url())
 
-        return self.render_to_response(self.template_name, context)
+            milestone_pk = request.GET.get('milestone', None)
 
-    @login_required
-    def post(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
+            if milestone_pk:
+                selected_milestone = get_object_or_404(milestones, pk=milestone_pk)
+            else:
+                selected_milestone = None
 
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-            ('task', 'view'),
-        ])
+            context = {
+                'project': project,
+                'milestones': list(milestones),
+                'milestone': selected_milestone,
+                'tasks': (task.to_dict() for task in tasks),
+                'tags': tuple(tags),
+            }
 
-        form = IssueFilterForm(request.POST, project=project)
-        if not form.is_valid():
-            return self.render_to_error(form.errors)
-
-        milestone = form.cleaned_data['milestone']
-        status = form.cleaned_data['status'] or None
-        order_by = form.cleaned_data['order_by']
-        selected_tags = form.cleaned_data['tags']
-        filtered_tasks = self.filter_issues(project, milestone, order_by, status, selected_tags)
-        tags = self.get_tag_dicts(filtered_tasks, [tag.id for tag in selected_tags])
-        filtered_tasks = [task.to_dict() for task in filtered_tasks]
-
-        return self.render_to_ok({
-            "tasks": filtered_tasks,
-            'tags': tags,
-        })
+            return self.render_to_response(self.template_name, context)
 
 
 class CreateIssue(GenericView):

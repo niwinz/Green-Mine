@@ -25,7 +25,7 @@ class ProjectPersonalSettingsForm(forms.ModelForm):
             'mail_userstory_created',)
 
 
-class ProjectGeneralSettingsForm(forms.Form):
+class ProjectAdminSettingsForm(forms.Form):
     colors_hidden = forms.CharField(max_length=5000, required=False,
         widget=forms.HiddenInput)
 

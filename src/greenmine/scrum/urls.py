@@ -28,18 +28,6 @@ issues_patterns = patterns('',
     url(r'^(?P<tref>[\w\d]+)/send/comment/$', issues.IssueSendComment.as_view(), name='issues-send-comment'),
 )
 
-project_settings_patterns = patterns('',
-    url(r'^personal/$', project.ProjectSettings.as_view(), name='project-personal-settings'),
-    url(r'^general/$', project.ProjectGeneralSettings.as_view(), name='project-general-settings'),
-    url(r'^edit/$', project.ProjectEditView.as_view(), name="project-edit"),
-
-    # export (not finished)
-    #url(r'^export/$', export.ProjectExportView.as_view(), name="project-export-settings"),
-    #url(r'^export/now/$', export.ProjectExportNow.as_view(), name="project-export-settings-now"),
-    #url(r'^export/rehash/', export.RehashExportsDirectory.as_view(), name="project-export-settings-rehash"),
-)
-
-
 backlog_patterns = patterns('',
     url(r'^$', backlog.BacklogView.as_view(), name='project-backlog'),
     url(r'^stats/$', backlog.BacklogStats.as_view(), name='project-backlog-stats'),
@@ -80,12 +68,18 @@ urlpatterns = patterns('',
     url(r'^create/$', project.ProjectCreateView.as_view(), name='project-create'),
     url(r'^(?P<pslug>[\w\d\-]+)/delete/$', project.ProjectDelete.as_view(), name='project-delete'),
 
+    # settings and admin
+    url(r'^personal-settings/$',  project.ProjectUserSettings.as_view(), name="project-personal"),
+    url(r'^personal-settings/(?P<pslug>[\w\d\-]+)/$',
+        project.ProjectUserSettingsIndividual.as_view(), name="project-personal-individual"),
+    url(r"^(?P<pslug>[\w\d\-]+)/admin/$", project.ProjectAdminSettings.as_view(), name="project-admin"),
+
+
     #url(r'^(?P<pslug>[\w\d\-]+)/task/(?P<tref>[\w\d]+)/edit/$',
     #    main.TaskEdit.as_view(), name='task-edit'),
     url(r"^(?P<pslug>[\w\d\-]+)/backlog/", include(backlog_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/dashboard/", include(dashboard_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/milestone/", include(milestone_patterns)),
-    url(r"^(?P<pslug>[\w\d\-]+)/settings/", include(project_settings_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/issues/", include(issues_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/tasks/", include(tasks_patterns)),
     url(r"^(?P<pslug>[\w\d\-]+)/uss/", include(userstories_patterns)),

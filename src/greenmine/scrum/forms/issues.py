@@ -6,7 +6,7 @@ from greenmine.scrum.models import *
 from greenmine.taggit.models import Tag
 
 class IssueFilterForm(forms.Form):
-    order_by = forms.CharField(max_length=20) # TODO: conver to choice field
+    order_by = forms.CharField(max_length=20, required=False) # TODO: conver to choice field
     status = forms.ChoiceField(choices=TASK_STATUS_CHOICES, required=False)
     tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), required=False)
 
