@@ -34,6 +34,7 @@ from greenmine.scrum.forms.project import *
 from greenmine.scrum.forms.milestone import *
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
+from greenmine.profile.models import *
 
 import os
 import re

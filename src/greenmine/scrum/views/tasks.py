@@ -16,6 +16,7 @@ from greenmine.core import signals
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
 from greenmine.scrum.forms.tasks import TaskCreateForm
+from greenmine.scrum.models import *
 from greenmine.forms.base import CommentForm
 
 

@@ -43,7 +43,7 @@ class BacklogStats(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        project = get_object_or_404(models.Project, slug=pslug)
+        project = get_object_or_404(Project, slug=pslug)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
