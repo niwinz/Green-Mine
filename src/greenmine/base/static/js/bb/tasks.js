@@ -67,7 +67,12 @@ Greenmine.TasksView = Backbone.View.extend({
     events: {
         "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
-        "click .context-menu a.filter-task": "changeStatus"
+        "click .context-menu a.filter-task": "changeStatus",
+
+        /*Tag filtering */
+        //"click .un-us-item .category.selected": "on_tag_remove_filter_clicked",
+        //"click .un-us-item .category.unselected": "on_tag_add_filter_clicked"
+        "click .un-us-item .category": "on_tag_add_filter_clicked"
     },
 
     el: $("#dashboard"),
@@ -85,6 +90,17 @@ Greenmine.TasksView = Backbone.View.extend({
         this._order = "created_date";
         this._order_mod = "-";
         this._status = "closed";
+
+        var order_by = getUrlVars()["order_by"];
+        if (order_by === undefined){
+            this.options.order_by = "-priority";
+        }
+        else{
+            this.options.order_by = order_by;
+        }
+
+        this.options.tag_filter = getIntListFromURLParam('tags');
+
     },
 
     changeOrder: function(event) {
@@ -120,9 +136,11 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     collectPostData: function() {
+
         var current = {
             "order_by": this._order_mod + this._order,
             "milestone": this._milestone_id,
+            "tags": this.options.tag_filter
         }
         if (this._status.length > 0) {
             current['status'] = this._status;
@@ -132,14 +150,12 @@ Greenmine.TasksView = Backbone.View.extend({
 
     reload: function(post_data) {
         var url = this.$el.data('tasks-url');
+        var post_data = this.collectPostData();
 
-        if (post_data === undefined) {
-            post_data = {};
-        }
+        $.post(url, post_data, function(data) {
+            console.log(data);
 
-        var postdata = _.extend({}, this.collectPostData(), post_data);
-
-        $.post(url, postdata, function(data) {
+            Greenmine.tagCollection.reset(data.tags);
             Greenmine.taskCollection.reset(data.tasks);
         }, 'json');
     },
@@ -184,5 +200,16 @@ Greenmine.TasksView = Backbone.View.extend({
         Greenmine.tagCollection.each(function(item) {
             self.addTag(item);
         });
+    },
+
+    on_tag_add_filter_clicked: function(){
+        event.preventDefault();
+        var self = $(event.target);
+        var tag_filter = parseInt(self.attr('category'));
+
+        if ($.inArray(tag_filter, this.options.tag_filter)<0){
+            this.options.tag_filter.push(tag_filter);
+            this.reload();
+        }
     }
 });

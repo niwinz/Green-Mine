@@ -32,7 +32,7 @@ class IssueList(GenericView):
     def get_query_set(self, milestone):
         return milestone.tasks.filter(type="bug")
 
-    def filter_issues(self, milestone, order_by=None, status=None):
+    def filter_issues(self, milestone, order_by=None, status=None, tags=None):
         issues = self.get_query_set(milestone)
 
         if status is not None:
@@ -42,6 +42,10 @@ class IssueList(GenericView):
             issues = issues.order_by('-created_date')
         else:
             issues = issues.order_by(order_by)
+
+        if tags:
+            for tag in tags:
+                issues = issues.filter(tags__in=[tag])
 
         return issues
 
@@ -106,13 +110,14 @@ class IssueList(GenericView):
         milestone = form.cleaned_data['milestone']
         status = form.cleaned_data['status'] or None
         order_by = form.cleaned_data['order_by']
+        selected_tags = form.cleaned_data['tags']
 
-        filtered_tasks = self.filter_issues(milestone, order_by, status)
-        tags = Tag.objects.tags_for_queryset(filtered_tasks)
+        filtered_tasks = self.filter_issues(milestone, order_by, status, selected_tags)
+        tags = self.get_tag_dicts(filtered_tasks)
         filtered_tasks = [task.to_dict() for task in filtered_tasks]
 
         return self.render_to_ok({
-            "tasks": tasks,
+            "tasks": filtered_tasks,
             'tags': tags,
         })
 
