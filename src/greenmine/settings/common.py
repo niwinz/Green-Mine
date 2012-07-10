@@ -306,8 +306,7 @@ DATE_INPUT_FORMATS = (
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-#        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-        'PATH': os.path.join(os.path.dirname(__file__), 'search/index'),
+        'PATH': os.path.join(os.path.dirname(__file__), '../search/index'),
     },
 }
 
