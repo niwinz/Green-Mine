@@ -217,9 +217,15 @@ var LeftBlockView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
 
-        this.options.order_by = "-priority";
-        this.options.tag_filter = [];
+        var order_by = getUrlVars()["order_by"];
+        if (order_by === undefined){
+            this.options.order_by = "-priority";
+        }
+        else{
+            this.options.order_by = order_by;
+        }
 
+        this.options.tag_filter = getIntListFromURLParam('tags');
         this.model = new LeftBlockModel({view:this});
         this.model.fetch({success: this.render});
     },

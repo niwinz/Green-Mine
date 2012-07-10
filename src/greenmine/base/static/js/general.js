@@ -6,6 +6,31 @@
     });
 })(jQuery);
 
+function getUrlVars(){
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+function getIntListFromURLParam(param){
+    var param_value = getUrlVars()[param];
+    var return_list = [];
+    if (param_value!== undefined){
+        $.each(param_value.split(','), function(index, value){
+            if (value!=''){
+                return_list.push(parseInt(value));
+            }
+        });
+    }
+    return return_list;
+
+}
 
 var milestone_dashboard_bindings = function() {
     $('.user-story .user-story-status .user-story-task').live('mouseenter', function(e) {
@@ -39,7 +64,7 @@ var milestone_dashboard_bindings = function() {
                     }
                     var mod_url = $(ui.draggable).attr('url');
                     $.ajax({
-                        url:mod_url, 
+                        url:mod_url,
                         data:params,
                         type: 'POST',
                         dataType:'json',
@@ -76,22 +101,22 @@ var milestone_dashboard_bindings = function() {
 */
 
 var djangoPrintError = function (self, field){
-    var error = field.data('error'); 
+    var error = field.data('error');
     $("#field-" + field.attr('id')).remove();
     if (error) {
-        field.addClass(this.invalidClass);                
+        field.addClass(this.invalidClass);
         if(!self.disableInlineErrors) {
             if(self.inlineErrors) {
-                $("<ul class='errorlist' id='field-"+field.attr('id')+"'><li>" + 
+                $("<ul class='errorlist' id='field-"+field.attr('id')+"'><li>" +
                     field.data('error') + "</li></ul>").insertBefore(field);
             } else {
                 self.printFieldGlobalError(field.data('error'), field.attr('id'));
             }
         }
     } else {
-        field.addClass(self.validClass);    
-    }    
-    self.onPrintError(field);      
+        field.addClass(self.validClass);
+    }
+    self.onPrintError(field);
 }
 
 
@@ -104,18 +129,18 @@ var djangoAjaxSuccess = function(self, data) {
         messages.reset();
         messages._send(data.messages.type, data.messages.msg);
     }
-    
+
     if (data.valid) {
         self.form.data('ajax-valid', true);
 
         if (data.redirect_to !== undefined){
-            window.location.href = data.redirect_to;  
-        } 
+            window.location.href = data.redirect_to;
+        }
     } else {
         jQuery.each(data.errors, function(index, value){
             field = self.elements.filter("[name="+index+"]");
             field.data('error', value[0]);
-        })    
+        })
         self.printErrors();
     }
 }
@@ -144,7 +169,7 @@ $(document).ready(function(){
             }
         });
     }
-    
+
     if ($("#new-project-form, #edit-project-form").length) {
         $("#new-project-form, #edit-project-form").validate({
             printFieldError: function(field) {
@@ -164,15 +189,15 @@ $(document).ready(function(){
                         return false;
                     }
                 }
-            }           
-        });          
-    }    
+            }
+        });
+    }
 
     if($('#projects').length){
         $('.table01 a.delete').click(function(e){
             var self = $(this);
             //self.closest('.un-us-item').css('border', '1px solid red');
-            
+
             var buttons = {};
             buttons[gettext('Delete')] = function() {
                 var $this = $(this);
@@ -193,7 +218,7 @@ $(document).ready(function(){
 
             e.preventDefault();
         });
-        
+
         $("#open-import-project").click(function(e){
             e.preventDefault();
             $("#import-project").slideToggle("slow");
@@ -217,7 +242,7 @@ $(document).ready(function(){
                 }, 'json');
             }
         });
-        
+
         $("#btn-usr-project").click(function(e){
             var role = $(".users-roles [name='rol-aux']");
             if (role.val().length == 0){
@@ -241,14 +266,14 @@ $(document).ready(function(){
         $("#user-project").delegate('a.delete', 'click', function(event){
             $(this).parents('tr').remove();
             event.preventDefault();
-        });        
+        });
     }
-    
+
     if($("#issue").length){
         $("#issue").delegate(".delete-user", "click", function(e){
-            $(this).parent().fadeOut("400", function(){  
+            $(this).parent().fadeOut("400", function(){
                 var realinput = $(this).parent().find("input[type='hidden']");
-                if($(realinput).val().length){    
+                if($(realinput).val().length){
                     var values = $(realinput).val().split(',');
                     values.splice(jQuery.inArray($(this).attr('rel'),values),1);
                     $(realinput).val(values.join(','));
@@ -259,15 +284,15 @@ $(document).ready(function(){
             });
             e.preventDefault();
         })
-        
+
         $("input.users-autocomplete").autocomplete({
-            minLength: 1,            
+            minLength: 1,
             select: function(event, ui) {
-                var realinput = $(this).parent().find("input[type='hidden']");     
-                var values = $(realinput).val().split(',');     
+                var realinput = $(this).parent().find("input[type='hidden']");
+                var values = $(realinput).val().split(',');
                 if(jQuery.inArray(ui.item.id,values)==-1){
                     values.push(ui.item.id)
-                    if($(realinput).val().length){    
+                    if($(realinput).val().length){
                         $(realinput).val(values.join(','));
                     }else{
                         $(realinput).val(ui.item.id);
@@ -275,7 +300,7 @@ $(document).ready(function(){
                     var html = "<span rel='"+ui.item.id+"' class='delete-user-ac'>"+ui.item.label+"<a class='delete-user' href=''></a></span>";
                     $(this).parent().append(html);
                 }
-                $(this).val("");    
+                $(this).val("");
                 return false;
             },
             source: function(request, response) {
@@ -285,10 +310,10 @@ $(document).ready(function(){
                     if (data.valid){response(data.list);}
                 }, 'json');
             }
-        });   
-        
+        });
+
         $("input.user-autocomplete").autocomplete({
-            minLength: 1,            
+            minLength: 1,
             source: function(request, response) {
                 var url = $("input.user-autocomplete").attr('urlautocomplete');
                 url = url + "?term=" + request.term;
@@ -296,10 +321,10 @@ $(document).ready(function(){
                     if (data.valid){response(data.list);}
                 }, 'json');
             }
-        }); 
-        
+        });
+
         $("#issue").delegate(".delete-file", "click", function(e){
-            $(this).parent().fadeOut("400", function(){  
+            $(this).parent().fadeOut("400", function(){
                 var realinput = $("#input-delete-files");
                 if($(realinput).val().length){
                     var values = $(realinput).val().split(',');
@@ -311,13 +336,13 @@ $(document).ready(function(){
                 $(this).remove();
             });
             e.preventDefault();
-        })     
+        })
     }
-    
-    if ($("#dashboard").length) {        
+
+    if ($("#dashboard").length) {
         (function($) {
             var dragAndDrop = function() {
-                $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer', 
+                $("#bin").droppable({activeClass: 'bin2',  tolerance: 'pointer',
                 drop: function(ev, ui){
                     /* Drop ¿Que? Milestone? */
                     if($(ui.draggable).hasClass('milestone')){
@@ -346,13 +371,13 @@ $(document).ready(function(){
 
                 $('#tasks').delegate('li', 'mouseenter', function() {
                     if(!$(this).is(':data(draggable)')) {
-                        $(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});        
+                        $(this).draggable({handle:'.dg', helper: 'clone', cursorAt: {cursor: "crosshair", top: -5, left: -5}, revert: 'invalid'});
                     }
                     var milestones = $("li.milestone");
                     var milestones_length = milestones.length;
                     for(var i=0; i<milestones_length; i++){
                         if(!$(milestones[i]).is(':data(droppable)')) {
-                            $(milestones[i]).droppable({activeClass: 'add',  tolerance: 'pointer', 
+                            $(milestones[i]).droppable({activeClass: 'add',  tolerance: 'pointer',
                             drop: function(ev, ui){
                                 ui.draggable.draggable('option','revert',false);
                                 if(!$(this).hasClass('selected')){
@@ -370,8 +395,8 @@ $(document).ready(function(){
                                             }
                                             self.data('total_tasks', parseInt(self.data('total_tasks'))+1);
                                             $(old_milestone).data('total_tasks', parseInt($(old_milestone).data('total_tasks'))-1);
-                                            self.updateHtml(); 
-                                            $(old_milestone).updateHtml(); 
+                                            self.updateHtml();
+                                            $(old_milestone).updateHtml();
                                             $(ui.draggable).remove();
                                         }
                                     }, 'json');
@@ -382,9 +407,9 @@ $(document).ready(function(){
                             });
                         }
                     }
-                });                     
+                });
             }
-            
+
             /*
              * TODO: areglar esta funcion, ya que no hace su trabajo
              */
@@ -410,15 +435,15 @@ $(document).ready(function(){
                     }).show();
                 });
             };
-                        
+
             //init dashboard
             //milestones_bindings();
             dragAndDrop();
-            //filters();   
+            //filters();
         })(jQuery);
     }
-    
-    
+
+
     $(".file").live("change", function(e){
         if(!$(this).attr('rel')){
             $(this).parent().append('<input type="file" class="file ">');
