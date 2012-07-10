@@ -287,7 +287,6 @@ class Milestone(models.Model):
         total = 0.0
 
         for item in self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states()):
-            print [ t.finished_date for t in item.tasks.all() ]
             if item.tasks.filter(finished_date__lt=date).count() > 0:
                 if item.points == -1:
                     continue
