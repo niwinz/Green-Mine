@@ -91,9 +91,12 @@ class BacklogLeftBlockView(GenericView):
         if "order_by" in request.GET:
             unassigned = unassigned.order_by(request.GET['order_by'])
 
+        selected_tags = Tag.objects.none()
         if "tags" in request.GET and request.GET['tags']:
-            for tag_filter in request.GET['tags'].split(','):
-                unassigned = unassigned.filter(tags__in=tag_filter)
+            selected_tags_ids = map(int, request.GET['tags'].split(','))
+            selected_tags = Tag.objects.filter(id__in = selected_tags_ids)
+            for tag in selected_tags:
+                unassigned = unassigned.filter(tags__in=[tag])
 
         unassigned = unassigned.select_related()
 
@@ -101,6 +104,7 @@ class BacklogLeftBlockView(GenericView):
             'project': project,
             'unassigned_us': unassigned,
             'tags': Tag.objects.tags_for_queryset(unassigned),
+            'selected_tags_ids': selected_tags.values_list('id', flat=True),
         }
 
         response_context = {

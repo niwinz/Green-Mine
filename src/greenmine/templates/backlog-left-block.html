@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load static i18n %}
 <div class="un-us-item head-title">
     <div class="row title">
         <span>
@@ -17,7 +17,7 @@
 <div class="un-us-item">
     <div class="row title tag-selector">
         {% for tag in tags%}
-            <span class="category" category="{{ tag.id }}">
+            <span class="category {% if tag.id in selected_tags_ids %} selected {% else %} unselected {% endif %}" category="{{ tag.id }}">
                 {{ tag }} {{tag.count}}
             </span>
         {% endfor %}
