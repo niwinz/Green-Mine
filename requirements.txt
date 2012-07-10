@@ -17,3 +17,5 @@ git+git://github.com/kaleidos/django-superview.git
 
 git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
 whoosh>=2.3.2
+
+django-reversion>=1.6.1
