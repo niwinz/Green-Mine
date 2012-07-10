@@ -4,11 +4,11 @@ from .models import Question, QuestionResponse
 
 
 class QuestionIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='owner')
     project = indexes.CharField(model_attr='project')
-    milestone = indexes.CharField(model_attr='milestone')
-    created_date = indexes.DateTimeField(model_attr='created_data')
+    milestone = indexes.CharField(model_attr='milestone', null=True)
+    created_date = indexes.DateTimeField(model_attr='created_date')
 
     def get_model(self):
         return Question
@@ -18,11 +18,11 @@ class QuestionIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class QuestionResponseIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='owner')
     project = indexes.CharField(model_attr='project')
     question  = indexes.CharField(model_attr='question')
-    created_date = indexes.DateTimeField(model_attr='created_data')
+    created_date = indexes.DateTimeField(model_attr='created_date')
 
     def get_model(self):
         return QuestionResponse

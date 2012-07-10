@@ -4,10 +4,10 @@ from .models import Project, Milestone, UserStory, Task
 
 
 class ProjectIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='owner')
-    created_date = indexes.DateTimeField(model_attr='created_data')
-    extra = indexes.DateTimeField(model_attr='extra')
+    created_date = indexes.DateTimeField(model_attr='created_date')
+    extras = indexes.CharField(model_attr='extras', null=True)
 
     def get_model(self):
         return Project
@@ -17,10 +17,10 @@ class ProjectIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class MilestoneIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='owner')
     project = indexes.CharField(model_attr='project')
-    created_date = indexes.DateTimeField(model_attr='created_data')
+    created_date = indexes.DateTimeField(model_attr='created_date')
 
     def get_model(self):
         return Milestone
@@ -30,11 +30,11 @@ class MilestoneIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class UserStoryIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    owner = indexes.CharField(model_attr='owner')
+    text = indexes.CharField(document=True)
+    owner = indexes.CharField(model_attr='owner', null=True)
     project = indexes.CharField(model_attr='project')
-    milestone = indexes.CharField(model_attr='milestone')
-    created_date = indexes.DateTimeField(model_attr='created_data')
+    milestone = indexes.CharField(model_attr='milestone', null=True)
+    created_date = indexes.DateTimeField(model_attr='created_date')
 
     def get_model(self):
         return UserStory
@@ -44,12 +44,12 @@ class UserStoryIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class TaskIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='owner')
     project = indexes.CharField(model_attr='project')
-    milestone = indexes.CharField(model_attr='milestone')
-    user_story = indexes.CharField(model_attr='user_story')
-    created_date = indexes.DateTimeField(model_attr='created_data')
+    milestone = indexes.CharField(model_attr='milestone', null=True)
+    user_story = indexes.CharField(model_attr='user_story', null=True)
+    created_date = indexes.DateTimeField(model_attr='created_date')
 
     def get_model(self):
         return Task

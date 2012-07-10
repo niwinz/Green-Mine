@@ -1,10 +1,10 @@
 # -* coding: utf-8 -*-
-from django.contrib.auth import User
+from django.contrib.auth.models import User
 from haystack import indexes
 from .models import Profile
 
 class UserIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
 
     def get_model(self):
         return User
@@ -14,7 +14,7 @@ class UserIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class ProfileIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.CharField(document=True)
     owner = indexes.CharField(model_attr='user')
 
     def get_model(self):
