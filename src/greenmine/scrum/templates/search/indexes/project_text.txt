@@ -1,0 +1,11 @@
+{{ object.uuid }}
+{{ object.name }}
+{{ object.slug }}
+{{ object.description }}
+{{ object.created_date }}
+{{ object.modified_date }}
+{{ object.owner }}
+{% for participant in object.participants.all %}
+    {{ participant }}
+{% endfor %}
+{{ object.markup }}
