@@ -23,12 +23,7 @@ from .choices import *
 import datetime
 import re
 
-US_STATUS_HAVE_TASK_STATUS = {
-        'open': ['open'],
-        'progress': ['progress', 'needinfo', 'posponed'],
-        'completed': ['completed', 'workaround'],
-        'closed': ['closed'],
-}
+from .utils import SCRUM_STATES
 
 class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
@@ -291,8 +286,8 @@ class Milestone(models.Model):
         """
         total = 0.0
 
-        for item in self.user_stories.filter(status__in=settings.CLOSED_STATUSES):
-            if item.tasks.filter(modified_date__lt=date).count() > 0:
+        for item in self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states):
+            if item.tasks.filter(finished_date__lt=date).count() > 0:
                 if item.points == -1:
                     continue
 
@@ -310,7 +305,7 @@ class Milestone(models.Model):
         Get a total of completed points.
         """
 
-        queryset = self.user_stories.filter(status__in=settings.CLOSED_STATUSES)
+        queryset = self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states())
         total = sum(iter_points(queryset))
         return "{0:.1f}".format(total)
 
@@ -413,7 +408,7 @@ class UserStory(models.Model):
     priority = models.IntegerField(default=1)
     points = models.IntegerField(choices=POINTS_CHOICES, default=-1)
     status = models.CharField(max_length=50,
-        choices=US_STATUS_CHOICES, db_index=True, default="open")
+        choices=SCRUM_STATES.get_us_choices(), db_index=True, default="open")
 
     tags = TaggableManager()
 
@@ -502,28 +497,28 @@ class UserStory(models.Model):
 
     @property
     def tasks_new(self):
-        return self.tasks.filter(status='open')
+        return self.tasks.filter(status__in=SCRUM_STATES.get_task_states_for_us_state('open'))
 
     @property
     def tasks_progress(self):
-        return self.tasks.filter(status='progress')
+        return self.tasks.filter(status__in=SCRUM_STATES.get_task_states_for_us_state('progress'))
 
     @property
     def tasks_completed(self):
-        return self.tasks.filter(status='completed')
+        return self.tasks.filter(status__in=SCRUM_STATES.get_task_states_for_us_state('completed'))
 
     @property
     def tasks_closed(self):
-        return self.tasks.filter(status__in=['workaround', 'needinfo','closed', 'posponed'])
+        return self.tasks.filter(status__in=SCRUM_STATES.get_task_states_for_us_state('closed'))
 
     def update_status(self):
         total_tasks_count = self.tasks.count()
 
         if total_tasks_count == 0:
             self.status = 'open'
-        elif self.tasks.filter(status__in=settings.CLOSED_STATUSES).count() == total_tasks_count:
+        elif self.tasks.filter(status__in=SCRUM_STATES.get_finished_task_states()).count() == total_tasks_count:
             self.status = 'completed'
-        elif self.tasks.filter(status='open').count() == total_tasks_count:
+        elif self.tasks.filter(status__in=SCRUM_STATES.get_unfinished_task_states()).count() == total_tasks_count:
             self.status = 'open'
         else:
             self.status = 'progress'
@@ -574,6 +569,9 @@ class Task(models.Model):
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
+    finished_date = models.DateTimeField(null=True, blank=True)
+    last_status = models.CharField(max_length=50,
+        choices=TASK_STATUS_CHOICES, null=True, blank=True)
 
     subject = models.CharField(max_length=500)
     description = WikiField(blank=True)
@@ -593,10 +591,7 @@ class Task(models.Model):
 
     @property
     def fake_status(self):
-        for key in US_STATUS_HAVE_TASK_STATUS.keys():
-            if self.status in US_STATUS_HAVE_TASK_STATUS[key]:
-                return key
-        return None
+        return SCRUM_STATES.get_us_state_for_task_state(self.status)
 
     @models.permalink
     def get_edit_url(self):
@@ -626,6 +621,15 @@ class Task(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = timezone.now()
+            # Store information about close date of a task
+            if self.last_status != self.status:
+                if self.last_status in SCRUM_STATES.get_finished_task_states():
+                    if self.status in SCRUM_STATES.get_unfinished_task_states():
+                        self.finished_date = None
+                elif self.last_status in SCRUM_STATES.get_unfinished_task_states():
+                    if self.status in SCRUM_STATES.get_finished_task_states():
+                        self.finished_date = timezone.now()
+                self.last_status = self.status
 
         if not self.ref:
             self.ref = ref_uniquely(self.project, self.__class__)
