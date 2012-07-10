@@ -13,7 +13,8 @@ from ..models import Project, Task
 from ..models import TASK_STATUS_CHOICES
 from ..forms.dashboard import ApiForm as DashboardApiForm
 
-from datetime import timedelta
+from datetime import timedelta, datetime, time
+from django.utils import timezone
 
 # TODO:
 # * quick task creation
@@ -38,11 +39,26 @@ class MilestoneBurndownView(GenericView):
             date = date + timedelta(days=1)
         points_done_on_date.append(milestone.get_points_done_at_date(date))
 
+        now_position = None
+
+        begin = timezone.make_aware(datetime.combine(milestone.estimated_start, time(0)), timezone.utc).localtime()
+        end = timezone.make_aware(datetime.combine(milestone.estimated_finish, time(0)), timezone.utc).localtime()
+        now = timezone.now()
+
+        if begin < now and end > now:
+            now_seconds = (now - begin).total_seconds()
+            end_seconds = (end - begin).total_seconds()
+            now_position = float(now_seconds*((end-begin).days))/float(end_seconds);
+
+            # The begin is in the x axis position 1
+            now_position += 1;
+
         context = {
             'points_done_on_date': points_done_on_date,
             'sprint_points': milestone.total_points,
             'begin_date': milestone.estimated_start,
             'end_date': milestone.estimated_finish,
+            'now_position': now_position,
         }
 
         return self.render_to_ok(context)
