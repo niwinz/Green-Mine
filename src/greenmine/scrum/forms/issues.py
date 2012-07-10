@@ -12,7 +12,8 @@ class IssueFilterForm(forms.Form):
 
     milestone = forms.ModelChoiceField(
         queryset = Milestone.objects.none(),
-        empty_label = None
+        empty_label = None,
+        required = False
     )
 
     def __init__(self, *args, **kwargs):
