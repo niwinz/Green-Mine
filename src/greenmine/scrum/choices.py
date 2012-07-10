@@ -2,6 +2,8 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from .utils import SCRUM_STATES
+
 ORG_ROLE_CHOICES = (
     ('owner', _(u'Owner')),
     ('developer', _(u'Developer')),
@@ -12,12 +14,7 @@ MARKUP_TYPE = (
     ('rst', _('Restructured Text')),
 )
 
-US_STATUS_CHOICES = (
-    ('open', _(u'New')),
-    ('progress', _(u'In progress')),
-    ('completed', _(u'Ready for test')),
-    ('closed', _(u'Closed')),
-)
+US_STATUS_CHOICES = SCRUM_STATES.get_us_choices()
 
 TASK_PRIORITY_CHOICES = (
     (1, _(u'Low')),
@@ -31,11 +28,7 @@ TASK_TYPE_CHOICES = (
     ('task', _(u'Task')),
 )
 
-TASK_STATUS_CHOICES = US_STATUS_CHOICES + (
-    ('workaround', _(u"Workaround")),
-    ('needinfo', _(u"Needs info")),
-    ('posponed', _(u"Posponed")),
-)
+TASK_STATUS_CHOICES = SCRUM_STATES.get_task_choices()
 
 POINTS_CHOICES = (
     (-1, u'?'),

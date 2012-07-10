@@ -112,7 +112,6 @@ class Command(BaseCommand):
                         )
 
             # created unassociated uss.
-
             for y in xrange(10):
                 us = UserStory.objects.create(
                     subject = lorem_ipsum.words(random.randint(4,9), common=False),
@@ -127,3 +126,17 @@ class Command(BaseCommand):
 
                 for tag in lorem_ipsum.words(random.randint(1,5), common=True).split(" "):
                     us.tags.add(tag)
+
+            # create bugs.
+            for y in xrange(20):
+                bug = Task.objects.create(
+                    project = project,
+                    type = "bug",
+                    subject = lorem_ipsum.words(random.randint(1,5)),
+                    description = lorem_ipsum.words(random.randint(1,15)),
+                    owner = project.owner,
+                )
+
+                for tag in lorem_ipsum.words(random.randint(1,5), common=False).split(" "):
+                    bug.tags.add(tag)
+

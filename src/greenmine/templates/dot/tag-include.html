@@ -1,5 +1,5 @@
 <script type="template/dot" id="tag-template">
-    <span class="category" category="{{=it.id}}">
+    <span class="category {{? it.selected == true}}selected{{??}}unselected{{?}}" category="{{=it.id}}" >
         {{=it.name}} {{=it.count}}
     </span>
 </script>

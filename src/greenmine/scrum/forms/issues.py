@@ -3,14 +3,17 @@
 from django import forms
 from greenmine.base.models import *
 from greenmine.scrum.models import *
+from greenmine.taggit.models import Tag
 
 class IssueFilterForm(forms.Form):
     order_by = forms.CharField(max_length=20) # TODO: conver to choice field
     status = forms.ChoiceField(choices=TASK_STATUS_CHOICES, required=False)
+    tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), required=False)
 
     milestone = forms.ModelChoiceField(
         queryset = Milestone.objects.none(),
-        empty_label = None
+        empty_label = None,
+        required = False
     )
 
     def __init__(self, *args, **kwargs):
