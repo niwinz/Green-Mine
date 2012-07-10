@@ -12,6 +12,8 @@ from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
 from greenmine.taggit.models import Tag
 
+from django.utils import timezone
+
 from ..models import *
 
 
@@ -164,6 +166,8 @@ class BacklogBurnDownView(GenericView):
 
         sprints_queryset = project.milestones.order_by('created_date')
 
+        now_position = None
+
         for i, sprint in enumerate(sprints_queryset, 1):
             usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
             points_sum += sum(iter_points(usqs))
@@ -186,11 +190,17 @@ class BacklogBurnDownView(GenericView):
             points_for_sprint.append(points_sum)
             disponibility.append(sprint.disponibility)
 
+            if timezone.now().date() <= sprint.estimated_finish and timezone.now().date() >= sprint.estimated_start:
+                end_days = (sprint.estimated_finish-sprint.estimated_start).days
+                now_days = (timezone.now().date()-sprint.estimated_start).days
+                now_position = (float(now_days)/float(end_days))+i
+
         context = {
             'points_for_sprint': points_for_sprint,
             'disponibility': disponibility,
             'sprints_number': extras.sprints,
             'extra_points': extra_points,
+            'now_position': now_position,
             #old
             #'total_points': sum(iter_points(project.user_stories.all())),
             'total_points': sum(iter_points(project.user_stories\
@@ -222,6 +232,9 @@ class BacklogBurnUpView(GenericView):
         extra_points_team_sum = 0
 
         sprints_queryset = project.milestones.order_by('created_date')
+
+        now_position = None
+
         for i, sprint in enumerate(sprints_queryset, 1):
             usqs = sprint.user_stories.filter(status__in=['completed', 'closed'])
             points_sum += sum(iter_points(usqs))
@@ -258,6 +271,11 @@ class BacklogBurnUpView(GenericView):
 
             points_for_sprint.append(points_sum)
 
+            if timezone.now().date() <= sprint.estimated_finish and timezone.now().date() >= sprint.estimated_start:
+                end_days = (sprint.estimated_finish-sprint.estimated_start).days
+                now_days = (timezone.now().date()-sprint.estimated_start).days
+                now_position = (float(now_days)/float(end_days))+i
+
         total_points = sum(iter_points(project.user_stories.all()))
 
         sprints = []
@@ -271,6 +289,7 @@ class BacklogBurnUpView(GenericView):
             'total_points': sum(iter_points(project.user_stories\
                 .exclude(Q(client_requirement=True) | Q(team_requirement=True)))),
             'total_sprints': extras.sprints,
+            'now_position': now_position,
         }
 
         return self.render_to_ok(context)

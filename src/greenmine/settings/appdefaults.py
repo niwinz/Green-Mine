@@ -4,6 +4,7 @@ GM_SCRUM_STATES = {
     'open': {
         'name': 'Open',
         'is_finished': False,
+        'order': 10,
         'task_states': [
             ('open', 'Open'),
         ]
@@ -11,6 +12,7 @@ GM_SCRUM_STATES = {
     'progress': {
         'name': 'In progress',
         'is_finished': False,
+        'order': 20,
         'task_states': [
             ('progress', 'In progress'),
             ('needs_info', 'Needs info'),
@@ -20,6 +22,7 @@ GM_SCRUM_STATES = {
     'completed': {
         'name': 'Ready for test',
         'is_finished': True,
+        'order': 30,
         'task_states': [
             ('completed', 'Ready for test'),
             ('workaround', 'Workaround'),
@@ -28,6 +31,7 @@ GM_SCRUM_STATES = {
     'closed': {
         'name': 'Closed',
         'is_finished': True,
+        'order': 40,
         'task_states': [
             ('closed', 'Closed'),
         ]

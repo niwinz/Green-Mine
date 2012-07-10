@@ -299,10 +299,14 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
         var end_date = new Date(this.model.get('end_date'));
         var sprint_points = this.model.get('sprint_points');
         var points_done_on_date = this.model.get('points_done_on_date');
+        var now_position = this.model.get('now_position');
 
-        for(var date=begin_date; date<=end_date; date.setDate(date.getDate()+1)) {
-            ticks.push(date);
+        var counter = 1;
+        for(var date=new Date(begin_date.toString()); date<=end_date; date.setDate(date.getDate()+1)) {
+            ticks.push([counter, date.getDate().toString()+"/"+(date.getMonth()+1).toString()]);
+            counter++;
         }
+
         for(var i=0; i<=ticks.length; i++) {
             d1.push([i+1, sprint_points-points_done_on_date[i]]);
             d2.push([i+1, sprint_points-((sprint_points/ticks.length)*i)]);
@@ -318,6 +322,12 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
                 data: d2,
                 lines: { show: true, fill: true },
                 points: { show: true }
+            },
+            {
+                data: [[now_position, 0], [now_position, sprint_points]],
+                lines: { show: true, fill: true },
+                points: { show: false },
+                color: "#66cc66",
             }
         ],
         {

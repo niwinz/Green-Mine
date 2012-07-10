@@ -22,5 +22,5 @@ class UserStoryForm(forms.ModelForm):
 class UserStoryFormInline(forms.ModelForm):
     class Meta:
         model = UserStory
-        fields = ('priority', 'points', 'status', 'tags',
+        fields = ('priority', 'points', 'tags',
             'tested', 'finish_date', 'milestone')
