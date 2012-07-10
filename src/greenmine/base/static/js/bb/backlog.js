@@ -211,7 +211,8 @@ var LeftBlockView = Backbone.View.extend({
         "click .unassigned-us .head-title .row a": "on_order_link_clicked",
 
         /*Tag filtering */
-        "click .unassigned-us .row .category": "on_tag_filter_clicked"
+        "click .unassigned-us .row .category.selected": "on_tag_remove_filter_clicked",
+        "click .unassigned-us .row .category.unselected": "on_tag_add_filter_clicked"
     },
 
     initialize: function() {
@@ -226,6 +227,7 @@ var LeftBlockView = Backbone.View.extend({
         }
 
         this.options.tag_filter = getIntListFromURLParam('tags');
+
         this.model = new LeftBlockModel({view:this});
         this.model.fetch({success: this.render});
     },
@@ -243,7 +245,6 @@ var LeftBlockView = Backbone.View.extend({
         if (typeof(window.history.pushState) == 'function'){
             history.pushState({}, "backlog ", params);
         }
-
         return base_url + params;
     },
 
@@ -274,13 +275,25 @@ var LeftBlockView = Backbone.View.extend({
         this.model.fetch({success:this.render});
     },
 
-    on_tag_filter_clicked: function(event) {
+    on_tag_add_filter_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
         var tag_filter = parseInt(self.attr('category'));
-        this.options.tag_filter.push(tag_filter);
-        this.model.fetch({success:this.render});
 
+        if ($.inArray(tag_filter, this.options.tag_filter)<0){
+            this.options.tag_filter.push(tag_filter);
+            this.model.fetch({success:this.render});
+        }
+    },
+
+    on_tag_remove_filter_clicked: function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var self = $(event.currentTarget).parent();
+        var tag_filter = parseInt(self.attr('category'));
+
+        this.options.tag_filter.pop(tag_filter);
+        this.model.fetch({success:this.render});
     },
 
     /*
