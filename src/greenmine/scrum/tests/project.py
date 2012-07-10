@@ -65,6 +65,8 @@ class SimplePermissionMethodsTest(TestCase):
 
 
 class ProjectRelatedTests(TestCase):
+    fixtures = ['initial_data']
+
     def setUp(self):
         self.user = User.objects.create(
             username = 'test',

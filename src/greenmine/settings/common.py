@@ -171,6 +171,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'greenmine.core.middleware.PermissionMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -212,6 +214,7 @@ INSTALLED_APPS = [
     'south',
     'superview',
     'haystack',
+    'reversion',
 ]
 
 WSGI_APPLICATION = 'greenmine.wsgi.application'

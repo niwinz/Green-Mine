@@ -142,6 +142,13 @@ class Tag(TagBase):
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
 
+    def to_dict(self):
+        self_dict = {
+            'id': self.pk,
+            'name': self.name,
+        }
+
+        return self_dict
 
 
 class ItemBase(models.Model):

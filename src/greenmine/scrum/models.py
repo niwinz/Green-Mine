@@ -16,12 +16,19 @@ from greenmine.core.fields import DictField, ListField
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
 from greenmine.taggit.managers import TaggableManager
+import reversion
 
 from .choices import *
 
 import datetime
 import re
 
+US_STATUS_HAVE_TASK_STATUS = {
+        'open': ['open'],
+        'progress': ['progress', 'needinfo', 'posponed'],
+        'completed': ['completed', 'workaround'],
+        'closed': ['closed'],
+}
 
 class ProjectManager(models.Manager):
     def get_by_natural_key(self, slug):
@@ -586,13 +593,10 @@ class Task(models.Model):
 
     @property
     def fake_status(self):
-        if self.has_noncolumn_status:
-            return "closed"
-        return self.status
-
-    @property
-    def has_noncolumn_status(self):
-        return self.status in ['needinfo', 'workaround', 'posponed']
+        for key in US_STATUS_HAVE_TASK_STATUS.keys():
+            if self.status in US_STATUS_HAVE_TASK_STATUS[key]:
+                return key
+        return None
 
     @models.permalink
     def get_edit_url(self):
@@ -640,8 +644,18 @@ class Task(models.Model):
             'fakeStatus': self.fake_status,
             'us': self.user_story and self.user_story.pk or None,
             'assignedTo': self.assigned_to and self.assigned_to.pk or None,
+            'tags': [tag.to_dict() for tag in self.tags.all()],
         }
 
         return self_dict
+
+reversion.register(ProjectExtras)
+reversion.register(Project)
+reversion.register(ProjectUserRole)
+reversion.register(Milestone)
+reversion.register(UserStory)
+reversion.register(Change)
+reversion.register(ChangeAttachment)
+reversion.register(Task)
 
 from . import sigdispatch

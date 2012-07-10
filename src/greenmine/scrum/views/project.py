@@ -25,6 +25,14 @@ from ...core import signals
 from ..models import Project
 from ..forms.project import ProjectForm, ProjectPersonalSettingsForm, ProjectGeneralSettingsForm
 
+from greenmine.forms.base import *
+from greenmine.questions.forms import *
+from greenmine.scrum.forms.project import *
+from greenmine.scrum.forms.milestone import *
+from greenmine.core.utils import iter_points
+from greenmine.core import signals
+from greenmine.profile.models import *
+
 from datetime import timedelta
 
 import os
