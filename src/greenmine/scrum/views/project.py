@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import render_to_string
-from django.template import RequestContext, loader
+from django.http import HttpResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.utils import IntegrityError
 from django.db import transaction
-from django.db.models import Q
-from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.timezone import now
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf import settings
 
 from ...profile.models import Role
 from ...core.generic import GenericView
@@ -23,7 +18,7 @@ from ...core.decorators import login_required, staff_required
 from ...core import signals
 
 from ..models import Project
-from ..forms.project import ProjectForm, ProjectPersonalSettingsForm, ProjectGeneralSettingsForm
+from ..forms.project import ProjectForm, ProjectPersonalSettingsForm, ProjectAdminSettingsForm
 
 from datetime import timedelta
 
@@ -187,6 +182,7 @@ class ProjectEditView(UserRoleMixIn, GenericView):
 
 class ProjectDelete(GenericView):
     @login_required
+    @transaction.commit_on_success
     def post(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
 
@@ -198,15 +194,19 @@ class ProjectDelete(GenericView):
             .send(sender=self, project=project, user=request.user)
 
         project.delete()
+        return self.render_json({}, ok=True)
 
-        return self.render_to_ok({})
 
 
-class ProjectSettings(GenericView):
+
+class ProjectUserSettings(GenericView):
     template_path = "config/project-personal.html"
-    menu = ['settings', 'settings_personal']
 
-    @login_required
+    def get(self, request):
+        return HttpResponse("TODO")
+
+
+class ProjectUserSettingsIndividual(GenericView):
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
         try:
@@ -225,36 +225,17 @@ class ProjectSettings(GenericView):
             'form': form,
         }
 
-        return self.render_to_response(self.template_path, context)
-
-    @login_required
-    def post(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-        pur = get_object_or_404(project.user_roles, user=request.user)
-        form = ProjectPersonalSettingsForm(request.POST, instance=pur)
-
-        if form.is_valid():
-            pur = form.save(commit=True)
-            messages.info(request, _(u"Project preferences saved successfull"))
-
-            return self.render_redirect(project.get_settings_url())
-
-        context = {
-            'pur': pur,
-            'project': project,
-            'form': form,
-        }
-
-        return self.render_to_response(self.template_path, context)
+        return HttpResponse("TODO")
 
 
-class ProjectGeneralSettings(GenericView):
+
+class ProjectAdminSettings(GenericView):
+    """
+    Future project administration page.
+    Only visible for owner and superuser.
+    """
     template_path = "config/project-general.html"
     menu = ["settings", "settings_general"]
-
-    def create_category_choices(self, project):
-        return [('', '-----'),] + [(key, key.title()) \
-            for key in project.meta_category_list]
 
     @login_required
     def get(self, request, pslug):
@@ -274,7 +255,7 @@ class ProjectGeneralSettings(GenericView):
             'total_story_points': extras.total_story_points,
         }
 
-        form = ProjectGeneralSettingsForm(initial=initial)
+        form = ProjectAdminSettingsForm(initial=initial)
 
         context = {
             'categorys': self.create_category_choices(project),
@@ -286,7 +267,6 @@ class ProjectGeneralSettings(GenericView):
 
     @transaction.commit_on_success
     def save_form(self, project, form):
-        project.meta_category_color = form.colors_data
         project.markup = form.cleaned_data['markup']
         project.save()
 
@@ -315,7 +295,6 @@ class ProjectGeneralSettings(GenericView):
             return self.render_redirect(project.get_general_settings_url())
 
 
-        print dict(form.errors)
         context = {
             'categorys': self.create_category_choices(project),
             'project': project,
@@ -323,4 +302,3 @@ class ProjectGeneralSettings(GenericView):
         }
 
         return self.render_to_response(self.template_path, context)
-
