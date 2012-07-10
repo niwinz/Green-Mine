@@ -10,7 +10,7 @@ from greenmine.core.decorators import login_required
 from datetime import timedelta
 from greenmine.forms import base as forms
 from greenmine.core.utils import iter_points
-from greenmine.taggit.utils import get_tags_for_queryset
+from greenmine.taggit.models import Tag
 
 from ..models import *
 
@@ -91,16 +91,20 @@ class BacklogLeftBlockView(GenericView):
         if "order_by" in request.GET:
             unassigned = unassigned.order_by(request.GET['order_by'])
 
+        selected_tags = Tag.objects.none()
         if "tags" in request.GET and request.GET['tags']:
-            for tag_filter in request.GET['tags'].split(','):
-                unassigned = unassigned.filter(tags__in=tag_filter)
+            selected_tags_ids = map(int, request.GET['tags'].split(','))
+            selected_tags = Tag.objects.filter(id__in = selected_tags_ids)
+            for tag in selected_tags:
+                unassigned = unassigned.filter(tags__in=[tag])
 
         unassigned = unassigned.select_related()
 
         template_context = {
             'project': project,
             'unassigned_us': unassigned,
-            'tags': UserStory.objects.tags_for_queryset(unassigned),
+            'tags': Tag.objects.tags_for_queryset(unassigned),
+            'selected_tags_ids': selected_tags.values_list('id', flat=True),
         }
 
         response_context = {

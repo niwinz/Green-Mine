@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, Http404
 from django.core.cache import cache
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext, loader
@@ -18,15 +15,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.timezone import now
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from greenmine.core.generic import GenericView
-from greenmine.core.decorators import login_required, staff_required
+from ...profile.models import Role
+from ...core.generic import GenericView
+from ...core.decorators import login_required, staff_required
+from ...core import signals
 
-# Temporal imports
-from greenmine.base.models import *
-from greenmine.scrum.models import *
+from ..models import Project
+from ..forms.project import ProjectForm, ProjectPersonalSettingsForm, ProjectGeneralSettingsForm
 
 from greenmine.forms.base import *
 from greenmine.questions.forms import *
@@ -36,10 +33,10 @@ from greenmine.core.utils import iter_points
 from greenmine.core import signals
 from greenmine.profile.models import *
 
+from datetime import timedelta
+
 import os
 import re
-
-from datetime import timedelta
 
 
 class UserRoleMixIn(object):
@@ -217,10 +214,6 @@ class ProjectSettings(GenericView):
     template_path = "config/project-personal.html"
     menu = ['settings', 'settings_personal']
 
-    def create_category_choices(self, project):
-        return [('', '-----'),] + [(key, key.title()) \
-            for key in project.meta_category_list]
-
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -235,7 +228,6 @@ class ProjectSettings(GenericView):
         form = ProjectPersonalSettingsForm(instance=pur)
 
         context = {
-            'categorys': self.create_category_choices(project),
             'pur': pur,
             'project': project,
             'form': form,

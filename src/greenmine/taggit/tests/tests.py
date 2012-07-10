@@ -508,7 +508,6 @@ class QuerySetTestCase(BaseTaggingTestCase):
         tomato = self.food_model.objects.create(name="tomato")
         tomato.tags.add('red')
 
-        #black
-        self.assertEqual(self.food_model.objects.tags_for_queryset(self.food_model.objects.all())[0].count, 1)
-        self.assertEqual(self.food_model.objects.tags_for_queryset(self.food_model.objects.all())[1].count, 3)
-        self.assertEqual(self.food_model.objects.tags_for_queryset(self.food_model.objects.all())[2].count, 2)
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[0].count, 1)
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[1].count, 3)
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[2].count, 2)

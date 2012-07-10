@@ -270,6 +270,12 @@ div.main-menu ul.right-menu li {
     background: #000000;
 }
 
+#dashboard .left-block .unassigned-us .un-us-item .row.title span.category.selected {
+    background-image: url(/static/imgs/close-icon.png);
+    background-repeat:no-repeat;
+    padding-left: 20px;
+}
+
 #dashboard .left-block .unassigned-us .un-us-item .row.priority {
     width: 60px;
 
