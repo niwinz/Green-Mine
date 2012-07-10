@@ -286,7 +286,8 @@ class Milestone(models.Model):
         """
         total = 0.0
 
-        for item in self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states):
+        for item in self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states()):
+            print [ t.finished_date for t in item.tasks.all() ]
             if item.tasks.filter(finished_date__lt=date).count() > 0:
                 if item.points == -1:
                     continue
@@ -494,6 +495,22 @@ class UserStory(models.Model):
             {'pslug': self.project.slug, 'usref': self.ref})
 
     """ Propertys """
+    def update_status(self):
+        tasks = self.tasks.all()
+        used_states = []
+
+        for task in tasks:
+            used_states.append(task.fake_status)
+        used_states = set(used_states)
+
+        all_completed = True
+        for state in SCRUM_STATES.ordered_us_states():
+            for task_state in used_states:
+                if task_state == state:
+                    self.status = state
+                    self.save()
+                    return None
+        return None
 
     @property
     def tasks_new(self):
@@ -510,21 +527,6 @@ class UserStory(models.Model):
     @property
     def tasks_closed(self):
         return self.tasks.filter(status__in=SCRUM_STATES.get_task_states_for_us_state('closed'))
-
-    def update_status(self):
-        total_tasks_count = self.tasks.count()
-
-        if total_tasks_count == 0:
-            self.status = 'open'
-        elif self.tasks.filter(status__in=SCRUM_STATES.get_finished_task_states()).count() == total_tasks_count:
-            self.status = 'completed'
-        elif self.tasks.filter(status__in=SCRUM_STATES.get_unfinished_task_states()).count() == total_tasks_count:
-            self.status = 'open'
-        else:
-            self.status = 'progress'
-
-        self.modified_date = timezone.now()
-        self.save()
 
 
 class Change(models.Model):
@@ -553,6 +555,7 @@ class ChangeAttachment(models.Model):
 class Task(models.Model):
     uuid = models.CharField(max_length=40, unique=True, blank=True)
     user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
+    last_user_story = models.ForeignKey('UserStory', null=True, blank=True)
     ref = models.CharField(max_length=200, db_index=True, null=True, default=None)
     status = models.CharField(max_length=50,
         choices=TASK_STATUS_CHOICES, default='open')
@@ -619,6 +622,11 @@ class Task(models.Model):
             return None
 
     def save(self, *args, **kwargs):
+        last_user_story = None
+        if self.last_user_story != self.user_story:
+            last_user_story = self.last_user_story
+            self.last_user_story = self.user_story
+
         if self.id:
             self.modified_date = timezone.now()
             # Store information about close date of a task
@@ -635,6 +643,13 @@ class Task(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
+
+        if last_user_story:
+            last_user_story.update_status()
+
+        if self.user_story:
+            self.user_story.update_status()
+
 
     def to_dict(self):
         self_dict = {
