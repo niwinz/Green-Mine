@@ -648,6 +648,7 @@ class Task(models.Model):
             'fakeStatus': self.fake_status,
             'us': self.user_story and self.user_story.pk or None,
             'assignedTo': self.assigned_to and self.assigned_to.pk or None,
+            'tags': [tag.to_dict() for tag in self.tags.all()],
         }
 
         return self_dict

@@ -29,7 +29,7 @@
         <div class="form-field">
             <span class="label">{% trans "Status" %}</span>
             <span>{{ task.get_status_display }}</span>
-        </div> 
+        </div>
         <div class="form-field">
             <span class="label">{% trans "Tested" %}</span>
             <span>{{ user_story.tested|yesno }}</span>
@@ -37,7 +37,14 @@
         {% if task.finish_date %}
         <div class="form-field">
             <span class="label">{% trans "Finish date" %}</span>
-            <span>{{ .finish_date|date:"DATE_FORMAT" }}</span>
+            <span>{{ task.finish_date|date:"DATE_FORMAT" }}</span>
+        </div>
+        {% endif %}
+
+        {% if task.tags.all %}
+        <div class="form-field">
+            <span class="label">{% trans "Tags" %}</span>
+            <span>{{ task.tags.all }}</span>
         </div>
         {% endif %}
 
@@ -49,6 +56,7 @@
             </div>
         </div>
         {% endif %}
+
     </div>
 
     <div class="user-story-responses task-changes">
@@ -59,9 +67,9 @@
             {% endfor %}
         </div>
     </div>
-    
+
     <div class="form-container response-form">
-        <form enctype="multipart/form-data" method="post" 
+        <form enctype="multipart/form-data" method="post"
                 action="{% url 'issues-send-comment' pslug=project.slug tref=task.ref %}">
 
             {% csrf_token %}
@@ -87,7 +95,7 @@
 {% block bottom-headers %}
 <script type="text/javascript" src="{% static "js/bb/task.js" %}"></script>
 <script type="text/javascript">
-Greenmine.mainView = new Greenmine.IssueView();
+    Greenmine.mainView = new Greenmine.IssueView();
 </script>
 {% endblock %}
 

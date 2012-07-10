@@ -213,6 +213,7 @@ INSTALLED_APPS = [
     'greenqueue',
     'south',
     'superview',
+    'haystack',
     'reversion',
 ]
 
@@ -295,6 +296,7 @@ LOGGING = {
     }
 }
 
+
 AUTH_PROFILE_MODULE = 'profile.Profile'
 FORMAT_MODULE_PATH = 'greenmine.core.formats'
 DATE_INPUT_FORMATS = (
@@ -302,5 +304,16 @@ DATE_INPUT_FORMATS = (
     '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
     '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
 )
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), '../search/index'),
+    },
+}
+
+HAYSTACK_DEFAULT_OPERATOR = 'AND'
+
 
 from .appdefaults import *

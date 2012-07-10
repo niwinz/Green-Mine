@@ -19,7 +19,7 @@ from greenmine.core.utils import iter_points
 from greenmine.scrum.forms.issues import IssueFilterForm, IssueCreateForm
 from greenmine.forms.base import CommentForm
 from greenmine.scrum.models import *
-
+from greenmine.taggit.models import Tag
 
 class IssueList(GenericView):
     """
@@ -32,7 +32,7 @@ class IssueList(GenericView):
     def get_query_set(self, milestone):
         return milestone.tasks.filter(type="bug")
 
-    def filter_issues(self, milestone, order_by=None, status=None):
+    def filter_issues(self, milestone, order_by=None, status=None, tags=None):
         issues = self.get_query_set(milestone)
 
         if status is not None:
@@ -43,7 +43,20 @@ class IssueList(GenericView):
         else:
             issues = issues.order_by(order_by)
 
-        return (issue.to_dict() for issue in issues)
+        if tags:
+            for tag in tags:
+                issues = issues.filter(tags__in=[tag])
+
+        return issues
+
+    def get_tag_dicts(self, issues_queryset):
+        tags = Tag.objects.tags_for_queryset(issues_queryset)
+        tag_dicts = []
+        for tag in tags:
+            tag_dict = tag.to_dict()
+            tag_dict['count'] = tag.count
+            tag_dicts.append(tag_dict)
+        return tag_dicts
 
     @login_required
     def get(self, request, pslug):
@@ -73,7 +86,8 @@ class IssueList(GenericView):
             'project': project,
             'milestones': list(milestones),
             'milestone': selected_milestone,
-            'tasks': tasks,
+            'tasks': (task.to_dict() for task in tasks),
+            'tags': tuple(self.get_tag_dicts(tasks)),
         }
 
         return self.render_to_response(self.template_name, context)
@@ -96,11 +110,15 @@ class IssueList(GenericView):
         milestone = form.cleaned_data['milestone']
         status = form.cleaned_data['status'] or None
         order_by = form.cleaned_data['order_by']
+        selected_tags = form.cleaned_data['tags']
 
-        filtered_tasks = list(self.filter_issues(milestone, order_by, status))
+        filtered_tasks = self.filter_issues(milestone, order_by, status, selected_tags)
+        tags = self.get_tag_dicts(filtered_tasks)
+        filtered_tasks = [task.to_dict() for task in filtered_tasks]
 
         return self.render_to_ok({
             "tasks": filtered_tasks,
+            'tags': tags,
         })
 
 
@@ -152,6 +170,7 @@ class CreateIssue(GenericView):
         issue.project = project
         issue.owner = request.user
         issue.save()
+        form.save_m2m()
 
         redirect_to = reverse('issues-list', args=[project.slug]) \
             + "?milestone={0}".format(issue.milestone.pk)

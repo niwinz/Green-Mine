@@ -1,6 +1,17 @@
 <script type="template/dot" id="task-template">
     <div class="row title">
-        <span><a href="{{=it.viewUrl }}">{{=it.subject }}</a></span>
+
+        {{~it.tags :value:index}}
+            <span class="category" category="{{=value.id}}">
+                {{=value.name}}
+            </span>
+
+        {{~}}
+        <span>
+            <a href="{{=it.viewUrl }}">
+                {{=it.subject }}
+            </a>
+        </span>
     </div>
     <div class="row status">
         <span>{{=it.status }}</span>
