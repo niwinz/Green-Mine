@@ -72,14 +72,6 @@ class IssueList(GenericView):
     def get(self, request, pslug):
 
         project = get_object_or_404(Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-            ('task', 'view'),
-        ])
-
         self.check_role(request.user, project, [
             ('project', 'view'),
             ('milestone', 'view'),
@@ -90,7 +82,6 @@ class IssueList(GenericView):
         form = IssueFilterForm(request.GET, project=project)
         valid_form = form.is_valid()
         if valid_form:
-            valid_form = True
             milestone = form.cleaned_data['milestone']
             status = form.cleaned_data['status'] or None
             order_by = form.cleaned_data['order_by']
@@ -98,16 +89,20 @@ class IssueList(GenericView):
 
             tasks = self.filter_issues(project, milestone, order_by, status, selected_tags)
             tags = self.get_tag_dicts(tasks, [tag.id for tag in selected_tags])
+        else:
+            #TODO: error?
+            tasks = []
+            tags = []
 
         if request.is_ajax():
+            if not valid_form:
+                return self.render_to_error(form.errors)
+
             return self.render_to_ok({
                 "tasks": [task.to_dict() for task in tasks],
                 'tags': tags,
             })
         else:
-            if not valid_form:
-                return self.render_to_error(form.errors)
-
             milestones = project.milestones.order_by('-created_date')
             if len(milestones) == 0:
                 messages.error(request, _("No milestones found"))
