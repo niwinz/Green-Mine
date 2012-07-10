@@ -1,6 +1,8 @@
 from django.db import models
 from greenmine.core.utils.slug import slugify_uniquely
 from greenmine.wiki.fields import WikiField
+from greenmine.taggit.managers import TaggableManager
+
 
 class Question(models.Model):
     subject = models.CharField(max_length=150)
@@ -22,6 +24,8 @@ class Question(models.Model):
 
     watchers = models.ManyToManyField('auth.User',
         related_name='question_watch', null=True, blank=True)
+
+    tags = TaggableManager()
 
     @models.permalink
     def get_view_url(self):

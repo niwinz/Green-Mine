@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils.slug import slugify_uniquely as slugify
+from greenmine.taggit.managers import TaggableManager
 
 
 class Document(models.Model):
@@ -20,6 +21,8 @@ class Document(models.Model):
     owner = models.ForeignKey('auth.User', related_name='documents')
     attached_file = models.FileField(upload_to="documents",
         max_length=1000, null=True, blank=True)
+
+    tags = TaggableManager()
 
     def save(self, *args, **kwargs):
         if not self.slug:

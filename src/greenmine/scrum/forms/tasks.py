@@ -24,6 +24,7 @@ class TaskCreateForm(forms.ModelForm):
             'subject',
             'description',
             'assigned_to',
+            'tags',
         )
 
 class TaskEditForm(TaskCreateForm):

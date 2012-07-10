@@ -72,9 +72,6 @@ class Project(models.Model):
     markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
     extras = models.OneToOneField("ProjectExtras", related_name="project", null=True, default=None)
 
-    last_us_ref = models.BigIntegerField(null=True, default=0)
-    last_task_ref = models.BigIntegerField(null=True, default=0)
-
     objects = ProjectManager()
 
     def __unicode__(self):
@@ -397,7 +394,8 @@ class Milestone(models.Model):
 
 class UserStory(models.Model):
     uuid = models.CharField(max_length=40, unique=True, blank=True)
-    ref = models.BigIntegerField(max_length=200, db_index=True, null=True, default=None)
+    ref = models.CharField(max_length=200, unique=True,
+        db_index=True, null=True, default=None)
     milestone = models.ForeignKey("Milestone", blank=True,
         related_name="user_stories", null=True, default=None)
     project = models.ForeignKey("Project", related_name="user_stories")
@@ -445,6 +443,8 @@ class UserStory(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = timezone.now()
+        if not self.ref:
+            self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
 
@@ -549,7 +549,8 @@ class ChangeAttachment(models.Model):
 class Task(models.Model):
     uuid = models.CharField(max_length=40, unique=True, blank=True)
     user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
-    ref = models.BigIntegerField(max_length=200, db_index=True, null=True, default=None)
+    ref = models.CharField(max_length=200, unique=True,
+        db_index=True, null=True, default=None)
     status = models.CharField(max_length=50,
         choices=TASK_STATUS_CHOICES, default='open')
     owner = models.ForeignKey("auth.User", null=True,
@@ -576,6 +577,8 @@ class Task(models.Model):
         related_name='task_watch', null=True)
 
     changes = generic.GenericRelation(Change)
+
+    tags = TaggableManager()
 
     class Meta:
         unique_together = ('ref', 'project')
@@ -618,6 +621,9 @@ class Task(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.modified_date = timezone.now()
+
+        if not self.ref:
+            self.ref = ref_uniquely(self.project, self.__class__)
 
         super(Task, self).save(*args, **kwargs)
 
