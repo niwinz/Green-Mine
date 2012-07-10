@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 from django.utils.translation import ugettext
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
-from greenmine.core.generic import GenericView
-from greenmine.core.decorators import login_required
+from ...core.generic import GenericView
+from ...core.decorators import login_required
 
-from ..models import *
+from ..models import Project, Task
+from ..models import TASK_STATUS_CHOICES
 from ..forms.dashboard import ApiForm as DashboardApiForm
 
 from datetime import timedelta

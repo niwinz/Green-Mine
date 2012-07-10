@@ -97,6 +97,8 @@ class Command(BaseCommand):
                         milestone = milestone,
                         status = 'completed',
                     )
+                    for tag in lorem_ipsum.words(random.randint(1,5), common=True).split(" "):
+                        us.tags.add(tag)
 
                     for w in xrange(3):
                         task = Task.objects.create(
@@ -122,3 +124,6 @@ class Command(BaseCommand):
                     milestone = None,
                     project = project,
                 )
+
+                for tag in lorem_ipsum.words(random.randint(1,5), common=True).split(" "):
+                    us.tags.add(tag)

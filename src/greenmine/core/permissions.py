@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-from greenmine.base.models import Role
+
+# FIXME: move this file to base.
+
+from greenmine.profile.models import Role
 from greenmine.scrum.models import ProjectUserRole
 
 def get_role(name):

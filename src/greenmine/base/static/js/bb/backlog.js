@@ -211,15 +211,14 @@ var LeftBlockView = Backbone.View.extend({
         "click .unassigned-us .head-title .row a": "on_order_link_clicked",
 
         /*Tag filtering */
-        "click .row.tag-selector .category": "on_tag_filter_clicked",
-
+        "click .unassigned-us .row .category": "on_tag_filter_clicked"
     },
 
     initialize: function() {
         _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
 
         this.options.order_by = "-priority";
-        this.options.tag_filter = "";
+        this.options.tag_filter = [];
 
         this.model = new LeftBlockModel({view:this});
         this.model.fetch({success: this.render});
@@ -232,9 +231,14 @@ var LeftBlockView = Backbone.View.extend({
 
     fetch_url: function() {
         var base_url = this.$el.attr('url');
-        base_url += "?order_by=" + this.options.order_by;
-        base_url += "&tags=" + this.options.tag_filter;
-        return base_url;
+        var params = "?order_by=" + this.options.order_by;
+        params += "&tags=" + this.options.tag_filter;
+
+        if (typeof(window.history.pushState) == 'function'){
+            history.pushState({}, "backlog ", params);
+        }
+
+        return base_url + params;
     },
 
     /*
@@ -267,15 +271,10 @@ var LeftBlockView = Backbone.View.extend({
     on_tag_filter_clicked: function(event) {
         event.preventDefault();
         var self = $(event.currentTarget);
-
-        var tag_filter = self.attr('category');
-        var opt_key = "backlog_tag_filter_" + tag_filter + "_opt";
-        var opt = localStorage.getItem(opt_key)
-
-        this.options.tag_filter = tag_filter;
-        localStorage.setItem(opt_key, "");
-
+        var tag_filter = parseInt(self.attr('category'));
+        this.options.tag_filter.push(tag_filter);
         this.model.fetch({success:this.render});
+
     },
 
     /*

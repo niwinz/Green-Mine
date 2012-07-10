@@ -1,11 +1,19 @@
-from greenmine.core.utils.slug import slugify_uniquely
-from greenmine.core.generic import GenericView
-from greenmine.core.decorators import login_required, staff_required
-from django.shortcuts import get_object_or_404
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 from django.core.urlresolvers import reverse
-from greenmine.scrum.models import *
-from greenmine.wiki.models import *
-from greenmine.wiki.forms import *
+from django.template.defaultfilters import slugify
+from django.shortcuts import get_object_or_404
+
+from ..core.utils.slug import slugify_uniquely
+from ..core.generic import GenericView
+from ..core.decorators import login_required
+from ..scrum.models import Project
+
+from .models import WikiPage
+from .forms import WikiPageEditForm
+
 
 class WikiPageView(GenericView):
     menu = ['wiki']

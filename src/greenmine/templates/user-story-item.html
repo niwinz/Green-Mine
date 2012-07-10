@@ -10,16 +10,10 @@
 
             {% if us_tags %}
             {% for us_tag in us_tags %}
-            <span class="category">
+            <span class="category" category="{{ us_tag.id }}">
                 {{ us_tag }}
             </span>
             {% endfor %}
-            {% comment %}
-            {% tag_color us.category as result_color %}
-            <span class="category" style="background-color: {{ result_color }}">
-                {{ us.category|capfirst }}
-            </span>
-            {% endcomment %}
             {% endif %}
         {% endwith %}
 

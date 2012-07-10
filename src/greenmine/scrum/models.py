@@ -55,6 +55,7 @@ class ProjectExtras(models.Model):
 
 
 class Project(models.Model):
+    uuid = models.CharField(max_length=40, unique=True, blank=True)
     name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     description = WikiField(blank=False)
@@ -68,12 +69,7 @@ class Project(models.Model):
         null=True, blank=True)
 
     public = models.BooleanField(default=True)
-
-    meta_category_list = ListField(null=True, default=[], editable=False)
-    meta_category_color = DictField(null=True, default={}, editable=False)
-
     markup = models.CharField(max_length=10, choices=MARKUP_TYPE, default='md')
-
     extras = models.OneToOneField("ProjectExtras", related_name="project", null=True, default=None)
 
     objects = ProjectManager()
@@ -218,7 +214,7 @@ class Project(models.Model):
 class ProjectUserRole(models.Model):
     project = models.ForeignKey("Project", related_name="user_roles")
     user = models.ForeignKey("auth.User", related_name="user_roles")
-    role = models.ForeignKey("base.Role", related_name="user_roles")
+    role = models.ForeignKey("profile.Role", related_name="user_roles")
 
     mail_milestone_created = models.BooleanField(default=True)
     mail_milestone_modified = models.BooleanField(default=False)
@@ -251,6 +247,7 @@ class MilestoneManager(models.Manager):
 
 
 class Milestone(models.Model):
+    uuid = models.CharField(max_length=40, unique=True, blank=True)
     name = models.CharField(max_length=200, db_index=True)
     owner = models.ForeignKey('auth.User', related_name="milestones")
     project = models.ForeignKey('Project', related_name="milestones")
@@ -396,6 +393,7 @@ class Milestone(models.Model):
 
 
 class UserStory(models.Model):
+    uuid = models.CharField(max_length=40, unique=True, blank=True)
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
     milestone = models.ForeignKey("Milestone", blank=True,
@@ -549,6 +547,7 @@ class ChangeAttachment(models.Model):
 
 
 class Task(models.Model):
+    uuid = models.CharField(max_length=40, unique=True, blank=True)
     user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
     ref = models.CharField(max_length=200, unique=True,
         db_index=True, null=True, default=None)
@@ -642,4 +641,4 @@ class Task(models.Model):
 
         return self_dict
 
-#from . import sigdispatch
+from . import sigdispatch

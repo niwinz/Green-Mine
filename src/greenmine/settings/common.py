@@ -33,7 +33,8 @@ LANGUAGES = (
 
 if 'test' in sys.argv:
     if "settings" not in ",".join(sys.argv):
-        print "Not settings specified. \nTry: python manage.py test --settings=settings.testing -v2 greenmine"
+        print ("Not settings specified. \nTry: python manage.py test "
+               "--settings=greenmine.settings.testing -v2 scrum")
         sys.exit(0)
 
 MANAGERS = ADMINS

@@ -508,8 +508,6 @@ class QuerySetTestCase(BaseTaggingTestCase):
         tomato = self.food_model.objects.create(name="tomato")
         tomato.tags.add('red')
 
-        tags_for_queryset = get_tags_for_queryset(self.food_model.objects.all())
-        valid_response = [{'count': 3, 'tags': 1}, {'count': 2, 'tags': 2}, {'count': 1, 'tags': 3}]
-        for i in range(len(valid_response)):
-            self.assertEqual(valid_response[i]['count'], tags_for_queryset[i]['count'])
-            self.assertEqual(valid_response[i]['tags'], tags_for_queryset[i]['tags'])
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[0].count, 1)
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[1].count, 3)
+        self.assertEqual(Tag.objects.tags_for_queryset(self.food_model.objects.all())[2].count, 2)

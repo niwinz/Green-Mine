@@ -10,7 +10,7 @@ from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import TagField
-from .models import TaggedItem, GenericTaggedItemBase
+from .models import TaggedItem, GenericTaggedItemBase, Tag
 from .utils import require_instance_manager
 
 
