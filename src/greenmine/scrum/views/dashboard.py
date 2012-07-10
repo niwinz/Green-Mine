@@ -41,8 +41,8 @@ class MilestoneBurndownView(GenericView):
 
         now_position = None
 
-        begin = timezone.make_aware(datetime.combine(milestone.estimated_start, time(0)), timezone.utc).localtime()
-        end = timezone.make_aware(datetime.combine(milestone.estimated_finish, time(0)), timezone.utc).localtime()
+        begin = timezone.make_aware(datetime.combine(milestone.estimated_start, time(0)), timezone.utc)
+        end = timezone.make_aware(datetime.combine(milestone.estimated_finish, time(0)), timezone.utc)
         now = timezone.now()
 
         if begin < now and end > now:
