@@ -53,13 +53,17 @@ class IssueList(GenericView):
 
         return issues
 
-    def get_tag_dicts(self, issues_queryset):
+    def get_tag_dicts(self, issues_queryset, selected_tag_ids=None):
         tags = Tag.objects.tags_for_queryset(issues_queryset)
         tag_dicts = []
         for tag in tags:
             tag_dict = tag.to_dict()
             tag_dict['count'] = tag.count
             tag_dicts.append(tag_dict)
+            if selected_tag_ids:
+                tag_dict['selected'] = tag.id in selected_tag_ids or False
+            else:
+                tag_dict['selected'] = False
         return tag_dicts
 
     @login_required
@@ -115,9 +119,8 @@ class IssueList(GenericView):
         status = form.cleaned_data['status'] or None
         order_by = form.cleaned_data['order_by']
         selected_tags = form.cleaned_data['tags']
-
         filtered_tasks = self.filter_issues(project, milestone, order_by, status, selected_tags)
-        tags = self.get_tag_dicts(filtered_tasks)
+        tags = self.get_tag_dicts(filtered_tasks, [tag.id for tag in selected_tags])
         filtered_tasks = [task.to_dict() for task in filtered_tasks]
 
         return self.render_to_ok({

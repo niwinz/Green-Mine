@@ -70,9 +70,8 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .context-menu a.filter-task": "changeStatus",
 
         /*Tag filtering */
-        //"click .un-us-item .category.selected": "on_tag_remove_filter_clicked",
-        //"click .un-us-item .category.unselected": "on_tag_add_filter_clicked"
-        "click .un-us-item .category": "on_tag_add_filter_clicked"
+        "click .un-us-item .category.selected": "on_tag_remove_filter_clicked",
+        "click .un-us-item .category.unselected": "on_tag_add_filter_clicked"
     },
 
     el: $("#dashboard"),
@@ -211,5 +210,14 @@ Greenmine.TasksView = Backbone.View.extend({
             this.options.tag_filter.push(tag_filter);
             this.reload();
         }
+    },
+
+    on_tag_remove_filter_clicked: function(){
+        event.preventDefault();
+        event.stopPropagation();
+        var self = $(event.target);
+        var tag_filter = parseInt(self.attr('category'));
+        this.options.tag_filter.pop(tag_filter);
+        this.reload();
     }
 });

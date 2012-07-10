@@ -10,7 +10,7 @@
 
             {% if us_tags %}
             {% for us_tag in us_tags %}
-            <span class="category {% if us_tag.id in selected_tags_ids %} selected {% else %} unselected {% endif %}" category="{{ us_tag.id }}">
+            <span class="category unselected" category="{{ us_tag.id }}">
                 {{ us_tag }}
             </span>
             {% endfor %}
