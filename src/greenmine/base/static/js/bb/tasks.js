@@ -17,6 +17,27 @@ Greenmine.Lightbox = Kaleidos.Lightbox.extend({
     }
 });
 
+/*Tags*/
+Greenmine.TagModel = Backbone.Model.extend({});
+
+Greenmine.TagCollection = Backbone.Collection.extend({
+    model: Greenmine.TagModel
+});
+
+Greenmine.tagCollection = new Greenmine.TagCollection();
+Greenmine.tag_template = doT.template($("#tag-template").html());
+
+Greenmine.TagView = Backbone.View.extend({
+    tagName: "span",
+
+    render: function() {
+
+        this.$el.html(Greenmine.tag_template(this.model.toJSON()));
+        return this;
+    }
+});
+
+/*Tasks*/
 Greenmine.TaskModel = Backbone.Model.extend({});
 
 Greenmine.TaskCollection = Backbone.Collection.extend({
@@ -24,7 +45,7 @@ Greenmine.TaskCollection = Backbone.Collection.extend({
 });
 
 Greenmine.taskCollection = new Greenmine.TaskCollection();
-Greenmine.template = doT.template($("#task-template").html());
+Greenmine.task_template = doT.template($("#task-template").html());
 
 Greenmine.TaskView = Backbone.View.extend({
     tagName: "div",
@@ -33,7 +54,7 @@ Greenmine.TaskView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$el.html(Greenmine.template(this.model.toJSON()));
+        this.$el.html(Greenmine.task_template(this.model.toJSON()));
         this.$el.attr({
             'data-id':this.model.get('id'),
             'id': "task_" + this.model.get('id')
@@ -138,6 +159,11 @@ Greenmine.TasksView = Backbone.View.extend({
         this.$("#task-list-body").append(view.render().el);
     },
 
+    addTag: function(tag) {
+        var view = new Greenmine.TagView({model:tag});
+        this.$("#tags-body").append(view.render().el);
+    },
+
     deleteIssue: function(task) {
         var self = this;
         $.post(task.get('delete_url'), {}, function(data) {
@@ -153,6 +179,10 @@ Greenmine.TasksView = Backbone.View.extend({
         this.$("#task-list-body").html("");
         Greenmine.taskCollection.each(function(item) {
             self.addIssue(item);
+        });
+        this.$("#tags-body").html("");
+        Greenmine.tagCollection.each(function(item) {
+            self.addTag(item);
         });
     }
 });

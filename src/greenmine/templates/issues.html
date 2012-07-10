@@ -24,6 +24,7 @@
             <div class="un-us-item head-title">
                 <div class="row title">
                     <span><a href="" data-type="subject">{% trans "Subject" %}</a></span>
+                    <div id="tags-body"></div>
                 </div>
                 <div class="row status">
                     <span><a href="" data-type="status">{% trans "Status" %}</a></span>
@@ -71,13 +72,16 @@
 
 {% block bottom-headers %}
 {% raw_include "dot/task-include.html" %}
+{% raw_include "dot/tag-include.html" %}
 {% to_json tasks as tasks_json %}
+{% to_json tags as tags_json %}
 
 <script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
 <script type="text/javascript">
-Greenmine.issuesView = new Greenmine.TasksView();
-Greenmine.taskCollection.reset({{ tasks_json }});
+    Greenmine.issuesView = new Greenmine.TasksView();
+    Greenmine.tagCollection.reset({{ tags_json }});
+    Greenmine.taskCollection.reset({{ tasks_json }});
 </script>
 {% endblock %}
 

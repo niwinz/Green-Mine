@@ -38,4 +38,5 @@ class IssueCreateForm(forms.ModelForm):
             'subject',
             'description',
             'assigned_to',
+            'tags',
         )
