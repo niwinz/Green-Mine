@@ -15,6 +15,7 @@ from greenmine.core.utils.slug import slugify_uniquely, ref_uniquely
 from greenmine.core.fields import DictField, ListField
 from greenmine.wiki.fields import WikiField
 from greenmine.core.utils import iter_points
+from greenmine.taggit.managers import TaggableManager
 import reversion
 
 from .choices import *
