@@ -1,2 +1,3 @@
 dump*.json
 greenmine/database.sqlite
+greenmine/search/index
