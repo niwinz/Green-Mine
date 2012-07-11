@@ -7,10 +7,24 @@
 {% block wrapper %}
 <div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
     <div class="top-box">
+        <div class="sprint-stats right">
+            <div class="stats-box">
+                <div class="stats-row">
+                    <div class="stats-title left">{% trans "Points" %}</div>
+                    <div class="stats-value1 left">120</div>
+                    <div class="stats-value2 left">100</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-title left">{% trans "Points" %}</div>
+                    <div class="stats-value1 left">120</div>
+                    <div class="stats-value2 left">100</div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
         <div id="sprint-burndown" data-url="{{ milestone.get_burndown_url }}" show="on" class="sprint-burndown-container">
             <div id="sprint-burndown-graph" style="display:none"></div>
-        </div>
-        <div class="sprint-stats right">
         </div>
     </div>
 
