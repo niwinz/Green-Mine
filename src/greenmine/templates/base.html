@@ -26,8 +26,10 @@
                 <div class="header-row">
                     <div class="title-box left">
                         <span class="title-item title-main">Greenmine</span>
+                        {% block title %}
                         <span class="separator"> &gt; </span>
                         <span class="title-item">Login</span>
+                        {% endblock %}
                     </div>
                     <div class="right-top-menu right">
                         <a href="#">{{ user.get_full_name|default:"Anonymous" }}</a> |
@@ -43,6 +45,7 @@
                             <li class="{{ menu.in_dashboard }}"><a href="{{ project.get_dashboard_url }}">{% trans "Dashboard" %}</a></li>
                             <li class="{{ menu.in_issues }}"><a href="{{ project.get_issues_url }}">{% trans "Bugs" %}</a></li>
                             <li class="{{ menu.in_questions }}"><a href="{{ project.get_questions_url }}">{% trans "Questions" %}</a></li>
+                            <li class="{{ menu.in_wiki }}"><a href="{{ project.get_wiki_url }}">{% trans "Wiki" %}</a></li>
                         </ul>
                     </div>
                     <div class="search-form-box right" data-url="{% url 'search' %}">

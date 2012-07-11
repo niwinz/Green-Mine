@@ -1,5 +1,6 @@
 body {  background-color: red; }
 @import "bootstrap/bootstrap.less";
+@import "variables.less";
 @import "header.less";
 @import "dashboard.less";
 
@@ -101,21 +102,6 @@ body {
  *
  **************/
 
-.container{
-    width: 980px;
-}
-
-.sidebar{
-    width: 250px;
-    float: right;
-}
-
-.main-content {
-    width: 705px;
-    margin-right: 20px;
-    float: left;
-}
-
 .left{
     float: left;
 }
@@ -123,6 +109,7 @@ body {
 .right{
     float: right;
 }
+
 
 /***************
  *
@@ -142,12 +129,33 @@ body {
   clear: both;
 }
 
+
+
+progress {background-color: black; border-radius: 20px; -webkit-appearance: none;}
+progress::-webkit-progress-bar {
+    border-radius: 20px;
+}
+progress::-webkit-progress-bar-value, progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+    background-color: #690;
+    border-radius: 20px;
+}
+
 .button{
-    padding: 10px 30px;
+    padding: 5px 10px;
     .border-radius(5px);
     font-family: @DroidSansBold;
-    font-size: 16px;
+    font-size: 12px;
     border: 1px solid;
+    display: inline-block;
+    color: @black;
+    background-color: @white;
+    cursor: pointer;
+}
+
+.truncate-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .middle-container {

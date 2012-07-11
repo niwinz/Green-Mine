@@ -20,18 +20,35 @@
         .sprint-stats {
             width: 450px;
             .stats-box {
-                padding: 10px;
+                padding: 20px;
 
                 .stats-row {
                     border-bottom: 1px solid @black;
                     margin-bottom: 10px;
                     padding-bottom: 10px;
 
-                    .stats-title {
-                        font-size: 22px;
-                        color: @grayLighter;
+                    font-size: 22px;
+                    color: @grayLighter;
+
+                    .stats-large-value {
+                        padding-left: 20px;
+                    }
+
+                    .stats-title,
+                    .stats-value1,
+                    .stats-value2 {
                         display: inline-block;
-                        width: 100px;
+                        width: 135px;
+                    }
+                    span.value {
+                        vertical-align: top;
+                    }
+                    .help-text {
+                        font-size: 8px;
+                        display: inline-block;
+                        width: 50px;
+                        line-height: 9px;
+                        color: @white;
                     }
                 }
             }
@@ -73,20 +90,50 @@
 
         .middle-body {
             margin-top: 5px;
-            background-color: @grayDark;
-            padding: 15px;
         }
 
 
         .userstory-item {
+            background-color: @grayDark;
             min-height: 200px;
             margin-bottom: 10px;
+
+            .userstory-box {
+                padding: 15px;
+            }
 
             .userstory-description {
                 width: 200px;
                 color: @white;
 
+                .description-text {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                }
+
+                .description-meta {
+                    .points-box,
+                    .button-newtask {
+                        display: inline-block;
+                        padding: 13px;
+                        line-height: 3px;
+                        color: @black;
+                        background-color: @white;
+                        cursor: pointer;
+                    }
+
+                    .button-newtask {
+                        font-size: 12px;
+                    }
+
+                    .points-box {
+                        font-size: 14px;
+                        width: 7px;
+                    }
+                }
+
             }
+
             .userstory-tasks {
                 margin-left: 200px;
                 min-height: 200px;
@@ -127,7 +174,6 @@
 
                     .task-subject {
                         padding: 7px;
-                        height: 100px;
                         .text {
                             margin-top: 5px;
                         }
@@ -197,8 +243,31 @@
     background-color: #FFCC00;
 }
 .bg-closed {
-    background-color: #669900;
+    background-color: @green;
 }
 .bg-new {
     background-color: @grayLight;
+}
+
+
+.dashboard-new-task {
+    background-color: @gray;
+
+    .new-task-box {
+        padding: 5px;
+        background-color: @grayLighter;
+
+        .newtask-header {
+            padding: 5px;
+            .userstory-desc {
+                padding: 5px;
+                background-color: @grayLight;
+                .border-radius(5px);
+            }
+        }
+
+        .newtask-formset {
+            padding: 5px;
+        }
+    }
 }

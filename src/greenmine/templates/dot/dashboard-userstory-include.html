@@ -1,4 +1,5 @@
 <script id="userstory-template" type="template/dot">
+<div class="userstory-box">
     <div class="userstory-description left">
         <div class="description-box">
             <div class="tags-container">
@@ -8,7 +9,10 @@
             <div class="description-text">
                 {{=it.subject }}
             </div>
-            <div class="description-meta"></div>
+            <div class="description-meta">
+                <div class="points-box">{{=it.pointsDisplay }}</div>
+                <div class="button-newtask">{{=gettext("New task") }}</div>
+            </div>
         </div>
     </div>
     <div class="userstory-tasks">
@@ -33,4 +37,5 @@
             </tr>
         </table>
     </div>
+</div>
 </script>

@@ -2,7 +2,12 @@
 {% load url from future %}
 {% load rawinclude greenmine_utils static cache i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Dashboard" %} {% endblock %}
+{% block title %}
+<span class="separator"> &gt; </span>
+<span class="title-item">{{ project.name|capfirst }}</span>
+<span class="separator"> &gt; </span>
+<span class="title-item">{% trans "Dashboard" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
@@ -10,15 +15,49 @@
         <div class="sprint-stats right">
             <div class="stats-box">
                 <div class="stats-row">
-                    <div class="stats-title left">{% trans "Points" %}</div>
-                    <div class="stats-value1 left">120</div>
-                    <div class="stats-value2 left">100</div>
+                    <div class="stats-large left">
+                        <progress value="20" max="100"></progress>
+                    </div>
+                    <div class="stats-large-value left">
+                        <span class="value">85%</span>
+                        <span class="help-text">{% trans "completed" %}</span>
+                    </div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="stats-row">
                     <div class="stats-title left">{% trans "Points" %}</div>
-                    <div class="stats-value1 left">120</div>
-                    <div class="stats-value2 left">100</div>
+                    <div class="stats-value1 left">
+                        <span class="value">120</span>
+                        <span class="help-text">{% trans "total points" %}</span>
+                    </div>
+                    <div class="stats-value2 left">
+                        <span class="value">100</span>
+                        <span class="help-text">{% trans "assigned points" %}</span>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-title left">{% trans "User Stories" %}</div>
+                    <div class="stats-value1 left">
+                        <span class="value">120</span>
+                        <span class="help-text">{% trans "total user stories" %}</span>
+                    </div>
+                    <div class="stats-value2 left">
+                        <span class="value">100</span>
+                        <span class="help-text">{% trans "completed user stories" %}</span>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-title left">{% trans "Tasks" %}</div>
+                    <div class="stats-value1 left">
+                        <span class="value">120</span>
+                        <span class="help-text">{% trans "total tasks" %}</span>
+                    </div>
+                    <div class="stats-value2 left">
+                        <span class="value">100</span>
+                        <span class="help-text">{% trans "completed tasks" %}</span>
+                    </div>
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -54,6 +93,33 @@
 
         <div class="middle-body userstory-list">
         </div>
+    </div>
+</div>
+
+
+<div class="dashboard-new-task" id="new-task-lightbox">
+    <div class="new-task-box">
+        <h3>{% trans "New task" %}</h3>
+
+        <section class="newtask-header">
+            <h4>{% trans "user story" %}:</h4>
+            <section class="userstory-desc">
+                Listado de pedidos (wireframe: Perfil Tus pedidos una entrega, Tus pedidos una entrega y este es el resto de la user story. Si es muy larga ponemos puntos suspensivos.
+            </section>
+        </section>
+
+        <section class="newtask-formset">
+            <section class="formset-item">
+                <h4>{% trans "Task subject" %}</h4>
+                <textarea></textarea>
+            </section>
+        </section>
+
+        <section class="newtask-meta">
+            <div class="button">{% trans "Save" %}</div>
+            <span class="cancel"><a href="#">{% trans "Cancelar" %}</a></span>
+            <div class="button plus right">+</div>
+        </section>
     </div>
 </div>
 

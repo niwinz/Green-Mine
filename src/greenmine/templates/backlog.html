@@ -3,7 +3,12 @@
 {% load static from staticfiles %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Backlog" %}{% endblock %}
+{% block title %}
+<span class="separator"> &gt; </span>
+<span class="title-item">{{ project.name|capfirst }}</span>
+<span class="separator"> &gt; </span>
+<span class="title-item">{% trans "Backlog" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div data-api-url="{{ project.get_milestones_list_api_url }}" class="backlog" id="backlog">

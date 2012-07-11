@@ -24,7 +24,7 @@
             font-size: 22px;
 
             .title-main {
-                color: #669900;
+                color: @green;
             }
         }
 
@@ -40,11 +40,14 @@
 
                 li {
                     display: inline;
-                    padding-right: 15px;
+                    padding-right: 25px;
                 }
 
-                li.selected a {
+                li a {
                     color: white;
+                }
+                li.selected a {
+                    color: @black;
                 }
             }
         }
