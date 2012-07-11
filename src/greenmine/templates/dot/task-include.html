@@ -2,8 +2,10 @@
     <div class="row title">
 
         {{~it.tags :value:index}}
-            <span class="category unselected" category="{{=value.id}}">
-                {{=value.name}}
+            <span class="tag">
+                <span class="category unselected" category="{{=value.id}}">
+                    {{=value.name}}
+                </span>
             </span>
 
         {{~}}

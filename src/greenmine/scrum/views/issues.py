@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.db.models import Q
 from django.db import transaction
+from django.contrib import messages
 
 from greenmine.core.generic import GenericView
 from greenmine.core.decorators import login_required
@@ -29,98 +30,52 @@ class IssueList(GenericView):
     template_name = 'issues.html'
     menu = ['issues']
 
-    def get_query_set(self, milestone):
-        return milestone.tasks.filter(type="bug")
-
-    def filter_issues(self, project, milestone=None, order_by=None, status=None, tags=None):
-
-        if milestone:
-            issues = self.get_query_set(milestone)
-        else:
-            issues = project.tasks.filter(type="bug")
-
-        if status is not None:
-            issues = issues.exclude(status=status)
-
-        if order_by is None:
-            issues = issues.order_by('-created_date')
-        else:
-            pass
-            #TODO: fix
-            #~ issues = issues.order_by(order_by)
-
-        if tags:
-            for tag in tags:
-                issues = issues.filter(tags__in=[tag])
-
-        return issues
-
-    def get_tag_dicts(self, issues_queryset, selected_tag_ids=None):
-        tags = Tag.objects.tags_for_queryset(issues_queryset)
-        tag_dicts = []
-        for tag in tags:
-            tag_dict = tag.to_dict()
-            tag_dict['count'] = tag.count
-            tag_dicts.append(tag_dict)
-            if selected_tag_ids:
-                tag_dict['selected'] = tag.id in selected_tag_ids or False
-            else:
-                tag_dict['selected'] = False
-        return tag_dicts
-
-    @login_required
-    def get(self, request, pslug):
-
-        project = get_object_or_404(Project, slug=pslug)
-        self.check_role(request.user, project, [
+    def initialize(self, request, pslug):
+        self.project = get_object_or_404(Project, slug=pslug)
+        self.check_role(request.user, self.project, [
             ('project', 'view'),
             ('milestone', 'view'),
             ('userstory', 'view'),
             ('task', 'view'),
         ])
 
-        form = IssueFilterForm(request.GET, project=project)
-        valid_form = form.is_valid()
-        if valid_form:
+        form = IssueFilterForm(request.GET, project=self.project)
+        self.valid_form = form.is_valid()
+        if self.valid_form:
             milestone = form.cleaned_data['milestone']
-            status = form.cleaned_data['status'] or None
+            status = form.cleaned_data['status']
             order_by = form.cleaned_data['order_by']
-            selected_tags = form.cleaned_data['tags']
+            tags = form.cleaned_data['tags']
+            assigned_to = form.cleaned_data['assigned_to']
 
-            tasks = self.filter_issues(project, milestone, order_by, status, selected_tags)
-            tags = self.get_tag_dicts(tasks, [tag.id for tag in selected_tags])
+            tasks_and_filters = self.project.tasks.filter(type='bug').\
+                filter_and_build_filter_dict(milestone, status, tags, assigned_to)
+
+            self.tasks = tasks_and_filters['list']
+            self.filter_dict = tasks_and_filters['filters']
+
         else:
-            #TODO: error?
-            tasks = []
-            tags = []
+            messages.error(request, _("Uops!, something went wrong!"))
+            self.tasks = []
+            self.filter_dict = {}
 
+    @login_required
+    def get(self, request, pslug):
+        self.initialize(request, pslug)
         if request.is_ajax():
-            if not valid_form:
+            if not self.valid_form:
                 return self.render_to_error(form.errors)
 
             return self.render_to_ok({
-                "tasks": [task.to_dict() for task in tasks],
-                'tags': tags,
+                "tasks": [task.to_dict() for task in self.tasks],
+                'filter_dict': self.filter_dict,
             })
+
         else:
-            milestones = project.milestones.order_by('-created_date')
-            if len(milestones) == 0:
-                messages.error(request, _("No milestones found"))
-                return self.render_redirect(project.get_backlog_url())
-
-            milestone_pk = request.GET.get('milestone', None)
-
-            if milestone_pk:
-                selected_milestone = get_object_or_404(milestones, pk=milestone_pk)
-            else:
-                selected_milestone = None
-
             context = {
-                'project': project,
-                'milestones': list(milestones),
-                'milestone': selected_milestone,
-                'tasks': (task.to_dict() for task in tasks),
-                'tags': tuple(tags),
+                'project': self.project,
+                'tasks': (task.to_dict() for task in self.tasks),
+                'filter_dict': self.filter_dict,
             }
 
             return self.render_to_response(self.template_name, context)

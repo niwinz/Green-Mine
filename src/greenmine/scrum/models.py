@@ -552,6 +552,89 @@ class ChangeAttachment(models.Model):
         max_length=500, null=True, blank=True)
 
 
+class TaskQuerySet(models.query.QuerySet):
+
+    def _add_categories(self, section_dict, category_id, category_element, selected):
+        section_dict[category_id] = section_dict.get(category_id, {
+            'element': unicode(category_element),
+            'count': 0,
+            'id': category_id,
+            'selected': selected,
+        })
+        section_dict[category_id]['count'] += 1
+
+    def _get_category(self, section_dict, order_by='element', reverse=False):
+        values = section_dict.values()
+        values = sorted(values, key=lambda entry: unicode(entry[order_by]))
+        if reverse:
+            values.reverse()
+        return values
+
+    def _get_filter_and_build_filter_dict(self, queryset, milestone_id, status_id, tags_ids, assigned_to_id):
+        task_list = list(queryset)
+        milestones = {}
+        status = {}
+        tags = {}
+        assigned_to = {}
+
+        for task in task_list:
+            if task.milestone:
+                selected = milestone_id and task.milestone.id == milestone_id
+                self._add_categories(milestones, task.milestone.id, task.milestone.name, selected)
+
+            selected = status_id and task.status == status_id
+            self._add_categories(status, task.status, task.status, selected)
+
+            for tag in task.tags.all():
+
+                print tag.id, tags_ids
+
+                selected = tags_ids and tag.id in tags_ids
+                self._add_categories(tags, tag.id, tag.name, selected)
+
+            if task.assigned_to:
+                selected = assigned_to_id and task.assigned_to.id == assigned_to_id
+                self._add_categories(assigned_to, task.assigned_to.id, task.assigned_to.first_name, selected)
+
+
+        return{
+            'list': task_list,
+            'filters' : {
+                'milestones' : self._get_category(milestones),
+                'status' : self._get_category(status),
+                'tags' : self._get_category(tags),
+                'assigned_to' : self._get_category(assigned_to),
+            }
+        }
+
+    def filter_and_build_filter_dict(self, milestone=None, status=None, tags=None, assigned_to=None):
+        queryset = self
+        if milestone:
+            queryset = queryset.filter(milestone = milestone)
+
+        if status:
+            queryset = queryset.filter(milestone = milestone)
+
+        if tags:
+            for tag in tags:
+                queryset = queryset.filter(tags__in=[tag])
+
+        if assigned_to:
+            queryset = queryset.filter(assigned_to = assigned_to)
+
+
+        milestone_id = milestone and milestone.id
+        status_id = status and status
+        tags_ids = tags and tags.values_list('id', flat=True)
+        assigned_to_id = assigned_to and assigned_to.id
+
+        return self._get_filter_and_build_filter_dict(queryset, milestone_id, status_id, tags_ids, assigned_to_id)
+
+class TaskManager(models.Manager):
+    def get_query_set(self):
+        return TaskQuerySet(self.model)
+
+
 class Task(models.Model):
     uuid = models.CharField(max_length=40, unique=True, blank=True)
     user_story = models.ForeignKey('UserStory', related_name='tasks', null=True, blank=True)
@@ -588,6 +671,8 @@ class Task(models.Model):
     changes = generic.GenericRelation(Change)
 
     tags = TaggableManager()
+
+    objects = TaskManager()
 
     class Meta:
         unique_together = ('ref', 'project')

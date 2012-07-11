@@ -24,7 +24,11 @@
             <div class="un-us-item head-title">
                 <div class="row title">
                     <span><a href="" data-type="subject">{% trans "Subject" %}</a></span>
-                    <div id="tags-body"></div>
+                    <br/>
+                    Tags: <div id="tags-body"></div>
+                    Milestones: <div id="milestones-body"></div>
+                    Status: <div id="status-body"></div>
+                    Assigned to: <div id="assigned-to-body"></div>
                 </div>
                 <div class="row status">
                     <span><a href="" data-type="status">{% trans "Status" %}</a></span>
@@ -73,14 +77,22 @@
 {% block bottom-headers %}
 {% raw_include "dot/task-include.html" %}
 {% raw_include "dot/tag-include.html" %}
+
 {% to_json tasks as tasks_json %}
-{% to_json tags as tags_json %}
+{% to_json filter_dict.tags as tags_json %}
+{% to_json filter_dict.milestones as milestones_json %}
+{% to_json filter_dict.status as status_json %}
+{% to_json filter_dict.assigned_to as assigned_to_json %}
 
 <script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
 <script type="text/javascript">
     Greenmine.issuesView = new Greenmine.TasksView();
     Greenmine.tagCollection.reset({{ tags_json }});
+    Greenmine.milestoneCollection.reset({{ milestones_json }});
+    Greenmine.statusCollection.reset({{ status_json }});
+    console.log(1, {{ assigned_to_json }});
+    Greenmine.assignedToCollection.reset({{ assigned_to_json }});
     Greenmine.taskCollection.reset({{ tasks_json }});
 </script>
 {% endblock %}
