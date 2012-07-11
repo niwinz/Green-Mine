@@ -3,24 +3,41 @@
 
 {% for ml in milestones %}
 <div id="milestone-{{ml.id}}" ref="{{ ml.id }}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
-    <div class="milestone-title clearfix">
-        <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
+    <div class="header clearfix">
+
+        <div class="title">
+            {{ ml.name|capfirst }}
+        </div>
+
         <div class="meta">
+            <a href="{{ ml.get_dashboard_url }}">
+                {% trans "Detail" %}
+            </a>
+
             <a href="{{ ml.get_edit_url }}" class="mledit">
-                <img style="vertical-align: middle; width: 18px;" src="{% static 'imgs/settings.png' %}"></img>
+                {% trans "Edit" %}
             </a>
 
             <a href="{{ ml.get_delete_url }}" class="delete">
-                <img style="vertical-align: middle; width: 20px;" src="{% static 'imgs/close-icon2.png' %}"></img>
+                {% trans "Delete" %}
             </a>
         </div>
-        <div class="milestone-stats" style="clear:both">
-            <span class="total-points">
-                <strong>{% trans "Total" %}:</strong><span class="value">{{ ml.total_points }}</span>
-            </span> //
-            <span class="completed-points">
-                <strong>{% trans "Completed" %}:</strong><span class="value">{{ ml.completed_points }}</span>
+
+        <div class="stats clearfix" style="clear:both">
+
+            <progress max="100" value="{{ ml.percentage_completed }}">
+              <strong>{{ ml.percentage_completed }}%</strong>
+            </progress>
+
+            <span class="number percenajte">
+                {{ ml.percentage_completed }}%
             </span>
+
+            <span class="number total-points">{{ ml.total_points }}</span>
+            <span class="text">{% trans "Total" %}</span>
+
+            <span class="number completed-points">{{ ml.completed_points }}</span>
+            <span class="text">{% trans "Completed" %}</span>
         </div>
     </div>
 

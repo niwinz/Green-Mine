@@ -179,8 +179,40 @@ body {
             color: #FFFFFF;
             padding: 10px;
 
-            .milestone-stats{
-                float: right;
+            .header{
+                padding: 5px;
+
+                .title{
+                    float: left;
+                    font-size: 18px;
+                }
+                .meta{
+                    float:right;
+
+                    a {
+                        background: @grayLight;
+                        padding: 2px 3px;
+                        -webkit-border-radius: 5px;
+                        margin-left: 5px;
+                        color: @white;
+
+                        &:hover{
+                            background: @red;
+                            text-decoration: none;
+                        }
+                    }
+                }
+                .stats{
+                    .number{
+                        font-size: 15px;
+                    }
+                    .text{
+                        font-size: 10px;
+                        color: @grayLight;
+                    }
+                    progress {
+                    }
+                }
             }
 
             .milestone-userstorys{
