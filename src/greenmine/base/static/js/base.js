@@ -103,6 +103,7 @@ function getStringListFromURLParam(param){
 
 
 /* Top Message framework */
+var Greenmine = {}
 
 Greenmine.TopMessage = Backbone.Model.extend({
     level: function() {

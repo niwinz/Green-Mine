@@ -163,11 +163,69 @@ body {
     }
 }
 
+/***************
+ *
+ * BACKLOG
+ *
+ **************/
 .backlog {
     .milestones {
         width: 450px;
         min-height: 200px;
-        border: 1px solid black;
+
+        .milestone-item{
+            background: @grayDark;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+            padding: 10px;
+
+            .milestone-stats{
+                float: right;
+            }
+
+            .milestone-userstorys{
+                margin: 0px;
+                padding: 10px;
+                background: @white;
+                color: @black;
+                line-height: 30px;
+
+                hr{
+                    margin: 5px 0px;
+                }
+
+                .us-item{
+                    .us-meta{
+                        float:right;
+                        text-align:right;
+                        width: 50px;
+                        color: @grayLight;
+                    }
+
+                    .us-title{
+                        margin-right: 60px;
+
+                        .status{
+                            width: 12px;
+                            height: 12px;
+                            background-color: @grayLight;
+                            -webkit-border-radius: 6px;
+                            float: left;
+                            margin: 8px 8px 0 0;
+                            &.completed{
+                                background-color: @green;
+                            }
+                        }
+
+                        .tag{
+                            background: @gray;
+                            padding: 5px;
+                            color: @white;
+                        }
+                    }
+                }
+            }
+        }
     }
     .backlog-container {
         margin-right: 450px;

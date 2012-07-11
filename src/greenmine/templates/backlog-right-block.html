@@ -3,7 +3,7 @@
 
 {% for ml in milestones %}
 <div id="milestone-{{ml.id}}" ref="{{ ml.id }}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
-    <div class="milestone-title">
+    <div class="milestone-title clearfix">
         <div class="text"><a href="{{ ml.get_dashboard_url }}">{{ ml.name|capfirst }}</a></div>
         <div class="meta">
             <a href="{{ ml.get_edit_url }}" class="mledit">
@@ -20,13 +20,16 @@
             </span> //
             <span class="completed-points">
                 <strong>{% trans "Completed" %}:</strong><span class="value">{{ ml.completed_points }}</span>
-            </span> 
+            </span>
         </div>
     </div>
 
     <div class="milestone-userstorys">
         {% for us in ml.user_stories.select_related %}
             {% include "milestone-item.html" with us=us %}
+            {% if not forloop.last %}
+                <hr>
+            {% endif %}
         {% empty %}
         <div class="us-item-empty us-item">
             <div class="us-title">{% trans "No user storys" %}</div>

@@ -6,9 +6,11 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Backlog" %}{% endblock %}
 
 {% block wrapper %}
-<div data-api-url"{{ project.get_milestones_list_api_url }}" class="backlog">
-    <div class="milestones right">
+<div data-api-url="{{ project.get_milestones_list_api_url }}" class="backlog" id="backlog">
+
+    <div class="milestones right" id="milestones" url="{{ project.get_backlog_right_block_url }}">
     </div>
+
     <div class="backlog-container">
         <div class="backlog-box">
             <div class="graph-box"></div>
@@ -20,7 +22,5 @@
 {% endblock %}
 
 {% block bottom-headers %}
-{% comment %}
-<script type="text/javascript" src="{% static 'js/bb/backlog.js' %}"></script>
-{% endcomment %}
+    <script type="text/javascript" src="{% static 'js/bb/backlog.js' %}"></script>
 {% endblock %}

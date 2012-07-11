@@ -469,7 +469,7 @@ var MilestonesModel = Backbone.Model.extend({
 });
 
 var RightBlockView = Backbone.View.extend({
-    el: $(".right-block"),
+    el: $("#milestones"),
 
     events: {
         "dragover .milestones .milestone-item": "milestones_dragover",
@@ -490,7 +490,7 @@ var RightBlockView = Backbone.View.extend({
 
     render: function() {
         var self = this;
-        self.$(".milestones").html(this.model.get('html'));
+        self.$el.html(this.model.get('html'));
         this.trigger('load');
     },
 
@@ -571,16 +571,17 @@ var RightBlockView = Backbone.View.extend({
 });
 
 var Backlog = Backbone.View.extend({
-    el: $("#dashboard"),
+    el: $("#backlog"),
 
     initialize: function() {
         _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
 
-        var stats_view = new StatsView();
-        var burndown_view = new BurndownView();
-        var burnup_view = new BurnupView();
+        //TODO:
+        //~ var stats_view = new StatsView();
+        //~ var burndown_view = new BurndownView();
+        //~ var burnup_view = new BurnupView();
 
-        this.left_block = new LeftBlockView();
+        //~ this.left_block = new LeftBlockView();
         this.right_block = new RightBlockView();
 
         this.left_block.on('load', this.calculateLimit);

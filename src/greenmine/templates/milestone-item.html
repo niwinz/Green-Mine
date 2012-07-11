@@ -1,7 +1,17 @@
 {% load static from staticfiles %}
 <div class="us-item" id="us-item-{{ us.id }}" unassignurl="{{ us.get_unassign_url }}" assignurl="{{ us.get_assign_url }}" draggable="true">
-    <div class="us-title us-status-{{ us.status }}">{{ us.subject|truncatechars:40 }}</div>
     <div class="us-meta">
         {{ us.get_points_display }}
+    </div>
+
+    <div class="us-title us-status-{{ us.status }}">
+
+        <div class="status {% if us.status == completed %}completed{% endif %}"></div>
+
+        {% for tag in us.tags.all %}
+            <span class="tag">{{ tag }}</span>
+        {% endfor %}
+
+        {{ us.subject|truncatechars:40 }}
     </div>
 </div>
