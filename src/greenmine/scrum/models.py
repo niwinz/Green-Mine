@@ -320,7 +320,7 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return self.get_ml_detail_url()
+        return self.get_dashboard_url()
 
     @models.permalink
     def get_edit_url(self):
