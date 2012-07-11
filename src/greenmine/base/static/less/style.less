@@ -260,8 +260,85 @@ body {
         }
     }
     .backlog-container {
-        margin-right: 450px;
-        border: 1px solid red;
+        margin-right: 465px;
         min-height: 200px;
+
+        .uslist-box{
+            .un-us-item{
+                overflow: hidden;
+            }
+
+            .row {
+                font-size: 14px;
+                float: right;
+                vertical-align: bottom;
+                line-height: 25px;
+                color: @black;
+
+                &.title{
+                    float: left;
+                    width: auto;
+                    margin-right: 100px;
+
+                    .category{
+                        background: @gray;
+                        padding: 10px;
+                        color: @white;
+                        margin-right: 5px;
+                        cursor: pointer;
+                        &.selected {
+                            background-color: @green;
+                            background-image: url(/static/imgs/close-icon.png);
+                            background-repeat:no-repeat;
+                            background-position: 3px 10px;
+                            padding-left: 20px;
+                        }
+
+                    }
+
+                }
+
+                &.priority, &.points {
+                    width: 60px;
+                    text-align: right;
+                }
+
+                &.meta{
+                    float:right;
+
+                    a {
+                        background: @grayLight;
+                        padding: 2px 3px;
+                        -webkit-border-radius: 5px;
+                        margin-left: 5px;
+                        color: @white;
+
+                        &:hover{
+                            background: @red;
+                            text-decoration: none;
+                        }
+                    }
+                }
+
+            }
+
+            hr{
+                margin: 5px 0px;
+            }
+        }
+
+    }
+}
+
+.row{
+    margin: auto;
+    display: block;
+    &:before {
+        display: block;
+        content: none;
+    }
+    &:after {
+        display: block;
+        content: none;
     }
 }

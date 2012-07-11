@@ -1,18 +1,4 @@
 {% load static i18n %}
-<div class="un-us-item head-title">
-    <div class="row title">
-        <span>
-            <a href="#" order_by="subject">{% trans "Subject" %}</a>
-        </span>
-    </div>
-    <div class="row points">
-        <span><a href="#" order_by="points">{% trans "Points" %}</a></span>
-    </div>
-    <div class="row priority">
-        <span><a href="#" order_by="priority">{% trans "Priority" %}</a></span>
-    </div>
-    <div class="row metaicon"></div>
-</div>
 
 <div class="un-us-item">
     <div class="row title tag-selector">
@@ -25,7 +11,28 @@
 </div>
 
 
+<div class="un-us-item head-title">
+    <div class="row title">
+        <span>
+            <a href="#" order_by="subject">{% trans "User story" %}</a>
+        </span>
+    </div>
+    <div class="row points">
+        <span>
+            <a href="#" order_by="points">{% trans "Points" %}</a>
+        </span>
+    </div>
+    <div class="row priority">
+        <span>
+            <a href="#" order_by="priority">{% trans "Priority" %}</a>
+        </span>
+    </div>
+    <div class="row metaicon"></div>
+</div>
 
 {% for us in unassigned_us %}
-{% include "user-story-item.html" with us=us %}
+    {% include "user-story-item.html" with us=us %}
+    {% if not forloop.last %}
+        <hr>
+    {% endif %}
 {% endfor %}

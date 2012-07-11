@@ -214,7 +214,7 @@ var LeftBlockModel = Backbone.Model.extend({
 });
 
 var LeftBlockView = Backbone.View.extend({
-    el: $(".left-block"),
+    el: $("#backlog-left-block"),
 
     events: {
         "dragstart .unassigned-us .un-us-item": "unassigned_us_dragstart",
@@ -223,18 +223,18 @@ var LeftBlockView = Backbone.View.extend({
         "drop .left-block .unassigned-us": "left_block_drop",
 
         /* Iniline edit */
-        "click .unassigned-us .config-us-inline": "on_us_edit_inline",
-        "click .unassigned-us .user-story-inline-submit": "on_us_edit_inline_submit",
-        "click .unassigned-us .user-story-inline-cancel": "on_us_edit_form_cancel",
+        "click .un-us-item .config-us-inline": "on_us_edit_inline",
+        "click .un-us-item .user-story-inline-submit": "on_us_edit_inline_submit",
+        "click .un-us-item .user-story-inline-cancel": "on_us_edit_form_cancel",
 
         "click .un-us-item .delete": "onUserStoryDeleteClick",
 
         /* Ordering */
-        "click .unassigned-us .head-title .row a": "on_order_link_clicked",
+        "click .un-us-item .head-title .row a": "on_order_link_clicked",
 
         /*Tag filtering */
-        "click .unassigned-us .row .category.selected": "on_tag_remove_filter_clicked",
-        "click .unassigned-us .row .category.unselected": "on_tag_add_filter_clicked"
+        "click .un-us-item .row .category.selected": "on_tag_remove_filter_clicked",
+        "click .un-us-item .row .category.unselected": "on_tag_add_filter_clicked"
     },
 
     initialize: function() {
@@ -255,7 +255,7 @@ var LeftBlockView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$('.unassigned-us').html(this.model.get('html'))
+        this.$('.uslist-box').html(this.model.get('html'))
         this.trigger('load');
     },
 
@@ -469,7 +469,7 @@ var MilestonesModel = Backbone.Model.extend({
 });
 
 var RightBlockView = Backbone.View.extend({
-    el: $("#milestones"),
+    el: $("#backlog-right-block"),
 
     events: {
         "dragover .milestones .milestone-item": "milestones_dragover",
@@ -581,21 +581,22 @@ var Backlog = Backbone.View.extend({
         //~ var burndown_view = new BurndownView();
         //~ var burnup_view = new BurnupView();
 
-        //~ this.left_block = new LeftBlockView();
+        this.left_block = new LeftBlockView();
         this.right_block = new RightBlockView();
 
-        this.left_block.on('load', this.calculateLimit);
-        this.left_block.on('change', stats_view.reload);
-        this.left_block.on('change', burndown_view.reload);
-        this.left_block.on('change', burndown_view.reload);
-        this.left_block.on('change', this.calculateLimit);
+        //TODO
+        //~ this.left_block.on('load', this.calculateLimit);
+        //~ this.left_block.on('change', stats_view.reload);
+        //~ this.left_block.on('change', burndown_view.reload);
+        //~ this.left_block.on('change', burndown_view.reload);
+        //~ this.left_block.on('change', this.calculateLimit);
 
-
-        this.right_block.on('load', this.calculateLimit);
-        this.right_block.on('change', this.calculateLimit);
-        this.right_block.on('change', this.left_block.reload);
-        this.right_block.on('change', stats_view.reload);
-        this.right_block.on('change', burndown_view.reload);
+        //TODO
+        //~ this.right_block.on('load', this.calculateLimit);
+        //~ this.right_block.on('change', this.calculateLimit);
+        //~ this.right_block.on('change', this.left_block.reload);
+        //~ this.right_block.on('change', stats_view.reload);
+        //~ this.right_block.on('change', burndown_view.reload);
     },
 
     assignedPoints: function() {

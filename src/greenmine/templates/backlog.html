@@ -8,11 +8,11 @@
 {% block wrapper %}
 <div data-api-url="{{ project.get_milestones_list_api_url }}" class="backlog" id="backlog">
 
-    <div class="milestones right" id="milestones" url="{{ project.get_backlog_right_block_url }}">
+    <div class="milestones right" id="backlog-right-block" url="{{ project.get_backlog_right_block_url }}">
     </div>
 
     <div class="backlog-container">
-        <div class="backlog-box">
+        <div class="backlog-box" id="backlog-left-block" url="{{ project.get_backlog_left_block_url }}">
             <div class="graph-box"></div>
             <div class="filters-box"></div>
             <div class="uslist-box"></div>
