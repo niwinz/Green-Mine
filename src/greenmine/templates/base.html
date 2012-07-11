@@ -35,14 +35,18 @@
                         <a href="#">{% trans "logout" %}</a>
                     </div>
                 </div>
+                <div class="clearfix"></div>
                 <div class="header-row">
-                    <div class="header-menu">
+                    <div class="header-menu left">
                         <ul>
-                            <li><a href="#">Backlog</a></li>
-                            <li><a href="#">Dashboard</a></li>
-                            <li><a href="#">Bugs</a></li>
-                            <li><a href="#">Questions</a></li>
+                            <li class="{{ menu.in_backlog }}"><a href="#">{% trans "Backlog" %}</a></li>
+                            <li class="{{ menu.in_dashboard }}"><a href="#">{% trans "Dashboard" %}</a></li>
+                            <li class="{{ menu.in_issues }}"><a href="#">{% trans "Bugs" %}</a></li>
+                            <li class="{{ menu.in_questions }}"><a href="#">{% trans "Questions" %}</a></li>
                         </ul>
+                    </div>
+                    <div class="search-form-box right">
+                        <input type="text" placeholder="Issue, User story, wiki..." />
                     </div>
                 </div>
             </div>

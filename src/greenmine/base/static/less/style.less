@@ -129,6 +129,18 @@ body {
  *
  **************/
 
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+
 .button{
     padding: 10px 30px;
     .border-radius(5px);

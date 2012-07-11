@@ -1,7 +1,7 @@
 .header-container {
     width: 100%;
     background-color: @gray;
-    height: 120px;
+    height: 100px;
 
     .header-inner {
         padding-left: 40px;
@@ -17,10 +17,32 @@
 
         .title-box {
             padding: 15px;
+            margin-left: 10px;
             background-color: @grayDark;
             color: white;
             .border-radius(7px);
             font-size: 22px;
+        }
+
+        .header-menu {
+            padding: 10px;
+            margin-top: 10px;
+
+            ul {
+                padding: 0px;
+                margin: 0px;
+                font-size: 14px;
+                font-family: @DroidSansBold;
+
+                li {
+                    display: inline;
+                    padding-right: 15px;
+                }
+
+                li.selected a {
+                    color: white;
+                }
+            }
         }
     }
 }
