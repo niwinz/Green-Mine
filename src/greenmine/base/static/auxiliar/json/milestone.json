@@ -1,6 +1,0 @@
-{"valid":true, 
- "milestone": {"id": 144, "name": "Nuevooooo",  "url": "auxiliar/json/dashboard.json", "estimated_finish": "05/10/2011","completed_tasks": 0, "total_tasks": 0},
- "errors": [{
-    "nombre-milestone": "Prueba validación nombre"
- }]
-}

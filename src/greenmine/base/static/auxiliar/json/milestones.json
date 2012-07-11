@@ -1,7 +1,0 @@
-{
-    "milestones":[
-        {"id": 1, "name": "Fase 1",  "url": "auxiliar/json/dashboard.json", "estimated_finish": "12/10/2011", "completed_tasks": "2", "total_tasks": 6, "edit_url": "auxiliar/json/milestone.json"},
-        {"id": 2, "name": "Fase 2",  "url": "auxiliar/json/dashboard.json", "estimated_finish": "06/05/2011", "completed_tasks": "5", "total_tasks": 16, "edit_url": "auxiliar/json/milestone.json"},
-        {"id": 0, "name": "Sin asignar",  "url": "auxiliar/json/dashboard.json", "estimated_finish": "23/07/2011", "completed_tasks": "1", "total_tasks": 3, "edit_url": "auxiliar/json/milestone.json"}
-    ]
-}
