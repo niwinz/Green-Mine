@@ -45,8 +45,8 @@
                             <li class="{{ menu.in_questions }}"><a href="{{ project.get_questions_url }}">{% trans "Questions" %}</a></li>
                         </ul>
                     </div>
-                    <div class="search-form-box right">
-                        <input type="text" placeholder="Issue, User story, wiki..." />
+                    <div class="search-form-box right" data-url="{% url 'search' %}">
+                        <input id="search-input" type="text" placeholder="Issue, User story, wiki..." />
                     </div>
                 </div>
             </div>
@@ -78,6 +78,7 @@
     <script src="{% static 'js/libs/backbone-form.js' %}"></script>
 
     <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/bb/search.js' %}"></script>
     {% block bottom-headers %}{% endblock %}
 </body>
 </html>
