@@ -20,8 +20,41 @@
     <script src="{% static 'js/libs/modernizr-2.5.3-respond-1.1.0.min.js' %}"></script>
 </head>
 <body>
-    {% block middle-box %}
-    {% endblock %}
+    <div class="main-container">
+        <div class="header-container">
+            <div class="header-inner">
+                <div class="header-row">
+                    <div class="title-box left">
+                        <span class="title-item">Greenmine</span>
+                        <span class="separator"> &gt; </span>
+                        <span class="title-item">Login</span>
+                    </div>
+                    <div class="right-top-menu right">
+                        <a href="#">{{ user.get_full_name|default:"Anonymous" }}</a> |
+                        <a href="#">{% trans "settings" %}</a> |
+                        <a href="#">{% trans "logout" %}</a>
+                    </div>
+                </div>
+                <div class="header-row">
+                    <div class="header-menu">
+                        <ul>
+                            <li><a href="#">Backlog</a></li>
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Bugs</a></li>
+                            <li><a href="#">Questions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="middle-container">
+            {% block middle-box %}
+            <div class="main-box">
+                {% block wrapper %}{% endblock %}
+            </div>
+            {% endblock %}
+        </div>
+    </div>
 
     <script src="{% url "jsi18n" %}"></script>
     <script src="{% static 'js/libs/json2.js' %}"></script>

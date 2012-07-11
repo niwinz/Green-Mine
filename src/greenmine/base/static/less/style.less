@@ -1,5 +1,6 @@
 body {  background-color: red; }
 @import "bootstrap/bootstrap.less";
+@import "header.less";
 
 body {
   padding-bottom: 40px;
@@ -134,4 +135,31 @@ body {
     font-family: @DroidSansBold;
     font-size: 16px;
     border: 1px solid;
+}
+
+.middle-container {
+    .main-box {
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-top: 20px;
+    }
+
+    #login {
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-top: 20px;
+    }
+}
+
+.backlog {
+    .milestones {
+        width: 450px;
+        min-height: 200px;
+        border: 1px solid black;
+    }
+    .backlog-container {
+        margin-right: 450px;
+        border: 1px solid red;
+        min-height: 200px;
+    }
 }
