@@ -39,10 +39,10 @@
                 <div class="header-row">
                     <div class="header-menu left">
                         <ul>
-                            <li class="{{ menu.in_backlog }}"><a href="#">{% trans "Backlog" %}</a></li>
-                            <li class="{{ menu.in_dashboard }}"><a href="#">{% trans "Dashboard" %}</a></li>
-                            <li class="{{ menu.in_issues }}"><a href="#">{% trans "Bugs" %}</a></li>
-                            <li class="{{ menu.in_questions }}"><a href="#">{% trans "Questions" %}</a></li>
+                            <li class="{{ menu.in_backlog }}"><a href="{{ project.get_backlog_url }}">{% trans "Backlog" %}</a></li>
+                            <li class="{{ menu.in_dashboard }}"><a href="{{ project.get_dashboard_url }}">{% trans "Dashboard" %}</a></li>
+                            <li class="{{ menu.in_issues }}"><a href="{{ project.get_issues_url }}">{% trans "Bugs" %}</a></li>
+                            <li class="{{ menu.in_questions }}"><a href="{{ project.get_questions_url }}">{% trans "Questions" %}</a></li>
                         </ul>
                     </div>
                     <div class="search-form-box right">
