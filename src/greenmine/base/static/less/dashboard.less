@@ -1,4 +1,12 @@
 .dashboard {
+    div.tag {
+        display: inline-block;
+        background: #555;
+        padding: 5px 10px;
+        color: white;
+        margin-right: 5px;
+        cursor: pointer;
+    }
     .top-box {
         padding: 15px;
         min-height: 200px;
@@ -35,9 +43,9 @@
 
                 div.status-title-wrapper {
                     padding:  3px 10px 3px 10px;
-                    display: inline-block;
                     text-align: left;
-                    width: 200px;
+                    margin-left: 4px;
+                    margin-right: 4px;
                     .border-radius(7px);
                 }
 
@@ -56,16 +64,12 @@
 
         .userstory-item {
             min-height: 200px;
+            margin-bottom: 10px;
 
             .userstory-description {
                 width: 200px;
                 color: @white;
 
-                div.tag {
-                    padding: 5px;
-                    background-color: #666;
-                    display: inline-block;
-                }
             }
             .userstory-tasks {
                 margin-left: 200px;
@@ -107,8 +111,11 @@
                     height: 170px;
 
                     .task-subject {
-                        padding: 10px;
+                        padding: 7px;
                         height: 100px;
+                        .text {
+                            margin-top: 5px;
+                        }
                     }
 
                     .task-meta {

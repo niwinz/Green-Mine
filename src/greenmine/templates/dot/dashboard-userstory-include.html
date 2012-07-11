@@ -1,21 +1,36 @@
 <script id="userstory-template" type="template/dot">
-    <td class="user-story-col col">
-        <div class="user-story-container">
-            <div class="user-story">
-                <div class="description">
-                    <a href="{{=it.viewUrl }}">{{=it.subject }}</a>
-                </div>
-                <div class="icons">
-                    <div class="points">{{=it.pointsDisplay }}</div>
-                    <div class="new-task" href="#">
-                        <img src="/static/imgs/plus-icon.png" />
-                    </div>
-                </div>
+    <div class="userstory-description left">
+        <div class="description-box">
+            <div class="tags-container">
+                <div class="tag">Tag1</div>
+                <div class="tag">Tag2</div>
             </div>
+            <div class="description-text">
+                {{=it.subject }}
+            </div>
+            <div class="description-meta"></div>
         </div>
-    </td>
-    <td class="task-col col open-task-col" data-status="open"></td>
-    <td class="task-col col progress-task-col" data-status="progress"></td>
-    <td class="task-col col completed-task-col" data-status="completed"></td>
-    <td class="task-col col closed-task-col" data-status="closed"></td>
+    </div>
+    <div class="userstory-tasks">
+        <table>
+            <tr class="task-row">
+                <td class="status status-new" data-status="open">
+                    <div class="task-item-container">
+                    </div>
+                </td>
+                <td class="status status-progress" data-status="progress">
+                    <div class="task-item-container">
+                    </div>
+                </td>
+                <td class="status status-completed" data-status="completed">
+                    <div class="task-item-container">
+                    </div>
+                </td>
+                <td class="status status-closed" data-status="closed">
+                    <div class="task-item-container">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 </script>

@@ -5,7 +5,7 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Dashboard" %} {% endblock %}
 
 {% block wrapper %}
-<div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard">
+<div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
     <div class="top-box">
         <div id="sprint-burndown" data-url="{{ milestone.get_burndown_url }}" show="on" class="sprint-burndown-container">
             <div id="sprint-burndown-graph" style="display:none"></div>
@@ -39,109 +39,8 @@
         </div>
 
         <div class="middle-body userstory-list">
-            <div class="userstory-item">
-                <div class="userstory-description left">
-                    <div class="description-box">
-                        <div class="tags-container">
-                            <div class="tag">Tag1</div>
-                            <div class="tag">Tag2</div>
-                        </div>
-                        <div class="description-text">
-                            Listado de pedidos (wireframe: Perfil Tus pedidos una entrega, Tus pedidos una entrega Observacion):
-                        </div>
-                        <div class="description-meta"></div>
-                    </div>
-                </div>
-                <div class="userstory-tasks">
-                    <table>
-                        <tr class="task-row">
-                            <td class="status status-new">
-                                <div class="task-item-container">
-                                    <div class="task-item">
-                                        <div class="task-item-box">
-                                            <div class="task-inner-box">
-                                                <div class="task-subject">Perfil - Listado de pedidos (wireframe: Perfil -> Tus pedidos una entrega, Tus pedidos una entrega Observacion):</div>
-                                                <div class="task-meta">
-                                                    <div class="status-button left">In progress</div>
-                                                    <div class="assigned-button left">
-                                                        <div class="assigned-color left"></div>
-                                                        <div class="assigned-name left">Alejandro Alonso</div>
-                                                        <div class="clearfix"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="status status-progress">
-                                <div class="task-item-container">
-                                    <div class="task-item">
-                                        <div class="task-item-box">
-                                            <div class="task-inner-box">
-                                                <div class="task-subject">Perfil - Listado de pedidos (wireframe: Perfil -> Tus pedidos una entrega, Tus pedidos una entrega Observacion):</div>
-                                                <div class="task-meta">
-                                                    <div class="status-button left">In progress</div>
-                                                    <div class="assigned-button left">
-                                                        <div class="assigned-color left"></div>
-                                                        <div class="assigned-name left">Alejandro Alonso</div>
-                                                        <div class="clearfix"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="status status-completed">
-                                <div class="task-item-container">
-                                </div>
-                            </td>
-                            <td class="status status-closed">
-                                <div class="task-item-container">
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
         </div>
-
-
     </div>
-
-    {% comment %}
-    <div id="sprint-burndown" url="{{ milestone.get_burndown_url }}" {% if project.extras.show_sprint_burndown %}show="on"{%endif%}>
-        <div id="sprint-burndown-graph" style="display:none"></div>
-    </div>
-
-    <div class="matrix" id="dashboard-matrix" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
-        <table>
-            <thead>
-                <tr class="header-row row">
-                    <td class="user-story-col col">
-                        <div class="text">{% trans "User story" %}</div>
-                    </td>
-                    <td class="task-col col open-task-col">
-                        <div class="text">{% trans "New" %}</div>
-                    </td>
-                    <td class="task-col col progress-task-col">
-                        <div class="text">{% trans "In progress" %}</div>
-                    </td>
-                    <td class="task-col col completed-task-col">
-                        <div class="text">{% trans "Ready for test" %}</div>
-                    </td>
-                    <td class="task-col col closed-task-col">
-                        <div class="text">{% trans "Closed" %}</div>
-                    </td>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    {% endcomment %}
 </div>
 
 {% endblock %}
@@ -159,9 +58,7 @@
 {% to_json statuses as statuses_json %}
 {% to_json participants as participants_json %}
 
-<script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/bb/dashboard.js" %}"></script>
-
 <script type="text/javascript">
 Greenmine.statuses = {{ statuses_json }};
 Greenmine.participants = {{ participants_json }};

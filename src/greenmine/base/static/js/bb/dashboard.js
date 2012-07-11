@@ -19,10 +19,10 @@ Greenmine.TaskCollection = Backbone.Collection.extend({
 
 
 Greenmine.UserStoryView = Backbone.View.extend({
-    tagName: "tr",
+    tagName: "div",
 
     attributes: {
-        'class': 'user-story-row row'
+        'class': 'userstory-item'
     },
 
     initialize: function() {
@@ -41,7 +41,7 @@ Greenmine.TaskView = Backbone.View.extend({
     tagName: "div",
 
     attributes: {
-        "class": "task-container non-closed-task",
+        "class": "task-item",
         "draggable": "true",
     },
 
@@ -61,10 +61,8 @@ Greenmine.TaskView = Backbone.View.extend({
 
     setStatus: function(stat) {
         this.$el.attr('data-status', stat);
-        var status_node = this.$('.statuses');
-        status_node.val(stat);
-
         this.model.set('status', stat);
+        this.$(".status-button").html(stats[stat]);
     },
 
     setUserStory: function(us) {
@@ -84,16 +82,16 @@ Greenmine.taskTemplate = doT.template($("#userstory-task-template").html());
 
 
 Greenmine.DashboardView = Backbone.View.extend({
-    el: $("#dashboard-matrix"),
+    el: $("#milestone-dashboard"),
 
     events: {
-        "dragstart .task-col .task-container": "onDragStart",
-        "dragleave .task-col": "onDragLeave",
-        "dragover .task-col": "onDragOver",
-        "drop .task-col": "onDrop",
+        "dragstart td.status .task-item": "onDragStart",
+        "dragleave td.status": "onDragLeave",
+        "dragover td.status": "onDragOver",
+        "drop td.status": "onDrop",
 
-        "change .task-col .task-container .icons .participants": "assignationChangeSelect",
-        "change .task-col .task-container .icons .statuses": "statusChangeChange"
+        //"change .task-col .task-container .icons .participants": "assignationChangeSelect",
+        //"change .task-col .task-container .icons .statuses": "statusChangeChange"
         //"click .user-story-row .user-story-container .new-task": "onNewTaskClick"
     },
 
@@ -117,7 +115,7 @@ Greenmine.DashboardView = Backbone.View.extend({
 
     addUserStory: function(item) {
         var view = new Greenmine.UserStoryView({model:item});
-        this.$("tbody").append(view.render().el);
+        this.$(".userstory-list").append(view.render().el);
     },
 
     resetTasks: function() {
@@ -132,11 +130,11 @@ Greenmine.DashboardView = Backbone.View.extend({
         var view = new Greenmine.TaskView({model:item});
 
         var usdom = this.$("#user-story-" + item.get("us"));
-        var column = _.find(usdom.find(".task-col"), function(element) {
+        var column = _.find(usdom.find("td.status"), function(element) {
             return $(element).data('status') == item.get('fakeStatus');
         });
 
-        $(column).append(view.render().el);
+        $(column).find(".task-item-container").append(view.render().el);
         this.tasks.push(view);
     },
 
@@ -175,7 +173,7 @@ Greenmine.DashboardView = Backbone.View.extend({
             return taskview.model.get('id') == id;
         });
 
-        var userstory = column.closest('tr');
+        var userstory = column.closest('.userstory-item');
 
         var new_status_string = null;
         if (stats[task_view.model.get('status')] === undefined) {
@@ -186,7 +184,7 @@ Greenmine.DashboardView = Backbone.View.extend({
 
         task_view.setStatus(new_status_string);
         task_view.setUserStory(userstory.data('id'));
-        column.append(task_view.$el);
+        column.find(".task-item-container").append(task_view.$el);
 
         var apiUrl = this.$el.data('api-url');
 
@@ -194,11 +192,10 @@ Greenmine.DashboardView = Backbone.View.extend({
             "status": new_status_string,
             "us": userstory.data('id'),
             "task":  id,
-            "assignation": task_view.model.get('assignedTo')
+            "assignation": task_view.model.get('assignedTo') || ""
         }
 
         $.post(apiUrl, postData, function(response) {
-            console.log(response);
         }, 'json');
     },
 
@@ -263,7 +260,7 @@ Greenmine.DashboardView = Backbone.View.extend({
 
 Greenmine.SprintBurndownModel = Backbone.Model.extend({
     url: function() {
-        return this.get('view').$el.attr('url');
+        return this.get('view').$el.data('url');
     }
 });
 
