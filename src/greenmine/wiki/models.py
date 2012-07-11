@@ -13,6 +13,10 @@ class WikiPage(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     @models.permalink
+    def get_absolute_url(self):
+        return self.get_view_url()
+
+    @models.permalink
     def get_view_url(self):
         return ('wiki-page', (),
             {'pslug': self.project.slug, 'wslug': self.slug})

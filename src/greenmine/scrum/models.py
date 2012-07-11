@@ -126,6 +126,9 @@ class Project(models.Model):
 
 
     """ Permalinks """
+    @models.permalink
+    def get_absolute_url(self):
+        return self.get_backlog_url()
 
     @models.permalink
     def get_dashboard_url(self):
@@ -316,6 +319,10 @@ class Milestone(models.Model):
         )
 
     @models.permalink
+    def get_absolute_url(self):
+        return self.get_ml_detail_url()
+
+    @models.permalink
     def get_edit_url(self):
         return ('milestone-edit', (),
             {'pslug': self.project.slug, 'mid': self.id})
@@ -451,6 +458,10 @@ class UserStory(models.Model):
             self.ref = ref_uniquely(self.project, self.__class__)
 
         super(UserStory, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return self.get_view_url()
 
     @models.permalink
     def get_assign_url(self):
@@ -679,6 +690,10 @@ class Task(models.Model):
     @property
     def fake_status(self):
         return SCRUM_STATES.get_us_state_for_task_state(self.status)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return self.get_view_url()
 
     @models.permalink
     def get_edit_url(self):

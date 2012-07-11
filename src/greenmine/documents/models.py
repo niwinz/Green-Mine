@@ -33,3 +33,7 @@ class Document(models.Model):
     def get_delete_url(self):
         return ('documents-delete', (),
             {'pslug': self.project.slug, 'docid': self.pk})
+
+    @models.permalink
+    def get_absolute_url(self):
+        return self.attached_file.url

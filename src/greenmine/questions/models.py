@@ -28,6 +28,10 @@ class Question(models.Model):
     tags = TaggableManager()
 
     @models.permalink
+    def get_absolute_url(self):
+        return self.get_view_url()
+
+    @models.permalink
     def get_view_url(self):
         return ('questions-view', (),
             {'pslug': self.project.slug, 'qslug': self.slug})
