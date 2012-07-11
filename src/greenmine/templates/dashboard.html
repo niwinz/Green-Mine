@@ -5,13 +5,114 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_backlog_url }}">{{ project.slug }}</a> / {% trans "Dashboard" %} {% endblock %}
 
 {% block wrapper %}
-<div id="milestone-dashboard" rel="{{ milestone.id }}">
-    {% include "messages.html" %}
-    <div id="milestone-dashboard-title">
-        <h1>Milestone: «{{ milestone.name }}»</h1>
-        <br />
+<div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard">
+    <div class="top-box">
+        <div id="sprint-burndown" data-url="{{ milestone.get_burndown_url }}" show="on" class="sprint-burndown-container">
+            <div id="sprint-burndown-graph" style="display:none"></div>
+        </div>
+        <div class="sprint-stats right">
+        </div>
     </div>
 
+    <div class="middle-box">
+        <div class="middle-header">
+            <div class="userstory-description left"></div>
+            <div class="userstory-tasks">
+                <table>
+                    <tr>
+                        <th class="status status-new">
+                            <div class="status-title-wrapper bg-new">{% trans "New" %}</div>
+                        </th>
+                        <th class="status status-progress">
+                            <div class="status-title-wrapper bg-progress">{% trans "In progress" %}</div>
+                        </th>
+                        <th class="status status-completed">
+                            <div class="status-title-wrapper bg-completed">{% trans "Ready for test" %}</div>
+                        </th>
+                        <th class="status status-closed">
+                            <div class="status-title-wrapper bg-closed">{% trans "Closed" %}</div>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="middle-body userstory-list">
+            <div class="userstory-item">
+                <div class="userstory-description left">
+                    <div class="description-box">
+                        <div class="tags-container">
+                            <div class="tag">Tag1</div>
+                            <div class="tag">Tag2</div>
+                        </div>
+                        <div class="description-text">
+                            Listado de pedidos (wireframe: Perfil Tus pedidos una entrega, Tus pedidos una entrega Observacion):
+                        </div>
+                        <div class="description-meta"></div>
+                    </div>
+                </div>
+                <div class="userstory-tasks">
+                    <table>
+                        <tr class="task-row">
+                            <td class="status status-new">
+                                <div class="task-item-container">
+                                    <div class="task-item">
+                                        <div class="task-item-box">
+                                            <div class="task-inner-box">
+                                                <div class="task-subject">Perfil - Listado de pedidos (wireframe: Perfil -> Tus pedidos una entrega, Tus pedidos una entrega Observacion):</div>
+                                                <div class="task-meta">
+                                                    <div class="status-button left">In progress</div>
+                                                    <div class="assigned-button left">
+                                                        <div class="assigned-color left"></div>
+                                                        <div class="assigned-name left">Alejandro Alonso</div>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="status status-progress">
+                                <div class="task-item-container">
+                                    <div class="task-item">
+                                        <div class="task-item-box">
+                                            <div class="task-inner-box">
+                                                <div class="task-subject">Perfil - Listado de pedidos (wireframe: Perfil -> Tus pedidos una entrega, Tus pedidos una entrega Observacion):</div>
+                                                <div class="task-meta">
+                                                    <div class="status-button left">In progress</div>
+                                                    <div class="assigned-button left">
+                                                        <div class="assigned-color left"></div>
+                                                        <div class="assigned-name left">Alejandro Alonso</div>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="status status-completed">
+                                <div class="task-item-container">
+                                </div>
+                            </td>
+                            <td class="status status-closed">
+                                <div class="task-item-container">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    {% comment %}
     <div id="sprint-burndown" url="{{ milestone.get_burndown_url }}" {% if project.extras.show_sprint_burndown %}show="on"{%endif%}>
         <div id="sprint-burndown-graph" style="display:none"></div>
     </div>
@@ -40,65 +141,9 @@
             <tbody></tbody>
         </table>
     </div>
+    {% endcomment %}
 </div>
 
-{% comment %}
-<div id="create-task-dialog" class="user-story-create form-container hidden">
-    <div class="form-legend">
-        <span>{% trans "Task Create:" %}</span>
-    </div>
-
-    <form action="" method="post" class="inline">
-        {% csrf_token %}
-        <div class="form-field width100">
-            <label>{{ form.subject.label }}</label>
-            {{ form.subject.errors }}
-            {{ form.subject }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.status.label }}</label>
-            {{ form.status.errors }}
-            {{ form.status }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.priority.label }}</label>
-            {{ form.priority.errors }}
-            {{ form.priority }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.milestone.label }}</label>
-            {{ form.milestone.errors }}
-            {{ form.milestone }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.user_story.label }}</label>
-            {{ form.user_story.errors }}
-            {{ form.user_story }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.type.label }}</label>
-            {{ form.type.errors }}
-            {{ form.type}}
-        </div>
-        <div class="form-field">
-            <label>{{ form.assigned_to.label }}</label>
-            {{ form.assigned_to.errors }}
-            {{ form.assigned_to }}
-        </div>
-        <div class="form-field width100">
-            <label>{{ form.description.label }}</label>
-            {{ form.description }}
-            {{ form.description.errors }}
-        </div>
-        <input type="hidden" name="from" value="dashboard" />
-        <input type="hidden" name="createother" value="off" />
-        <div class="form-field width100 float-left">
-           <input type="submit" value="{% trans "Save" %}" class="btn01 save"></input>
-           <input type="submit" value="{% trans "Save and create other" %}" class="btn01 save-and-create-other"></input>
-        </div>
-    </form>
-</div>
-{% endcomment %}
 {% endblock %}
 
 {% block top-headers %}
