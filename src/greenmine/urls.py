@@ -39,8 +39,7 @@ urlpatterns = patterns('',
     url(r"^project/(?P<pslug>[\w\d\-]+)/wiki/", include("greenmine.wiki.urls")),
     url(r"^project/(?P<pslug>[\w\d\-]+)/questions/", include("greenmine.questions.urls")),
     url(r"^project/(?P<pslug>[\w\d\-]+)/documents/", include("greenmine.documents.urls")),
-
-    url(r'^search/', include('haystack.urls')),
+    url(r'^search/', include('greenmine.search.urls')),
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jsi18n'),
     url(r"^intern-api/", include(internapi_urlpatterns, namespace='api')),
 
