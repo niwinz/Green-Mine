@@ -13,12 +13,33 @@
 
     <div class="backlog-container">
         <div class="backlog-box" id="backlog-left-block" url="{{ project.get_backlog_left_block_url }}">
+            <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
             <div class="graph-box"></div>
             <div class="filters-box"></div>
             <div class="uslist-box"></div>
         </div>
     </div>
 </div>
+
+
+<div class="unassign-dialog" style="display: none" title="{% trans "What do you do?" %}">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+        {% trans "Choose the appropriate option." %}
+    </p>
+</div>
+
+<div class="assign-dialog" style="display: none" title="">
+</div>
+
+<div class="delete-milestone-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this milestone?" %}
+</div>
+
+<div class="delete-us-dialog" style="display: none" title="{% trans "Are you sure?" %}">
+    <p>{% trans "Are you sure you want to delete this US?" %}
+</div>
+
+
 {% endblock %}
 
 {% block bottom-headers %}

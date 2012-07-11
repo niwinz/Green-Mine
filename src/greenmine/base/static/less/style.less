@@ -223,10 +223,17 @@ body {
                 line-height: 30px;
 
                 hr{
-                    margin: 5px 0px;
+                    margin: 0px 0px;
                 }
 
                 .us-item{
+                    padding: 5px 0px;
+
+                    &:hover{
+                        background:@grayLighter;
+                        cursor: pointer;
+                    }
+
                     .us-meta{
                         float:right;
                         text-align:right;
@@ -266,13 +273,19 @@ body {
         .uslist-box{
             .un-us-item{
                 overflow: hidden;
+
+                &:hover{
+                    background:@grayLighter;
+                    cursor: pointer;
+                }
+
             }
 
             .row {
                 font-size: 14px;
                 float: right;
                 vertical-align: bottom;
-                line-height: 25px;
+                line-height: 35px;
                 color: @black;
 
                 &.title{
@@ -282,7 +295,7 @@ body {
 
                     .category{
                         background: @gray;
-                        padding: 10px;
+                        padding: 5px 10px;
                         color: @white;
                         margin-right: 5px;
                         cursor: pointer;
@@ -290,7 +303,7 @@ body {
                             background-color: @green;
                             background-image: url(/static/imgs/close-icon.png);
                             background-repeat:no-repeat;
-                            background-position: 3px 10px;
+                            background-position: 3px 5px;
                             padding-left: 20px;
                         }
 
@@ -323,7 +336,7 @@ body {
             }
 
             hr{
-                margin: 5px 0px;
+                margin: 0px 0px;
             }
         }
 

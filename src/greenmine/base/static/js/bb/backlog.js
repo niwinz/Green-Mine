@@ -217,10 +217,10 @@ var LeftBlockView = Backbone.View.extend({
     el: $("#backlog-left-block"),
 
     events: {
-        "dragstart .unassigned-us .un-us-item": "unassigned_us_dragstart",
-        "dragover .left-block .unassigned-us": "left_block_dragover",
-        "dragleave .left-block .unassigned-us": "left_block_dragleave",
-        "drop .left-block .unassigned-us": "left_block_drop",
+        "dragstart .un-us-item": "unassigned_us_dragstart",
+        "dragover .uslist-box": "left_block_dragover",
+        "dragleave .uslist-box": "left_block_dragleave",
+        "drop .uslist-box": "left_block_drop",
 
         /* Iniline edit */
         "click .un-us-item .config-us-inline": "on_us_edit_inline",
@@ -341,6 +341,7 @@ var LeftBlockView = Backbone.View.extend({
             $(this).dialog('close');
         };
 
+        //TODO: we have no dialogs
         $(".delete-us-dialog").dialog({
             modal: true,
             width: '220px',
@@ -515,6 +516,7 @@ var RightBlockView = Backbone.View.extend({
     },
 
     milestones_on_drop: function(event) {
+
         var target = $(event.currentTarget);
         if (target.hasClass('drag-over')) {
             target.removeClass('drag-over');
@@ -522,6 +524,9 @@ var RightBlockView = Backbone.View.extend({
 
         var source_id = event.originalEvent.dataTransfer.getData('source_id');
         var source = $("#" + source_id);
+
+        console.log(source_id, source);
+
         var assign_url = source.attr('assignurl');
         var milestone_id = target.attr('ref');
         var self = this;
@@ -577,7 +582,7 @@ var Backlog = Backbone.View.extend({
         _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
 
         //TODO:
-        //~ var stats_view = new StatsView();
+        var stats_view = new StatsView();
         //~ var burndown_view = new BurndownView();
         //~ var burnup_view = new BurnupView();
 
@@ -585,17 +590,17 @@ var Backlog = Backbone.View.extend({
         this.right_block = new RightBlockView();
 
         //TODO
-        //~ this.left_block.on('load', this.calculateLimit);
-        //~ this.left_block.on('change', stats_view.reload);
+        this.left_block.on('load', this.calculateLimit);
+        this.left_block.on('change', stats_view.reload);
         //~ this.left_block.on('change', burndown_view.reload);
         //~ this.left_block.on('change', burndown_view.reload);
-        //~ this.left_block.on('change', this.calculateLimit);
+        this.left_block.on('change', this.calculateLimit);
 
         //TODO
-        //~ this.right_block.on('load', this.calculateLimit);
-        //~ this.right_block.on('change', this.calculateLimit);
-        //~ this.right_block.on('change', this.left_block.reload);
-        //~ this.right_block.on('change', stats_view.reload);
+        this.right_block.on('load', this.calculateLimit);
+        this.right_block.on('change', this.calculateLimit);
+        this.right_block.on('change', this.left_block.reload);
+        this.right_block.on('change', stats_view.reload);
         //~ this.right_block.on('change', burndown_view.reload);
     },
 
