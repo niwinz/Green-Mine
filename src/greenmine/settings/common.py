@@ -207,6 +207,7 @@ INSTALLED_APPS = [
     'greenmine.documents',
     'greenmine.taggit',
     'greenmine.questions',
+    'greenmine.search',
 
     'django_gravatar',
     'rawinclude',

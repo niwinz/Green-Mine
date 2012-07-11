@@ -4,10 +4,7 @@ from .models import Project, Milestone, UserStory, Task
 
 
 class ProjectIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner')
-    created_date = indexes.DateTimeField(model_attr='created_date')
-    extras = indexes.CharField(model_attr='extras', null=True)
+    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/project_text.txt')
 
     def get_model(self):
         return Project
@@ -17,10 +14,7 @@ class ProjectIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class MilestoneIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner')
-    project = indexes.CharField(model_attr='project')
-    created_date = indexes.DateTimeField(model_attr='created_date')
+    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/milestone_text.txt')
 
     def get_model(self):
         return Milestone
@@ -30,11 +24,7 @@ class MilestoneIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 
 class UserStoryIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner', null=True)
-    project = indexes.CharField(model_attr='project')
-    milestone = indexes.CharField(model_attr='milestone', null=True)
-    created_date = indexes.DateTimeField(model_attr='created_date')
+    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/userstory_text.txt')
 
     def get_model(self):
         return UserStory
@@ -44,12 +34,7 @@ class UserStoryIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class TaskIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner')
-    project = indexes.CharField(model_attr='project')
-    milestone = indexes.CharField(model_attr='milestone', null=True)
-    user_story = indexes.CharField(model_attr='user_story', null=True)
-    created_date = indexes.DateTimeField(model_attr='created_date')
+    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/task_text.txt')
 
     def get_model(self):
         return Task

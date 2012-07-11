@@ -1,42 +1,13 @@
 # -* coding: utf-8 -*-
 from haystack import indexes
-from .models import WikiPage, WikiPageAttachment,  WikiPageHistory
+from .models import WikiPage
 
 
 class WikiPageIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    owner = indexes.CharField(model_attr='owner')
-    project = indexes.CharField(model_attr='project')
-    created_date = indexes.DateTimeField(model_attr='created_date')
+    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/wikipage_text.txt')
 
     def get_model(self):
         return WikiPage
-
-    def index_queryset(self):
-        return self.get_model().objects.all()
-
-
-class WikiPageAttachmentIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner')
-    wikipage = indexes.CharField(model_attr='wikipage')
-    created_date = indexes.DateTimeField(model_attr='created_date')
-
-    def get_model(self):
-        return WikiPageAttachment
-
-    def index_queryset(self):
-        return self.get_model().objects.all()
-
-
-class WikiPageHistoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    owner = indexes.CharField(model_attr='owner')
-    wikipage = indexes.CharField(model_attr='wikipage')
-    created_date = indexes.DateTimeField(model_attr='created_date')
-
-    def get_model(self):
-        return WikiPageHistory
 
     def index_queryset(self):
         return self.get_model().objects.all()

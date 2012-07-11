@@ -66,6 +66,7 @@ var BurndownView = Backbone.View.extend({
         var sprints = this.model.get('sprints_number');
         var disponibility = this.model.get('disponibility');
         var extra_points = this.model.get('extra_points');
+        var now_position = this.model.get('now_position');
 
         for(var i=0; i<=sprints; i++) {
             d1.push([i+1, total_points - points_for_sprint[i]]);
@@ -98,6 +99,12 @@ var BurndownView = Backbone.View.extend({
                 data: d4,
                 bars: { show: true },
                 color: '#4da74d'
+            },
+            {
+                data: [[now_position, 0], [now_position, total_points]],
+                lines: { show: true, fill: true },
+                points: { show: false },
+                color: "#66cc66",
             }
         ],
         {
@@ -148,6 +155,7 @@ var BurnupView = Backbone.View.extend({
         var sprints = this.model.get('sprints');
         var total_points = this.model.get('total_points');
         var total_sprints = this.model.get('total_sprints');
+        var now_position = this.model.get('now_position');
 
         for(var i=0; i<=total_sprints; i++) {
             d1.push([i+1, total_points]);
@@ -181,6 +189,12 @@ var BurnupView = Backbone.View.extend({
                 lines: { show: true, fill: 1.0 },
                 points: { show: true },
                 color: '#eec446'
+            },
+            {
+                data: [[now_position, 0], [now_position, total_points]],
+                lines: { show: true, fill: true },
+                points: { show: false },
+                color: "#66cc66",
             }
         ],
         {

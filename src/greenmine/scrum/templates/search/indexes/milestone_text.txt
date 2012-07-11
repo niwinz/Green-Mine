@@ -1,0 +1,8 @@
+{{ object.uuid }}
+{{ object.name }}
+{{ object.owner }}
+{{ object.project }}
+{{ object.estimated_start }}
+{{ object.estimated_finish }}
+{{ object.created_date }}
+{{ object.modified_date }}
