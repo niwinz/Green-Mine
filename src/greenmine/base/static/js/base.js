@@ -84,199 +84,27 @@ function getIntListFromURLParam(param){
         });
     }
     return return_list;
+
 }
 
-/* Global gonway  module namespace. */
-
-var Gonway = {};
-
-Gonway.Form = Kaleidos.Form.extend({
-    clear: function() {
-        this.$("ul.errorlist").remove();
-        this.$(".error-arrow-top").remove();
-
-        if (this.globalErrorsBox) {
-            this.globalErrorsBox.html("");
-            this.globalErrorsBox.hide();
-        }
-
-        if (this.options.higlight) {
-            this.$("." + this.options.higlight).removeClass(this.options.higlight);
-        }
-    },
-    setErrorsFieldsStandatd: function(errors) {
-        var self = this;
-
-        _.each(errors.form, function(error_list, key) {
-            var field = self.searchField(key);
-            self.higlight(field);
-
-            var error_list_dom = $(self.make('ul', {'class': 'errorlist', 'id': 'field-' + field.attr('id')}));
-            var error_arrow_dom = $(self.make('div', {'class': 'error-arrow-top'}));
-
-            _.each(error_list, function(item) {
-                error_list_dom.append(self.make('li', {}, item));
-            });
-
-            error_arrow_dom.insertAfter(field);
-            error_list_dom.insertAfter(field);
-        });
-    }
-});
-
-Gonway.MailboxModel = Backbone.Model.extend({
-    defaults: {
-        'messages': 2,
-        'applications': 4
-    },
-    url: function() {
-        return $(".navbar").attr('mailbox_update_url');
-    }
-});
-
-
-/* Base view for all portlets.
- * Implements a server content loading on render method. */
-
-Gonway.BasePortletView = Backbone.View.extend({
-    render: function() {
-        var self = this;
-        $.get(self.$el.attr('url'), function(data) {
-            self.$el.html(data);
-            self.$el.slideDown(100, function() {
-                self.trigger('ready');
-            });
-        });
-    }
-});
-
-
-Gonway.HeaderView = Backbone.View.extend({
-    el: $('.navbar'),
-
-    events: {
-        'click .mailbox': 'mailboxDropDown',
-        'mouseleave .mailbox': 'mailboxSlideUp'
-    },
-
-    initialize: function() {
-        _.bindAll(this,
-            'mailboxDropDown',
-            'mailboxSlideUp',
-            'renderMailbox',
-            'setProfileImage'
-        );
-
-        var self = this;
-
-        /* Mailbox */
-        //var update_url = this.$el.attr('mailbox_update_url');
-        var mailbox_num_dom = this.$(".mailbox-num");
-
-        this.mailbox = new Gonway.MailboxModel();
-        this.mailbox.set("messages", mailbox_num_dom.attr('messages') || 0);
-        this.mailbox.set("applications", mailbox_num_dom.attr('applications') || 0);
-
-        /* Initial rendering of mailbox */
-        this.renderMailbox();
-
-        /* Update mailbox with server content every 2 seconds */
-        //setInterval(function() {
-        //    self.mailbox.fetch({success: self.renderMailbox});
-        //}, 2000);
-    },
-
-    mailboxDropDown: function(e) {
-        e.preventDefault();
-        var target = $(e.currentTarget);
-        target.css('border-color', '#FFFFFF');
-        target.find('ul').slideDown();
-    },
-
-    mailboxSlideUp: function(e){
-        var target = $(e.currentTarget);
-        target.css('border-color', '#3D3B48');
-        target.find('ul').fadeOut('fast');
-    },
-
-    renderMailbox: function() {
-        var mailbox_num = this.$(".mailbox-num");
-        mailbox_num.html(
-            this.mailbox.get("messages") + this.mailbox.get("applications")
-        );
-
-        this.$(".mailbox-dropdown span.messages-num").html(this.mailbox.get('messages'));
-        this.$(".mailbox-dropdown span.applications-num").html(this.mailbox.get('applications'));
-    },
-
-    setProfileImage: function(url) {
-        this.$(".navbar-user a:first img").attr('src', url);
-    }
-});
-
-
-Gonway.MainView = Backbone.View.extend ({
-    el: $('body'),
-
-    events: {
-        "change .autocomplete-region": "countryChange"
-    },
-
-    initialize: function() {
-        _.bindAll(this, 'reloadGraphs');
-        this.reloadGraphs();
-    },
-
-    reloadGraphs: function() {
-        var graphs = this.$('.canvas').not(".canvasReady");
-
-        _.each(graphs, function(item) {
-            var gitem = $(item);
-            var width = gitem.attr('rel');
-
-            /* The unique id is mandatory on canvas item */
-            var graphId = gitem.attr('id');
-            var graphSize = gitem.attr('size');
-            var graphWidth = (graphSize / 100) * width;
-            var graphColor = gitem.attr('color');
-            var paper = Raphael(graphId, graphSize, 10);
-            paper.rect(0, 0, graphSize, 10).attr({"font": '9px "Arial"', fill: "#ccc", "stroke-width": 0, r: "4px" });
-            if(graphColor !== undefined){
-                paper.rect(1, 1, graphWidth, 8).attr({"font": '9px "Arial"', fill: graphColor, "stroke-width": 0, r: "4px" });
-            } else {
-                paper.rect(1, 1, graphWidth, 8).attr({"font": '9px "Arial"', fill: "#4595DC", "stroke-width": 0, r: "4px" });
+function getStringListFromURLParam(param){
+    var param_value = getUrlVars()[param];
+    var return_list = [];
+    if (param_value!== undefined){
+        $.each(param_value.split(','), function(index, value){
+            if (value!=''){
+                return_list.push(value);
             }
-
-            gitem.addClass("canvasReady");
         });
-    },
-
-    countryChange: function(event) {
-        event.preventDefault();
-
-        var target = $(event.currentTarget);
-        var regionSelect = this.$(target.data('region-input'));
-        var regionUrl = target.data('url');
-        var self = this;
-
-        $.get(regionUrl, {'country': target.val()}, function(data) {
-            if (!data.success) return;
-            regionSelect.html("");
-            _.each(data.regions, function(region) {
-                var optiondom = self.make('option', {'value': region.id}, region.name);
-                regionSelect.append(optiondom);
-            });
-        }, 'json');
     }
-});
+    return return_list;
 
-Gonway.header = new Gonway.HeaderView();
-Gonway.main = new Gonway.MainView();
+}
 
 
 /* Top Message framework */
 
-Gonway.TopMessage = Backbone.Model.extend({
+Greenmine.TopMessage = Backbone.Model.extend({
     level: function() {
         return this.get('level');
     },
@@ -285,16 +113,16 @@ Gonway.TopMessage = Backbone.Model.extend({
     }
 });
 
-Gonway.TopMessageCollection = Backbone.Collection.extend({
-    model: Gonway.TopMessage
+Greenmine.TopMessageCollection = Backbone.Collection.extend({
+    model: Greenmine.TopMessage
 });
 
-Gonway.MessagesView = Backbone.View.extend({
+Greenmine.MessagesView = Backbone.View.extend({
     el: $("#top-message"),
 
     initialize: function() {
         _.bindAll(this);
-        this.collection = new Gonway.TopMessageCollection();
+        this.collection = new Greenmine.TopMessageCollection();
         this.collection.on('reset', this.resetMessages);
 
         if (window.currentTopMessages !== undefined && window.currentTopMessages.length > 0){
@@ -380,4 +208,4 @@ Gonway.MessagesView = Backbone.View.extend({
     }
 });
 
-Gonway.messages = new Gonway.MessagesView();
+//Greenmine.messages = new Greenmine.MessagesView();
