@@ -24,21 +24,22 @@
         <div class="header-container">
             <div class="header-inner">
                 <div class="header-row">
-                    <div class="title-box left">
-                        <span class="title-item title-main">
-                            <a href="{% url "projects" %}" /><img src="{% static "imgs/logo.png" %}" /></a>
-                        </span>
-                        {% block title %}
-                        <span class="separator"> &rsaquo; </span>
-                        <span class="title-item">Login</span>
-                        {% endblock %}
-                    </div>
                     <div class="right-top-menu right">
                         {% if user.is_authenticated %}
                             <a href="#">{{ user.get_full_name|default:"Anonymous" }}</a> |
                             <a href="#">{% trans "settings" %}</a> |
                             <a href="#">{% trans "logout" %}</a>
                         {% endif %}
+                    </div>
+
+                    <div class="logo-box">
+                        <a href="{% url "projects" %}" /><img src="{% static "imgs/logo.png" %}" /></a>
+                    </div>
+                    <div class="title-box">
+                        {% block title %}
+                        <span class="separator"> &rsaquo; </span>
+                        <span class="title-item">Login</span>
+                        {% endblock %}
                     </div>
                 </div>
                 <div class="clearfix"></div>

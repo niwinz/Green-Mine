@@ -2,6 +2,7 @@
     width: 100%;
     background-color: @green;
     height: 105px;
+    border-bottom: 2px solid @black;
 
     .header-inner {
         padding-left: 40px;
@@ -14,19 +15,34 @@
         a {
             color: @grayDarker;
         }
-
-        .title-box {
-            padding: 0px;
-            margin-left: 0px;
-            color: white;
-            font-size: 26px;
-
-            .title-main {
-                color: @green;
+        .header-row {
+            .logo-box {
+                float: left;
             }
-            .separator {
-                color: @gray;
-                font-weight: bold;
+
+            .title-box {
+                line-height: 55px;
+                padding-left: 10px;
+                margin-left: 0px;
+                color: white;
+                font-size: 26px;
+                display: inline-block;
+
+                .title-item {
+                    line-height: 15px;
+                    display: inline-block;
+                }
+
+                .separator {
+                    line-height: 10px;
+                    color: @gray;
+                    font-weight: bold;
+                    width: 11px;
+                    height: 16px;
+
+                    display: inline-block;
+
+                }
             }
             .title-item{
                 a {
@@ -40,6 +56,10 @@
         }
         .right-top-menu {
             font-weight: bold;
+
+            a {
+                text-decoration: underline;
+            }
         }
 
         .header-menu {
@@ -59,6 +79,7 @@
 
                 li a {
                     color: white;
+
                 }
                 li.selected a {
                     color: @black;
