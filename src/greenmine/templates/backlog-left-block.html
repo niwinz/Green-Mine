@@ -1,4 +1,5 @@
 {% load static i18n %}
+{% load url from future %}
 
 <div class="filters-box">
 
@@ -29,6 +30,10 @@
             {% trans "¡Filters out!" %}
         </span>
     {% endif %}
+
+    <div class="bar-button button right">
+        <a href="{% url 'user-story-create' pslug=project.slug %}">{% trans "New user story" %}</a>
+    </div>
 
 </div>
 
