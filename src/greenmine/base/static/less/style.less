@@ -335,6 +335,56 @@ progress::-moz-progress-bar {
                 }
             }
 
+            .category{
+                background: @gray;
+                padding: 5px 10px;
+                color: @white;
+                margin-right: 5px;
+                cursor: pointer;
+                &.selected {
+                    background-color: @green;
+                    background-image: url(/static/imgs/close-icon.png);
+                    background-repeat:no-repeat;
+                    background-position: 3px 5px;
+                    padding-left: 20px;
+                }
+            }
+
+            .filters-box {
+                display: none;
+                margin-top: 10px;
+
+                .category{
+                    min-width: 200px;
+                }
+            }
+
+            .filters-bar {
+                margin-top: 10px;
+                padding: 10px;
+                background-color: @grayLight;
+                overflow: hidden;
+
+                .show-hide-filters-box{
+                    cursor: pointer;
+                    font-size: 15px;
+
+                }
+
+                .remove-filters{
+                    cursor: pointer;
+                    font-size: 15px;
+                    color: @white;
+                }
+
+                .bar-title {
+                    font-size: 16px;
+                    padding: 5px;
+                    color: @white;
+                    cursor: pointer;
+                }
+            }
+
             .un-us-item{
                 overflow: hidden;
                 padding: 5px;
@@ -357,23 +407,7 @@ progress::-moz-progress-bar {
                     margin-right: 100px;
                     margin-left: 10px;
 
-                    .category{
-                        background: @gray;
-                        padding: 5px 10px;
-                        color: @white;
-                        margin-right: 5px;
-                        cursor: pointer;
-                        &.selected {
-                            background-color: @green;
-                            background-image: url(/static/imgs/close-icon.png);
-                            background-repeat:no-repeat;
-                            background-position: 3px 5px;
-                            padding-left: 20px;
-                        }
-
                     }
-
-                }
 
                 &.priority, &.points {
                     width: 60px;

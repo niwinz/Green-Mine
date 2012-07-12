@@ -233,8 +233,23 @@ var LeftBlockView = Backbone.View.extend({
         "click .head-title .row a": "on_order_link_clicked",
 
         /*Tag filtering */
-        "click .un-us-item .row .category.selected": "on_tag_remove_filter_clicked",
-        "click .un-us-item .row .category.unselected": "on_tag_add_filter_clicked"
+        "click .category.selected": "on_tag_remove_filter_clicked",
+        "click .category.unselected": "on_tag_add_filter_clicked",
+
+        /*Filters box*/
+        "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
+        "click .filters-bar .remove-filters": "remove_filters"
+
+    },
+
+    toggle_filters_box_visibility: function(event) {
+        this.$('.filters-box').toggle();
+        this.filters_box_visible = this.$('.filters-box').is(":visible");
+    },
+
+    remove_filters: function(event){
+        this.options.tag_filter = [];
+        this.reload();
     },
 
     initialize: function() {
@@ -252,10 +267,14 @@ var LeftBlockView = Backbone.View.extend({
 
         this.model = new LeftBlockModel({view:this});
         this.model.fetch({success: this.render});
+        this.filters_box_visible = false;
     },
 
     render: function() {
         this.$('.uslist-box').html(this.model.get('html'))
+        if (this.filters_box_visible){
+            this.$('.filters-box').toggle();
+        }
         this.trigger('load');
     },
 

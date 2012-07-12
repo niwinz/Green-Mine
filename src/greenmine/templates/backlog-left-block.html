@@ -1,13 +1,35 @@
 {% load static i18n %}
 
-<div class="un-us-item">
-    <div class="row title tag-selector">
-        {% for tag in tags%}
-            <span class="category {% if tag.id in selected_tags_ids %} selected {% else %} unselected {% endif %}" category="{{ tag.id }}">
-                {{ tag }} {{tag.count}}
-            </span>
-        {% endfor %}
-    </div>
+<div class="filters-box">
+
+    {% trans "Tags" %}
+
+    {% for tag in tags%}
+        <span class="category {% if tag.id in selected_tags_ids %} selected {% else %} unselected {% endif %}" category="{{ tag.id }}">
+            {{ tag }} {{tag.count}}
+        </span>
+    {% endfor %}
+</div>
+
+<div class="filters-bar collapsed">
+    <span class="show-hide-filters-box">
+        {% trans "Filters" %}
+    </span>
+
+    {% for tag in tags%}
+        {% if tag.id in selected_tags_ids %}
+        <span class="category selected" category="{{ tag.id }}">
+            {{ tag }} {{tag.count}}
+        </span>
+        {% endif %}
+    {% endfor %}
+
+    {% if selected_tags_ids %}
+        <span class="remove-filters">
+            {% trans "¡Filters out!" %}
+        </span>
+    {% endif %}
+
 </div>
 
 
