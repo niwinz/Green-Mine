@@ -690,6 +690,9 @@ class Task(models.Model):
     class Meta:
         unique_together = ('ref', 'project')
 
+    def __unicode__(self):
+        return self.subject
+
     @property
     def fake_status(self):
         return SCRUM_STATES.get_us_state_for_task_state(self.status)
