@@ -98,11 +98,17 @@ Greenmine.task_template = doT.template($("#task-template").html());
 Greenmine.TaskView = Backbone.View.extend({
     tagName: "div",
     attributes: {
-        "class": "un-us-item"
+        "class": "list-item"
     },
 
     render: function() {
-        this.$el.html(Greenmine.task_template(this.model.toJSON()));
+        var context = this.model.toJSON();
+        context = _.extend(context, {
+            'participants': Greenmine.participants,
+            'statuses': Greenmine.statuses
+        });
+
+        this.$el.html(Greenmine.task_template(context));
         this.$el.attr({
             'data-id':this.model.get('id'),
             'id': "task_" + this.model.get('id')
@@ -116,6 +122,8 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
         "click .context-menu a.filter-task": "changeStatus",
+
+        // FIXME: change all selectors.
 
         /*Tag filtering */
         "click .un-us-item .tag .category.selected": "on_tag_remove_filter_clicked",
@@ -134,7 +142,7 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .un-us-item .assigned-to .category.unselected": "on_assigned_add_filter_clicked"
     },
 
-    el: $("#dashboard"),
+    el: $("#issues"),
 
     initialize: function() {
         _.bindAll(this);
@@ -192,7 +200,6 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     collectPostData: function() {
-
         var current = {
             "order_by": this._order_mod + this._order,
             "milestone": this.options.milestone_filter,
@@ -232,8 +239,9 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addIssue: function(task) {
+        console.log(task);
         var view = new Greenmine.TaskView({model:task});
-        this.$("#task-list-body").append(view.render().el);
+        this.$(".list-body").append(view.render().el);
     },
 
     addTag: function(tag) {
@@ -268,30 +276,30 @@ Greenmine.TasksView = Backbone.View.extend({
 
     reset: function() {
         var self = this;
-        this.$("#task-list-body").html("");
+        this.$(".list-body").html("");
         Greenmine.taskCollection.each(function(item) {
             self.addIssue(item);
         });
 
-        this.$("#tags-body").html("");
-        Greenmine.tagCollection.each(function(item) {
-            self.addTag(item);
-        });
+        //this.$("#tags-body").html("");
+        //Greenmine.tagCollection.each(function(item) {
+        //    self.addTag(item);
+        //});
 
-        this.$("#milestones-body").html("");
-        Greenmine.milestoneCollection.each(function(item) {
-            self.addMilestone(item);
-        });
+        //this.$("#milestones-body").html("");
+        //Greenmine.milestoneCollection.each(function(item) {
+        //    self.addMilestone(item);
+        //});
 
-        this.$("#status-body").html("");
-        Greenmine.statusCollection.each(function(item) {
-            self.addStatus(item);
-        });
+        //this.$("#status-body").html("");
+        //Greenmine.statusCollection.each(function(item) {
+        //    self.addStatus(item);
+        //});
 
-        this.$("#assigned-to-body").html("");
-        Greenmine.assignedToCollection.each(function(item) {
-            self.addAssignedTo(item);
-        });
+        //this.$("#assigned-to-body").html("");
+        //Greenmine.assignedToCollection.each(function(item) {
+        //    self.addAssignedTo(item);
+        //});
 
     },
 

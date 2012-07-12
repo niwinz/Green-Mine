@@ -1,28 +1,27 @@
 <script type="template/dot" id="task-template">
-    <div class="row title">
-
-        {{~it.tags :value:index}}
-            <span class="tag">
-                <span class="category unselected" category="{{=value.id}}">
-                    {{=value.name}}
-                </span>
-            </span>
-
-        {{~}}
-        <span>
-            <a href="{{=it.viewUrl }}">
-                {{=it.subject }}
-            </a>
-        </span>
+    <div class="body-right right" data-delete-url="{{=it.deleteUrl }}">
+        <div class="body-item state left">{{=it.status }}</div>
+        <div class="body-item priority left">{{=it.priorityDisplay }}</div>
+        <div class="body-item assigned-to left">
+            <div class="assigned-button left" data-assigned-to-id="{{=it.assignedTo }}">
+                <div class="assigned-color left"></div>
+                <div class="assigned-name left">{{=it.assignedTo }}</div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="row status">
-        <span>{{=it.status }}</span>
+    <div class="body-left">
+        <div class="body-item severity button left critical-color">Critical</div>
+        <div class="body-item title">
+            <div class="title-tags">
+                {{~it.tags :value:index}}
+                <div class="tag" data-category="{{=value.id }}">{{=value.name}}</div>
+                {{~}}
+            </div>
+            <div class="title-text" data-url="{{=it.viewUrl }}">{{=it.subject }}</div>
+        </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="row milestone">
-        <span><a href="">{{=it.assignedTo }}</a></span>
-    </div>
-    <div class="row metaicon">
-        <img class="delete" src="/static/imgs/close-icon.png"
-            deleteurl="{{=it.deleteUrl }}"></img>
-    </div>
+    <div class="clearfix"></div>
 </script>

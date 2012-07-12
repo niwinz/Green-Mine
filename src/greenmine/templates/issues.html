@@ -32,20 +32,61 @@
             <div class="clearfix"></div>
         </div>
         <div class="list-body">
+            {% comment %}
             <div class="list-item">
                 <div class="body-right right">
-                    <div class="body-item state left">{% trans "State" %}</div>
-                    <div class="body-item priority left">{% trans "Priority" %}</div>
-                    <div class="body-item assigned-to left">{% trans "Assigned to" %}</div>
+                    <div class="body-item state left">New</div>
+                    <div class="body-item priority left">Low</div>
+                    <div class="body-item assigned-to left">
+                        <div class="assigned-button left" data-assigned-to-id="">
+                            <div class="assigned-color left"></div>
+                            <div class="assigned-name left">Alejandro Alonso</div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="body-left">
-                    <div class="body-item severity left">{% trans "Severity" %}</div>
-                    <div class="body-item title">{% trans "Bug" %}</div>
+                    <div class="body-item severity button left critical-color">Critical</div>
+                    <div class="body-item title">
+                        <div class="title-tags">
+                            <div class="tag">Tag1</div>
+                            <div class="tag">Tag2</div>
+                        </div>
+                        <div class="title-text">Clearly, the power of relational databases lies in relating tables to each other.</div>
+                    </div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="clearfix"></div>
             </div>
+
+            <div class="list-item">
+                <div class="body-right right">
+                    <div class="body-item state left">New</div>
+                    <div class="body-item priority left">Low</div>
+                    <div class="body-item assigned-to left">
+                        <div class="assigned-button left" data-assigned-to-id="">
+                            <div class="assigned-color left"></div>
+                            <div class="assigned-name left">Alejandro Alonso</div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="body-left">
+                    <div class="body-item severity button left critical-color">Critical</div>
+                    <div class="body-item title">
+                        <div class="title-tags">
+                            <div class="tag">Tag1</div>
+                            <div class="tag">Tag2</div>
+                        </div>
+                        <div class="title-text">Clearly, the power of relational databases lies in relating tables to each other.</div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            {% endcomment %}
         </div>
     </div>
 </div>
@@ -121,25 +162,28 @@
 {% endblock %}
 
 {% block bottom-headers %}
-{% raw_include "dot/task-include.html" %}
-{% raw_include "dot/tag-include.html" %}
+    {% raw_include "dot/task-include.html" %}
+    {% raw_include "dot/tag-include.html" %}
 
-{% to_json tasks as tasks_json %}
-{% to_json filter_dict.tags as tags_json %}
-{% to_json filter_dict.milestones as milestones_json %}
-{% to_json filter_dict.status as status_json %}
-{% to_json filter_dict.assigned_to as assigned_to_json %}
+    {% to_json tasks as tasks_json %}
+    {% to_json filter_dict.tags as tags_json %}
+    {% to_json filter_dict.milestones as milestones_json %}
+    {% to_json filter_dict.status as status_json %}
+    {% to_json filter_dict.assigned_to as assigned_to_json %}
+    {% to_json statuses as statuses_json %}
+    {% to_json participants as participants_json %}
 
-<script type="text/javascript" src="{% static "js/doT.min.js" %}"></script>
-<script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
-<script type="text/javascript">
-    Greenmine.issuesView = new Greenmine.TasksView();
-    Greenmine.tagCollection.reset({{ tags_json }});
-    Greenmine.milestoneCollection.reset({{ milestones_json }});
-    Greenmine.statusCollection.reset({{ status_json }});
-    console.log(1, {{ assigned_to_json }});
-    Greenmine.assignedToCollection.reset({{ assigned_to_json }});
-    Greenmine.taskCollection.reset({{ tasks_json }});
-</script>
+    <script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
+    <script type="text/javascript">
+        Greenmine.statuses = {{ statuses_json }};
+        Greenmine.participants = {{ participants_json }};
+
+        Greenmine.issuesView = new Greenmine.TasksView();
+        Greenmine.tagCollection.reset({{ tags_json }});
+        Greenmine.milestoneCollection.reset({{ milestones_json }});
+        Greenmine.statusCollection.reset({{ status_json }});
+        Greenmine.assignedToCollection.reset({{ assigned_to_json }});
+        Greenmine.taskCollection.reset({{ tasks_json }});
+    </script>
 {% endblock %}
 

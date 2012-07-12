@@ -15,7 +15,7 @@
         border-bottom: 2px solid @gray;
 
         .header-left {
-            margin-right: 300px;
+            margin-right: 350px;
 
             .header-item.severity {
                 width: 100px;
@@ -26,7 +26,7 @@
         }
 
         .header-right {
-            width: 300px;
+            width: 350px;
 
             .header-item.state {
                 width: 90px;
@@ -39,20 +39,37 @@
 
     .list-body {
         margin-top: 5px;
+
+        .list-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid @gray;
+            padding-bottom: 5px;
+        }
+
+
         .body-left {
-            margin-right: 300px;
+            margin-right: 350px;
 
             .body-item.severity {
-                width: 100px;
+                width:  50px;
             }
             .body-item.title {
                 margin-left: 100px;
+
+                .title-tags {
+                    display: inline;
+                }
+                .title-text {
+                    display: inline;
+                }
             }
+
         }
 
         .body-right {
-            width: 300px;
+            width: 350px;
 
+            line-height: 28px;
             .body-item.state {
                 width: 90px;
             }

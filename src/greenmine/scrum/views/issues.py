@@ -30,8 +30,23 @@ class IssueList(GenericView):
     template_name = 'issues.html'
     menu = ['issues']
 
-    def initialize(self, request, pslug):
-        self.project = get_object_or_404(Project, slug=pslug)
+    def get_general_context(self, project):
+        participants = [{
+            "name": x.get_full_name(),
+            "id": x.id,
+        } for x in project.all_participants]
+
+        statuses = [{
+            "name": x[1],
+            "id": x[0]
+        } for x in TASK_STATUS_CHOICES]
+
+        return {
+            "participants": [{'name': ugettext("Unassigned"), "id":""}] + participants,
+            "statuses": statuses,
+        }
+
+    def initialize(self, request):
         self.check_role(request.user, self.project, [
             ('project', 'view'),
             ('milestone', 'view'),
@@ -61,15 +76,21 @@ class IssueList(GenericView):
 
     @login_required
     def get(self, request, pslug):
-        self.initialize(request, pslug)
+        self.project = get_object_or_404(Project, slug=pslug)
+        self.initialize(request)
+
+        _aditional_context = self.get_general_context(self.project)
+
         if request.is_ajax():
             if not self.valid_form:
                 return self.render_to_error(form.errors)
 
-            return self.render_to_ok({
+            context = {
                 "tasks": [task.to_dict() for task in self.tasks],
                 'filter_dict': self.filter_dict,
-            })
+            }
+            context.update(_aditional_context)
+            return self.render_to_ok(context)
 
         else:
             context = {
@@ -78,6 +99,7 @@ class IssueList(GenericView):
                 'filter_dict': self.filter_dict,
             }
 
+            context.update(_aditional_context)
             return self.render_to_response(self.template_name, context)
 
 
