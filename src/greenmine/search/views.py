@@ -6,6 +6,7 @@ from haystack.query import EmptySearchQuerySet
 
 from greenmine.core.decorators import login_required
 from greenmine.core.generic import GenericView
+from greenmine.scrum.models import Project
 from .forms import SearchForm
 
 
@@ -20,12 +21,20 @@ class SearchView(GenericView):
         query = ''
         results = EmptySearchQuerySet()
 
+        if request.user.is_staff:
+            projects = Project.objects.all()
+        else:
+            projects = request.user.projects.all() | \
+                request.user.projects_participant.all()
+
+        projects = projects.order_by('name').distinct()
+
         if request.GET.get('q'):
             form = SearchForm(request.GET)
 
             if form.is_valid():
                 query = form.cleaned_data['q']
-                results = form.search()
+                results = form.search().filter(project__in=projects)
         else:
             form = SearchForm()
 
