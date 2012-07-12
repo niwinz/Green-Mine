@@ -32,6 +32,7 @@
     <div class="middle-box">
         <div class="form-container">
             <form method="post" action="{{ project.get_userstory_create_url }}">
+                {% csrf_token %}
                 <div class="form-row inline-row">
                     <div class="form-field">
                         <label>{{ form.subject.label }}</label>

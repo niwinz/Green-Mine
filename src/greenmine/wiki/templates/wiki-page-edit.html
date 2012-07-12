@@ -16,20 +16,39 @@
 {% endblock %}
 
 {% block wrapper %}
-<div class="milestone milestone-create form-container wiki-page-edit">
-    <div class="form-legend">
-        <span>{% trans "Create/Edit wikipage" %}</span>
+<div class="wiki-page-edit form-box">
+    <div class="top-box">
+        <div class="top-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button data-url" data-url="">{% trans "Save" %}</div>
+            </div>
+            <div class="title-area">
+                <div class="title">{% trans "Create wiki page" %}:</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
     </div>
-    <form method="post" action="{{ current_url }}">
-        {% csrf_token %}
-        <div class="form-field width100">
-            <label>{{ form.content.label }}</label>
-            {{ form.content.errors }}
-            {{ form.content }}
+    <div class="middle-box">
+        <div class="form-container">
+            <form method="post" action="{{ current_url }}">
+                {% csrf_token %}
+                <div class="form-row inline-row">
+                    <div class="form-field width100">
+                        <label>{{ form.content.label }}</label>
+                        {{ form.content }}
+                    </div>
+                </div>
+            </form>
+            <div class="clearfix"></div>
         </div>
-        <div class="width100 float-left">
-            <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
+    </div>
+    <div class="bottom-box">
+        <div class="bottom-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button data-url" data-url="">{% trans "Save" %}</div>
+            </div>
+            <div class="clearfix"></div>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
