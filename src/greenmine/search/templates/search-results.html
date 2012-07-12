@@ -8,11 +8,11 @@
 
 
 {% block wrapper %}
-    <h3>{% trans "Results" %}</h3>
+    <h1>{% trans "Search Results" %}</h1>
 
     {% for result in page.object_list %}
         <p>
-            <a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+             {{ result.object.project }} - {{ result.verbose_name }} - <a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
         </p>
     {% empty %}
         <p>{% trans "No results found." %}</p>
@@ -20,9 +20,10 @@
 
     {% if page.has_previous or page.has_next %}
         <div>
-            {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-            |
-            {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+            {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; {% trans "Previous" %}{% if page.has_previous %}</a>{% endif %}
+            |<span class="current">
+    {% blocktrans with number=page.number total=page.paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktrans %}</span>|
+            {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}{% trans "Next" %} &raquo;{% if page.has_next %}</a>{% endif %}
         </div>
     {% endif %}
 {% endblock %}
