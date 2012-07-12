@@ -242,10 +242,10 @@ progress::-moz-progress-bar {
                 }
 
                 .us-item{
-                    padding: 5px 0px;
+                    padding: 5px;
 
                     &:hover{
-                        background:@gray;
+                        background:@grayLight;
                         cursor: pointer;
                     }
 
@@ -253,7 +253,7 @@ progress::-moz-progress-bar {
                         float:right;
                         text-align:right;
                         width: 50px;
-                        color: @grayLight;
+                        color: @grayDark;
                     }
 
                     .us-title{
@@ -313,6 +313,14 @@ progress::-moz-progress-bar {
             #burndown-graph, #burnup-graph {
                 min-height: 200px;
                 background-color: @white;
+            }
+
+            .show-hide{
+                margin-top: 10px;
+                a{
+                    color: @white;
+                }
+
             }
         }
 

@@ -30,6 +30,11 @@
                 <div id="burnup" url="{{ project.get_backlog_burnup_url }}" {% if project_extras.show_burnup %}show="on"{% endif %}>
                     <div id="burnup-graph" style="display:none"></div>
                 </div>
+
+                <div class="show-hide">
+                    <a href="#" >{% trans "Hide graphics" %}</a>
+                </div>
+
             </div>
             <div class="filters-box"></div>
             <div class="uslist-box"></div>
