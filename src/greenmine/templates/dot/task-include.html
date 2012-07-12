@@ -16,7 +16,9 @@
         <div class="body-item title">
             <div class="title-tags">
                 {{~it.tags :value:index}}
-                <div class="tag" data-category="{{=value.id }}">{{=value.name}}</div>
+                <span class="tag">
+                    <span class="category unselected" category="{{=value.id }}">{{=value.name}}</span>
+                </span>
                 {{~}}
             </div>
             <div class="title-text" data-url="{{=it.viewUrl }}">{{=it.subject }}</div>

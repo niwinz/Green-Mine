@@ -7,11 +7,73 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Bugs" %}{% endblock %}
 
 {% block wrapper %}
+
+
 <div id="issues" class="tasks-ds list-container" data-tasks-url="{{ current_url }}">
+
+    Tags: <div id="tags-body"></div>
+    Milestones: <div id="milestones-body"></div>
+    Status: <div id="status-body"></div>
+    Assigned to: <div id="assigned-to-body"></div>
+
+    <div class="filters-box">
+
+    </div>
+
     <div class="top-box">
         <div class="filters-container"></div>
         <div class="filters-bar">
-            <div class="bar-title left">{% trans "Filters" %}</div>
+            <div class="bar-title left">
+
+                <span class="show-hide-filters-box">
+                    {% trans "Filters" %}
+                </span>
+
+                {% for tag in filter_dict.tags %}
+                    {% if tag.selected %}
+                    <span class="tag">
+                        <span class="category selected" category="{{ tag.id }}">
+                            {{ tag.element }} {{tag.count}}
+                        </span>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+
+                {% for milestone in filter_dict.milestones%}
+                    {% if milestone.selected %}
+                    <span class="milestone">
+                        <span class="category selected" category="{{ milestone.id }}">
+                            {{ milestone.element }} {{milestone.count}}
+                        </span>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+
+                {% for status in filter_dict.status%}
+                    {% if status.selected %}
+                    <span class="status">
+                        <span class="category selected" category="{{ status.id }}">
+                            {{ status.element }} {{status.count}}
+                        </span>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+
+                {% for assigned_to in filter_dict.assigned_to%}
+                    {% if assigned_to.selected %}
+                    <span class="assigned_to">
+                        <span class="category selected" category="{{ assigned_to.id }}">
+                            {{ assigned_to.element }} {{assigned_to.count}}
+                        </span>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+
+                <span class="remove-filters">
+                    {% trans "¡Filters out!" %}
+                </span>
+
+            </div>
             <div class="bar-button button right">{% trans "New bug" %}</div>
             <div class="clearfix"></div>
         </div>

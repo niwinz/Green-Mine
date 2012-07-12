@@ -131,27 +131,26 @@ Greenmine.TaskView = Backbone.View.extend({
 
 Greenmine.TasksView = Backbone.View.extend({
     events: {
+        //TODO: fix this three selectors
         "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
         "click .context-menu a.filter-task": "changeStatus",
 
-        // FIXME: change all selectors.
-
         /*Tag filtering */
-        "click .un-us-item .tag .category.selected": "on_tag_remove_filter_clicked",
-        "click .un-us-item .tag .category.unselected": "on_tag_add_filter_clicked",
+        "click .tag .category.selected": "on_tag_remove_filter_clicked",
+        "click .tag .category.unselected": "on_tag_add_filter_clicked",
 
         /*Milestone filtering */
-        "click .un-us-item .milestone .category.selected": "on_milestone_remove_filter_clicked",
-        "click .un-us-item .milestone .category.unselected": "on_milestone_add_filter_clicked",
+        "click .milestone .category.selected": "on_milestone_remove_filter_clicked",
+        "click .milestone .category.unselected": "on_milestone_add_filter_clicked",
 
         /*Status filtering */
-        "click .un-us-item .status .category.selected": "on_status_remove_filter_clicked",
-        "click .un-us-item .status .category.unselected": "on_status_add_filter_clicked",
+        "click .status .category.selected": "on_status_remove_filter_clicked",
+        "click .status .category.unselected": "on_status_add_filter_clicked",
 
         /*Assigned to filtering */
-        "click .un-us-item .assigned-to .category.selected": "on_assigned_remove_filter_clicked",
-        "click .un-us-item .assigned-to .category.unselected": "on_assigned_add_filter_clicked"
+        "click .assigned-to .category.selected": "on_assigned_remove_filter_clicked",
+        "click .assigned-to .category.unselected": "on_assigned_add_filter_clicked"
     },
 
     el: $("#issues"),
@@ -251,7 +250,6 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addIssue: function(task) {
-        console.log(task);
         var view = new Greenmine.TaskView({model:task});
         this.$(".list-body").append(view.render().el);
     },
@@ -293,25 +291,25 @@ Greenmine.TasksView = Backbone.View.extend({
             self.addIssue(item);
         });
 
-        //this.$("#tags-body").html("");
-        //Greenmine.tagCollection.each(function(item) {
-        //    self.addTag(item);
-        //});
+        this.$("#tags-body").html("");
+        Greenmine.tagCollection.each(function(item) {
+            self.addTag(item);
+        });
 
-        //this.$("#milestones-body").html("");
-        //Greenmine.milestoneCollection.each(function(item) {
-        //    self.addMilestone(item);
-        //});
+        this.$("#milestones-body").html("");
+        Greenmine.milestoneCollection.each(function(item) {
+            self.addMilestone(item);
+        });
 
-        //this.$("#status-body").html("");
-        //Greenmine.statusCollection.each(function(item) {
-        //    self.addStatus(item);
-        //});
+        this.$("#status-body").html("");
+        Greenmine.statusCollection.each(function(item) {
+            self.addStatus(item);
+        });
 
-        //this.$("#assigned-to-body").html("");
-        //Greenmine.assignedToCollection.each(function(item) {
-        //    self.addAssignedTo(item);
-        //});
+        this.$("#assigned-to-body").html("");
+        Greenmine.assignedToCollection.each(function(item) {
+            self.addAssignedTo(item);
+        });
 
     },
 
