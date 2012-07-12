@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+<span class="separator"> &gt; </span>
+<span class="title-item">{% trans "Search" %}</span>
+{% endblock %}
+
 
 {% block wrapper %}
-    <h3>Results</h3>
+    <h3>{% trans "Results" %}</h3>
 
     {% for result in page.object_list %}
         <p>
             <a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
         </p>
     {% empty %}
-        <p>No results found.</p>
+        <p>{% trans "No results found." %}</p>
     {% endfor %}
 
     {% if page.has_previous or page.has_next %}
