@@ -217,6 +217,9 @@ class Project(models.Model):
     def get_documents_url(self):
         return ('documents', (), {'pslug': self.slug})
 
+    @models.permalink
+    def get_wiki_url(self):
+        return ('wiki-page', (), {'pslug': self.slug, 'wslug': 'index'})
 
 
 class ProjectUserRole(models.Model):
