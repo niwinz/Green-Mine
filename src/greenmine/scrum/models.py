@@ -599,9 +599,6 @@ class TaskQuerySet(models.query.QuerySet):
             self._add_categories(status, task.status, task.status, selected)
 
             for tag in task.tags.all():
-
-                print tag.id, tags_ids
-
                 selected = tags_ids and tag.id in tags_ids
                 self._add_categories(tags, tag.id, tag.name, selected)
 
