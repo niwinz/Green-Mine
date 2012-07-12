@@ -52,9 +52,6 @@ Greenmine.TaskView = Backbone.View.extend({
             'statuses': Greenmine.statuses
         });
 
-        console.log(Greenmine.statuses);
-        console.log(context);
-
         this.$el.html(Greenmine.taskTemplate(context));
         this.$el.attr('id', 'task-' +  this.model.get('id'));
         this.$el.attr('data-id',  this.model.get('id'));

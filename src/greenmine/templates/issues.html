@@ -7,6 +7,51 @@
 {% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Issues" %}{% endblock %}
 
 {% block wrapper %}
+<div id="issues" class="tasks-ds list-container" data-tasks-url="{{ current_url }}">
+    <div class="top-box">
+        <div class="filters-container"></div>
+        <div class="filters-bar">
+            <div class="bar-title left">{% trans "Filters" %}</div>
+            <div class="bar-button button right">{% trans "New bug" %}</div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="middle-box">
+        <div class="list-header">
+            <div class="header-right right">
+                <div class="header-item state left">{% trans "State" %}</div>
+                <div class="header-item priority left">{% trans "Priority" %}</div>
+                <div class="header-item assigned-to left">{% trans "Assigned to" %}</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="header-left">
+                <div class="header-item severity left">{% trans "Severity" %}</div>
+                <div class="header-item title">{% trans "Bug" %}</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="list-body">
+            <div class="list-item">
+                <div class="body-right right">
+                    <div class="body-item state left">{% trans "State" %}</div>
+                    <div class="body-item priority left">{% trans "Priority" %}</div>
+                    <div class="body-item assigned-to left">{% trans "Assigned to" %}</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="body-left">
+                    <div class="body-item severity left">{% trans "Severity" %}</div>
+                    <div class="body-item title">{% trans "Bug" %}</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% comment %}
 <div id="dashboard" class="tasks-ds" data-tasks-url="{{ current_url }}"
         data-milestone="{{ milestone.id }}">
     <div class="context-menu">
@@ -68,6 +113,7 @@
     </p>
 </div>
 {% endblock %}
+{% endcomment %}
 
 
 {% block top-headers %}
