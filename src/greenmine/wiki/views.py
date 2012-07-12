@@ -11,7 +11,7 @@ from ..core.generic import GenericView
 from ..core.decorators import login_required
 from ..scrum.models import Project
 
-from .models import WikiPage
+from .models import WikiPage, WikiPageHistory
 from .forms import WikiPageEditForm
 
 
@@ -83,34 +83,31 @@ class WikiPageEditView(GenericView):
             wikipage = None
 
         form = WikiPageEditForm(request.POST, instance=wikipage)
-        if form.is_valid():
-            wikipage_new = form.save(commit=False)
+        if not form.is_valid():
+            return self.render_json_errors(form.errors)
 
-            if wikipage is not None:
-                old_wikipage = WikiPage.objects.get(pk=wikipage.pk)
-                history_entry = WikiPageHistory(
-                    wikipage = old_wikipage,
-                    content = old_wikipage.content,
-                    owner = old_wikipage.owner,
-                    created_date = old_wikipage.created_date,
-                )
-                history_entry.save()
+        wikipage_new = form.save(commit=False)
 
-            if not wikipage_new.slug:
-                wikipage_new.slug = slugify_uniquely(wslug, wikipage_new.__class__)
+        if wikipage is not None:
+            old_wikipage = WikiPage.objects.get(pk=wikipage.pk)
+            history_entry = WikiPageHistory(
+                wikipage = old_wikipage,
+                content = old_wikipage.content,
+                owner = old_wikipage.owner,
+                created_date = old_wikipage.created_date,
+            )
+            history_entry.save()
 
-            if not wikipage_new.project_id:
-                wikipage_new.project = project
+        if not wikipage_new.slug:
+            wikipage_new.slug = slugify_uniquely(wslug, wikipage_new.__class__)
 
-            wikipage_new.owner = request.user
-            wikipage_new.save()
-            return self.render_redirect(wikipage_new.get_view_url())
+        if not wikipage_new.project_id:
+            wikipage_new.project = project
 
-        context = {
-            'form': form,
-            'project': project,
-        }
-        return self.render_to_response(self.template_path, context)
+        wikipage_new.owner = request.user
+        wikipage_new.save()
+
+        return self.render_json({'redirect_to': wikipage_new.get_view_url()})
 
 
 class WikiPageHistoryView(GenericView):
