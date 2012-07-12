@@ -299,13 +299,18 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
         var now_position = this.model.get('now_position');
 
         var counter = 1;
+        ticks.push([1, "Kickoff"]);
         for(var date=new Date(begin_date.toString()); date<=end_date; date.setDate(date.getDate()+1)) {
-            ticks.push([counter, date.getDate().toString()+"/"+(date.getMonth()+1).toString()]);
+            ticks.push([counter+1, date.getDate().toString()+"/"+(date.getMonth()+1).toString()]);
             counter++;
         }
 
-        for(var i=0; i<=ticks.length; i++) {
-            d1.push([i+1, sprint_points-points_done_on_date[i]]);
+        for(var i=0; i<=ticks.length-1; i++) {
+            if(now_position<i+1) {
+                d1.push([now_position, sprint_points-points_done_on_date[i]]);
+            } else {
+                d1.push([i+1, sprint_points-points_done_on_date[i]]);
+            }
             d2.push([i+1, sprint_points-((sprint_points/ticks.length)*i)]);
         }
 
@@ -323,14 +328,15 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
                 color: '#eec446'
             },
             {
-                data: [[now_position, 0], [now_position, sprint_points]],
+                data: [[now_position, 0], [now_position, sprint_points+5]],
                 lines: { show: true, fill: true },
                 points: { show: false },
-                color: "#ff9900"
+                color: "#888888",
             }
         ],
         {
             xaxis: { ticks: ticks },
+            yaxis: { position: "right", labelWidth: 20 },
             grid: { borderWidth: 0 }
         });
     }

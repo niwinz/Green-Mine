@@ -67,11 +67,20 @@ var BurndownView = Backbone.View.extend({
         var extra_points = this.model.get('extra_points');
         var now_position = this.model.get('now_position');
 
+        ticks.push([1,"Kickoff"]);
         for(var i=0; i<=sprints; i++) {
-            d1.push([i+1, total_points - points_for_sprint[i]]);
+            if(now_position && (points_for_sprint[i+1]==null)) {
+                d1.push([now_position, total_points - points_for_sprint[i]]);
+            } else {
+                d1.push([i+1, total_points - points_for_sprint[i]]);
+            }
             d2.push([i+1, total_points - ((total_points/sprints)*i)]);
-            d3.push([i+1, -extra_points[i]]);
-            ticks.push([i,"Sprint "+i])
+            if(now_position && (extra_points[i+1]==null)) {
+                d3.push([now_position, -extra_points[i]]);
+            } else {
+                d3.push([i+1, -extra_points[i]]);
+            }
+            ticks.push([i+2,"Sprint "+(i+1)])
         }
 
         var min_extra_points = _.reduce(d3, function(memo, num){
@@ -105,11 +114,12 @@ var BurndownView = Backbone.View.extend({
                 data: [[now_position, min_extra_points-5], [now_position, total_points+5]],
                 lines: { show: true, fill: true },
                 points: { show: false },
-                color: "#ff9900",
+                color: "#888888",
             }
         ],
         {
             xaxis: { ticks: ticks },
+            yaxis: { position: "right", labelWidth: 40 },
             grid: { borderWidth: 0 }
         });
     }
@@ -158,13 +168,30 @@ var BurnupView = Backbone.View.extend({
         var total_sprints = this.model.get('total_sprints');
         var now_position = this.model.get('now_position');
 
+        ticks.push([1,"Kickoff"]);
         for(var i=0; i<=total_sprints; i++) {
             d1.push([i+1, total_points]);
-            d2.push([i+1, sprints[0][i]]);
-            d3.push([i+1, sprints[1][i]]);
-            d4.push([i+1, sprints[2][i]]);
-            ticks.push([i,"Sprint "+i]);
+
+            if(now_position && (sprints[0][i+1]==null)) {
+                d2.push([now_position, sprints[0][i]]);
+            } else {
+                d2.push([i+1, sprints[0][i]]);
+            }
+
+            if(now_position && (sprints[1][i+1]==null)) {
+                d3.push([now_position, sprints[1][i]]);
+            } else {
+                d3.push([i+1, sprints[1][i]]);
+            }
+
+            if(now_position && (sprints[2][i+1]==null)) {
+                d4.push([now_position, sprints[2][i]]);
+            } else {
+                d4.push([i+1, sprints[2][i]]);
+            }
+            ticks.push([i+2,"Sprint "+(i+1)]);
         }
+        console.log(ticks);
         var max_extra_points = _.reduce(d4, function(memo, num){
             if(num[1] != undefined) {
                 return Math.max(memo, num[1]);
@@ -181,20 +208,6 @@ var BurnupView = Backbone.View.extend({
         }, 0);
 
         $.plot($("#burnup-graph"), [
-            {
-                data: [[now_position, 0], [now_position, total_points+max_extra_points+5]],
-                lines: { show: true, fill: true },
-                points: { show: false },
-                color: "#ff9900",
-                stack: 'bar'
-            },
-            {
-                data: d2,
-                lines: { show: true, fill: true },
-                points: { show: true },
-                color: '#669900',
-                stack: 'greengraph'
-            },
             {
                 data: d1,
                 lines: { show: true, fill: true },
@@ -215,6 +228,20 @@ var BurnupView = Backbone.View.extend({
                 points: { show: true },
                 color: '#cb4b4b',
                 stack: 'other_bars'
+            },
+            {
+                data: d2,
+                lines: { show: true, fill: true },
+                points: { show: true },
+                color: '#669900',
+                stack: 'greengraph'
+            },
+            {
+                data: [[now_position, 0], [now_position, total_points+max_extra_points+5]],
+                lines: { show: true, fill: true },
+                points: { show: false },
+                color: "#888888",
+                stack: 'bar'
             }
         ],
         {
@@ -224,7 +251,8 @@ var BurnupView = Backbone.View.extend({
                 bars: { show: false, barWidth: 0.6 }
             },
             xaxis: { ticks: ticks },
-            grid: { borderWidth: 0 }
+            yaxis: { position: "right", labelWidth: 40 },
+            grid: { borderWidth: 0},
         });
     }
 });
