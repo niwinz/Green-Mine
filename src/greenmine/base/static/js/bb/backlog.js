@@ -64,7 +64,6 @@ var BurndownView = Backbone.View.extend({
         var total_points = this.model.get('total_points');
         var points_for_sprint = this.model.get('points_for_sprint');
         var sprints = this.model.get('sprints_number');
-        var disponibility = this.model.get('disponibility');
         var extra_points = this.model.get('extra_points');
         var now_position = this.model.get('now_position');
 
@@ -72,22 +71,29 @@ var BurndownView = Backbone.View.extend({
             d1.push([i+1, total_points - points_for_sprint[i]]);
             d2.push([i+1, total_points - ((total_points/sprints)*i)]);
             d3.push([i+1, -extra_points[i]]);
-            d4.push([i+1, disponibility[i]]);
             ticks.push([i,"Sprint "+i])
         }
 
+        var min_extra_points = _.reduce(d3, function(memo, num){
+            if(num[1]) {
+                return Math.min(memo, num[1]);
+            } else {
+                return memo;
+            }
+        }, 0);
+
         $.plot(this.$('#burndown-graph'), [
             {
-                data: d1,
+                data: d2,
                 lines: { show: true, fill: true },
                 points: { show: true },
                 color: '#eec446'
             },
             {
-                data: d2,
-                lines: { show: true, fill: true },
+                data: d1,
+                lines: { show: true, fill: false },
                 points: { show: true },
-                color: '#b6d9f2'
+                color: '#669900'
             },
             {
                 data: d3,
@@ -96,15 +102,10 @@ var BurndownView = Backbone.View.extend({
                 color: '#cb4b4b'
             },
             {
-                data: d4,
-                bars: { show: true },
-                color: '#4da74d'
-            },
-            {
-                data: [[now_position, 0], [now_position, total_points]],
+                data: [[now_position, min_extra_points-5], [now_position, total_points+5]],
                 lines: { show: true, fill: true },
                 points: { show: false },
-                color: "#66cc66",
+                color: "#ff9900",
             }
         ],
         {
@@ -160,44 +161,68 @@ var BurnupView = Backbone.View.extend({
         for(var i=0; i<=total_sprints; i++) {
             d1.push([i+1, total_points]);
             d2.push([i+1, sprints[0][i]]);
-            d3.push([i+1, total_points+sprints[1][i]]);
-            d4.push([i+1, total_points+sprints[1][i]+sprints[2][i]]);
+            d3.push([i+1, sprints[1][i]]);
+            d4.push([i+1, sprints[2][i]]);
             ticks.push([i,"Sprint "+i]);
         }
+        var max_extra_points = _.reduce(d4, function(memo, num){
+            if(num[1] != undefined) {
+                return Math.max(memo, num[1]);
+            } else {
+                return memo;
+            }
+        }, 0);
+        max_extra_points += _.reduce(d3, function(memo, num){
+            if(num[1] != undefined) {
+                return Math.max(memo, num[1]);
+            } else {
+                return memo;
+            }
+        }, 0);
 
         $.plot($("#burnup-graph"), [
             {
-                data: d4,
-                lines: { show: true, fill: 1.0 },
-                points: { show: true },
-                color: '#cb4b4b'
-            },
-            {
-                data: d3,
-                lines: { show: true, fill: 1.0 },
-                points: { show: true },
-                color: '#ff77ff'
-            },
-            {
-                data: d1,
-                lines: { show: true, fill: 1.0 },
-                points: { show: true },
-                color: '#b6d9f2'
+                data: [[now_position, 0], [now_position, total_points+max_extra_points+5]],
+                lines: { show: true, fill: true },
+                points: { show: false },
+                color: "#ff9900",
+                stack: 'bar'
             },
             {
                 data: d2,
-                lines: { show: true, fill: 1.0 },
+                lines: { show: true, fill: true },
                 points: { show: true },
-                color: '#eec446'
+                color: '#669900',
+                stack: 'greengraph'
             },
             {
-                data: [[now_position, 0], [now_position, total_points]],
+                data: d1,
                 lines: { show: true, fill: true },
-                points: { show: false },
-                color: "#66cc66",
+                points: { show: true },
+                color: '#eec446',
+                stack: 'other_bars'
+            },
+            {
+                data: d3,
+                lines: { show: true, fill: true },
+                points: { show: true },
+                color: '#ff77ff',
+                stack: 'other_bars'
+            },
+            {
+                data: d4,
+                lines: { show: true, fill: true },
+                points: { show: true },
+                color: '#cb4b4b',
+                stack: 'other_bars'
             }
         ],
         {
+            series: {
+                stack: true,
+                lines: { show: true, fill: true, steps: false },
+                bars: { show: false, barWidth: 0.6 }
+            },
             xaxis: { ticks: ticks },
             grid: { borderWidth: 0 }
         });

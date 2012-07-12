@@ -312,19 +312,21 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
         $.plot(this.$('#sprint-burndown-graph'), [
             {
                 data: d1,
-                lines: { show: true, fill: true },
-                points: { show: true }
+                lines: { show: true, fill: false },
+                points: { show: true },
+                color: "#669900"
             },
             {
                 data: d2,
                 lines: { show: true, fill: true },
-                points: { show: true }
+                points: { show: true },
+                color: '#eec446'
             },
             {
                 data: [[now_position, 0], [now_position, sprint_points]],
                 lines: { show: true, fill: true },
                 points: { show: false },
-                color: "#66cc66",
+                color: "#ff9900"
             }
         ],
         {
