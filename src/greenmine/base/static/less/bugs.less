@@ -1,4 +1,37 @@
 .list-container {
+    .filters-container{
+        display: none;
+        min-height: 150px;
+        .category {
+            min-width: 120px;
+            &.selected{
+                min-width: 110px;
+            }
+        }
+
+        .filter-section{
+            float: left;
+            min-height: 75px;
+            padding: 60px 5px 0 0;
+            margin: 0px 15px 15px 0px;
+            font-size: 15px;
+            font-weight: bold;
+            border-right: 2px solid @black;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .filter-group{
+            display: none;
+            width: 500px;
+
+            &.selected{
+                display: inline;
+                float:left;
+            }
+        }
+    }
+
     .filters-bar {
         padding: 5px;
         background-color: @gray;
@@ -7,6 +40,9 @@
             padding: 5px;
             color: @white;
             cursor: pointer;
+        }
+        #selected-filters{
+            display: inline;
         }
     }
 

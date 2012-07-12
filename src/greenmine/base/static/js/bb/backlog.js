@@ -296,28 +296,6 @@ var LeftBlockView = Backbone.View.extend({
 
     },
 
-    toggle_filters_box_visibility: function(event) {
-        this.$('.filters-box').toggle();
-        this.filters_box_visible = this.$('.filters-box').is(":visible");
-    },
-
-    remove_filters: function(event){
-        this.options.tag_filter = [];
-        this.reload();
-    },
-
-    toggle_graph_box_visibility: function(event){
-        event.preventDefault();
-        this.$('#graphs').toggle();
-        this.$('#graphs').toggleClass('visible');
-        if (this.$('#graphs').hasClass('visible')){
-            $(event.target).text(gettext("Show graphics"));
-        }
-        else{
-            $(event.target).text(gettext("Hide graphics"));
-        }
-    },
-
     initialize: function() {
         _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
 
@@ -543,6 +521,29 @@ var LeftBlockView = Backbone.View.extend({
         var self = $(event.currentTarget);
         self.closest('.un-us-item').find('.form-inline').hide();
     },
+
+    toggle_filters_box_visibility: function(event) {
+        this.$('.filters-box').toggle();
+        this.filters_box_visible = this.$('.filters-box').is(":visible");
+    },
+
+    remove_filters: function(event){
+        this.options.tag_filter = [];
+        this.reload();
+    },
+
+    toggle_graph_box_visibility: function(event){
+        event.preventDefault();
+        this.$('#graphs').toggle();
+        this.$('#graphs').toggleClass('visible');
+        if (this.$('#graphs').hasClass('visible')){
+            $(event.target).text(gettext("Show graphics"));
+        }
+        else{
+            $(event.target).text(gettext("Hide graphics"));
+        }
+    }
+
 });
 
 
