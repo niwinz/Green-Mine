@@ -4,6 +4,7 @@ body {  background-color: red; }
 @import "header.less";
 @import "dashboard.less";
 @import "bugs.less";
+@import "forms.less";
 
 body {
   padding-bottom: 40px;
@@ -148,6 +149,17 @@ progress::-moz-progress-bar {
     font-family: @DroidSansBold;
     font-size: 12px;
     border: 1px solid;
+    display: inline-block;
+    color: @black;
+    background-color: @white;
+    cursor: pointer;
+}
+
+.button-unbordered {
+    padding: 5px 10px;
+    .border-radius(5px);
+    font-family: @DroidSansBold;
+    font-size: 12px;
     display: inline-block;
     color: @black;
     background-color: @white;
