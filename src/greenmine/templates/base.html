@@ -26,9 +26,9 @@
                 <div class="header-row">
                     <div class="right-top-menu right">
                         {% if user.is_authenticated %}
-                            <a href="#">{{ user.get_full_name|default:"Anonymous" }}</a> |
+                            <a href="{% url 'profile' %}">{{ user.get_full_name|default:"Anonymous" }}</a> |
                             <a href="#">{% trans "settings" %}</a> |
-                            <a href="#">{% trans "logout" %}</a>
+                            <a href="{% url 'logout' %}" class="logout">{% trans "logout" %}</a>
                         {% endif %}
                     </div>
 
