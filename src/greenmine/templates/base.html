@@ -39,6 +39,7 @@
                 </div>
                 <div class="clearfix"></div>
                 <div class="header-row">
+                    {% if user.is_authenticated %}
                     <div class="header-menu left">
                         <ul>
                             <li class="{{ menu.in_backlog }}"><a href="{{ project.get_backlog_url }}">{% trans "Backlog" %}</a></li>
@@ -51,6 +52,7 @@
                     <div class="search-form-box right" data-url="{% url 'search' %}">
                         <input id="search-input" type="text" placeholder="Issue, User story, wiki..." />
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
