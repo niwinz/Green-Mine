@@ -6,9 +6,9 @@
 {% load i18n %}
 
 {% block title %}
-    <span class="separator"> &gt; </span>
+    <span class="separator"> &rsaquo; </span>
     <span class="title-item"><a href="{% url 'users-view' user.id %}">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</a></span>
-    <span class="separator"> &gt; </span>
+    <span class="separator"> &rsaquo; </span>
     <span class="title-item">{% trans "View" %}</span>
 {% endblock %}
 
