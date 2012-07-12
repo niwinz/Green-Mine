@@ -2,7 +2,7 @@
 {% load static from staticfiles %}
 
 {% for ml in milestones %}
-<div id="milestone-{{ml.id}}" ref="{{ ml.id }}" class="milestone-item {% if ml == milestone %}selected{% endif %}">
+<div id="milestone-{{ml.id}}" ref="{{ ml.id }}" class="milestone-item {% if ml == milestone %}selected{% endif %} {% if forloop.first %}first{% endif %}">
     <div class="header clearfix">
 
         <div class="title">
