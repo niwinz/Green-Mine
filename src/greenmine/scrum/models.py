@@ -128,7 +128,8 @@ class Project(models.Model):
     """ Permalinks """
     @models.permalink
     def get_absolute_url(self):
-        return self.get_backlog_url()
+        return ('project-backlog', (),
+            {'pslug': self.slug})
 
     @models.permalink
     def get_dashboard_url(self):
@@ -323,7 +324,8 @@ class Milestone(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return self.get_dashboard_url()
+        return ('dashboard', (),
+            {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
     def get_edit_url(self):
@@ -464,7 +466,8 @@ class UserStory(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return self.get_view_url()
+        return ('user-story', (),
+            {'pslug': self.project.slug, 'iref': self.ref})
 
     @models.permalink
     def get_assign_url(self):
@@ -696,7 +699,10 @@ class Task(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return self.get_view_url()
+        if self.type == "bug":
+            return ('issues-view', (), {'pslug':self.project.slug, 'tref': self.ref})
+        else:
+            return ('tasks-view', (), {'pslug':self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_edit_url(self):

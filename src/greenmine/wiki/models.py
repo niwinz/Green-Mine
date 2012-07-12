@@ -14,7 +14,8 @@ class WikiPage(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return self.get_view_url()
+        return ('wiki-page', (),
+            {'pslug': self.project.slug, 'wslug': self.slug})
 
     @models.permalink
     def get_view_url(self):

@@ -52,6 +52,8 @@ class SearchView(GenericView):
             'query': query,
             'suggestion': None,
         }
+        for result in page.object_list:
+            print type(result), type(result.object)
 
         if results.query.backend.include_spelling:
             context['suggestion'] = form.get_suggestion()
