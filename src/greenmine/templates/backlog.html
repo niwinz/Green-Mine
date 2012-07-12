@@ -18,8 +18,19 @@
 
     <div class="backlog-container">
         <div class="backlog-box" id="backlog-left-block" url="{{ project.get_backlog_left_block_url }}">
-            <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
-            <div class="graph-box"></div>
+            <div class="graph-box">
+
+                <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}">
+                </div>
+
+                <div id="burndown" url="{{ project.get_backlog_burndown_url }}" {% if project_extras.show_burndown %}show="on"{%endif%}>
+                    <div id="burndown-graph" style="display:none"></div>
+                </div>
+
+                <div id="burnup" url="{{ project.get_backlog_burnup_url }}" {% if project_extras.show_burnup %}show="on"{% endif %}>
+                    <div id="burnup-graph" style="display:none"></div>
+                </div>
+            </div>
             <div class="filters-box"></div>
             <div class="uslist-box"></div>
         </div>

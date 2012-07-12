@@ -1,7 +1,19 @@
 {% load i18n %}
-<ul>
-    <li>{% trans "Total points" %}: {{ total_points }}</li>
-    <li>{% trans "Unassigned points" %}: {{ unassigned_points }}</li>
-    <li>{% trans "Assigned points" %}: {{ assigned_points }}</li>
-    <li>{% trans "Completed" %}: {{ percentage_completed }} %</li>
-</ul>
+<progress max="100" value="{{ percentage_completed }}">
+  <strong>{{ percentage_completed }}%</strong>
+</progress>
+
+<span class="number percenajte">
+    {{ percentage_completed }}%
+</span>
+<span class="text">{% trans "Completed points" %}</span>
+
+<span class="number total-points">{{ total_points }}</span>
+<span class="text">{% trans "Total" %}</span>
+
+<span class="number assigned-points">{{ assigned_points }}</span>
+<span class="text">{% trans "Assigned points" %}</span>
+
+<span class="number unassigned-points">{{ unassigned_points }}</span>
+<span class="text">{% trans "Unassigned points" %}</span>
+

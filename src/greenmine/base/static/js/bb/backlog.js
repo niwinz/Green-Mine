@@ -581,27 +581,24 @@ var Backlog = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
 
-        //TODO:
         var stats_view = new StatsView();
-        //~ var burndown_view = new BurndownView();
-        //~ var burnup_view = new BurnupView();
+        var burndown_view = new BurndownView();
+        var burnup_view = new BurnupView();
 
         this.left_block = new LeftBlockView();
         this.right_block = new RightBlockView();
 
-        //TODO
         this.left_block.on('load', this.calculateLimit);
         this.left_block.on('change', stats_view.reload);
-        //~ this.left_block.on('change', burndown_view.reload);
-        //~ this.left_block.on('change', burndown_view.reload);
+        this.left_block.on('change', burndown_view.reload);
+        this.left_block.on('change', burndown_view.reload);
         this.left_block.on('change', this.calculateLimit);
 
-        //TODO
         this.right_block.on('load', this.calculateLimit);
         this.right_block.on('change', this.calculateLimit);
         this.right_block.on('change', this.left_block.reload);
         this.right_block.on('change', stats_view.reload);
-        //~ this.right_block.on('change', burndown_view.reload);
+        this.right_block.on('change', burndown_view.reload);
     },
 
     assignedPoints: function() {

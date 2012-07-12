@@ -285,6 +285,37 @@ progress::-moz-progress-bar {
         margin-right: 465px;
         min-height: 200px;
 
+        .graph-box {
+            padding: 15px;
+            min-height: 200px;
+            background-color: @grayDark;
+
+            .user-story-stats{
+                color: @white;
+                padding: 0 0 10px 0;
+
+                progress {
+                    height: 25px;
+                    width: 250px;
+                }
+
+                .number {
+                    font-size: 28px;
+                }
+
+                .text {
+                    color: @grayLight;
+                    font-size: 10px;
+                    width: 100px;
+                }
+            }
+
+            #burndown-graph, #burnup-graph {
+                min-height: 200px;
+                background-color: @white;
+            }
+        }
+
         .uslist-box{
             .un-us-item{
                 overflow: hidden;
