@@ -238,7 +238,8 @@ var LeftBlockView = Backbone.View.extend({
 
         /*Filters box*/
         "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
-        "click .filters-bar .remove-filters": "remove_filters"
+        "click .filters-bar .remove-filters": "remove_filters",
+        "click .graph-box .show-hide-graphics a": "toggle_graph_box_visibility"
 
     },
 
@@ -250,6 +251,18 @@ var LeftBlockView = Backbone.View.extend({
     remove_filters: function(event){
         this.options.tag_filter = [];
         this.reload();
+    },
+
+    toggle_graph_box_visibility: function(event){
+        event.preventDefault();
+        this.$('#graphs').toggle();
+        this.$('#graphs').toggleClass('visible');
+        if (this.$('#graphs').hasClass('visible')){
+            $(event.target).text(gettext("Show graphics"));
+        }
+        else{
+            $(event.target).text(gettext("Hide graphics"));
+        }
     },
 
     initialize: function() {
