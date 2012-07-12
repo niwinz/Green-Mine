@@ -230,7 +230,7 @@ var LeftBlockView = Backbone.View.extend({
         "click .un-us-item .delete": "onUserStoryDeleteClick",
 
         /* Ordering */
-        "click .un-us-item .head-title .row a": "on_order_link_clicked",
+        "click .head-title .row a": "on_order_link_clicked",
 
         /*Tag filtering */
         "click .un-us-item .row .category.selected": "on_tag_remove_filter_clicked",

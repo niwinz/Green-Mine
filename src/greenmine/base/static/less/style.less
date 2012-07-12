@@ -245,7 +245,7 @@ progress::-moz-progress-bar {
                     padding: 5px 0px;
 
                     &:hover{
-                        background:@grayLighter;
+                        background:@gray;
                         cursor: pointer;
                     }
 
@@ -317,14 +317,22 @@ progress::-moz-progress-bar {
         }
 
         .uslist-box{
+            .head-title {
+                overflow: hidden;
+                border-bottom: 2px solid @gray;
+
+                a {
+                    color: @grayLight;
+                }
+            }
+
             .un-us-item{
                 overflow: hidden;
-
+                padding: 5px;
                 &:hover{
-                    background:@grayLighter;
+                    background:@grayLight;
                     cursor: pointer;
                 }
-
             }
 
             .row {
@@ -338,6 +346,7 @@ progress::-moz-progress-bar {
                     float: left;
                     width: auto;
                     margin-right: 100px;
+                    margin-left: 10px;
 
                     .category{
                         background: @gray;
@@ -366,7 +375,7 @@ progress::-moz-progress-bar {
                     float:right;
 
                     a {
-                        background: @grayLight;
+                        background: @gray;
                         padding: 2px 3px;
                         -webkit-border-radius: 5px;
                         margin-left: 5px;
