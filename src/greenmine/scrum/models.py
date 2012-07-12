@@ -769,7 +769,14 @@ class Task(models.Model):
             'us': self.user_story and self.user_story.pk or None,
             'assignedTo': self.assigned_to and self.assigned_to.pk or None,
             'tags': [tag.to_dict() for tag in self.tags.all()],
+            'priority': self.priority,
+            'priorityDisplay': self.get_priority_display(),
         }
+
+        if self_dict['assignedTo']:
+            self_dict['assignedToDisplay'] = self.assigned_to.get_full_name()
+        else:
+            self_dict['assignedToDisplay'] = ugettext("Unassigned")
 
         return self_dict
 

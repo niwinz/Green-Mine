@@ -1,11 +1,11 @@
 <script type="template/dot" id="task-template">
     <div class="body-right right" data-delete-url="{{=it.deleteUrl }}">
-        <div class="body-item state left">{{=it.status }}</div>
+        <div class="body-item state left">{{=it.statusDisplay }}</div>
         <div class="body-item priority left">{{=it.priorityDisplay }}</div>
         <div class="body-item assigned-to left">
             <div class="assigned-button left" data-assigned-to-id="{{=it.assignedTo }}">
                 <div class="assigned-color left"></div>
-                <div class="assigned-name left">{{=it.assignedTo }}</div>
+                <div class="assigned-name left">{{=it.assignedToDisplay }}</div>
                 <div class="clearfix"></div>
             </div>
         </div>

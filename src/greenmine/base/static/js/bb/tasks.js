@@ -105,7 +105,7 @@ Greenmine.TaskView = Backbone.View.extend({
         var context = this.model.toJSON();
         context = _.extend(context, {
             'participants': Greenmine.participants,
-            'statuses': Greenmine.statuses
+            'statuses': Greenmine.statuses,
         });
 
         this.$el.html(Greenmine.task_template(context));
@@ -114,6 +114,18 @@ Greenmine.TaskView = Backbone.View.extend({
             'id': "task_" + this.model.get('id')
         });
         return this;
+    },
+
+    getParticipantById: function(id) {
+        var val = _.find(Greenmine.participants,  function(item) {
+            return item['id'] == id;
+        });
+
+        if (val) {
+            return val[name];
+        } else {
+            return null;
+        }
     }
 });
 
