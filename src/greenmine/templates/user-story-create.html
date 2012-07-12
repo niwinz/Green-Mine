@@ -4,7 +4,12 @@
 {% load i18n %}
 {% load l10n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "User Story" %}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "User stories" %}</span>
+{% endblock %}
 
 {% block bottom-headers %}
     {% include "modules/wikiwidget.html" %}

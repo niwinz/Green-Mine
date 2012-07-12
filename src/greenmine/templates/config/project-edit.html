@@ -8,7 +8,12 @@
     {% include "config/middle-menu.html" %}
 {% endblock %}
 
-{% block title %}{{ block.super }} / {% trans "Edit" %}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "Edit" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div id="project">

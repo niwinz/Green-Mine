@@ -4,7 +4,12 @@
 {% load i18n %}
 {% load rawinclude greenmine_utils %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.slug }}</a> / {% trans "Tasks" %}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "Tasks" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div id="dashboard" class="tasks-ds" data-tasks-url="{{ current_url }}"

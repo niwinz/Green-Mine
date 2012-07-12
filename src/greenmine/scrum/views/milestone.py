@@ -109,6 +109,7 @@ class MilestoneEditView(GenericView):
         context = {
             'form': form,
             'project': project,
+            'milestone': milestone,
         }
 
         return self.render_to_response(self.template_name, context)

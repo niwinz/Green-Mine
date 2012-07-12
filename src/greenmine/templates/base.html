@@ -45,6 +45,7 @@
                 <div class="header-row">
                     {% if user.is_authenticated %}
                     <div class="header-menu left">
+                        {% if project %}
                         <ul>
                             <li class="{{ menu.in_backlog }}"><a href="{{ project.get_backlog_url }}">{% trans "Backlog" %}</a></li>
                             <li class="{{ menu.in_dashboard }}"><a href="{{ project.get_dashboard_url }}">{% trans "Dashboard" %}</a></li>
@@ -52,6 +53,7 @@
                             <li class="{{ menu.in_questions }}"><a href="{{ project.get_questions_url }}">{% trans "Questions" %}</a></li>
                             <li class="{{ menu.in_wiki }}"><a href="{{ project.get_wiki_url }}">{% trans "Wiki" %}</a></li>
                         </ul>
+                        {% endif %}
                     </div>
                     <div class="search-form-box right" data-url="{% url 'search' %}">
                         <input id="search-input" type="text" placeholder="Issue, User story, wiki..." />

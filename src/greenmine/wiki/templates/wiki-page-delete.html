@@ -4,7 +4,12 @@
 {% load wiki_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">Wiki</span>
+{% endblock %}
 
 {% block wrapper %}
 <div class="show-module">

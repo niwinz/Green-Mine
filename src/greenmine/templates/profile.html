@@ -3,7 +3,10 @@
 {% load i18n %}
 {% load gravatar %}
 
-{% block title %}{{ block.super }} / {% trans "Profile" %}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "Profile" %}</span>
+{% endblock %}
 
 {% block middle %}
 {% endblock %}

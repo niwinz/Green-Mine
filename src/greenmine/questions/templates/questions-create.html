@@ -2,7 +2,12 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {% trans "Questions" %} / {% trans "Create" %}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{{ project.get_dashboard_url }}">{{ project.name }}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "Questions" %}</span>
+{% endblock %}
 
 {% block bottom-headers %}
     {% include "modules/wikiwidget.html" %}

@@ -5,7 +5,10 @@
 {% load greenmine_markup %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "Delete" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div class="show-module">

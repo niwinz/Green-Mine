@@ -5,7 +5,12 @@
 {% load greenmine_markup %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} / <a href="{{ project.get_dashboard_url }}">{{ project.name }}{% endblock %}
+{% block title %}
+    <span class="separator"> &gt; </span>
+    <span class="title-item"><a href="{% url 'users-view' user.id %}">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</a></span>
+    <span class="separator"> &gt; </span>
+    <span class="title-item">{% trans "View" %}</span>
+{% endblock %}
 
 {% block wrapper %}
 <div class="show-module">
