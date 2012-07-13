@@ -49,7 +49,9 @@
                 </span>
 
             </div>
-            <div class="bar-button button right">{% trans "New bug" %}</div>
+            <div class="bar-button button right">
+                <a href="{% url 'issues-create' pslug=project.slug %}">{% trans "New bug" %}</a>
+            </div>
             <div class="clearfix"></div>
         </div>
     </div>
