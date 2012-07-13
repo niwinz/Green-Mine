@@ -599,7 +599,7 @@ class TaskQuerySet(models.query.QuerySet):
                 self._add_categories(milestones, task.milestone.id, task.milestone.name, selected)
 
             selected = status_id and task.status == status_id
-            self._add_categories(status, task.status, task.status, selected)
+            self._add_categories(status, task.status, task.get_status_display(), selected)
 
             for tag in task.tags.all():
                 selected = tags_ids and tag.id in tags_ids
@@ -608,7 +608,6 @@ class TaskQuerySet(models.query.QuerySet):
             if task.assigned_to:
                 selected = assigned_to_id and task.assigned_to.id == assigned_to_id
                 self._add_categories(assigned_to, task.assigned_to.id, task.assigned_to.first_name, selected)
-
 
         return{
             'list': task_list,
@@ -626,7 +625,7 @@ class TaskQuerySet(models.query.QuerySet):
             queryset = queryset.filter(milestone = milestone)
 
         if status:
-            queryset = queryset.filter(milestone = milestone)
+            queryset = queryset.filter(status = status)
 
         if tags:
             for tag in tags:
