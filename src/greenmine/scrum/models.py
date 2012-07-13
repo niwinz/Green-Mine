@@ -586,12 +586,13 @@ class TaskQuerySet(models.query.QuerySet):
             values.reverse()
         return values
 
-    def _get_filter_and_build_filter_dict(self, queryset, milestone_id, status_id, tags_ids, assigned_to_id):
+    def _get_filter_and_build_filter_dict(self, queryset, milestone_id, status_id, tags_ids, assigned_to_id, severity_id):
         task_list = list(queryset)
         milestones = {}
         status = {}
         tags = {}
         assigned_to = {}
+        severity = {}
 
         for task in task_list:
             if task.milestone:
@@ -609,6 +610,9 @@ class TaskQuerySet(models.query.QuerySet):
                 selected = assigned_to_id and task.assigned_to.id == assigned_to_id
                 self._add_categories(assigned_to, task.assigned_to.id, task.assigned_to.first_name, selected)
 
+            selected = severity_id and task.severity == int(severity_id)
+            self._add_categories(severity, task.severity, task.get_severity_display(), selected)
+
         return{
             'list': task_list,
             'filters' : {
@@ -616,10 +620,12 @@ class TaskQuerySet(models.query.QuerySet):
                 'status' : self._get_category(status),
                 'tags' : self._get_category(tags),
                 'assigned_to' : self._get_category(assigned_to),
+                'severity' : self._get_category(severity),
             }
         }
 
-    def filter_and_build_filter_dict(self, milestone=None, status=None, tags=None, assigned_to=None):
+    def filter_and_build_filter_dict(self, milestone=None, status=None, tags=None, assigned_to=None, severity=None):
+
         queryset = self
         if milestone:
             queryset = queryset.filter(milestone = milestone)
@@ -634,13 +640,17 @@ class TaskQuerySet(models.query.QuerySet):
         if assigned_to:
             queryset = queryset.filter(assigned_to = assigned_to)
 
+        if severity:
+            queryset = queryset.filter(severity = severity)
+
 
         milestone_id = milestone and milestone.id
-        status_id = status and status
+        status_id = status
         tags_ids = tags and tags.values_list('id', flat=True)
         assigned_to_id = assigned_to and assigned_to.id
+        severity_id = severity
 
-        return self._get_filter_and_build_filter_dict(queryset, milestone_id, status_id, tags_ids, assigned_to_id)
+        return self._get_filter_and_build_filter_dict(queryset, milestone_id, status_id, tags_ids, assigned_to_id, severity_id)
 
 class TaskManager(models.Manager):
     def get_query_set(self):

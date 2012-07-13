@@ -85,6 +85,23 @@ Greenmine.AssignedToView = Backbone.View.extend({
     }
 });
 
+/*Severity*/
+Greenmine.SeverityModel = Backbone.Model.extend({});
+Greenmine.SeverityCollection = Backbone.Collection.extend({
+    model: Greenmine.SeverityModel
+});
+Greenmine.severityCollection = new Greenmine.SeverityCollection();
+Greenmine.SeverityView = Backbone.View.extend({
+    tagName: "span",
+    attributes: {
+        "class": "severity"
+    },
+    render: function() {
+        this.$el.html(Greenmine.filter_template(this.model.toJSON()));
+        return this;
+    }
+});
+
 /*Tasks*/
 Greenmine.TaskModel = Backbone.Model.extend({});
 Greenmine.TaskCollection = Backbone.Collection.extend({
@@ -150,6 +167,10 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .assigned-to .category.selected": "on_assigned_remove_filter_clicked",
         "click .assigned-to .category.unselected": "on_assigned_add_filter_clicked",
 
+        /*Severity*/
+        "click .severity .category.selected": "on_severity_remove_filter_clicked",
+        "click .severity .category.unselected": "on_severity_add_filter_clicked",
+
         /*Filters box*/
         "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
         "click .filters-bar .remove-filters": "remove_filters",
@@ -186,6 +207,7 @@ Greenmine.TasksView = Backbone.View.extend({
         var base_status_filter = getUrlVars()['status'];
         this.options.status_filter = getStringListFromURLParam('status');
         this.options.assigned_to_filter = getIntListFromURLParam('assigned_to');
+        this.options.severity_filter = getIntListFromURLParam('severity');
 
         this.filters_box_visible = false;
     },
@@ -221,7 +243,8 @@ Greenmine.TasksView = Backbone.View.extend({
             "milestone": this.options.milestone_filter,
             "tags": this.options.tag_filter,
             "status": this.options.status_filter,
-            "assigned_to": this.options.assigned_to_filter
+            "assigned_to": this.options.assigned_to_filter,
+            "severity": this.options.severity_filter
         }
         return current;
     },
@@ -240,6 +263,7 @@ Greenmine.TasksView = Backbone.View.extend({
             Greenmine.milestoneCollection.reset(data.filter_dict.milestones);
             Greenmine.statusCollection.reset(data.filter_dict.status);
             Greenmine.assignedToCollection.reset(data.filter_dict.assigned_to);
+            Greenmine.severityCollection.reset(data.filter_dict.severity);
             Greenmine.taskCollection.reset(data.tasks);
         }, 'json');
     },
@@ -295,6 +319,15 @@ Greenmine.TasksView = Backbone.View.extend({
         }
     },
 
+    addSeverity: function(tag) {
+        var view = new Greenmine.SeverityView({model:tag});
+        var rendered_elem = view.render().el;
+        this.$("#severity-body").append(rendered_elem);
+        if (tag.attributes.selected === true){
+            this.$("#selected-filters").append($(rendered_elem).clone());
+        }
+    },
+
     deleteIssue: function(task) {
         var self = this;
         $.post(task.get('delete_url'), {}, function(data) {
@@ -340,15 +373,18 @@ Greenmine.TasksView = Backbone.View.extend({
         });
         this.$("#assigned-to-filter-section").toggle(Greenmine.assignedToCollection.length!=0);
 
+        this.$("#severity-body").html("");
+        Greenmine.severityCollection.each(function(item) {
+            self.addSeverity(item);
+        });
+        this.$("#severity-filter").toggle(Greenmine.severityCollection.length!=0);
+
         if (this.$("#selected-filters .category").length > 0) {
             this.$(".remove-filters").show();
         }
         else {
             this.$(".remove-filters").hide();
         }
-
-
-        console.log(Greenmine);
 
         Greenmine.main.colorizeTags();
     },
@@ -430,6 +466,25 @@ Greenmine.TasksView = Backbone.View.extend({
         this.reload();
     },
 
+    on_severity_add_filter_clicked: function(event){
+        event.preventDefault();
+        var self = $(event.target);
+        var severity_filter = parseInt(self.attr('category'));
+        if ($.inArray(severity_filter, this.options.severity_filter)<0){
+            this.options.severity_filter.push(severity_filter);
+            this.reload();
+        }
+    },
+
+    on_severity_remove_filter_clicked: function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        var self = $(event.target);
+        var severity_filter = parseInt(self.attr('category'));
+        this.options.severity_filter.pop(severity_filter);
+        this.reload();
+    },
+
     toggle_filter_section: function(event) {
         var related = $(event.target).attr('related');
         this.$(".filter-group").removeClass('selected');
@@ -448,6 +503,7 @@ Greenmine.TasksView = Backbone.View.extend({
         var base_status_filter = undefined;
         this.options.status_filter = [];
         this.options.assigned_to_filter = [];
+        this.options.severity_filter = [];
 
         this.reload();
     }

@@ -27,12 +27,13 @@
             <div id ="assigned-to-filter-section" class="filter-section" related="#assigned-to-body">{% trans "Assigned to" %}</div>
             <div id="assigned-to-body" class="filter-group"></div>
 
+            <div id="severity-filter-section" class="filter-section" related="#severity-body">{% trans "Severity" %}</div>
+            <div id="severity-body" class="filter-group"></div>
+
             {#TODO#}
             {% comment %}
             <div id ="priority-filter-section" class="filter-section" related="#priority">{% trans "Priority" %}</div>
             <div id="priority-body" class="filter-group"></div>
-            <div id ="severity-filter-section" class="filter-section"related="#severity">{% trans "Severity" %}</div>
-            <div id="severity-body" class="filter-group"></div>
             {% endcomment %}
         </div>
         <div class="filters-bar">
@@ -89,6 +90,7 @@
     {% to_json filter_dict.milestones as milestones_json %}
     {% to_json filter_dict.status as status_json %}
     {% to_json filter_dict.assigned_to as assigned_to_json %}
+    {% to_json filter_dict.severity as severities_json %}
     {% to_json statuses as statuses_json %}
     {% to_json participants as participants_json %}
 
@@ -98,11 +100,14 @@
         Greenmine.participants = {{ participants_json }};
 
         Greenmine.issuesView = new Greenmine.TasksView();
+
         Greenmine.tagCollection.reset({{ tags_json }});
         Greenmine.milestoneCollection.reset({{ milestones_json }});
         Greenmine.statusCollection.reset({{ status_json }});
         Greenmine.assignedToCollection.reset({{ assigned_to_json }});
+        Greenmine.severityCollection.reset({{ severities_json }});
         Greenmine.taskCollection.reset({{ tasks_json }});
+
     </script>
 {% endblock %}
 

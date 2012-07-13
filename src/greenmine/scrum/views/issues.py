@@ -62,9 +62,10 @@ class IssueList(GenericView):
             order_by = form.cleaned_data['order_by']
             tags = form.cleaned_data['tags']
             assigned_to = form.cleaned_data['assigned_to']
+            severity = form.cleaned_data['severity']
 
             tasks_and_filters = self.project.tasks.filter(type='bug').\
-                filter_and_build_filter_dict(milestone, status, tags, assigned_to)
+                filter_and_build_filter_dict(milestone, status, tags, assigned_to, severity)
 
             self.tasks = tasks_and_filters['list']
             self.filter_dict = tasks_and_filters['filters']

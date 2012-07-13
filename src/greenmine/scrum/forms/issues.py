@@ -11,6 +11,8 @@ class IssueFilterForm(forms.Form):
     tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), required=False)
     project = forms.ModelChoiceField(queryset=Project.objects.all(), required=False)
     assigned_to = forms.ModelChoiceField(queryset=User.objects.none(), required=False)
+    severity = forms.ChoiceField(choices=TASK_SEVERITY_CHOICES, required=False)
+    priority = forms.ChoiceField(choices=TASK_PRIORITY_CHOICES, required=False)
 
     milestone = forms.ModelChoiceField(
         queryset = Milestone.objects.none(),
