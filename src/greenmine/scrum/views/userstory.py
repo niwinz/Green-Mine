@@ -105,27 +105,23 @@ class UserStoryCreateView(GenericView):
 
         form = UserStoryForm(request.POST, initial={'milestone': milestone})
 
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.milestone = milestone
-            instance.owner = request.user
-            instance.project = project
-            instance.save()
+        if not form.is_valid():
+            return self.render_json_error(form.errors)
 
-            #TODO: review this save_m2m
-            form.save_m2m()
+        instance = form.save(commit=False)
+        instance.milestone = milestone
+        instance.owner = request.user
+        instance.project = project
+        instance.save()
 
-            signals.mail_userstory_created.send(sender=self, us=instance, user=request.user)
-            self.create_asociated_tasks(project, instance)
+        #TODO: review this save_m2m
+        form.save_m2m()
 
-            messages.info(request, _(u'The user story was created correctly'))
-            return self.render_redirect(project.get_backlog_url())
+        signals.mail_userstory_created.send(sender=self, us=instance, user=request.user)
+        self.create_asociated_tasks(project, instance)
 
-        context = {
-            'form':form,
-            'project':project,
-        }
-        return self.render_to_response(self.template_name, context)
+        #messages.info(request, _(u'The user story was created correctly'))
+        return self.render_json({"redirect_to": project.get_backlog_url()})
 
     def create_asociated_tasks(self, project, user_story):
         texts = list(project.get_extras().parse_ustext(user_story.description))
