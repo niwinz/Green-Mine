@@ -18,6 +18,11 @@
     {% block top-headers %}{% endblock %}
 
     <script src="{% static 'js/libs/modernizr-2.5.3-respond-1.1.0.min.js' %}"></script>
+
+    {# Passing profile settings to the javascript #}
+    <script type="text/javascript">
+        var UserWantColorizedTags = {% if user.profile.colorizeTags %}true{% else %}false{% endif %};
+    </script>
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
     {% block body %}
