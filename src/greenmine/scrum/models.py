@@ -778,6 +778,7 @@ class Task(models.Model):
             'tags': [tag.to_dict() for tag in self.tags.all()],
             'priority': self.priority,
             'priorityDisplay': self.get_priority_display(),
+            'severity': self.severity,
             'severityDisplay': self.get_severity_display(),
         }
 
