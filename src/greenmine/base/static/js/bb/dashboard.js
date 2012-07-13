@@ -37,6 +37,7 @@ Greenmine.UserStoryView = Backbone.View.extend({
     }
 });
 
+
 Greenmine.TaskView = Backbone.View.extend({
     tagName: "div",
 
@@ -80,6 +81,60 @@ Greenmine.taskCollection = new Greenmine.TaskCollection();
 Greenmine.usTemplate = doT.template($("#userstory-template").html());
 Greenmine.taskTemplate = doT.template($("#userstory-task-template").html());
 
+/* Create dialog */
+
+Greenmine.CreateTaskDialog = Kaleidos.Lightbox.extend({
+    el: "#new-task-lightbox",
+
+    events: {
+        'click a.close-lightbox': 'onCloseClicked',
+        'click a.accept-lightbox': 'onAcceptClicked',
+        "click .newtask-meta .button.plus": "newTaskDom"
+    },
+
+    _initilize: function() {
+
+    },
+
+    collectTasks: function() {
+        var tasks = new Array();
+        _.each(this.$("textarea"), function(item) {
+            tasks.push($(item).val());
+        });
+
+        return tasks;
+    },
+
+    _close: function(ok) {
+        console.log(this.$el, this.$el.data());
+        var self = this;
+        if (ok) {
+            var context = {
+                task: this.collectTasks(),
+                us: this.userStoryReference
+            };
+
+            $.post(this.$el.data('url'),  context, function(data) {
+                self.trigger("newTasks", data.tasks);
+            }, 'json');
+        }
+    },
+
+    newTaskDom: function() {
+        var new_formset = this.$(".formset-item").eq(0).clone();
+        new_formset.find("textarea").val("");
+
+        this.$(".newtask-formset").append(new_formset);
+    },
+
+    setUserStoryReference: function(ref) {
+        this.userStoryReference = ref;
+    }
+});
+
+Greenmine.createDialog = new Greenmine.CreateTaskDialog();
+
+/* Dashboard view */
 
 Greenmine.DashboardView = Backbone.View.extend({
     el: $("#milestone-dashboard"),
@@ -89,10 +144,7 @@ Greenmine.DashboardView = Backbone.View.extend({
         "dragleave td.status": "onDragLeave",
         "dragover td.status": "onDragOver",
         "drop td.status": "onDrop",
-
-        //"change .task-col .task-container .icons .participants": "assignationChangeSelect",
-        //"change .task-col .task-container .icons .statuses": "statusChangeChange"
-        //"click .user-story-row .user-story-container .new-task": "onNewTaskClick"
+        "click .button-newtask": "newTaskDialog",
     },
 
     initialize: function() {
@@ -100,9 +152,28 @@ Greenmine.DashboardView = Backbone.View.extend({
 
         Greenmine.usCollection.on("reset", this.resetUserStories);
         Greenmine.taskCollection.on("reset", this.resetTasks);
+        Greenmine.taskCollection.on("add", this.addTask);
+
+        Greenmine.createDialog.on("newTasks", this.onNewTasks);
+
 
         this.tasks = [];
         this.uss = [];
+    },
+
+    onNewTasks: function(tasks) {
+        console.log(tasks);
+        Greenmine.taskCollection.add(tasks);
+    },
+
+    newTaskDialog: function(event) {
+        event.preventDefault();
+
+        var target = $(event.currentTarget);
+        var userStory = target.closest(".userstory-item");
+
+        Greenmine.createDialog.setUserStoryReference(userStory.data('id'));
+        Greenmine.createDialog.open();
     },
 
     resetUserStories: function() {
@@ -196,64 +267,6 @@ Greenmine.DashboardView = Backbone.View.extend({
         }
 
         $.post(apiUrl, postData, function(response) {
-        }, 'json');
-    },
-
-    assignationChangeSelect: function(event) {
-        var target = $(event.currentTarget);
-        var selected_person_id = target.val();
-
-        var task_dom = target.closest(".task-container");
-        var us_dom = task_dom.closest("tr.user-story-row");
-
-        var task_view = _.find(this.tasks, function(taskview) {
-            return taskview.model.get('id') == task_dom.data('id');
-        });
-
-        task_view.setAssigation(selected_person_id);
-
-        var postData = {
-            "assignation": selected_person_id,
-            "task": task_dom.data('id'),
-            "status": task_dom.data('status'),
-            "us": us_dom.data('id')
-        };
-
-        var apiUrl = this.$el.data('api-url');
-
-        $.post(apiUrl, postData, function(response) {
-            console.log(response);
-        }, 'json');
-    },
-
-    statusChangeChange: function(event) {
-        var target = $(event.currentTarget);
-        var selected_status_key = target.val()
-
-        var task_dom = target.closest(".task-container");
-        var us_dom = task_dom.closest("tr.user-story-row");
-
-        var task_view = _.find(this.tasks, function(taskview) {
-            return taskview.model.get('id') == task_dom.data('id');
-        });
-
-        var postData = {
-            "assignation": task_view.model.get('assignedTo'),
-            "task": task_dom.data('id'),
-            "status": selected_status_key,
-            "us": us_dom.data('id')
-        };
-
-        task_view.setStatus(selected_status_key);
-
-        var apiUrl = this.$el.data('api-url');
-
-        $.post(apiUrl, postData, function(response) {
-            if (!response.success) return;
-            var column = _.find(us_dom.find(".task-col"), function(element) {
-                return $(element).data('status') == response.task.fakeStatus;
-            });
-            $(column).append(task_view.$el);
         }, 'json');
     }
 });

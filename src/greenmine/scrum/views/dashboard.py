@@ -164,3 +164,33 @@ class DashboardApiView(GenericView):
             task.save()
 
         return self.render_json({"task": task.to_dict()})
+
+
+class DashboardCreateTask(GenericView):
+    @transaction.commit_on_success
+    @login_required
+    def post(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+
+        if "us" not in request.POST:
+            return self.render_json({}, ok=False)
+
+        if "task" not in request.POST:
+            return self.render_json({}, ok=False)
+
+        user_story = get_object_or_404(project.user_stories, pk=request.POST['us'])
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', ('view')),
+            ('userstory', ('view', 'edit')),
+            ('task', ('view', 'edit')),
+        ])
+
+        tasks = []
+        for task_text in request.POST.getlist("task"):
+            task = Task(type="task", subject="task_text", project=project, user_story=user_story)
+            task.save()
+            tasks.append(task)
+
+        return self.render_json({"tasks": [x.to_dict() for x in tasks]})

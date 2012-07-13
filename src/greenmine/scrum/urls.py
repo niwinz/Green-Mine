@@ -43,6 +43,7 @@ dashboard_patterns = patterns('',
     url(r'^(?P<mid>(?:\d+))/burndown/$',
         dashboard.MilestoneBurndownView.as_view(), name="milestone-burndown"),
     url(r'^api/$', dashboard.DashboardApiView.as_view(), name="dashboard-api"),
+    url(r'^api/crate-task/$', dashboard.DashboardCreateTask.as_view(), name="dashboard-api-create-task"),
 )
 
 milestone_patterns = patterns('',

@@ -762,7 +762,7 @@ class Task(models.Model):
     def to_dict(self):
         self_dict = {
             'id': self.pk,
-            'editUrl': self.get_edit_url(),
+            #'editUrl': self.get_edit_url(),
             'viewUrl': self.get_view_url(),
             'deleteUrl': self.get_delete_url(),
             'subject': self.subject,

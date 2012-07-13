@@ -97,7 +97,7 @@
 </div>
 
 
-<div class="dashboard-new-task" id="new-task-lightbox">
+<div class="dashboard-new-task" id="new-task-lightbox" data-url="{% url 'dashboard-api-create-task' pslug=project.slug %}" style="display: none">
     <div class="new-task-box">
         <h3>{% trans "New task" %}</h3>
 
@@ -116,8 +116,8 @@
         </section>
 
         <section class="newtask-meta">
-            <div class="button">{% trans "Save" %}</div>
-            <span class="cancel"><a href="#">{% trans "Cancelar" %}</a></span>
+            <div class="button"><a href="#" class="accept-lightbox">{% trans "Save" %}</a></div>
+            <span class="cancel"><a href="#" class="close-lightbox">{% trans "Cancelar" %}</a></span>
             <div class="button plus right">+</div>
         </section>
     </div>
