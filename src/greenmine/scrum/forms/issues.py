@@ -41,6 +41,7 @@ class IssueCreateForm(forms.ModelForm):
         model = Task
         fields = (
             'milestone',
+            'status',
             'priority',
             'subject',
             'description',
