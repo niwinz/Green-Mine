@@ -184,8 +184,8 @@ class UserStoryEdit(GenericView):
         if form.is_valid():
             user_story = form.save(commit=True)
             signals.mail_userstory_modified.send(sender=self, us=user_story, user=request.user)
-            messages.info(request, _(u'The user story has been successfully saved'))
-            return self.render_redirect(user_story.get_view_url())
+            #messages.info(request, _(u'The user story has been successfully saved'))
+            return self.render_json({"redirect_to": user_story.get_view_url()})
 
         context = {
             'project': project,
