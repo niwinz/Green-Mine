@@ -3,33 +3,42 @@
 {% load url from future %}
 {% load i18n %}
 
-{% block middle-box %}
+{% block bodyclass %}login{% endblock %}
+
+{% block body %}
 <div id="login">
     {% include "messages.html" %}
-    <form id="login-form" method="post" action=""  >
-        {% csrf_token %}
-        <fieldset>
-            <div class="form-field">
-                <label>{{ form.username.label }}</label>
-                {{ form.username }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.password.label }}</label>
-                {{ form.password }}
-            </div>
-            <p class="forgot-pass">
-                <a href="{% url 'remember-password' %}">{% trans "Forgot your password?" %}</a>
-                {% if not register_disabled %}
-                <br />
-                <a id="open-forgotten-password-form" href="{% url 'register' %}">{% trans "Register" %}</a>
-                {% endif %}
-            </p>
-            <div class="form-field">
-                <input class="btn01" type="submit" value="{% trans "Login" %}" />
-                <span class="ajax-loader"></span>
-            </div>
-        </fieldset>
-    </form>
+    <div class="center-box">
+        <div class="logo-box">
+            <img src="{% static 'imgs/logo.png' %}"></img>
+        </div>
+        <div class="form-container">
+            <form id="login-form" method="post" action=""  >
+                {% csrf_token %}
+                <fieldset>
+                    <div class="form-field">
+                        <label>{{ form.username.label }}</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.password.label }}</label>
+                        {{ form.password }}
+                    </div>
+                    <p class="forgot-pass">
+                        <a href="{% url 'remember-password' %}">{% trans "Forgot your password?" %}</a>
+                        {% if not register_disabled %}
+                        <br />
+                        <a id="open-forgotten-password-form" href="{% url 'register' %}">{% trans "Register" %}</a>
+                        {% endif %}
+                    </p>
+                    <div class="form-field">
+                        <input class="btn01" type="submit" value="{% trans "Login" %}" />
+                        <span class="ajax-loader"></span>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

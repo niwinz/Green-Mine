@@ -19,7 +19,8 @@
 
     <script src="{% static 'js/libs/modernizr-2.5.3-respond-1.1.0.min.js' %}"></script>
 </head>
-<body>
+<body class="{% block bodyclass %}{% endblock %}">
+    {% block body %}
     <div id="overlay"></div>
     <div class="main-container">
         <div class="header-container">
@@ -72,6 +73,7 @@
             {% endblock %}
         </div>
     </div>
+    {% endblock %}
 
     <script src="{% url "jsi18n" %}"></script>
     <script src="{% static 'js/libs/json2.js' %}"></script>
