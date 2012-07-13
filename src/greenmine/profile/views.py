@@ -201,12 +201,13 @@ class ProfileView(GenericView):
         return self.render_to_response(self.template_name, context)
 
     @login_required
+    @transaction.commit_on_success
     def post(self, request):
         form = ProfileForm(request.POST, request.FILES, instance=request.user)
         context = {'form':form}
 
         if not form.is_valid():
-            return self.render_to_response(self.template_name, context)
+            return self.render_json.error(form.errors)
 
         sem = transaction.savepoint()
         try:
@@ -218,8 +219,11 @@ class ProfileView(GenericView):
             return self.render_to_response(self.template_name, context)
 
         transaction.savepoint_commit(sem)
-        messages.info(request, _(u'Profile save success!'))
-        return HttpResponseRedirect(reverse('profile'))
+        #messages.info(request, _(u'Profile save success!'))
+        #return HttpResponseRedirect(reverse('profile'))
+        return self.render_json({'redirect_to': reverse('profile')})
+
+
 class LoginView(GenericView):
     template_name = 'login.html'
 

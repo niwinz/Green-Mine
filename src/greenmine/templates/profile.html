@@ -1,72 +1,94 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load greenmine_utils %}
 {% load i18n %}
+{% load l10n %}
 {% load gravatar %}
 
 {% block title %}
-    <span class="separator"> &rsaquo; </span>
-    <span class="title-item">{% trans "Profile" %}</span>
+<span class="separator"> &rsaquo; </span>
+<span class="title-item">{% trans "Profile" %}</span>
 {% endblock %}
 
-{% block middle %}
+{% block bottom-headers %}
+    {% include "modules/wikiwidget.html" %}
 {% endblock %}
 
 {% block wrapper %}
-<div id="my-profile">
-    <div class="context-menu">
-        <ul>
-            <li><a class="new-milestone" href="{% url 'profile-password' %}">{% trans "Change password" %}</a></li>
-        </ul>
-    </div>
-    {% include "messages.html" %}
-    <div class="form-container">
-        <div class="form-legend">
-            <span>{% trans "Profile:" %}</span>
+<div class="profile form-box">
+    <div class="top-box">
+        <div class="top-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-value="1">{% trans "Save" %}</div>
+            </div>
+            <div class="title-area">
+                <div class="title">{% trans "Profile" %}:</div>
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <form id="edit-profile-form" method="post" enctype="multipart/form-data"
-            action="{% url 'profile' %}" class="inline">
-            {% csrf_token %}
-            <div class="form-field">
-                <label>{{ form.first_name.label }}</label>
-                {{ form.first_name }}
-                {{ form.first_name.errors }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.last_name.label }}</label>
-                {{ form.last_name }}
-                {{ form.last_name.errors }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.username.label }}</label>
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.email.label }}</label>
-                {{ form.email }}
-                {{ form.email.errors }}
-            </div>    
-            <div class="form-field width100">
-                <label>{{ form.description.label }}</label>
-                {{ form.description }}
-                {{ form.description.errors }}
-            </div>
-            <div class="form-field">
-                {% if not user.get_profile.photo %}
-                    {% gravatar user.email 50 %}
-                {% else %}
-                    <img width="50" src="{{ user.get_profile.photo.url }}" />
-                {% endif %}
+    </div>
+    <div class="middle-box">
+        <div class="form-container">
+            <form method="post" action="{% url  'profile' %}">
+                {% csrf_token %}
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
 
-                {{ form.photo.label }}
-                {{ form.photo }}
-                {{ form.photo.errors }}
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.username.label }}</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.email.label }}</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field width100">
+                        <label>{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        {% if not user.get_profile.photo %}
+                            {% gravatar user.email 50 %}
+                        {% else %}
+                            <img width="50" src="{{ user.get_profile.photo.url }}" />
+                        {% endif %}
+
+                        {{ form.photo.label }}
+                        {{ form.photo }}
+                        {{ form.photo.errors }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="bottom-box">
+        <div class="bottom-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-url="">{% trans "Save" %}</div>
             </div>
-            <div class="width100 float-left">
-                <input class="btn01" type="submit" value="{% trans "Save" %}" />
-                <span class="ajax-loader"></span>        
-            </div>
-        </form>
+            <div class="clearfix"></div>
+        </div>
     </div>
 </div>
 {% endblock %}
