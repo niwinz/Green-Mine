@@ -11,7 +11,6 @@ Greenmine.GenericFormsView = Backbone.View.extend({
 
     submit: function(event) {
         event.preventDefault();
-        console.log(1);
 
         var target = $(event.currentTarget);
         if (target.data('value') == '1') {
@@ -21,11 +20,12 @@ Greenmine.GenericFormsView = Backbone.View.extend({
 
     postSuccess: function(data) {
         if (!data.success) {
-            return;
-        }
+            this.form.setErrors(data.errors);
+        } else {
 
-        if (data.redirect_to) {
-            window.location.href = data.redirect_to;
+            if (data.redirect_to) {
+                window.location.href = data.redirect_to;
+            }
         }
     }
 });
