@@ -153,8 +153,9 @@ class CreateIssue(GenericView):
         issue.save()
         form.save_m2m()
 
-        redirect_to = reverse('issues-list', args=[project.slug]) \
-            + "?milestone={0}".format(issue.milestone.pk)
+        redirect_to = reverse('issues-list', args=[project.slug])
+        if issue.milestone:
+                redirect_to += "?milestone={0}".format(issue.milestone.pk)
 
         return self.render_to_ok({"task": issue.to_dict(), 'redirect_to':redirect_to})
 

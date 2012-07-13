@@ -1,5 +1,3 @@
-var Greenmine = {}
-
 Greenmine.Lightbox = Kaleidos.Lightbox.extend({
     events: {
         'click a.close': 'onCloseClicked',
@@ -348,6 +346,10 @@ Greenmine.TasksView = Backbone.View.extend({
         else {
             this.$(".remove-filters").hide();
         }
+
+
+        console.log(Greenmine);
+
         Greenmine.main.colorizeTags();
     },
 

@@ -5,8 +5,6 @@ var stats = {
     'closed': gettext('Closed'),
 };
 
-var Greenmine = {}
-
 Greenmine.UserStory = Backbone.Model.extend({});
 Greenmine.UserStoryCollection = Backbone.Collection.extend({
     model: Greenmine.UserStory

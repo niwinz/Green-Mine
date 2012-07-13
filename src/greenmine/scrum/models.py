@@ -710,8 +710,11 @@ class Task(models.Model):
             return ('issues-edit', (),
                 {'pslug': self.project.slug, 'tref': self.ref})
         else:
-            return ('tasks-edit', (),
+            #TODO: make this url
+            return ('issues-edit', (),
                 {'pslug': self.project.slug, 'tref': self.ref})
+            #return ('tasks-edit', (),
+                #{'pslug': self.project.slug, 'tref': self.ref})
 
     @models.permalink
     def get_view_url(self):
@@ -762,7 +765,7 @@ class Task(models.Model):
     def to_dict(self):
         self_dict = {
             'id': self.pk,
-            #'editUrl': self.get_edit_url(),
+            'editUrl': self.get_edit_url(),
             'viewUrl': self.get_view_url(),
             'deleteUrl': self.get_delete_url(),
             'subject': self.subject,
