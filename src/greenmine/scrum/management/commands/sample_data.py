@@ -132,6 +132,7 @@ class Command(BaseCommand):
                 bug = Task.objects.create(
                     project = project,
                     type = "bug",
+                    severity = random.randint(1,5),
                     subject = lorem_ipsum.words(random.randint(1,5), common=False),
                     description = lorem_ipsum.words(random.randint(1,15), common=False),
                     owner = project.owner,

@@ -658,6 +658,7 @@ class Task(models.Model):
     owner = models.ForeignKey("auth.User", null=True,
         default=None, related_name="tasks")
 
+    severity = models.IntegerField(choices=TASK_SEVERITY_CHOICES, default=3)
     priority = models.IntegerField(choices=TASK_PRIORITY_CHOICES, default=3)
     milestone = models.ForeignKey('Milestone', related_name='tasks',
         null=True, default=None, blank=True)
@@ -775,6 +776,7 @@ class Task(models.Model):
             'tags': [tag.to_dict() for tag in self.tags.all()],
             'priority': self.priority,
             'priorityDisplay': self.get_priority_display(),
+            'severityDisplay': self.get_severity_display(),
         }
 
         if self_dict['assignedTo']:

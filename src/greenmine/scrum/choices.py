@@ -22,6 +22,13 @@ TASK_PRIORITY_CHOICES = (
     (5, _(u'High')),
 )
 
+TASK_SEVERITY_CHOICES = (
+    (1, _(u'Wishlist')),
+    (2, _(u'Minor')),
+    (3, _(u'Normal')),
+    (4, _(u'Important')),
+    (5, _(u'Critical')),
+)
 
 TASK_TYPE_CHOICES = (
     ('bug', _(u'Bug')),
