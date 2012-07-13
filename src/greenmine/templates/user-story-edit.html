@@ -16,55 +16,88 @@
 {% endblock %}
 
 {% block wrapper %}
-<div class="userstory userstory-create form-container">
-    <div class="form-legend">
-        <span>{% trans "Create user story:" %}</span>
+<div class="user-story-create form-box">
+    <div class="top-box">
+        <div class="top-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url" data-url="">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-url="">{% trans "Save" %}</div>
+            </div>
+            <div class="title-area">
+                <div class="title">{% trans "Edit user story" %}:</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
     </div>
-    <form method="post" action="{{ project.get_userstory_edit_url }}" class="inline">
-        {% csrf_token %}
-        <div class="form-field">
-            <label>{{ form.subject.label }}</label>
-            {{ form.subject.errors }}
-            {{ form.subject }}
+    <div class="middle-box">
+        <div class="form-container">
+            <form method="post" action="{{ project.get_userstory_edit_url }}">
+                {% csrf_token %}
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.subject.label }}</label>
+                        {{ form.subject }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.priority.label }}</label>
+                        {{ form.priority }}
+                    </div>
+                    <div class="clearfix">
+                </div>
+
+
+                <div class="form-row inline-row">
+                    <div class="form-field width100">
+                        <label>{{ form.tags.label }}</label>
+                        {{ form.tags }}
+                    </div>
+                    <div class="clearfix">
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.finish_date.label }}</label>
+                        {{ form.finish_date }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.points.label }}</label>
+                        {{ form.points }}
+                    </div>
+                    <div class="clearfix">
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.client_requirement.label }}</label>
+                        {{ form.client_requirement }}
+                    </div>
+
+                    <div class="form-field">
+                        <label>{{ form.team_requirement.label }}</label>
+                        {{ form.team_requirement }}
+                    </div>
+                    <div class="clearfix">
+                </div>
+
+
+                <div class="form-row inline-row">
+                    <div class="form-field width100">
+                        <label>{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="clearfix">
+                </div>
+            </form>
         </div>
-        <div class="form-field">
-            <label>{{ form.priority.label }}</label>
-            {{ form.priority.errors }}
-            {{ form.priority }}
+    </div>
+    <div class="bottom-box">
+        <div class="bottom-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url" data-url="">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-url="">{% trans "Save" %}</div>
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <div class="form-field">
-            <label>{{ form.tags.label }}</label>
-            {{ form.tags.errors }}
-            {{ form.tags }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.client_requirement.label }}</label>
-            {{ form.client_requirement.errors }}
-            {{ form.client_requirement }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.team_requirement.label }}</label>
-            {{ form.team_requirement.errors }}
-            {{ form.team_requirement }}
-        </div>
-        <div class="form-field width100">
-            <label>{{ form.description.label }}</label>
-            {{ form.description.errors }}
-            {{ form.description }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.finish_date.label }}</label>
-            {{ form.finish_date.errors }}
-            {{ form.finish_date }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.points.label }}</label>
-            {{ form.points.errors }}
-            {{ form.points }}
-        </div>
-        <div class="form-field width100 float-left">
-            <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
