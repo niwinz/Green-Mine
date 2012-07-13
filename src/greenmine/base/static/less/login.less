@@ -6,14 +6,50 @@ body.login {
     .center-box {
         margin: auto;
         padding-top: 100px;
-        width: 350px;
+        width: 370px;
+
+        .logo-box {
+            text-align: center;
+        }
     }
     .form-container {
         margin-top: 10px;
-        padding: 10px;
+        padding: 20px 20px 0px 20px;
         background: @white;
-        .border-radius(4px);
+        .border-radius(15px);
         border: 2px solid @gray;
+
+        input.btn01 {
+            margin-top: 13px;
+            width: 100px;
+            background: none repeat scroll 0 0 #666666;
+            color: #ffffff;
+            padding: 2px 3px;
+            border: 0px;
+            .border-radius(4px);
+            padding: 10px;
+            font-family: @DroidSansBold;
+        }
+
+        input#id_password {
+            margin-bottom: 0px;
+        }
+
+        p.forgot-pass {
+            float: right;
+        }
+
+        p.forgot-pass a{
+            color: #666666;
+        }
+
+        p.register {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #666666;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+        }
     }
 
     input[type="text"], input[type="password"] {
