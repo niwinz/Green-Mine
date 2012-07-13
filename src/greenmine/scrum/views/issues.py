@@ -181,8 +181,9 @@ class EditIssue(GenericView):
         })
 
     @login_required
-    def post(self, request, pslug):
+    def post(self, request, pslug, tref):
         project = get_object_or_404(Project, slug=pslug)
+        issue = get_object_or_404(project.tasks, ref=tref)
 
         self.check_role(request.user, project, [
             ('project', 'view'),
@@ -191,10 +192,7 @@ class EditIssue(GenericView):
             ('task', ('view', 'create')),
         ])
 
-        initial_data = {
-            "milestone": request.GET.get('milestone', None),
-        }
-        form = IssueCreateForm(request.POST, project=project, initial=initial_data)
+        form = IssueCreateForm(request.POST, project=project, instance=issue)
         if not form.is_valid():
             return self.render_json_error(form.errors)
 
@@ -204,8 +202,9 @@ class EditIssue(GenericView):
         issue.owner = request.user
         issue.save()
 
-        redirect_to = reverse('issues-list', args=[project.slug]) \
-            + "?milestone={0}".format(issue.milestone.pk)
+        redirect_to = reverse('issues-list', args=[project.slug])
+        if issue.milestone:
+                redirect_to += "?milestone={0}".format(issue.milestone.pk)
 
         return self.render_to_ok({"task": issue.to_dict(), 'redirect_to':redirect_to})
 

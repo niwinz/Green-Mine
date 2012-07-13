@@ -170,6 +170,7 @@ class UserStoryEdit(GenericView):
 
     @login_required
     def post(self, request, pslug, iref):
+
         project = get_object_or_404(Project, slug=pslug)
         user_story = get_object_or_404(project.user_stories, ref=iref)
 

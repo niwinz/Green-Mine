@@ -12,53 +12,80 @@
 {% endblock %}
 
 {% block wrapper %}
-<div class="user-story-create form-container" id="task-create">
-    <div class="form-legend">
-        <span>{% trans "Edit task:" %}</span>
-    </div>
 
-    <form action="{{ full_current_url }}" method="post" class="inline">
-        {% csrf_token %}
-        <div class="form-field">
-            <label>{{ form.subject.label }}</label>
-            {{ form.subject.errors }}
-            {{ form.subject }}
+<div class="issue-create form-box">
+    <div class="top-box">
+        <div class="top-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-value="1">{% trans "Save" %}</div>
+            </div>
+            <div class="title-area">
+                <div class="title">{% trans "Edit issue" %}:</div>
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <div class="form-field">
-            <label>{{ form.status.label }}</label>
-            {{ form.status.errors }}
-            {{ form.status }}
+    </div>
+    <div class="middle-box">
+        <div class="form-container">
+            <form action="{{ full_current_url }}" method="post" class="inline">
+                {% csrf_token %}
+
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.subject.label }}</label>
+                        {{ form.subject }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.status.label }}</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.priority.label }}</label>
+                        {{ form.priority }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
+                        <label>{{ form.milestone.label }}</label>
+                        {{ form.milestone }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.assigned_to.label }}</label>
+                        {{ form.assigned_to }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.tags.label }}</label>
+                        {{ form.tags }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-field width100">
+                    <label>{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+            </form>
         </div>
-        <div class="form-field">
-            <label>{{ form.priority.label }}</label>
-            {{ form.priority.errors }}
-            {{ form.priority }}
+    </div>
+    <div class="bottom-box">
+        <div class="bottom-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url">{% trans "Cancel" %}</div>
+                <div class="area-item button data-url" data-value="1">{% trans "Save" %}</div>
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <div class="form-field">
-            <label>{{ form.milestone.label }}</label>
-            {{ form.milestone.errors }}
-            {{ form.milestone }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.assigned_to.label }}</label>
-            {{ form.assigned_to.errors }}
-            {{ form.assigned_to }}
-        </div>
-        <div class="form-field">
-            <label>{{ form.tags.label }}</label>
-            {{ form.tags.errors }}
-            {{ form.tags }}
-        </div>
-        <div class="form-field width100">
-            <label>{{ form.description.label }}</label>
-            {{ form.description }}
-            {{ form.description.errors }}
-        </div>
-        <div class="form-field width100 float-left">
-           <input type="submit" value="{% trans "Save" %}" class="btn01"></input>
-        </div>
-    </form>
+    </div>
 </div>
+
+
+
+
 {% endblock %}
 
 {% block bottom-headers %}
