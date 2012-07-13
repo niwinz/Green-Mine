@@ -9,7 +9,33 @@
     <span class="title-item">{% trans "Projects" %}</span>
 {% endblock %}
 
+{% block bodyclass %}projects{% endblock %}
+
 {% block wrapper %}
+<div class="project-list">
+    <div class="list-container">
+        {% for project in page.object_list %}
+        <div class="list-item">
+            <div class="meta right">
+                <div class="button">
+                    <a href="{{ project.get_backlog_url }}">{% trans "Detail" %}</a>
+                </div>
+                <div class="button">
+                    <a href="{{ project.get_edit_url }}">{% trans "Edit" %}</a>
+                </div>
+                <div class="button">
+                    <a href="{{ project.get_edit_url }}">{% trans "Delete" %}</a>
+                </div>
+            </div>
+            <div class="title">
+                <a href="{{ project.get_backlog_url }}">{{ project.name }}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include "paginator.html" %}
+</div>
+{% comment %}
 <div id="projects">
     <div class="context-menu">
         <ul>
@@ -18,7 +44,7 @@
     </div>
 
     {% include "messages.html" %}
-    
+
     <h1>{% trans "My projects:" %}</h1>
     {% if page.paginator.count > 0 %}
     <table class="table01">
@@ -37,7 +63,7 @@
                     {% gravatar project.owner.email 30 %}
                 {% endif %}
             </td>
-            <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> | 
+            <td><a href="{{project.get_edit_url}}">{% trans "Modify" %}</a> |
                 <a class="delete" rel="{{ project.get_delete_url }}" href="">{% trans "Delete" %}</a>
             </td>
         </tr>
@@ -47,7 +73,7 @@
     <h2>No tiene ningun proyecto, crea uno!</h2>
     {% endif %}
 
-    {% include "paginator.html" %}
+{% endcomment %}
 </div>
 
 <div class="delete-project-dialog" style="display: none" title="{% trans "Are you sure?" %}">
