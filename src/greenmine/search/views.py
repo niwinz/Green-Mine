@@ -50,10 +50,7 @@ class SearchView(GenericView):
             'page': page,
             'paginator': paginator,
             'query': query,
-            'suggestion': None,
         }
-        if results.query.backend.include_spelling:
-            context['suggestion'] = form.get_suggestion()
 
         return self.render_to_response(self.template_path, context)
 
