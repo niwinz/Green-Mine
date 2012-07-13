@@ -320,6 +320,7 @@ var LeftBlockView = Backbone.View.extend({
             this.$('.filters-box').toggle();
         }
         this.trigger('load');
+        Greenmine.main.colorizeTags();
     },
 
     fetch_url: function() {
@@ -579,6 +580,7 @@ var RightBlockView = Backbone.View.extend({
         var self = this;
         self.$el.html(this.model.get('html'));
         this.trigger('load');
+        Greenmine.main.colorizeTags();
     },
 
     milestones_dragover: function(event) {

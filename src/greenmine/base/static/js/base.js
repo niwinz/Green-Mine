@@ -209,4 +209,27 @@ Greenmine.MessagesView = Backbone.View.extend({
     }
 });
 
+$(document).ready(function() {
+    Greenmine.MainView = Backbone.View.extend({
+        el: $("body"),
+    
+        initialize: function() {
+            _.bindAll(this);
+        },
+    
+        colorizeTags:  function() {
+            categories = $("span.category, div.us-item span.tag");
+            _.each(categories, function(category) {
+                if(!$(category).hasClass('selected')) {
+                    category_id = $(category).attr('category');
+                    color = $.sha1(category_id).substring(0,6).replace('8','0').replace('9','1').replace('a','2').replace('b','3').replace('c','4').replace('d','5').replace('e','6').replace('f','7');
+                    $(category).attr('style', 'background: #'+color);
+                }
+            });
+        },
+    });
+    
+    Greenmine.main = new Greenmine.MainView();
+    Greenmine.main.colorizeTags();
+});
 //Greenmine.messages = new Greenmine.MessagesView();

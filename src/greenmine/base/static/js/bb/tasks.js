@@ -348,10 +348,10 @@ Greenmine.TasksView = Backbone.View.extend({
         else {
             this.$(".remove-filters").hide();
         }
-
+        Greenmine.main.colorizeTags();
     },
 
-    on_tag_add_filter_clicked: function(){
+    on_tag_add_filter_clicked: function(event){
         event.preventDefault();
         var self = $(event.target);
         var tag_filter = parseInt(self.attr('category'));
@@ -362,7 +362,7 @@ Greenmine.TasksView = Backbone.View.extend({
         }
     },
 
-    on_tag_remove_filter_clicked: function(){
+    on_tag_remove_filter_clicked: function(event){
         event.preventDefault();
         event.stopPropagation();
         var self = $(event.target);
@@ -371,7 +371,7 @@ Greenmine.TasksView = Backbone.View.extend({
         this.reload();
     },
 
-    on_milestone_add_filter_clicked: function(){
+    on_milestone_add_filter_clicked: function(event){
         event.preventDefault();
         var self = $(event.target);
         var milestone_filter = parseInt(self.attr('category'));
@@ -381,7 +381,7 @@ Greenmine.TasksView = Backbone.View.extend({
         }
     },
 
-    on_milestone_remove_filter_clicked: function(){
+    on_milestone_remove_filter_clicked: function(event){
         event.preventDefault();
         event.stopPropagation();
         var self = $(event.target);
@@ -390,7 +390,7 @@ Greenmine.TasksView = Backbone.View.extend({
         this.reload();
     },
 
-    on_status_add_filter_clicked: function(){
+    on_status_add_filter_clicked: function(event){
         event.preventDefault();
         var self = $(event.target);
         var status_filter = self.attr('category');
@@ -400,7 +400,7 @@ Greenmine.TasksView = Backbone.View.extend({
         }
     },
 
-    on_status_remove_filter_clicked: function(){
+    on_status_remove_filter_clicked: function(event){
         event.preventDefault();
         event.stopPropagation();
         var self = $(event.target);
@@ -409,7 +409,7 @@ Greenmine.TasksView = Backbone.View.extend({
         this.reload();
     },
 
-    on_assigned_add_filter_clicked: function(){
+    on_assigned_add_filter_clicked: function(event){
         event.preventDefault();
         var self = $(event.target);
         var assigned_to_filter = parseInt(self.attr('category'));
@@ -419,7 +419,7 @@ Greenmine.TasksView = Backbone.View.extend({
         }
     },
 
-    on_assigned_remove_filter_clicked: function(){
+    on_assigned_remove_filter_clicked: function(event){
         event.preventDefault();
         event.stopPropagation();
         var self = $(event.target);

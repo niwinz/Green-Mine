@@ -9,7 +9,7 @@
         <div class="status {% if us.status == completed %}completed{% endif %}"></div>
 
         {% for tag in us.tags.all %}
-            <span class="tag">{{ tag }}</span>
+            <span class="tag" category="{{ tag.id }}">{{ tag }}</span>
         {% endfor %}
 
         {{ us.subject|truncatechars:40 }}
