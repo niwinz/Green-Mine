@@ -52,6 +52,7 @@
 
         .header-left {
             margin-right: 350px;
+            padding-left: 10px;
 
             .header-item.severity {
                 width: 100px;
@@ -77,14 +78,19 @@
         margin-top: 5px;
 
         .list-item {
-            margin-bottom: 10px;
             border-bottom: 1px solid @gray;
-            padding-bottom: 5px;
+            margin: 0;
+            padding: 5px 0;
+
+            &:hover{
+                background: @grayLight;
+            }
         }
 
 
         .body-left {
-            margin-right: 350px;
+            margin-right: 500px;
+            padding-left: 10px;
 
             .body-item.severity {
                 width:  50px;
@@ -103,7 +109,24 @@
         }
 
         .body-right {
-            width: 350px;
+            width: 500px;
+
+            .body-item.meta{
+                margin-right: 10px;
+
+                a {
+                    background: @gray;
+                    padding: 2px 3px;
+                    -webkit-border-radius: 5px;
+                    margin-left: 5px;
+                    color: @white;
+
+                    &:hover{
+                        background: @red;
+                        text-decoration: none;
+                    }
+                }
+            }
 
             line-height: 28px;
             .body-item.state {
