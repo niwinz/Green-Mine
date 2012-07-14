@@ -30,7 +30,6 @@
             <div id="severity-filter-section" class="filter-section" related="#severity-body">{% trans "Severity" %}</div>
             <div id="severity-body" class="filter-group"></div>
 
-            {#TODO#}
             {% comment %}
             <div id ="priority-filter-section" class="filter-section" related="#priority">{% trans "Priority" %}</div>
             <div id="priority-body" class="filter-group"></div>
@@ -38,17 +37,9 @@
         </div>
         <div class="filters-bar">
             <div class="bar-title left">
-
-                <span class="show-hide-filters-box">
-                    {% trans "Filters" %}
-                </span>
-
+                <span class="show-hide-filters-box">{% trans "Filters" %}</span>
                 <div id="selected-filters"></div>
-
-                <span class="remove-filters">
-                    {% trans "¡Filters out!" %}
-                </span>
-
+                <span class="remove-filters">{% trans "¡Filters out!" %}</span>
             </div>
             <div class="bar-button button right">
                 <a href="{% url 'issues-create' pslug=project.slug %}">{% trans "New bug" %}</a>
@@ -59,6 +50,7 @@
     <div class="middle-box">
         <div class="list-header">
             <div class="header-right right">
+                <div class="header-item buttons left"></div>
                 <div class="header-item state left">{% trans "State" %}</div>
                 <div class="header-item priority left">{% trans "Priority" %}</div>
                 <div class="header-item assigned-to left">{% trans "Assigned to" %}</div>

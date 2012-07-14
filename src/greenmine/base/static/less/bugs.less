@@ -51,7 +51,7 @@
         border-bottom: 2px solid @gray;
 
         .header-left {
-            margin-right: 350px;
+            margin-right: 500px;
             padding-left: 10px;
 
             .header-item.severity {
@@ -63,8 +63,7 @@
         }
 
         .header-right {
-            width: 350px;
-            padding-right: 10px;
+            width: 500px;
 
             .header-item.state {
                 width: 90px;
@@ -72,16 +71,18 @@
             .header-item.priority {
                 width: 90px;
             }
+            .header-item.buttons {
+                width: 210px;
+                min-height: 2px;
+            }
         }
     }
 
     .list-body {
-        margin-top: 5px;
-
         .list-item {
-            border-bottom: 1px solid @gray;
+            border-bottom: 1px solid #666;
             margin: 0;
-            padding: 5px 0;
+            padding: 7px 0px;
 
             &:hover{
                 background: @grayLight;
@@ -130,19 +131,11 @@
             width: 500px;
 
             .body-item.meta{
-                margin-right: 10px;
+                width: 210px;
+                min-height: 10px;
 
-                a {
-                    background: @gray;
-                    padding: 2px 3px;
-                    -webkit-border-radius: 5px;
-                    margin-left: 5px;
-                    color: @white;
-
-                    &:hover{
-                        background: @red;
-                        text-decoration: none;
-                    }
+                .button-gray {
+                    display: none;
                 }
             }
 

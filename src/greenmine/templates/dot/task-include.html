@@ -1,21 +1,16 @@
 <script type="template/dot" id="task-template">
     <div class="body-right right" data-delete-url="{{=it.deleteUrl }}">
-
-
         <div class="body-item meta left">
-            <a href="{{=it.viewUrl }}">
-                Detail
-            </a>
-
-            <a href="{{=it.editUrl}}">
-                Edit
-            </a>
-
-            <a href="{{=it.deleteUrl }}" class="delete">
-                Delete
-            </a>
+            <div class="button-gray">
+                <a href="{{=it.viewUrl }}">Detail</a>
+            </div>
+            <div class="button-gray">
+                <a href="{{=it.editUrl}}">Edit</a>
+            </div>
+            <div class="button-gray">
+                <a href="{{=it.deleteUrl }}" class="delete">Delete</a>
+            </div>
         </div>
-
 
         <div class="body-item state left">{{=it.statusDisplay }}</div>
         <div class="body-item priority left">{{=it.priorityDisplay }}</div>
@@ -33,9 +28,7 @@
         <div class="body-item title">
             <div class="title-tags">
                 {{~it.tags :value:index}}
-                <span class="tag">
-                    <span class="category unselected" category="{{=value.id }}">{{=value.name}}</span>
-                </span>
+                <span class="category unselected" category="{{=value.id }}">{{=value.name}}</span>
                 {{~}}
             </div>
             <div class="title-text" data-url="{{=it.viewUrl }}">{{=it.subject }}</div>
