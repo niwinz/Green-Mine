@@ -1,3 +1,63 @@
+/* Initial */
+
+Greenmine.Filters = {};
+
+/* Models */
+
+Greenmine.MilestoneModel = Backbone.Model.extend({});
+Greenmine.TaskModel = Backbone.Model.extend({});
+
+Greenmine.Filters.TagModel = Backbone.Model.extend({});
+Greenmine.Filters.StatusModel = Backbone.Model.extend({});
+Greenmine.Filters.AssignedToModel = Backbone.Model.extend({});
+Greenmine.Filters.SeverityModel = Backbone.Model.extend({});
+
+
+
+/* Collections */
+
+Greenmine.MilestoneCollection = Backbone.Collection.extend({
+    model: Greenmine.MilestoneModel
+});
+
+Greenmine.TaskCollection = Backbone.Collection.extend({
+    model: Greenmine.TaskModel
+});
+
+Greenmine.Filters.TagCollection = Backbone.Collection.extend({
+    model: Greenmine.Filters.TagModel
+});
+
+Greenmine.Filters.StatusCollection = Backbone.Collection.extend({
+    model: Greenmine.Filters.StatusModel
+});
+
+Greenmine.Filters.AssignedToCollection = Backbone.Collection.extend({
+    model: Greenmine.Filters.AssignedToModel
+});
+
+Greenmine.Filters.SeverityCollection = Backbone.Collection.extend({
+    model: Greenmine.Filters.SeverityModel
+});
+
+
+Greenmine.milestoneCollection = new Greenmine.MilestoneCollection();
+Greenmine.taskCollection = new Greenmine.TaskCollection();
+
+Greenmine.Filters.tagCollection = new Greenmine.Filters.TagCollection();
+Greenmine.Filters.statusCollection = new Greenmine.Filters.StatusCollection();
+Greenmine.Filters.assignedToCollection = new Greenmine.Filters.AssignedToCollection();
+Greenmine.Filters.severityCollection = new Greenmine.Filters.SeverityCollection();
+
+
+/* Templates */
+
+Greenmine.filter_template = doT.template($("#filter-template").html());
+Greenmine.task_template = doT.template($("#task-template").html());
+
+
+/* Views */
+
 Greenmine.Lightbox = Kaleidos.Lightbox.extend({
     events: {
         'click a.close': 'onCloseClicked',
@@ -15,14 +75,6 @@ Greenmine.Lightbox = Kaleidos.Lightbox.extend({
     }
 });
 
-Greenmine.filter_template = doT.template($("#filter-template").html());
-
-/*Milestones*/
-Greenmine.MilestoneModel = Backbone.Model.extend({});
-Greenmine.MilestoneCollection = Backbone.Collection.extend({
-    model: Greenmine.MilestoneModel
-});
-Greenmine.milestoneCollection = new Greenmine.MilestoneCollection();
 Greenmine.MilestoneView = Backbone.View.extend({
     tagName: "span",
     attributes: {
@@ -34,13 +86,7 @@ Greenmine.MilestoneView = Backbone.View.extend({
     }
 });
 
-/*Tags*/
-Greenmine.TagModel = Backbone.Model.extend({});
-Greenmine.TagCollection = Backbone.Collection.extend({
-    model: Greenmine.TagModel
-});
-Greenmine.tagCollection = new Greenmine.TagCollection();
-Greenmine.TagView = Backbone.View.extend({
+Greenmine.Filters.TagView = Backbone.View.extend({
     tagName: "span",
     attributes: {
         "class": "tag"
@@ -51,13 +97,7 @@ Greenmine.TagView = Backbone.View.extend({
     }
 });
 
-/*Status*/
-Greenmine.StatusModel = Backbone.Model.extend({});
-Greenmine.StatusCollection = Backbone.Collection.extend({
-    model: Greenmine.StatusModel
-});
-Greenmine.statusCollection = new Greenmine.StatusCollection();
-Greenmine.StatusView = Backbone.View.extend({
+Greenmine.Filters.StatusView = Backbone.View.extend({
     tagName: "span",
     attributes: {
         "class": "status"
@@ -68,13 +108,7 @@ Greenmine.StatusView = Backbone.View.extend({
     }
 });
 
-/*Assigned to*/
-Greenmine.AssignedToModel = Backbone.Model.extend({});
-Greenmine.AssignedToCollection = Backbone.Collection.extend({
-    model: Greenmine.AssignedToModel
-});
-Greenmine.assignedToCollection = new Greenmine.AssignedToCollection();
-Greenmine.AssignedToView = Backbone.View.extend({
+Greenmine.Filters.AssignedToView = Backbone.View.extend({
     tagName: "span",
     attributes: {
         "class": "assigned-to"
@@ -85,13 +119,7 @@ Greenmine.AssignedToView = Backbone.View.extend({
     }
 });
 
-/*Severity*/
-Greenmine.SeverityModel = Backbone.Model.extend({});
-Greenmine.SeverityCollection = Backbone.Collection.extend({
-    model: Greenmine.SeverityModel
-});
-Greenmine.severityCollection = new Greenmine.SeverityCollection();
-Greenmine.SeverityView = Backbone.View.extend({
+Greenmine.Filters.SeverityView = Backbone.View.extend({
     tagName: "span",
     attributes: {
         "class": "severity"
@@ -101,14 +129,6 @@ Greenmine.SeverityView = Backbone.View.extend({
         return this;
     }
 });
-
-/*Tasks*/
-Greenmine.TaskModel = Backbone.Model.extend({});
-Greenmine.TaskCollection = Backbone.Collection.extend({
-    model: Greenmine.TaskModel
-});
-Greenmine.taskCollection = new Greenmine.TaskCollection();
-Greenmine.task_template = doT.template($("#task-template").html());
 
 Greenmine.TaskView = Backbone.View.extend({
     tagName: "div",
@@ -131,6 +151,7 @@ Greenmine.TaskView = Backbone.View.extend({
         return this;
     },
 
+    // DEPRECATED
     getParticipantById: function(id) {
         var val = _.find(Greenmine.participants,  function(item) {
             return item['id'] == id;
@@ -152,8 +173,8 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .context-menu a.filter-task": "changeStatus",
 
         /*Tag filtering */
-        "click .tag .category.selected": "on_tag_remove_filter_clicked",
-        "click .tag .category.unselected": "on_tag_add_filter_clicked",
+        "click .category.selected": "on_tag_remove_filter_clicked",
+        "click .category.unselected": "on_tag_add_filter_clicked",
 
         /*Milestone filtering */
         "click .milestone .category.selected": "on_milestone_remove_filter_clicked",
@@ -182,6 +203,7 @@ Greenmine.TasksView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
+
         Greenmine.taskCollection.on("reset", this.reset);
         Greenmine.taskCollection.on("remove", this.deleteIssue);
 
@@ -197,18 +219,18 @@ Greenmine.TasksView = Backbone.View.extend({
         var order_by = getUrlVars()["order_by"];
         if (order_by === undefined){
             this.options.order_by = "-priority";
-        }
-        else{
+        } else {
             this.options.order_by = order_by;
         }
 
         this.options.tag_filter = getIntListFromURLParam('tags');
         this.options.milestone_filter = getIntListFromURLParam('milestone');
+
         var base_status_filter = getUrlVars()['status'];
+
         this.options.status_filter = getStringListFromURLParam('status');
         this.options.assigned_to_filter = getIntListFromURLParam('assigned_to');
         this.options.severity_filter = getIntListFromURLParam('severity');
-
         this.filters_box_visible = false;
     },
 
@@ -259,11 +281,11 @@ Greenmine.TasksView = Backbone.View.extend({
         }
 
         $.get(url, post_data, function(data) {
-            Greenmine.tagCollection.reset(data.filter_dict.tags);
+            Greenmine.Filters.tagCollection.reset(data.filter_dict.tags);
+            Greenmine.Filters.statusCollection.reset(data.filter_dict.status);
+            Greenmine.Filters.assignedToCollection.reset(data.filter_dict.assigned_to);
+            Greenmine.Filters.severityCollection.reset(data.filter_dict.severity);
             Greenmine.milestoneCollection.reset(data.filter_dict.milestones);
-            Greenmine.statusCollection.reset(data.filter_dict.status);
-            Greenmine.assignedToCollection.reset(data.filter_dict.assigned_to);
-            Greenmine.severityCollection.reset(data.filter_dict.severity);
             Greenmine.taskCollection.reset(data.tasks);
         }, 'json');
     },
@@ -284,7 +306,7 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addTag: function(tag) {
-        var view = new Greenmine.TagView({model:tag});
+        var view = new Greenmine.Filters.TagView({model:tag});
         var rendered_elem = view.render().el;
         this.$("#tags-body").append(rendered_elem);
         if (tag.attributes.selected === true){
@@ -302,7 +324,7 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addStatus: function(tag) {
-        var view = new Greenmine.StatusView({model:tag});
+        var view = new Greenmine.Filters.StatusView({model:tag});
         var rendered_elem = view.render().el;
         this.$("#status-body").append(rendered_elem);
         if (tag.attributes.selected === true){
@@ -311,7 +333,7 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addAssignedTo: function(tag) {
-        var view = new Greenmine.AssignedToView({model:tag});
+        var view = new Greenmine.Filters.AssignedToView({model:tag});
         var rendered_elem = view.render().el;
         this.$("#assigned-to-body").append(rendered_elem);
         if (tag.attributes.selected === true){
@@ -320,7 +342,7 @@ Greenmine.TasksView = Backbone.View.extend({
     },
 
     addSeverity: function(tag) {
-        var view = new Greenmine.SeverityView({model:tag});
+        var view = new Greenmine.Filters.SeverityView({model:tag});
         var rendered_elem = view.render().el;
         this.$("#severity-body").append(rendered_elem);
         if (tag.attributes.selected === true){
@@ -349,35 +371,35 @@ Greenmine.TasksView = Backbone.View.extend({
             self.addIssue(item);
         });
 
-        this.$("#tags-body").html("");
-        Greenmine.tagCollection.each(function(item) {
-            self.addTag(item);
-        });
-        this.$("#tags-filter-section").toggle(Greenmine.tagCollection.length!=0);
-
         this.$("#milestones-body").html("");
         Greenmine.milestoneCollection.each(function(item) {
             self.addMilestone(item);
         });
         this.$("#milestones-filter-section").toggle(Greenmine.milestoneCollection.length!=0);
 
+        this.$("#tags-body").html("");
+        Greenmine.Filters.tagCollection.each(function(item) {
+            self.addTag(item);
+        });
+        this.$("#tags-filter-section").toggle(Greenmine.Filters.tagCollection.length!=0);
+
         this.$("#status-body").html("");
-        Greenmine.statusCollection.each(function(item) {
+        Greenmine.Filters.statusCollection.each(function(item) {
             self.addStatus(item);
         });
-        this.$("#status-filter-section").toggle(Greenmine.statusCollection.length!=0);
+        this.$("#status-filter-section").toggle(Greenmine.Filters.statusCollection.length!=0);
 
         this.$("#assigned-to-body").html("");
-        Greenmine.assignedToCollection.each(function(item) {
+        Greenmine.Filters.assignedToCollection.each(function(item) {
             self.addAssignedTo(item);
         });
-        this.$("#assigned-to-filter-section").toggle(Greenmine.assignedToCollection.length!=0);
+        this.$("#assigned-to-filter-section").toggle(Greenmine.Filters.assignedToCollection.length!=0);
 
         this.$("#severity-body").html("");
-        Greenmine.severityCollection.each(function(item) {
+        Greenmine.Filters.severityCollection.each(function(item) {
             self.addSeverity(item);
         });
-        this.$("#severity-filter").toggle(Greenmine.severityCollection.length!=0);
+        this.$("#severity-filter").toggle(Greenmine.Filters.severityCollection.length!=0);
 
         if (this.$("#selected-filters .category").length > 0) {
             this.$(".remove-filters").show();

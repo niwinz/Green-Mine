@@ -69,10 +69,6 @@
 </div>
 {% endblock %}
 
-{% block top-headers %}
-<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/issues.css' %}" />
-{% endblock %}
-
 {% block bottom-headers %}
     {% raw_include "dot/task-include.html" %}
     {% raw_include "dot/tag-include.html" %}
@@ -86,20 +82,19 @@
     {% to_json statuses as statuses_json %}
     {% to_json participants as participants_json %}
 
-    <script type="text/javascript" src="{% static "js/bb/tasks.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/bb/issues.js" %}"></script>
     <script type="text/javascript">
         Greenmine.statuses = {{ statuses_json }};
         Greenmine.participants = {{ participants_json }};
+        Greenmine.Filters.tagCollection.reset({{ tags_json }});
+        Greenmine.Filters.statusCollection.reset({{ status_json }});
+        Greenmine.Filters.assignedToCollection.reset({{ assigned_to_json }});
+        Greenmine.Filters.severityCollection.reset({{ severities_json }});
 
         Greenmine.issuesView = new Greenmine.TasksView();
 
-        Greenmine.tagCollection.reset({{ tags_json }});
         Greenmine.milestoneCollection.reset({{ milestones_json }});
-        Greenmine.statusCollection.reset({{ status_json }});
-        Greenmine.assignedToCollection.reset({{ assigned_to_json }});
-        Greenmine.severityCollection.reset({{ severities_json }});
         Greenmine.taskCollection.reset({{ tasks_json }});
-
     </script>
 {% endblock %}
 
