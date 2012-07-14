@@ -13,6 +13,7 @@ from .views import userstory
 from .views import project
 from .views import milestone
 
+
 tasks_patterns = patterns('',
     url(r'^create/$', tasks.CreateTask.as_view(), name='tasks-create'),
     url(r'^(?P<tref>[\w\d]+)/view/$', tasks.TaskView.as_view(), name='tasks-view'),
@@ -25,6 +26,7 @@ issues_patterns = patterns('',
     url(r'^create/$', issues.CreateIssue.as_view(), name='issues-create'),
     url(r'^(?P<tref>[\w\d]+)/view/$', issues.IssueView.as_view(), name='issues-view'),
     url(r'^(?P<tref>[\w\d]+)/edit/$', issues.EditIssue.as_view(), name='issues-edit'),
+    url(r'^(?P<tref>[\w\d]+)/delete/$', issues.DeleteIssue.as_view(), name='issues-delete'),
     url(r'^(?P<tref>[\w\d]+)/send/comment/$', issues.IssueSendComment.as_view(), name='issues-send-comment'),
 )
 

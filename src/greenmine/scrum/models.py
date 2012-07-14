@@ -570,7 +570,6 @@ class ChangeAttachment(models.Model):
 
 
 class TaskQuerySet(models.query.QuerySet):
-
     def _add_categories(self, section_dict, category_id, category_element, selected):
         section_dict[category_id] = section_dict.get(category_id, {
             'element': unicode(category_element),
@@ -736,12 +735,10 @@ class Task(models.Model):
 
     @models.permalink
     def get_delete_url(self):
-        # FIXME
-        return ('tasks-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
         if self.type == "bug":
-            return None
+            return ('issues-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
         else:
-            return None
+            return ('tasks-delete', (), {'pslug':self.project.slug, 'tref': self.ref})
 
     def save(self, *args, **kwargs):
         last_user_story = None
@@ -797,8 +794,8 @@ class Task(models.Model):
             self_dict['assignedToDisplay'] = self.assigned_to.get_full_name()
         else:
             self_dict['assignedToDisplay'] = ugettext("Unassigned")
-
         return self_dict
+
 
 reversion.register(ProjectExtras)
 reversion.register(Project)

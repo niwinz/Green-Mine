@@ -168,7 +168,6 @@ Greenmine.TaskView = Backbone.View.extend({
 Greenmine.TasksView = Backbone.View.extend({
     events: {
         //TODO: fix this three selectors
-        "click .un-us-item img.delete": "deleteIssueClick",
         "click .un-us-item.head-title .row a": "changeOrder",
         "click .context-menu a.filter-task": "changeStatus",
 
@@ -195,8 +194,9 @@ Greenmine.TasksView = Backbone.View.extend({
         /*Filters box*/
         "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
         "click .filters-bar .remove-filters": "remove_filters",
-        "click .filters-container .filter-section": "toggle_filter_section"
+        "click .filters-container .filter-section": "toggle_filter_section",
 
+        "click .list-body .list-item a.delete": "deleteIssueClick",
     },
 
     el: $("#issues"),
@@ -207,9 +207,8 @@ Greenmine.TasksView = Backbone.View.extend({
         Greenmine.taskCollection.on("reset", this.reset);
         Greenmine.taskCollection.on("remove", this.deleteIssue);
 
-        this.lightbox = new Greenmine.Lightbox({
-            el: $("#delete-task-dialog")
-        });
+        this.lightbox = new Greenmine.Lightbox({el: $("#issues-delete-dialog")});
+        this.lightbox.on('delete', this.deleteIssue);
 
         this._milestone_id = this.$el.data('milestone');
         this._order = "created_date";
@@ -292,12 +291,12 @@ Greenmine.TasksView = Backbone.View.extend({
 
     deleteIssueClick: function(event) {
         event.preventDefault();
-        var target = $(event.currentTarget).closest('.un-us-item');
+
+        var target = $(event.currentTarget).closest('.list-item');
         var task = Greenmine.taskCollection.get(target.data('id'));
 
         this.lightbox.setReference(task);
         this.lightbox.open();
-        this.lightbox.on('delete', this.deleteIssue);
     },
 
     addIssue: function(task) {
@@ -352,10 +351,13 @@ Greenmine.TasksView = Backbone.View.extend({
 
     deleteIssue: function(task) {
         var self = this;
-        $.post(task.get('delete_url'), {}, function(data) {
-            if (data.valid) {
-                var selector = "#task_" + task.get('id');
-                self.$(selector).remove();
+
+        $.post(task.get('deleteUrl'), {}, function(data) {
+            if (data.success) {
+                var object = self.$("#task_" + task.get('id'));
+                object.slideUp("fast", function() {
+                    object.remove();
+                });
             }
         }, 'json');
     },

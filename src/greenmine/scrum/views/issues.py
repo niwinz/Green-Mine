@@ -22,6 +22,7 @@ from greenmine.forms.base import CommentForm
 from greenmine.scrum.models import *
 from greenmine.taggit.models import Tag
 
+
 class IssueList(GenericView):
     """
     Issues list view.
@@ -56,24 +57,24 @@ class IssueList(GenericView):
 
         form = IssueFilterForm(request.GET, project=self.project)
         self.valid_form = form.is_valid()
-        if self.valid_form:
-            milestone = form.cleaned_data['milestone']
-            status = form.cleaned_data['status']
-            order_by = form.cleaned_data['order_by']
-            tags = form.cleaned_data['tags']
-            assigned_to = form.cleaned_data['assigned_to']
-            severity = form.cleaned_data['severity']
-
-            tasks_and_filters = self.project.tasks.filter(type='bug').\
-                filter_and_build_filter_dict(milestone, status, tags, assigned_to, severity)
-
-            self.tasks = tasks_and_filters['list']
-            self.filter_dict = tasks_and_filters['filters']
-
-        else:
-            messages.error(request, _("Uops!, something went wrong!"))
+        if not self.valid_form:
             self.tasks = []
             self.filter_dict = {}
+            messages.error(request, _("Uops!, something went wrong!"))
+            return
+
+        milestone = form.cleaned_data['milestone']
+        status = form.cleaned_data['status']
+        order_by = form.cleaned_data['order_by']
+        tags = form.cleaned_data['tags']
+        assigned_to = form.cleaned_data['assigned_to']
+        severity = form.cleaned_data['severity']
+
+        tasks_and_filters = self.project.tasks.filter(type='bug').\
+            filter_and_build_filter_dict(milestone, status, tags, assigned_to, severity)
+
+        self.tasks = tasks_and_filters['list']
+        self.filter_dict = tasks_and_filters['filters']
 
     @login_required
     def get(self, request, pslug):
@@ -91,17 +92,16 @@ class IssueList(GenericView):
                 'filter_dict': self.filter_dict,
             }
             context.update(_aditional_context)
-            return self.render_to_ok(context)
+            return self.render_json(context, ok=True)
 
-        else:
-            context = {
-                'project': self.project,
-                'tasks': (task.to_dict() for task in self.tasks),
-                'filter_dict': self.filter_dict,
-            }
+        context = {
+            'project': self.project,
+            'tasks': (task.to_dict() for task in self.tasks),
+            'filter_dict': self.filter_dict,
+        }
 
-            context.update(_aditional_context)
-            return self.render_to_response(self.template_name, context)
+        context.update(_aditional_context)
+        return self.render_to_response(self.template_name, context)
 
 
 class CreateIssue(GenericView):
@@ -231,9 +231,20 @@ class IssueView(GenericView):
         return self.render_to_response(self.template_name, context)
 
 
-class IssueSendComment(GenericView):
-    @login_required
+class DeleteIssue(GenericView):
     @transaction.commit_on_success
+    @login_required
+    def post(self, request, pslug, tref):
+        project = get_object_or_404(Project, slug=pslug)
+        task = get_object_or_404(project.tasks.filter(type="bug"), ref=tref)
+
+        task.delete()
+        return self.render_json({}, ok=True)
+
+
+class IssueSendComment(GenericView):
+    @transaction.commit_on_success
+    @login_required
     def post(self, request, pslug, tref):
         project = get_object_or_404(Project, slug=pslug)
         task = get_object_or_404(project.tasks, ref=tref)
