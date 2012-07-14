@@ -3,8 +3,9 @@
     <div class="userstory-description left">
         <div class="description-box">
             <div class="tags-container">
-                <div class="tag">Tag1</div>
-                <div class="tag">Tag2</div>
+                {{~it.tags :value:index}}
+                <span class="category" category="{{=value.id}}">{{=value.name}}</span>
+                {{~}}
             </div>
             <div class="description-text">
                 {{=it.subject }}

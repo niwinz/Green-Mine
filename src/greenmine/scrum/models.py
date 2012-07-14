@@ -448,6 +448,7 @@ class UserStory(models.Model):
             "subject": self.subject,
             "viewUrl": self.get_view_url(),
             "pointsDisplay": self.get_points_display(),
+            "tags": [ {'id': tag.id, 'name': tag.name} for tag in self.tags.all() ]
         }
 
     def __repr__(self):

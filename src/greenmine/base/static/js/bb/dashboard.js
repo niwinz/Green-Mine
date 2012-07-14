@@ -154,7 +154,6 @@ Greenmine.DashboardView = Backbone.View.extend({
 
         Greenmine.createDialog.on("newTasks", this.onNewTasks);
 
-
         this.tasks = [];
         this.uss = [];
     },
@@ -180,6 +179,7 @@ Greenmine.DashboardView = Backbone.View.extend({
         Greenmine.usCollection.each(function(item) {
             self.addUserStory(item);
         });
+        Greenmine.main.colorizeTags();
     },
 
     addUserStory: function(item) {
