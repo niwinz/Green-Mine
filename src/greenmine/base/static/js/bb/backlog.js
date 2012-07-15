@@ -292,7 +292,7 @@ var LeftBlockView = Backbone.View.extend({
         /*Filters box*/
         "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
         "click .filters-bar .remove-filters": "remove_filters",
-        "click .graph-box .show-hide-graphics a": "toggle_graph_box_visibility"
+        "click .show-hide-graphics a": "toggle_graph_box_visibility"
 
     },
 

@@ -15,7 +15,7 @@
             padding: 10px;
         }
 
-        .milestone-item{
+        .milestone-item {
             background-color: @grayVeryLighter;
             margin-bottom: 10px;
             color: @grayDarker;
@@ -34,7 +34,7 @@
                     a {
                         background: @grayLight;
                         padding: 2px 3px;
-                        -webkit-border-radius: 5px;
+                        .border-radius(5px);
                         margin-left: 5px;
                         color: @white;
 
@@ -57,7 +57,7 @@
                 }
             }
 
-            .milestone-userstorys{
+            .milestone-userstorys {
                 margin: 0px;
                 padding: 10px;
                 background: @white;
@@ -141,13 +141,16 @@
                 background-color: @white;
             }
 
-            .show-hide-graphics{
-                margin-top: 10px;
-                a{
-                    color: @white;
-                }
+        }
+        .show-hide-graphics{
+            padding: 0px 15px;
+            background-color: #666;
 
+            a {
+                color: @grayLighter;
+                font-size: 11px;
             }
+
         }
 
         .uslist-box{

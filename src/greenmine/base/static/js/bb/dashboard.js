@@ -134,7 +134,6 @@ Greenmine.CreateTaskDialog = Kaleidos.Lightbox.extend({
     },
 
     newTaskDom: function(event) {
-        console.log(1);
         var new_formset = this.$(".formset-item").eq(0).clone();
         new_formset.find("textarea").val("");
 

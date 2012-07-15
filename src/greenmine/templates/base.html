@@ -33,15 +33,16 @@
                 <div class="header-row">
                     <div class="right-top-menu right">
                         {% if user.is_authenticated %}
-                            <a href="{% url 'profile' %}">{{ user.get_full_name|default:"Anonymous" }}</a> |
-                            <a href="#">{% trans "settings" %}</a> |
-                            <a href="{% url 'logout' %}" class="logout">{% trans "logout" %}</a>
+                        <a href="{% url 'profile' %}">{{ user.get_full_name|default:"Anonymous" }}</a> |
+                        <a href="#">{% trans "settings" %}</a> |
+                        <a href="{% url 'logout' %}" class="logout">{% trans "logout" %}</a>
                         {% endif %}
                     </div>
 
                     <div class="logo-box">
-                        <a href="{% url "projects" %}" /><img src="{% static "imgs/logo.png" %}" /></a>
+                        <a href="{% url "projects" %}"><img src="{% static "imgs/logo.png" %}" /></a>
                     </div>
+
                     <div class="title-box">
                         {% block title %}
                         <span class="separator"> &rsaquo; </span>
@@ -58,7 +59,9 @@
                             <li class="{{ menu.in_backlog }}"><a href="{{ project.get_backlog_url }}">{% trans "Backlog" %}</a></li>
                             <li class="{{ menu.in_dashboard }}"><a href="{{ project.get_dashboard_url }}">{% trans "Dashboard" %}</a></li>
                             <li class="{{ menu.in_issues }}"><a href="{{ project.get_issues_url }}">{% trans "Bugs" %}</a></li>
+                            {% comment %}
                             <li class="{{ menu.in_questions }}"><a href="{{ project.get_questions_url }}">{% trans "Questions" %}</a></li>
+                            {% endcomment %}
                             <li class="{{ menu.in_wiki }}"><a href="{{ project.get_wiki_url }}">{% trans "Wiki" %}</a></li>
                         </ul>
                         {% endif %}
@@ -81,24 +84,19 @@
     {% endblock %}
 
     <script src="{% url "jsi18n" %}"></script>
-    <script src="{% static 'js/libs/json2.js' %}"></script>
     <script src="{% static 'js/libs/jquery-1.7.2.min.js' %}"></script>
     <script src="{% static 'js/libs/jquery.flot.js' %}"></script>
     <script src="{% static 'js/libs/jquery.flot.stack.js' %}"></script>
     <script src="{% static 'js/libs/jquery.sha1.js' %}"></script>
     <script src="{% static 'js/libs/doT.min.js' %}"></script>
-    <script src="{% static 'js/libs/json2.js' %}"></script>
     <script src="{% static 'js/libs/underscore-min.js' %}"></script>
     <script src="{% static 'js/libs/backbone-min.js' %}"></script>
     <script src="{% static 'js/libs/yepnope.1.5.4-min.js' %}"></script>
-
     <script src="{% static 'js/markitup/jquery.markitup.js' %}"></script>
     <script src="{% static 'js/markitup/sets/markdown/set.js' %}"></script>
     <script src="{% static 'js/markitup/sets/rest/set.js' %}"></script>
-
     <script src="{% static 'js/libs/backbone-lightbox.js' %}"></script>
     <script src="{% static 'js/libs/backbone-form.js' %}"></script>
-
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/bb/forms.js' %}"></script>
     <script src="{% static 'js/bb/search.js' %}"></script>
