@@ -343,8 +343,8 @@ class Milestone(models.Model):
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
-    def get_burndown_url(self):
-        return ('milestone-burndown', (),
+    def get_stats_url(self):
+        return ('dashboard-api-stats', (),
             {'pslug': self.project.slug, 'mid': self.id})
 
     @models.permalink
