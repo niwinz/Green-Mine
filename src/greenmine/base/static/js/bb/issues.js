@@ -172,8 +172,8 @@ Greenmine.TasksView = Backbone.View.extend({
         "click .context-menu a.filter-task": "changeStatus",
 
         /*Tag filtering */
-        "click .category.selected": "on_tag_remove_filter_clicked",
-        "click .category.unselected": "on_tag_add_filter_clicked",
+        "click .tag .category.selected": "on_tag_remove_filter_clicked",
+        "click .tag .category.unselected": "on_tag_add_filter_clicked",
 
         /*Milestone filtering */
         "click .milestone .category.selected": "on_milestone_remove_filter_clicked",
@@ -280,6 +280,7 @@ Greenmine.TasksView = Backbone.View.extend({
         }
 
         $.get(url, post_data, function(data) {
+            console.log(data);
             Greenmine.Filters.tagCollection.reset(data.filter_dict.tags);
             Greenmine.Filters.statusCollection.reset(data.filter_dict.status);
             Greenmine.Filters.assignedToCollection.reset(data.filter_dict.assigned_to);
@@ -454,8 +455,10 @@ Greenmine.TasksView = Backbone.View.extend({
 
     on_status_add_filter_clicked: function(event){
         event.preventDefault();
-        var self = $(event.target);
-        var status_filter = self.attr('category');
+        var target = $(event.currentTarget);
+        var status_filter = target.attr('category');
+
+
         if ($.inArray(status_filter, this.options.status_filter)<0){
             this.options.status_filter.push(status_filter);
             this.reload();
@@ -466,7 +469,7 @@ Greenmine.TasksView = Backbone.View.extend({
         event.preventDefault();
         event.stopPropagation();
         var self = $(event.target);
-        var status_filter = parseInt(self.attr('category'));
+        var status_filter = self.attr('category');
         this.options.status_filter.pop(status_filter);
         this.reload();
     },

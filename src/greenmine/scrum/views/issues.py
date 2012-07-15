@@ -55,20 +55,20 @@ class IssueList(GenericView):
             ('task', 'view'),
         ])
 
-        form = IssueFilterForm(request.GET, project=self.project)
-        self.valid_form = form.is_valid()
+        self.form = IssueFilterForm(request.GET, project=self.project)
+        self.valid_form = self.form.is_valid()
         if not self.valid_form:
             self.tasks = []
             self.filter_dict = {}
             messages.error(request, _("Uops!, something went wrong!"))
             return
 
-        milestone = form.cleaned_data['milestone']
-        status = form.cleaned_data['status']
-        order_by = form.cleaned_data['order_by']
-        tags = form.cleaned_data['tags']
-        assigned_to = form.cleaned_data['assigned_to']
-        severity = form.cleaned_data['severity']
+        milestone = self.form.cleaned_data['milestone']
+        status = self.form.cleaned_data['status']
+        order_by = self.form.cleaned_data['order_by']
+        tags = self.form.cleaned_data['tags']
+        assigned_to = self.form.cleaned_data['assigned_to']
+        severity = self.form.cleaned_data['severity']
 
         tasks_and_filters = self.project.tasks.filter(type='bug').\
             filter_and_build_filter_dict(milestone, status, tags, assigned_to, severity)
@@ -85,7 +85,7 @@ class IssueList(GenericView):
 
         if request.is_ajax():
             if not self.valid_form:
-                return self.render_to_error(form.errors)
+                return self.render_to_error(self.form.errors)
 
             context = {
                 "tasks": [task.to_dict() for task in self.tasks],
