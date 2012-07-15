@@ -132,7 +132,7 @@ class ProfileForm(forms.ModelForm):
     description = forms.CharField(widget=Textarea, required=False,
         label=_(u'Description'))
     photo = forms.ImageField(required=False, label=_(u'Photo'))
-    tolorize_tags = forms.BooleanField(required=False, label=_(u'Set color for tags'))
+    colorize_tags = forms.BooleanField(required=False, label=_(u'Set color for tags'))
 
     class Meta:
         model = User

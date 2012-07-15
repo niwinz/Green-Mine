@@ -2,21 +2,22 @@
 
 from __future__ import absolute_import
 
+from django.utils import timezone
 from django.utils.translation import ugettext
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
 from ...core.generic import GenericView
 from ...core.decorators import login_required
+from ...core.utils import iter_points
 
 from ..models import Project, Task
 from ..models import TASK_STATUS_CHOICES
 from ..forms.dashboard import ApiForm as DashboardApiForm
 
 from datetime import timedelta, datetime, time
-from django.utils import timezone
 
-#class MilestoneBurndownView(GenericView):
+
 class MilestoneStats(GenericView):
     def get_burndown_context(self, project, milestone):
         points_done_on_date = []
@@ -51,7 +52,34 @@ class MilestoneStats(GenericView):
         return context
 
     def get_stats_context(self, project, milestone):
-        return {}
+        all_us = milestone.user_stories.all()
+        completed_us = milestone.user_stories.filter(status__in=['completed', 'closed'])
+
+        total_points = sum(iter_points(all_us))
+        completed_points = sum(iter_points(completed_us))
+
+        us_number = all_us.count()
+        us_completed_number = completed_us.count()
+
+        task_number = milestone.tasks.filter(type="task").count()
+        task_completed_number = milestone.tasks\
+            .filter(type="task", status__in=['completed', 'workaround','closed']).count()
+
+        try:
+            percentage_completed = (completed_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_completed = 0
+
+        context = {
+            'total_points':  total_points,
+            'completed_points': completed_points,
+            'percentage_completed': "{0:.0f}".format(percentage_completed),
+            'us_number': us_number,
+            'us_completed_number': us_completed_number,
+            'task_number': task_number,
+            'task_completed_number': task_completed_number,
+        }
+        return context
 
     @login_required
     def get(self, request, pslug, mid):

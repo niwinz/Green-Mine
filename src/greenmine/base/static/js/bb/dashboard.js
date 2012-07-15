@@ -279,6 +279,7 @@ Greenmine.DashboardView = Backbone.View.extend({
         }
 
         $.post(apiUrl, postData, function(response) {
+            Greenmine.sprintStats.reload();
         }, 'json');
     }
 });
@@ -305,7 +306,15 @@ Greenmine.SprintStats = Backbone.View.extend({
     },
 
     renderStats: function(model) {
-        console.log("Render stats");
+        // Total percentage
+        this.stats.find("progress").val(model.get("percentage_completed"));
+        this.stats.find("#stats-total-percentage").html(model.get("percentage_completed") + " %");
+        this.stats.find("#stats-total-points").html(model.get("total_points"));
+        this.stats.find("#stats-completed-points").html(model.get("completed_points"));
+        this.stats.find("#stats-us-total").html(model.get("us_number"));
+        this.stats.find("#stats-us-completed").html(model.get("us_completed_number"));
+        this.stats.find("#stats-tasks-total").html(model.get("task_number"));
+        this.stats.find("#stats-tasks-completed").html(model.get("task_completed_number"));
     },
 
     renderBurndown: function(model) {
