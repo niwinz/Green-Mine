@@ -1,52 +1,58 @@
-{% extends "base_base.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load static %}
 
-{% block middle-box %}
+{% block bodyclass %}login{% endblock %}
+
+{% block body %}
 <div id="login">
-    {% include "messages.html" %}
-    <form id="register-form" method="post" action=""  >
-        {% csrf_token %}
-        <h2>{% trans "Register" %}</h2>
-        <fieldset>
-            <div class="form-field">
-                <label>{{ form.username.label }}</label>
-                {{ form.username.errors }}
-                {{ form.username }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.first_name.label }}</label>
-                {{ form.first_name.errors }}
-                {{ form.first_name }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.last_name.label }}</label>
-                {{ form.last_name.errors }}
-                {{ form.last_name }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.email.label }}</label>
-                {{ form.email.errors }}
-                {{ form.email }}
-            </div>
+    <div class="center-box">
+        <div class="logo-box">
+            <img src="{% static 'imgs/logo.png' %}"></img>
+        </div>
+        <div class="form-container">
+            <form id="register-form" method="post" action=""  >
+                {% csrf_token %}
+                <fieldset>
+                    <div class="form-field">
+                        <label>{{ form.username.label }}</label>
+                        {{ form.username.errors }}
+                        {{ form.username }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.first_name.label }}</label>
+                        {{ form.first_name.errors }}
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.last_name.label }}</label>
+                        {{ form.last_name.errors }}
+                        {{ form.last_name }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.email.label }}</label>
+                        {{ form.email.errors }}
+                        {{ form.email }}
+                    </div>
 
-            <h3>{% trans "Password" %}</h3>
-
-            <div class="form-field">
-                <label>{{ form.password.label }}</label>
-                {{ form.password.errors }}
-                {{ form.password }}
-            </div>
-            <div class="form-field">
-                <label>{{ form.password2.label }}</label>
-                {{ form.password2.errors }}
-                {{ form.password2 }}
-            </div>
-            <div class="form-field">
-                <input class="btn01" type="submit" value="{% trans "Register now" %}" />
-                <span class="ajax-loader"></span>        
-            </div>
-        </fieldset>
-    </form>
+                    <div class="form-field">
+                        <label>{{ form.password.label }}</label>
+                        {{ form.password.errors }}
+                        {{ form.password }}
+                    </div>
+                    <div class="form-field">
+                        <label>{{ form.password2.label }}</label>
+                        {{ form.password2.errors }}
+                        {{ form.password2 }}
+                    </div>
+                    <div class="form-field">
+                        <input class="btn01" type="submit" value="{% trans "Register" %}" />
+                        <span class="ajax-loader"></span>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
