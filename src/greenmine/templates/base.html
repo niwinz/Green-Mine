@@ -21,7 +21,7 @@
 
     {# Passing profile settings to the javascript #}
     <script type="text/javascript">
-        var UserWantColorizedTags = {% if user.profile.colorizeTags %}true{% else %}false{% endif %};
+        var UserWantColorizedTags = {% if user.profile.colorize_tags %}true{% else %}false{% endif %};
     </script>
 </head>
 <body class="{% block bodyclass %}{% endblock %}">

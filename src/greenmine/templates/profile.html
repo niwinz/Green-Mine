@@ -66,6 +66,14 @@
 
                 <div class="form-row inline-row">
                     <div class="form-field">
+                        <label>{{ form.colorize_tags.label }}</label>
+                        {{ form.colorize_tags }}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-row inline-row">
+                    <div class="form-field">
                         {% if not user.get_profile.photo %}
                             {% gravatar user.email 50 %}
                         {% else %}

@@ -30,7 +30,7 @@ class Profile(models.Model):
         null=True, blank=True, default=None)
     token = models.CharField(max_length=200, unique=True,
         null=True, blank=True, default=None)
-    colorizeTags = models.BooleanField(default=False)
+    colorize_tags = models.BooleanField(default=False)
 
 
 class Role(models.Model):

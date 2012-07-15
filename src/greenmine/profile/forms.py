@@ -132,17 +132,19 @@ class ProfileForm(forms.ModelForm):
     description = forms.CharField(widget=Textarea, required=False,
         label=_(u'Description'))
     photo = forms.ImageField(required=False, label=_(u'Photo'))
+    tolorize_tags = forms.BooleanField(required=False, label=_(u'Set color for tags'))
 
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username',
-                  'email', 'description', 'photo')
+                  'email', 'description', 'photo', 'colorize_tags')
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance', None)
         if instance:
             kwargs['initial'] = {
                 'description': instance.get_profile().description,
+                'colorize_tags': instance.get_profile().colorize_tags,
             }
         super(ProfileForm, self).__init__(*args,**kwargs)
 
@@ -150,6 +152,7 @@ class ProfileForm(forms.ModelForm):
         instance = super(ProfileForm, self).save(*args, **kwargs)
         profile = self.instance.get_profile()
         profile.description = self.cleaned_data['description']
+        profile.colorize_tags = self.cleaned_data['colorize_tags']
 
         if self.cleaned_data['photo']:
             profile.photo = self.cleaned_data['photo']
