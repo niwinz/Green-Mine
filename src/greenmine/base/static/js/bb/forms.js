@@ -30,6 +30,6 @@ Greenmine.GenericFormsView = Backbone.View.extend({
     }
 });
 
-_.each($(".form-box"), function(item) {
+_.each($(".form-box").not('.no-backbone-view'), function(item) {
     new Greenmine.GenericFormsView({el: $(item)});
 });

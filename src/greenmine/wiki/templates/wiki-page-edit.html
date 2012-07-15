@@ -4,10 +4,10 @@
 {% load i18n %}
 
 {% block title %}
-    <span class="separator"> &rsaquo; </span>
-    <span class="title-item"><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></span>
-    <span class="separator"> &rsaquo; </span>
-    <span class="title-item">{% trans "Wiki" %}</span>
+<span class="separator"> &rsaquo; </span>
+<span class="title-item"><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></span>
+<span class="separator"> &rsaquo; </span>
+<span class="title-item">{% trans "Wiki" %}</span>
 {% endblock %}
 
 
@@ -45,7 +45,7 @@
     <div class="bottom-box">
         <div class="bottom-box-bar">
             <div class="buttons-area right">
-                <div class="area-item button-unbordered data-url" data-url="">{% trans "Save" %}</div>
+                <div class="area-item button-unbordered data-url" data-value="1">{% trans "Save" %}</div>
             </div>
             <div class="clearfix"></div>
         </div>

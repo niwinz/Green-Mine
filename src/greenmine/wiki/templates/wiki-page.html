@@ -5,14 +5,15 @@
 {% load i18n %}
 
 {% block title %}
-    <span class="separator"> &rsaquo; </span>
-    <span class="title-item"><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></span>
-    <span class="separator"> &rsaquo; </span>
-    <span class="title-item">{% trans "Wiki" %}</span>
+<span class="separator"> &rsaquo; </span>
+<span class="title-item"><a href="{{ project.get_backlog_url }}">{{ project.name }}</a></span>
+<span class="separator"> &rsaquo; </span>
+<span class="title-item">{% trans "Wiki" %}</span>
 {% endblock %}
 
 {% block wrapper %}
-<div id="wiki-module" class="show-module wiki-module">
+
+{% comment %}
     <div class="context-menu">
         <ul>
             <li><a class="new-us" href="{{ wikipage.get_edit_url }}">{% trans "Edit" %}</a></li>
@@ -20,24 +21,56 @@
             <li><a class="show-menu" href="#">{% trans "Show options" %}</a></li>
         </ul>
     </div>
-    
     <div class="context-submenu" id="wiki-menu" style="display: none">
         <ul>
             <li><a href="">{% trans "View all wiki pages" %}</a></li>
             <li><a href="{{ wikipage.get_history_view_url }}">{% trans "Show changes" %}</a></li>
         </ul>
     </div>
+{% endcomment %}
 
-    <div class="wiki-content">
-        {{ wikipage.content|markup:project }}
+<div class="wiki-page-view form-box no-backbone-view">
+    <div class="top-box">
+        <div class="top-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url">
+                    <a href="{{ wikipage.get_edit_url }}">{% trans "Edit" %}</a>
+                </div>
+                <div class="area-item button-unbordered data-url">
+                    <a href="{{ wikipage.get_delete_url }}">{% trans "Delete" %}</a>
+                </div>
+                <div class="area-item button-unbordered data-url">
+                    <a href="#">{% trans "Options" %}</a>
+                </div>
+            </div>
+            <div class="title-area">
+                <div class="title">{% trans "wiki page" %}: {{ wikipage.slug }}</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
     </div>
+    <div class="middle-box">
+        <div class="wiki-content">
+            {{ wikipage.content|markup:project }}
+        </div>
+    </div>
+    {% comment %}
+    <div class="bottom-box">
+        <div class="bottom-box-bar">
+            <div class="buttons-area right">
+                <div class="area-item button-unbordered data-url" data-value="1">{% trans "Save" %}</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    {% endcomment %}
 </div>
 {% endblock %}
 
 {% block bottom-headers %}
     {% if project.markup == 'rst' %}
-        {% include "modules/syntaxhighlighter.html" %}
+    {% include "modules/syntaxhighlighter.html" %}
     {% else %}
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/friendly.css" type="text/css" media="handheld, all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/friendly.css" type="text/css" media="handheld, all" />
     {% endif %}
 {% endblock %}
