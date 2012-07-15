@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, Http404
+from django.conf import settings
 from django.core.cache import cache
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext, loader
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.db import transaction
-from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.timezone import now
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from greenmine.core.generic import GenericView
@@ -31,12 +25,13 @@ from greenmine.scrum.models import *
 from greenmine.core.utils import iter_points
 from greenmine.core import signals
 
+from .forms import *
+from .models import Profile
+
 import os
 import re
-
 from datetime import timedelta
 
-from .forms import *
 
 
 class RegisterView(GenericView):
@@ -55,27 +50,26 @@ class RegisterView(GenericView):
             return self.render_redirect(reverse('register'))
 
         form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = User(
-                username = form.cleaned_data['username'],
-                first_name = form.cleaned_data['first_name'],
-                last_name = form.cleaned_data['last_name'],
-                email = form.cleaned_data['email'],
-                is_active = False,
-                is_staff = False,
-                is_superuser = False,
-            )
+        if not form.is_valid():
+            context = {'form': form}
+            return self.render_to_response(self.template_path, context)
 
-            user.set_password(form.cleaned_data['password'])
-            user.save()
+        user = User(
+            username = form.cleaned_data['username'],
+            first_name = form.cleaned_data['first_name'],
+            last_name = form.cleaned_data['last_name'],
+            email = form.cleaned_data['email'],
+            is_active = False,
+            is_staff = False,
+            is_superuser = False,
+        )
+        user.set_password(form.cleaned_data['password'])
+        user.save()
 
-            signals.mail_new_user.send(sender=self, user=user)
-            messages.info(request, _(u"Validation message was sent successfully."))
+        signals.mail_new_user.send(sender=self, user=user)
+        #messages.info(request, _(u"Validation message was sent successfully."))
+        return self.render_redirect(reverse('login'))
 
-            return self.render_redirect(reverse('login'))
-
-        context = {'form': form}
-        return self.render_to_response(self.template_path, context)
 
 
 class AccountActivation(GenericView):

@@ -3,16 +3,17 @@
 from django import forms
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 from django.utils.translation import ugettext_lazy as _
 from django.forms.widgets import PasswordInput, TextInput
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import Textarea
 
-from greenmine.questions.models import *
 from greenmine.wiki.widgets import WikiWidget
-from greenmine.base.models import *
-from greenmine.scrum.models import *
+#from greenmine.questions.models import *
+#from greenmine.base.models import *
+#from greenmine.scrum.models import *
 
 import json
 
