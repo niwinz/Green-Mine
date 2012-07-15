@@ -7,10 +7,11 @@
 
 {% block body %}
 <div id="login">
-    {% include "messages.html" %}
     <div class="center-box">
         <div class="logo-box">
-            <img src="{% static 'imgs/logo.png' %}"></img>
+            <a href="{% url 'projects' %}">
+                <img src="{% static 'imgs/logo.png' %}"></img>
+            </a>
         </div>
         <div class="form-container">
             <form id="login-form" method="post" action=""  >
