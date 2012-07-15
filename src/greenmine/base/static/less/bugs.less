@@ -2,6 +2,7 @@
     .filters-container{
         display: none;
         min-height: 150px;
+
         .category {
             min-width: 120px;
             &.selected{
@@ -35,24 +36,24 @@
     .filters-bar {
         background-color: @gray;
         .bar-title {
-            font-size: 16px;
-            padding: 5px;
-            color: @white;
-            cursor: pointer;
-            display: inline-block;
+            font-size: 12px;
+            padding: 8px;
+
             .show-hide-filters-box {
-                line-height: 32px;
-                padding: 0px 10px;
+                padding: 4px 10px;
+                color: @white;
+                cursor: pointer;
+                display: inline-block;
             }
         }
         .bar-right {
-            padding: 5px;
+            padding: 8px;
         }
 
         #selected-filters{
             display: inline;
             .category {
-                font-size: 13px;
+                font-size: 12px;
             }
         }
     }
