@@ -11,54 +11,90 @@
 {% endblock %}
 
 {% block wrapper %}
-<div data-api-url="{{ project.get_milestones_list_api_url }}" class="backlog" id="backlog">
-
-    <div class="milestones right" id="backlog-right-block" url="{{ project.get_backlog_right_block_url }}"></div>
+<div class="backlog" id="backlog" data-api-url="{{ project.get_milestones_list_api_url }}">
+    <div class="milestones right" id="backlog-right-block" data-api-url="{{ project.get_backlog_right_block_url }}"></div>
 
     <div class="backlog-container">
-        <div class="backlog-box" id="backlog-left-block" url="{{ project.get_backlog_left_block_url }}">
-            <div class="graph-box">
-                <div class="user-story-stats" url="{{ project.get_backlog_stats_url }}"></div>
-                <div id="graphs">
-                    <div id="burndown" url="{{ project.get_backlog_burndown_url }}" {% if project_extras.show_burndown %}show="on"{%endif%}>
+        <div class="backlog-box" id="backlog-left-block" url="">
+            <div class="stats-box" id="stats-box">
+                <div class="stats-container" id="stats-container" data-apu-url=""></div>
+                <div class="graphs-container" id="graphs">
+                    <div id="burndown" {% if project_extras.show_burndown %}show="on"{%endif%}>
                         <div id="burndown-graph" style="display:none"></div>
                     </div>
-                    <div id="burnup" url="{{ project.get_backlog_burnup_url }}" {% if project_extras.show_burnup %}show="on"{% endif %}>
+                    <div id="burnup" {% if project_extras.show_burnup %}show="on"{% endif %}>
                         <div id="burnup-graph" style="display:none"></div>
                     </div>
                 </div>
-
             </div>
+
             <div class="show-hide-graphics">
                 <a href="#" >{% trans "Hide graphics" %}</a>
             </div>
-            <div class="filters-box"></div>
-            <div class="uslist-box"></div>
+
+            <div class="uslist-box">
+                <div class="top-box">
+                    <div class="filters-container clearfix">
+                        {% comment %}
+                        <div id ="tags-filter-section" class="filter-section" related="#tags-body">{% trans "Tags" %}</div>
+                        <div id="tags-body" class="filter-group selected"></div>
+                        <div id ="milestones-filter-section" class="filter-section" related="#milestones-body">{% trans "Milestones" %}</div>
+                        <div id="milestones-body" class="filter-group"></div>
+                        <div id ="status-filter-section" class="filter-section" related="#status-body">{% trans "Status" %}</div>
+                        <div id="status-body" class="filter-group"></div>
+                        <div id ="assigned-to-filter-section" class="filter-section" related="#assigned-to-body">{% trans "Assigned to" %}</div>
+                        <div id="assigned-to-body" class="filter-group"></div>
+
+                        <div id="severity-filter-section" class="filter-section" related="#severity-body">{% trans "Severity" %}</div>
+                        <div id="severity-body" class="filter-group"></div>
+
+                        <div id ="priority-filter-section" class="filter-section" related="#priority">{% trans "Priority" %}</div>
+                        <div id="priority-body" class="filter-group"></div>
+                        {% endcomment %}
+                    </div>
+                    <div class="filters-bar">
+                        <div class="bar-title left">
+                            <span class="show-hide-filters-box">{% trans "Filters" %}</span>
+                            <div id="selected-filters"></div>
+                            <span class="remove-filters">{% trans "¡Filters out!" %}</span>
+                        </div>
+                        <div class="bar-right right">
+                            <div class="bar-button button-unbordered">
+                                <a href="#">{% trans "New user story" %}</a>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="middle-box">
+                    <div class="list-header">
+                        <div class="header-right right">
+                            <div class="header-item buttons left"></div>
+                            <div class="header-item state left">{% trans "State" %}</div>
+                            <div class="header-item priority left">{% trans "Priority" %}</div>
+                            <div class="header-item assigned-to left">{% trans "Assigned to" %}</div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="header-left">
+                            <div class="header-item severity left">{% trans "Severity" %}</div>
+                            <div class="header-item title">{% trans "Bug" %}</div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="list-body">
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
-
-
-<div class="unassign-dialog" style="display: none" title="{% trans "What do you do?" %}">
-    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-        {% trans "Choose the appropriate option." %}
-    </p>
-</div>
-
-<div class="assign-dialog" style="display: none" title="">
-</div>
-
-<div class="delete-milestone-dialog" style="display: none" title="{% trans "Are you sure?" %}">
-    <p>{% trans "Are you sure you want to delete this milestone?" %}
-</div>
-
-<div class="delete-us-dialog" style="display: none" title="{% trans "Are you sure?" %}">
-    <p>{% trans "Are you sure you want to delete this US?" %}
-</div>
-
-
 {% endblock %}
 
 {% block bottom-headers %}
-    <script type="text/javascript" src="{% static 'js/bb/backlog.js' %}"></script>
+<script src="{% static 'js/bb/backlog.js' %}"></script>
+<script>
+
+</script>
 {% endblock %}
