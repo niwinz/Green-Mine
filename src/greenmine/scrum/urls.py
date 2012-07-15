@@ -42,10 +42,10 @@ backlog_patterns = patterns('',
 dashboard_patterns = patterns('',
     url(r'^$',dashboard.DashboardView.as_view(), name="dashboard"),
     url(r'^(?P<mid>(?:\d+))/$', dashboard.DashboardView.as_view(), name="dashboard"),
-    url(r'^(?P<mid>(?:\d+))/burndown/$',
-        dashboard.MilestoneBurndownView.as_view(), name="milestone-burndown"),
+
     url(r'^api/$', dashboard.DashboardApiView.as_view(), name="dashboard-api"),
     url(r'^api/crate-task/$', dashboard.DashboardCreateTask.as_view(), name="dashboard-api-create-task"),
+    url(r'^api/stats/(?P<mid>\d+)/$', dashboard.MilestoneStats.as_view(), name="dashboard-api-stats"),
 )
 
 milestone_patterns = patterns('',

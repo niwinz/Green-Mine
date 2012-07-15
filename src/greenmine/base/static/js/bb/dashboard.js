@@ -166,7 +166,6 @@ Greenmine.DashboardView = Backbone.View.extend({
         Greenmine.usCollection.on("reset", this.resetUserStories);
         Greenmine.taskCollection.on("reset", this.resetTasks);
         Greenmine.taskCollection.on("add", this.addTask);
-
         Greenmine.createDialog.on("newTasks", this.onNewTasks);
 
         this.tasks = [];
@@ -284,48 +283,51 @@ Greenmine.DashboardView = Backbone.View.extend({
     }
 });
 
-Greenmine.SprintBurndownModel = Backbone.Model.extend({
-    url: function() {
-        return this.get('view').$el.data('url');
-    }
-});
-
-Greenmine.SprintBurndownView = Backbone.View.extend({
-    el: $("#sprint-burndown"),
+Greenmine.SprintStats = Backbone.View.extend({
+    el: "#dashboard-stats",
 
     initialize: function() {
-        _.bindAll(this, 'render', 'reload');
-        if (this.$el.attr('show') === 'on') {
-            this.model = new Greenmine.SprintBurndownModel({'view':this});
-            this.model.fetch({success:this.render});
-        }
+        _.bindAll(this);
+        this.graph = this.$("#sprint-burndown");
+        this.stats = this.$("#sprint-stats");
+        this.reload();
     },
 
     reload: function() {
-        if (this.$el.attr('show') === 'on') {
-            this.model.fetch({success:this.render});
+        $.get(this.$el.data('api-url'), this.reloadSuccess, 'json');
+    },
+
+    reloadSuccess: function(data) {
+        if (data.success) {
+            this.renderStats(new Backbone.Model(data.stats));
+            this.renderBurndown(new Backbone.Model(data.burndown));
         }
     },
 
-    render: function() {
-        if (this.$el.attr('show') !== 'on') {
+    renderStats: function(model) {
+        console.log("Render stats");
+    },
+
+    renderBurndown: function(model) {
+        if (this.graph.attr('show') !== 'on') {
             return;
         }
 
-        this.$("#sprint-burndown-graph").show();
+        this.graph.find("#sprint-burndown-graph").show();
 
         var d1 = new Array(),
             d2 = new Array(),
             ticks = new Array();
 
-        var begin_date = new Date(this.model.get('begin_date'));
-        var end_date = new Date(this.model.get('end_date'));
-        var sprint_points = this.model.get('sprint_points');
-        var points_done_on_date = this.model.get('points_done_on_date');
-        var now_position = this.model.get('now_position');
+        var begin_date = new Date(model.get('begin_date'));
+        var end_date = new Date(model.get('end_date'));
+        var sprint_points = model.get('sprint_points');
+        var points_done_on_date = model.get('points_done_on_date');
+        var now_position = model.get('now_position');
 
         var counter = 1;
         ticks.push([1, "Kickoff"]);
+
         for(var date=new Date(begin_date.toString()); date<=end_date; date.setDate(date.getDate()+1)) {
             ticks.push([counter+1, date.getDate().toString()+"/"+(date.getMonth()+1).toString()]);
             counter++;
@@ -340,7 +342,7 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
             d2.push([i+1, sprint_points-((sprint_points/ticks.length)*i)]);
         }
 
-        $.plot(this.$('#sprint-burndown-graph'), [
+        $.plot(this.graph.find("#sprint-burndown-graph"), [
             {
                 data: d1,
                 lines: { show: true, fill: false },
@@ -367,3 +369,5 @@ Greenmine.SprintBurndownView = Backbone.View.extend({
         });
     }
 });
+
+Greenmine.sprintStats = new Greenmine.SprintStats();

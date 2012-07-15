@@ -11,8 +11,8 @@
 
 {% block wrapper %}
 <div id="milestone-dashboard" data-mid="{{ milestone.id }}" class="dashboard" data-api-url="{% url 'dashboard-api' pslug=project.slug %}">
-    <div class="top-box">
-        <div class="sprint-stats right">
+    <div class="top-box" id="dashboard-stats" data-api-url="{{ milestone.get_stats_url }}">
+        <div class="sprint-stats right" id="sprint-stats">
             <div class="stats-box">
                 <div class="stats-row">
                     <div class="stats-large left">
@@ -62,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div id="sprint-burndown" data-url="{{ milestone.get_burndown_url }}" show="on" class="sprint-burndown-container">
+        <div id="sprint-burndown" show="on" class="sprint-burndown-container">
             <div id="sprint-burndown-graph" style="display:none"></div>
         </div>
     </div>
@@ -143,10 +143,7 @@
 <script type="text/javascript">
 Greenmine.statuses = {{ statuses_json }};
 Greenmine.participants = {{ participants_json }};
-
 Greenmine.dashboard = new Greenmine.DashboardView()
-Greenmine.burndown = new Greenmine.SprintBurndownView();
-
 Greenmine.usCollection.reset({{ user_stories_json }});
 Greenmine.taskCollection.reset({{ tasks_json }});
 </script>

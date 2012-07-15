@@ -16,22 +16,10 @@ from ..forms.dashboard import ApiForm as DashboardApiForm
 from datetime import timedelta, datetime, time
 from django.utils import timezone
 
-# TODO:
-# * quick task creation
-
-class MilestoneBurndownView(GenericView):
-    @login_required
-    def get(self, request, pslug, mid):
-        project = get_object_or_404(Project, slug=pslug)
-        milestone = get_object_or_404(project.milestones, pk=mid)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
-        points_done_on_date = [];
+#class MilestoneBurndownView(GenericView):
+class MilestoneStats(GenericView):
+    def get_burndown_context(self, project, milestone):
+        points_done_on_date = []
         date = milestone.estimated_start
 
         while date <= milestone.estimated_finish:
@@ -60,8 +48,28 @@ class MilestoneBurndownView(GenericView):
             'end_date': milestone.estimated_finish,
             'now_position': now_position,
         }
+        return context
 
-        return self.render_to_ok(context)
+    def get_stats_context(self, project, milestone):
+        return {}
+
+    @login_required
+    def get(self, request, pslug, mid):
+        project = get_object_or_404(Project, slug=pslug)
+        milestone = get_object_or_404(project.milestones, pk=mid)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = {
+            'burndown': self.get_burndown_context(project, milestone),
+            'stats': self.get_stats_context(project, milestone)
+        }
+
+        return self.render_json(context, ok=True)
 
 
 class DashboardView(GenericView):
