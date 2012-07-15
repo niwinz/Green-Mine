@@ -1,21 +1,38 @@
-.dialog-container {
-    background-color: @white;
-    .border-radius(4px);
-    padding: 20px;
-    border: 2px solid @gray;
+.dialog {
+    .dialog-container {
+        background-color: @white;
+        .border-radius(4px);
+        padding: 15px;
+        border: 2px solid @gray;
 
-    .dialog-text {
-        padding: 10px;
-    }
-    .dialog-buttons {
-        padding: 10px;
-        .button-gray {
-            margin-left: 5px;
+        .dialog-title {
+            padding: 5px;
+            font-size: 18px;
+            border-bottom: 1px solid @grayLighter;
+        }
+        .dialog-text {
+            padding: 5px;
+        }
+        .dialog-content {
+            padding: 5px;
+        }
+        .dialog-buttons {
+            padding: 5px;
+            .button-gray {
+                margin-left: 5px;
+            }
         }
     }
 }
 
-.delete-dialog {
-    .dialog-container {
+.button.plus {
+    padding: 4px 10px;
+}
+
+.new-task-dialog {
+    .dialog-content {
+        textarea {
+            width: 500px;
+        }
     }
 }

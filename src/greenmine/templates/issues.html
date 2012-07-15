@@ -12,10 +12,7 @@
 {% endblock %}
 
 {% block wrapper %}
-
-
 <div id="issues" class="tasks-ds list-container" data-tasks-url="{{ current_url }}">
-
     <div class="top-box">
         <div class="filters-container clearfix">
             <div id ="tags-filter-section" class="filter-section" related="#tags-body">{% trans "Tags" %}</div>
@@ -41,8 +38,10 @@
                 <div id="selected-filters"></div>
                 <span class="remove-filters">{% trans "¡Filters out!" %}</span>
             </div>
-            <div class="bar-button button right">
-                <a href="{% url 'issues-create' pslug=project.slug %}">{% trans "New bug" %}</a>
+            <div class="bar-right right">
+                <div class="bar-button button">
+                    <a href="{% url 'issues-create' pslug=project.slug %}">{% trans "New bug" %}</a>
+                </div>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -68,7 +67,7 @@
     </div>
 </div>
 
-<div class="issues-delete-dialog delete-dialog" id="issues-delete-dialog" style="display: none">
+<div class="issues-delete-dialog delete-dialog dialog" id="issues-delete-dialog" style="display: none">
     <div class="dialog-container">
         <div class="dialog-text">{% trans "Are you sure you want to delete the task?" %}</div>
         <div class="dialog-buttons">

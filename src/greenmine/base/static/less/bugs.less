@@ -33,16 +33,27 @@
     }
 
     .filters-bar {
-        padding: 5px;
         background-color: @gray;
         .bar-title {
             font-size: 16px;
             padding: 5px;
             color: @white;
             cursor: pointer;
+            display: inline-block;
+            .show-hide-filters-box {
+                line-height: 32px;
+                padding: 0px 10px;
+            }
         }
+        .bar-right {
+            padding: 5px;
+        }
+
         #selected-filters{
             display: inline;
+            .category {
+                font-size: 13px;
+            }
         }
     }
 

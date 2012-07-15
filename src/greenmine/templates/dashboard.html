@@ -96,33 +96,34 @@
     </div>
 </div>
 
-
-<div class="dashboard-new-task" id="new-task-lightbox" data-url="{% url 'dashboard-api-create-task' pslug=project.slug %}" style="display: none">
-    <div class="new-task-box">
-        <h3>{% trans "New task" %}</h3>
-
-        <section class="newtask-header">
-            <h4>{% trans "user story" %}:</h4>
-            <section class="userstory-desc">
-                Listado de pedidos (wireframe: Perfil Tus pedidos una entrega, Tus pedidos una entrega y este es el resto de la user story. Si es muy larga ponemos puntos suspensivos.
+<div class="new-task-lightbox new-task-dialog dialog" data-url="{% url 'dashboard-api-create-task' pslug=project.slug %}"
+    id="new-task-lightbox" style="display: none">
+    <div class="dialog-container">
+        <div class="dialog-title">{% trans "New task" %}</div>
+        <div class="dialog-text">
+            <p>For <strong>user story:</strong></p>
+            <p>Listado de pedidos (wireframe: Perfil Tus pedidos una entrega, Tus pedidos una entrega y este es el resto de la user story. Si es muy larga ponemos puntos suspensivos.</p>
+        </div>
+        <div class="dialog-content">
+            <section class="newtask-formset">
+                <section class="formset-item">
+                    <h4>{% trans "Task subject" %}</h4>
+                    <textarea></textarea>
+                </section>
             </section>
-        </section>
-
-        <section class="newtask-formset">
-            <section class="formset-item">
-                <h4>{% trans "Task subject" %}</h4>
-                <textarea></textarea>
-            </section>
-        </section>
-
-        <section class="newtask-meta">
-            <div class="button"><a href="#" class="accept-lightbox">{% trans "Save" %}</a></div>
-            <span class="cancel"><a href="#" class="close-lightbox">{% trans "Cancelar" %}</a></span>
+        </div>
+        <div class="dialog-buttons">
+            <div class="button-gray left">
+                <a href="#" class="accept-lightbox">{% trans "Ok" %}</a>
+            </div>
+            <div class="button-gray left">
+                <a href="#" class="close-lightbox">{% trans "Cancelar" %}</a>
+            </div>
             <div class="button plus right">+</div>
-        </section>
+            <div class="clearfix"></div>
+        </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block top-headers %}

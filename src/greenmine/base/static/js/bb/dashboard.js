@@ -87,11 +87,18 @@ Greenmine.CreateTaskDialog = Kaleidos.Lightbox.extend({
     events: {
         'click a.close-lightbox': 'onCloseClicked',
         'click a.accept-lightbox': 'onAcceptClicked',
-        "click .newtask-meta .button.plus": "newTaskDom"
+        "click .dialog-buttons .button.plus": "newTaskDom",
+        "keydown .dialog-content textarea": "keydownParse"
     },
 
-    _initilize: function() {
-
+    keydownParse: function(event) {
+        var target = $(event.currentTarget);
+        if (event.keyCode == 9) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.newTaskDom();
+            target.closest(".formset-item").next().find("textarea").focus();
+        }
     },
 
     collectTasks: function() {
@@ -101,6 +108,14 @@ Greenmine.CreateTaskDialog = Kaleidos.Lightbox.extend({
         });
 
         return tasks;
+    },
+
+    _open: function() {
+        var new_formset = this.$(".formset-item").eq(0).clone();
+        new_formset.find("textarea").val("");
+
+        this.$(".newtask-formset").empty();
+        this.$(".newtask-formset").append(new_formset);
     },
 
     _close: function(ok) {
@@ -118,7 +133,8 @@ Greenmine.CreateTaskDialog = Kaleidos.Lightbox.extend({
         }
     },
 
-    newTaskDom: function() {
+    newTaskDom: function(event) {
+        console.log(1);
         var new_formset = this.$(".formset-item").eq(0).clone();
         new_formset.find("textarea").val("");
 
