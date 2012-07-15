@@ -8,15 +8,6 @@ from django.utils import timezone
 from greenmine.profile.models import Profile
 from greenmine.scrum.models import UserStory, Task, ProjectUserRole
 from greenmine.core.utils import normalize_tagname
-
-
-@receiver(post_save, sender=Task)
-def task_post_save(sender, instance, created, **kwargs):
-    if instance.user_story:
-        instance.user_story.modified_date = timezone.now()
-        instance.user_story.save()
-
-
 from greenmine.core import signals
 from greenmine.core.utils.auth import set_token
 

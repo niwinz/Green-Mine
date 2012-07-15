@@ -189,7 +189,10 @@ class DashboardCreateTask(GenericView):
 
         tasks = []
         for task_text in request.POST.getlist("task"):
-            task = Task(type="task", subject="task_text", project=project, user_story=user_story)
+            if not task_text:
+                continue
+
+            task = Task(type="task", subject=task_text, project=project, user_story=user_story)
             task.save()
             tasks.append(task)
 
