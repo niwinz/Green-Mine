@@ -119,22 +119,7 @@
 
             .stats-container{
                 color: @white;
-                padding: 0 0 10px 0;
-
-                progress {
-                    height: 25px;
-                    width: 250px;
-                }
-
-                .number {
-                    font-size: 28px;
-                }
-
-                .text {
-                    color: @grayLight;
-                    font-size: 10px;
-                    width: 100px;
-                }
+                padding: 0px;
             }
 
             #burndown-graph, #burnup-graph {
@@ -143,6 +128,7 @@
             }
 
         }
+
         .show-hide-graphics{
             padding: 0px 15px;
             background-color: #666;
@@ -154,118 +140,35 @@
 
         }
 
-        .uslist-box{
-            .head-title {
-                overflow: hidden;
-                border-bottom: 2px solid @gray;
-
-                a {
-                    color: @grayLight;
-                }
-            }
-
-            .filters-box {
-                display: none;
+        .uslist-box {
+            .top-box {
                 margin-top: 10px;
-
-                .category{
-                    min-width: 200px;
-                }
             }
 
             .filters-bar {
-                margin-top: 10px;
-
-                padding: 5px;
-                background-color: @grayLight;
-
-                .show-hide-filters-box{
-                    cursor: pointer;
-                    font-size: 16px;
-                    padding: 5px;
-                    color: @white;
-                    line-height: 30px;
-                }
-
-                .remove-filters{
-                    cursor: pointer;
-                    font-size: 15px;
-                    color: @white;
-                }
-
+                background-color: @gray;
                 .bar-title {
-                    font-size: 16px;
-                    padding: 5px;
-                    color: @white;
-                    cursor: pointer;
-                }
-            }
+                    font-size: 12px;
+                    padding: 8px;
 
-            .un-us-item{
-                overflow: hidden;
-                padding: 5px;
-                &:hover{
-                    background:@grayLight;
-                    cursor: pointer;
-                }
-            }
-
-            .row {
-                font-size: 14px;
-                float: right;
-                vertical-align: bottom;
-                padding: 5px 0px;
-                color: @black;
-
-                &.title{
-                    float: left;
-                    width: auto;
-                    margin-right: 100px;
-                    margin-left: 10px;
-
-                    }
-
-                &.priority, &.points {
-                    width: 60px;
-                    text-align: right;
-                }
-
-                &.meta{
-                    float:right;
-
-                    a {
-                        background: @gray;
-                        padding: 2px 3px;
-                        -webkit-border-radius: 5px;
-                        margin-left: 5px;
+                    .show-hide-filters-box {
+                        padding: 4px 10px;
                         color: @white;
-
-                        &:hover{
-                            background: @red;
-                            text-decoration: none;
-                        }
+                        cursor: pointer;
+                        display: inline-block;
                     }
                 }
+                .bar-right {
+                    padding: 8px;
+                }
 
-            }
-
-            hr{
-                margin: 0px 0px;
+                #selected-filters{
+                    display: inline;
+                    .category {
+                        font-size: 12px;
+                    }
+                }
             }
         }
-
-    }
-}
-
-.row{
-    margin: auto;
-    display: block;
-    &:before {
-        display: block;
-        content: none;
-    }
-    &:after {
-        display: block;
-        content: none;
     }
 }
