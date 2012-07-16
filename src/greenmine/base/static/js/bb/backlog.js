@@ -1,49 +1,120 @@
-Greenmine.UserStory = Backbone.Model.extend({});
+/* Models */
 
-Greenmine.Milestone = Backbone.Model.extend({
+Greenmine.Models.Tag = Backbone.Model.extend({});
+Greenmine.Models.UserStory = Backbone.Model.extend({});
+Greenmine.Models.Milestone = Backbone.Model.extend({
     userStoriesCollection: Backbone.Collection.extend({
-        model: Greenmine.UserStory
-    })
-
+        model: Greenmine.Models.UserStory
+    }),
     initialize: function() {
         this.userStories = new this.userStoriesCollection(this.get('userStories'));
     }
 });
 
-Greenmine.UnassignedCollection = Backbone.Collection.extend({
-    model: Greenmine.UserStory
+
+/* Collections */
+
+Greenmine.Collections.Tags = Backbone.Collection.extend({
+    model: Greenmine.Models.Tag
 });
 
-Greenmine.Milestones = Backbone.Collection.extend({
-    model: Greenmine.Milestone
+Greenmine.Collections.UnassignedUserstories = Backbone.Collection.extend({
+    model: Greenmine.Models.UserStory
 });
 
-Greenmine.StatsView = Backbone.View.extend({
-    el: $(".user-story-stats"),
+Greenmine.Collections.Milestones = Backbone.Collection.extend({
+    model: Greenmine.Models.Milestone
+});
 
+Greenmine.Collections.milestones = new Greenmine.Collections.Milestones();
+Greenmine.Collections.unassignedUserstories = new Greenmine.Collections.UnassignedUserstories();
+Greenmine.Collections.tags = new Greenmine.Collections.Tags();
+
+
+/* Templates */
+
+//Greenmine.Templates.unassignedUserstory = doT.template($("#unassigned-us-template").html());
+//Greenmine.Templates.assignedUserstory = doT.template($("#unassigned-us-template").html());
+//
+Greenmine.Templates.tag = doT.template($("#filter-template").html());
+Greenmine.Templates.milestone = doT.template($("#milestone-template").html());
+
+
+/* Views */
+
+Greenmine.Views.TagView = Backbone.View.extend({
+    tagName: "span",
+    attributes: {
+        "class": "tag"
+    },
+    render: function() {
+        this.$el.html(Greenmine.Templates.tag(this.model.toJSON()));
+        return this;
+    }
+});
+
+Greenmine.Views.UserStory = Backbone.View.extend({
+    tagName: "div",
+    attributes: {},
+    render: function() {
+        if (this.model.get('assignedTo')) {
+            this.$el.html(Greenmine.Templates.assignedUserstory(this.model.toJSON()));
+        } else {
+            this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
+        }
+        return this;
+    }
+});
+
+Greenmine.Views.Milestone = Backbone.View.extend({
+    tagName: "div",
+    attributes: {
+        "class": "milestone-item"
+    },
     initialize: function() {
-        _.bindAll(this, 'render', 'reload');
-        this.burndown = this.$("#burndown");
-        this.burnup = this.$("#burnup");
-        this.stats = this.$("#stats-container");
-        this.reload();
+        this.$el.attr('id', 'milestone-' + this.model.get('id'));
     },
 
-    reload: function() {
-        $.get(this.$el.data('api-url'), this.reloadSuccess, 'ajax');
+    render: function() {
+        this.$el.html(Greenmine.Templates.milestone(this.model.toJSON()));
+        return this;
     }
+});
 
-    reloadSuccess: function(data) {
-        this.renderBurnup(new Backbone.Model(data.burnup));
-        this.renderBurndown(new Backbone.Model(data.burndown));
-        this.renderStats(new Backbone.Model(data.stats));
+Greenmine.Views.GraphsView = Backbone.View.extend({
+    el: "#graphs",
+
+    initialize: function() {
+        _.bindAll(this);
+        this.burnup = this.$("#burnup");
+        this.burndown = this.$("#burndown");
+        this.reloadAll();
+    },
+
+    reloadAll: function() {
+        this.reloadBurnup();
+        this.reloadBurndown();
+    },
+
+    reloadBurnup: function() {
+        if (this.burnup.data('show') == 'on') {
+            var self = this;
+            $.get(this.$el.data('burnup-api-url'), function(data) {
+                self.renderBurnup(new Backbone.Model(data));
+            }, 'json');
+        }
+    },
+
+    reloadBurndown: function() {
+        if (this.burndown.data('show') == 'on') {
+            var self = this;
+            $.get(this.$el.data('burndown-api-url'), function(data) {
+                self.renderBurndown(new Backbone.Model(data));
+            }, 'json');
+        }
     },
 
     renderBurnup: function(model) {
-        if (this.burnup.attr('show') !== 'on') {
-            return;
-        }
-
         console.log("Render burnup");
         this.burnup.find("#burnup-graph").show();
 
@@ -58,7 +129,7 @@ Greenmine.StatsView = Backbone.View.extend({
         var total_sprints = model.get('total_sprints');
         var now_position = model.get('now_position');
 
-        ticks.push([1,"Kickoff"]);
+        Ticks.push([1,"Kickoff"]);
         for(var i=0; i<=total_sprints; i++) {
             d1.push([i+1, total_points]);
 
@@ -147,10 +218,6 @@ Greenmine.StatsView = Backbone.View.extend({
     },
 
     renderBurndown: function(model) {
-        if (this.burndown.attr('show') !== 'on') {
-            return;
-        }
-
         console.log("Render burndown");
         this.burndown.find("#burndown-graph").show();
 
@@ -221,6 +288,24 @@ Greenmine.StatsView = Backbone.View.extend({
             yaxis: { position: "right", labelWidth: 40 },
             grid: { borderWidth: 0 }
         });
+    }
+});
+
+
+Greenmine.Views.StatsView = Backbone.View.extend({
+    el: "#stats",
+
+    initialize: function() {
+        _.bindAll(this);
+        this.reload();
+    },
+
+    reload: function() {
+        $.get(this.$el.data('stats-api-url'), this.reloadSuccess, 'json');
+    },
+
+    reloadSuccess: function(data) {
+        this.renderStats(new Backbone.Model(data.stats));
     },
 
     renderStats: function(model) {
@@ -228,13 +313,29 @@ Greenmine.StatsView = Backbone.View.extend({
     }
 });
 
-Greenmine.Backlog = Backbone.View.extend({
+
+Greenmine.Views.Backlog = Backbone.View.extend({
     el: "#backlog",
 
     events: {},
 
     initialize: function() {
         _.bindAll(this);
+
+        Greenmine.Views.graphs = new Greenmine.Views.GraphsView();
+        Greenmine.Views.stats = new Greenmine.Views.StatsView();
+
+        Greenmine.Collections.milestones.on("reset", this.resetMilestones);
+
+        this.reloadMilestones();
+    },
+
+    reloadMilestones: function() {
+        $.get(this.$("#milestones").data('api-url'), this.reloadMilestonesSuccess, 'json');
+    },
+
+    reloadMilestonesSuccess: function(data) {
+        Greenmine.Collections.milestones.reset(data.milestones);
     },
 
     reloadUnassigned: function() {
@@ -243,8 +344,23 @@ Greenmine.Backlog = Backbone.View.extend({
 
     reloadUnassignedSuccess: function(data) {
 
+    },
+
+    resetMilestones: function() {
+        var self = this;
+        this.$("#milestones").empty();
+        Greenmine.Collections.milestones.each(function(item) {
+            self.addMilestone(item);
+        });
+    },
+
+    addMilestone: function(item) {
+        var mview = new Greenmine.Views.Milestone({model:item});
+        this.$("#milestones").append(mview.render().el);
     }
 });
+
+Greenmine.Views.backlog = new Greenmine.Views.Backlog();
 
 
 //var LeftBlockView = Backbone.View.extend({

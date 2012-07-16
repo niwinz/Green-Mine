@@ -128,7 +128,7 @@ class Project(models.Model):
     """ Permalinks """
     @models.permalink
     def get_absolute_url(self):
-        return ('project-backlog', (),
+        return ('backlog', (),
             {'pslug': self.slug})
 
     @models.permalink
@@ -137,32 +137,32 @@ class Project(models.Model):
 
     @models.permalink
     def get_backlog_url(self):
-        return ('project-backlog', (),
+        return ('backlog', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_stats_url(self):
-        return ('project-backlog-stats', (),
-            {'pslug': self.slug})
-
-    @models.permalink
-    def get_backlog_left_block_url(self):
-        return ('project-backlog-left-block', (),
-            {'pslug': self.slug})
-
-    @models.permalink
-    def get_backlog_right_block_url(self):
-        return ('project-backlog-right-block', (),
+        return ('backlog-api-stats', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_burndown_url(self):
-        return ('project-backlog-burndown', (),
+        return ('backlog-api-burndown', (),
             {'pslug': self.slug})
 
     @models.permalink
     def get_backlog_burnup_url(self):
-        return ('project-backlog-burnup', (),
+        return ('backlog-api-burnup', (),
+            {'pslug': self.slug})
+
+    @models.permalink
+    def get_backlog_unassigned_us_url(self):
+        return ('backlog-api-unassigned-us', (),
+            {'pslug': self.slug})
+
+    @models.permalink
+    def get_backlog_milestones_url(self):
+        return ('backlog-api-milestones', (),
             {'pslug': self.slug})
 
     @models.permalink
@@ -277,6 +277,16 @@ class Milestone(models.Model):
     class Meta:
         ordering = ['-created_date']
         unique_together = ('name', 'project')
+
+    def to_dict(self):
+        selfdict = {
+            "id": self.pk,
+            "name": self.name,
+            "project_id": self.project_id,
+            "closed": self.closed,
+            "userStories": [x.to_dict() for x in self.user_stories.all()],
+        }
+        return selfdict
 
     @property
     def total_points(self):

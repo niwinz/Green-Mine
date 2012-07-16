@@ -17,32 +17,7 @@ from django.utils import timezone
 from ..models import *
 
 
-class BacklogStats(GenericView):
-    def calculate_stats(self, unassigned, assigned, completed):
-        unassigned_points = sum(iter_points(unassigned))
-        assigned_points = sum(iter_points(assigned))
-        completed_points = sum(iter_points(completed))
-
-        total_points = unassigned_points + assigned_points
-
-        try:
-            percentage_assigned = (assigned_points * 100) / total_points
-        except ZeroDivisionError:
-            percentage_assigned = 0
-
-        try:
-            percentage_completed = (completed_points * 100) / total_points
-        except ZeroDivisionError:
-            percentage_completed = 0
-
-        return {
-            'unassigned_points': unassigned_points,
-            'assigned_points': assigned_points,
-            'total_points': total_points,
-            'percentage_completed': "{0:.2f}".format(percentage_completed),
-            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
-        }
-
+class BacklogUnassignedUsApi(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -53,77 +28,33 @@ class BacklogStats(GenericView):
             ('userstory', 'view'),
         ])
 
-        unassigned = project.user_stories\
-            .filter(milestone__isnull=True)\
-            .only('points')
+        return self.render_json(self.get_unassigned_us_context(project))
 
-        assigned = project.user_stories\
-            .filter(milestone__isnull=False)\
-            .only('points')
-
-        completed = assigned.filter(status__in=['completed', 'closed'])
-
-        context = self.calculate_stats(unassigned, assigned, completed)
-        stats = loader.render_to_string("modules/backlog-stats.html", context)
-        return self.render_to_ok({'stats_html': stats, 'stats': context})
-
-
-class BacklogLeftBlockView(GenericView):
-    """
-    Get unassigned user story html part for backlog.
-    API
-    """
-
-    template_path = 'backlog-left-block.html'
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
+    def get_unassigned_us_context(self, project):
         unassigned = project.user_stories\
             .filter(milestone__isnull=True)\
             .order_by('-priority')
 
-        if "order_by" in request.GET:
-            unassigned = unassigned.order_by(request.GET['order_by'])
+        if "order_by" in self.request.GET:
+            unassigned = unassigned.order_by(self.request.GET['order_by'])
 
-        selected_tags = Tag.objects.none()
-        if "tags" in request.GET and request.GET['tags']:
-            selected_tags_ids = map(int, request.GET['tags'].split(','))
-            selected_tags = Tag.objects.filter(id__in = selected_tags_ids)
-            for tag in selected_tags:
-                unassigned = unassigned.filter(tags__in=[tag])
+        selected_tags_ids = []
 
-        unassigned = unassigned.select_related()
+        if "tags" in self.request.GET and self.request.GET['tags']:
+            selected_tags_ids = map(int, self.request.GET['tags'].split(','))
 
-        template_context = {
-            'project': project,
-            'unassigned_us': unassigned,
-            'tags': Tag.objects.tags_for_queryset(unassigned),
-            'selected_tags_ids': selected_tags.values_list('id', flat=True),
+        if selected_tags_ids:
+            unassigned = unassigned.filter(tags__pk__in=selected_tags_ids).distinct()
+
+        context = {
+            'unassigned_us': [x.to_dict() for x in unassigned],
+            'tags': [x.to_dict() for x in Tag.objects.tags_for_queryset(unassigned)],
+            'selected_tags_ids': selected_tags_ids,
         }
-
-        response_context = {
-            'html': loader.render_to_string(self.template_path, template_context)
-        }
-
-        return self.render_to_ok(response_context)
+        return context
 
 
-class BacklogRightBlockView(GenericView):
-    """
-    Get milestones html part for backlog.
-    API
-    """
-
-    template_path = 'backlog-right-block.html'
-
+class BacklogMilestonesApi(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -134,20 +65,18 @@ class BacklogRightBlockView(GenericView):
             ('userstory', 'view'),
         ])
 
-        template_context = {
-            'project': project,
-            'milestones': project.milestones.order_by('-created_date')\
-                .prefetch_related('project'),
+        return self.render_json(self.get_milestones_context(project))
+
+    def get_milestones_context(self, project):
+        context = {
+            'milestones': [x.to_dict() for x in project\
+                .milestones.order_by('-created_date')\
+                .prefetch_related('project')],
         }
-
-        response_context = {
-            'html': loader.render_to_string(self.template_path, template_context),
-        }
-
-        return self.render_to_ok(response_context)
+        return context
 
 
-class BacklogBurnDownView(GenericView):
+class BacklogBurndownApi(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -210,7 +139,7 @@ class BacklogBurnDownView(GenericView):
         return self.render_to_ok(context)
 
 
-class BacklogBurnUpView(GenericView):
+class BacklogBurnupApi(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -293,6 +222,56 @@ class BacklogBurnUpView(GenericView):
         }
 
         return self.render_to_ok(context)
+
+
+class BacklogStatsApi(GenericView):
+    def calculate_stats(self, project):
+        unassigned = project.user_stories\
+            .filter(milestone__isnull=True)\
+            .only('points')
+
+        assigned = project.user_stories\
+            .filter(milestone__isnull=False)\
+            .only('points')
+
+        completed = assigned.filter(status__in=['completed', 'closed'])
+
+        unassigned_points = sum(iter_points(unassigned))
+        assigned_points = sum(iter_points(assigned))
+        completed_points = sum(iter_points(completed))
+
+        total_points = unassigned_points + assigned_points
+
+        try:
+            percentage_assigned = (assigned_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_assigned = 0
+
+        try:
+            percentage_completed = (completed_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_completed = 0
+
+        return {
+            'unassigned_points': unassigned_points,
+            'assigned_points': assigned_points,
+            'total_points': total_points,
+            'percentage_completed': "{0:.2f}".format(percentage_completed),
+            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
+        }
+
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = self.calculate_stats(project)
+        return self.render_json(context)
 
 
 class BacklogView(GenericView):

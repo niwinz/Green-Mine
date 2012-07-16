@@ -31,12 +31,12 @@ issues_patterns = patterns('',
 )
 
 backlog_patterns = patterns('',
-    url(r'^$', backlog.BacklogView.as_view(), name='project-backlog'),
-    url(r'^stats/$', backlog.BacklogStats.as_view(), name='project-backlog-stats'),
-    url(r'^left-block/$', backlog.BacklogLeftBlockView.as_view(), name='project-backlog-left-block'),
-    url(r'^right-block/$', backlog.BacklogRightBlockView.as_view(), name='project-backlog-right-block'),
-    url(r'^burndown/$', backlog.BacklogBurnDownView.as_view(), name='project-backlog-burndown'),
-    url(r'^burnup/$', backlog.BacklogBurnUpView.as_view(), name='project-backlog-burnup'),
+    url(r'^$', backlog.BacklogView.as_view(), name='backlog'),
+    url(r'^api/stats/$', backlog.BacklogStatsApi.as_view(), name='backlog-api-stats'),
+    url(r'^api/unassigned-us/$', backlog.BacklogUnassignedUsApi.as_view(), name='backlog-api-unassigned-us'),
+    url(r'^api/milestones/$', backlog.BacklogMilestonesApi.as_view(), name='backlog-api-milestones'),
+    url(r'^api/graph/burndown/$', backlog.BacklogBurndownApi.as_view(), name='backlog-api-burndown'),
+    url(r'^api/graph/burnup/$', backlog.BacklogBurnupApi.as_view(), name='backlog-api-burnup'),
 )
 
 dashboard_patterns = patterns('',

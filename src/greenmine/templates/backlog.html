@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load static from staticfiles %}
 {% load i18n %}
+{% load rawinclude greenmine_utils %}
 
 {% block title %}
 <span class="separator"> &rsaquo; </span>
@@ -11,18 +12,27 @@
 {% endblock %}
 
 {% block wrapper %}
-<div class="backlog" id="backlog" data-api-url="{{ project.get_milestones_list_api_url }}">
-    <div class="milestones right" id="backlog-right-block" data-api-url="{{ project.get_backlog_right_block_url }}"></div>
+<div class="backlog" id="backlog">
+    <div class="milestones right">
+        <div class="milestones-header"></div>
+        <div class="milestones-list" id="milestones" data-api-url="{{ project.get_backlog_milestones_url }}">
+        </div>
+    </div>
 
     <div class="backlog-container">
-        <div class="backlog-box" id="backlog-left-block" url="">
+        <div class="backlog-box">
             <div class="stats-box" id="stats-box">
-                <div class="stats-container" id="stats-container" data-apu-url=""></div>
-                <div class="graphs-container" id="graphs">
-                    <div id="burndown" {% if project_extras.show_burndown %}show="on"{%endif%}>
+                <div class="stats-container" id="stats"
+                    data-stats-api-url="{{ project.get_backlog_stats_url }}">
+                </div>
+
+                <div class="graphs-container" id="graphs"
+                        data-burndown-api-url="{{ project.get_backlog_burndown_url }}"
+                        data-burnup-api-url="{{ project.get_backlog_burnup_url }}">
+                    <div id="burndown" {% if project_extras.show_burndown %}data-show="on"{%endif%}>
                         <div id="burndown-graph" style="display:none"></div>
                     </div>
-                    <div id="burnup" {% if project_extras.show_burnup %}show="on"{% endif %}>
+                    <div id="burnup" {% if project_extras.show_burnup %}data-show="on"{% endif %}>
                         <div id="burnup-graph" style="display:none"></div>
                     </div>
                 </div>
@@ -86,15 +96,18 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block bottom-headers %}
+{% raw_include "dot/unassigned-us-include.html" %}
+{% raw_include "dot/assigned-us-include.html" %}
+{% raw_include "dot/milestone.html" %}
+{% raw_include "dot/tag-include.html" %}
+
 <script src="{% static 'js/bb/backlog.js' %}"></script>
 <script>
-
 </script>
 {% endblock %}
