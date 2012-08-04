@@ -83,25 +83,34 @@ class IssueList(GenericView):
 
         _aditional_context = self.get_general_context(self.project)
 
-        if request.is_ajax():
-            if not self.valid_form:
-                return self.render_to_error(self.form.errors)
-
-            context = {
-                "tasks": [task.to_dict() for task in self.tasks],
-                'filter_dict': self.filter_dict,
-            }
-            context.update(_aditional_context)
-            return self.render_json(context, ok=True)
-
         context = {
             'project': self.project,
             'tasks': (task.to_dict() for task in self.tasks),
             'filter_dict': self.filter_dict,
+            'querystring': request.META['QUERY_STRING'],
         }
 
         context.update(_aditional_context)
         return self.render_to_response(self.template_name, context)
+
+
+class IssueListApi(IssueList):
+    @login_required
+    def get(self, request, pslug):
+        self.project = get_object_or_404(Project, slug=pslug)
+        self.initialize(request)
+
+        _aditional_context = self.get_general_context(self.project)
+
+        if not self.valid_form:
+            return self.render_to_error(self.form.errors)
+
+        context = {
+            "tasks": [task.to_dict() for task in self.tasks],
+            'filter_dict': self.filter_dict,
+        }
+        context.update(_aditional_context)
+        return self.render_json(context, ok=True)
 
 
 class CreateIssue(GenericView):
