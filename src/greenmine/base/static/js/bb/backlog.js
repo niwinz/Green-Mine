@@ -306,8 +306,10 @@ Greenmine.Views.StatsView = Backbone.View.extend({
     },
 
     renderStats: function(model) {
-        console.log(model);
-        console.log("Render stats");
+        this.$("progress").val(model.get('percentage_completed'));
+        this.$("#completed-points .info-text-main span").html(model.get('percentage_completed'));
+        this.$("#total-points .info-text-main").html(model.get("total_points"));
+        this.$("#assigned-points .info-text-main").html(model.get("assigned_points"));
     }
 });
 

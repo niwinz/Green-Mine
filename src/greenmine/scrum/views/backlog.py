@@ -86,8 +86,9 @@ class BacklogView(GenericView):
             'unassigned_points': unassigned_points,
             'assigned_points': assigned_points,
             'total_points': total_points,
-            'percentage_completed': "{0:.2f}".format(percentage_completed),
-            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
+            'percentage_completed': "{0:.0f}".format(percentage_completed),
+            'percentage_assigned': "{0:.0f}".format(percentage_assigned),
+            'completed_points': completed_points,
         }
 
     @login_required
@@ -108,7 +109,6 @@ class BacklogView(GenericView):
         context.update(self.initialize_unassigned(project))
         context.update(self.initialize_milestones(project))
         context.update({'stats': self.initialize_stats(project)})
-
         return self.render_to_response(self.template_name, context)
 
 

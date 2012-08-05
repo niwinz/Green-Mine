@@ -199,11 +199,32 @@
 
                 .progress-bar-container {
                     display: inline-block;
+                    margin-right: 20px;
+
                     progress { height: 25px; width: 230px; }
                 }
 
                 .progress-text-container {
                     display: inline-block;
+
+                    .info-text-inline-box {
+                        display: inline-block;
+                        .info-text-main, .info-text-help {
+                            display: inline-block;
+                            color: @white;
+                        }
+
+                        .info-text-main {
+                            padding: 4px 10px;
+                            font-size: 25px;
+                        }
+
+                        .info-text-help {
+                            width: 55px;
+                            font-size: 10px;
+                            line-height: 10px;
+                        }
+                    }
                 }
             }
             .graphs-container {
