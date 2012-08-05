@@ -127,8 +127,27 @@
                         </div>
                         <div class="bar-right right">
                             <div class="bar-button button-unbordered">
-                                <a href="#">{% trans "New user story" %}</a>
+                                <a href="#" id="show-userstory-form">{% trans "New user story" %}</a>
                             </div>
+                        </div>
+                    </div>
+                    <div class="userstory-form hidden">
+                        <div class="button plus">+</div>
+                        <div class="form-box">
+                            <form method="post" action="">
+                                <div class="form-items">
+                                    <div class="form-row template-row">
+                                        <div class="form-field width100 userstory-text">
+                                            <label for="">{% trans "User story text:" %}</label>
+                                            <textarea name="userstory"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row submit-row">
+                                    <div class="button create">{% trans "Create" %}</div>
+                                    <div class="button-text white cancel">{% trans "Cancel" %}</div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

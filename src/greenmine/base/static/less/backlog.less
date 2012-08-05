@@ -282,6 +282,41 @@
                     }
                 }
             }
+
+            .userstory-form {
+                background: @grayDarker;
+                position: relative;
+
+                form {
+                    margin: 0px;
+                }
+
+                .button {
+                    &.plus {
+                        position: absolute;
+                        bottom: 5px;
+                        right: 5px;
+                    }
+                }
+
+                .form-box {
+                    padding: 10px 10px;
+                    font-size: 11px;
+
+                    .form-field {
+                        &.userstory-text {
+                            margin-right: 10px;
+                            textarea { width: 100%; }
+                        }
+                    }
+                    label {
+                        font-size: 12px;
+                        font-family: @DroidSansBold;
+                        color: @white;
+                        line-height: 10px;
+                    }
+                }
+            }
         }
     }
 }

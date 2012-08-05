@@ -323,6 +323,8 @@ Greenmine.Views.Backlog = Backbone.View.extend({
         "click .milestones-header .show-milestone-form": "showMilestoneForm",
 
         "click .show-hide-graphics a": "toggleGraphsVisibility",
+        "click #show-userstory-form": "toggleUserstoryFormVisibility",
+        "click .userstory-form .plus": "addAdditionalUserstoryInput",
     },
 
     initialize: function() {
@@ -332,6 +334,32 @@ Greenmine.Views.Backlog = Backbone.View.extend({
         Greenmine.Views.stats = new Greenmine.Views.StatsView();
 
         Greenmine.Collections.milestones.on("reset", this.resetMilestones);
+    },
+
+    addAdditionalUserstoryInput: function(event) {
+        event.preventDefault();
+
+        var templateDom = this.$(".userstory-form .template-row").clone()
+        templateDom.find("textarea").val("");
+        templateDom.removeClass("template-row");
+        this.$(".userstory-form .form-items").append(templateDom);
+    },
+
+    toggleUserstoryFormVisibility: function(event) {
+        event.preventDefault();
+        var userstoryForm = this.$(".userstory-form");
+
+        if (userstoryForm.hasClass("hidden")) {
+            userstoryForm.removeClass("hidden");
+        } else {
+            userstoryForm.addClass("hidden");
+            var templateDom = this.$(".userstory-form .template-row").clone()
+            templateDom.find("textarea").val("");
+
+            this.$(".userstory-form .form-items").empty();
+            this.$(".userstory-form .form-items").html(templateDom)
+
+        }
     },
 
     toggleGraphsVisibility: function(event) {
