@@ -61,44 +61,43 @@ $(document).ajaxSend(function(event, xhr, settings) {
     }
 });
 
-function getUrlVars(){
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars;
-}
+var getUrlVars = function(normalize) {
+    var params = location.href.slice(location.href.indexOf('?') + 1).split('&');
+    var result = {};
 
-function getIntListFromURLParam(param){
-    var param_value = getUrlVars()[param];
-    var return_list = [];
-    if (param_value!== undefined){
-        $.each(param_value.split(','), function(index, value){
-            if (value!=''){
-                return_list.push(parseInt(value));
+    _.each(params, function(param) {
+        var keyvalue = param.split("=");
+        var key = keyvalue[0];
+        var val = keyvalue[1];
+
+        if (result[key] === undefined) {
+            result[key] = [val];
+        } else {
+            result[key].push(val);
+        }
+    });
+
+    var finalResult = _.extend({}, result);
+
+    if (normalize !== undefined && normalize === true) {
+        /* Normalize */
+        _.each(result, function(val, key) {
+            if (finalResult[key].length === 1) {
+                finalResult[key] = finalResult[key][0];
             }
         });
     }
-    return return_list;
 
+    return finalResult;
 }
 
-function getStringListFromURLParam(param){
+var getIntListFromURLParam = function(param) {
     var param_value = getUrlVars()[param];
-    var return_list = [];
-    if (param_value!== undefined){
-        $.each(param_value.split(','), function(index, value){
-            if (value!=''){
-                return_list.push(value);
-            }
-        });
-    }
-    return return_list;
+    return _.map(getUrlVars()[param], function(item) { return parseInt(item); });
+}
 
+var getStringListFromURLParam = function(param) {
+    return getUrlVars()[param];
 }
 
 

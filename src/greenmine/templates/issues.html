@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block wrapper %}
-<div id="issues" class="tasks-ds list-container" data-tasks-url="{% url "issues-list-api" pslug=project.slug %}?{{ querystring }}">
+<div id="issues" class="tasks-ds list-container" data-tasks-url="{% url "issues-list-api" pslug=project.slug %}" data-initial-querystring="{{ querystring }}">
     <div class="top-box">
         <div class="filters-container clearfix">
             <div id ="tags-filter-section" class="filter-section" related="#tags-body">{% trans "Tags" %}</div>
@@ -111,4 +111,3 @@
         Greenmine.taskCollection.reset({{ tasks_json }});
     </script>
 {% endblock %}
-

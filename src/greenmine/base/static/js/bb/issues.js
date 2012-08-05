@@ -12,8 +12,6 @@ Greenmine.Filters.StatusModel = Backbone.Model.extend({});
 Greenmine.Filters.AssignedToModel = Backbone.Model.extend({});
 Greenmine.Filters.SeverityModel = Backbone.Model.extend({});
 
-
-
 /* Collections */
 
 Greenmine.MilestoneCollection = Backbone.Collection.extend({
@@ -278,9 +276,7 @@ Greenmine.TasksView = Backbone.View.extend({
         if (typeof(window.history.pushState) == 'function'){
             history.pushState({}, "issues ", "?"+$.param(post_data));
         }
-
         $.get(url, post_data, function(data) {
-            console.log(data);
             Greenmine.Filters.tagCollection.reset(data.filter_dict.tags);
             Greenmine.Filters.statusCollection.reset(data.filter_dict.status);
             Greenmine.Filters.assignedToCollection.reset(data.filter_dict.assigned_to);
@@ -309,7 +305,7 @@ Greenmine.TasksView = Backbone.View.extend({
         var view = new Greenmine.Filters.TagView({model:tag});
         var rendered_elem = view.render().el;
         this.$("#tags-body").append(rendered_elem);
-        if (tag.attributes.selected === true){
+        if (tag.get("selected") === true){
             this.$("#selected-filters").append($(rendered_elem).clone());
         }
     },
@@ -534,5 +530,4 @@ Greenmine.TasksView = Backbone.View.extend({
 
         this.reload();
     }
-
 });

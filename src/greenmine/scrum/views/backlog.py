@@ -16,21 +16,15 @@ from django.utils import timezone
 
 from ..models import *
 
+class BacklogView(GenericView):
+    """
+    General dasboard view,  with all milestones and all tasks.
+    """
 
-class BacklogUnassignedUsApi(GenericView):
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
+    template_name = 'backlog.html'
+    menu = ['backlog']
 
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
-        return self.render_json(self.get_unassigned_us_context(project))
-
-    def get_unassigned_us_context(self, project):
+    def initialize_unassigned(self, project):
         unassigned = project.user_stories\
             .filter(milestone__isnull=True)\
             .order_by('-priority')
@@ -53,8 +47,14 @@ class BacklogUnassignedUsApi(GenericView):
         }
         return context
 
+    def initialize_milestones(self, project):
+        context = {
+            'milestones': [x.to_dict() for x in project\
+                .milestones.order_by('-created_date')\
+                .prefetch_related('project')],
+        }
+        return context
 
-class BacklogMilestonesApi(GenericView):
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -65,15 +65,44 @@ class BacklogMilestonesApi(GenericView):
             ('userstory', 'view'),
         ])
 
-        return self.render_json(self.get_milestones_context(project))
-
-    def get_milestones_context(self, project):
         context = {
-            'milestones': [x.to_dict() for x in project\
-                .milestones.order_by('-created_date')\
-                .prefetch_related('project')],
+            'project': project,
+            'project_extras': project.get_extras()
         }
-        return context
+
+        context.update(self.initialize_unassigned(project))
+        context.update(self.initialize_milestones(project))
+        return self.render_to_response(self.template_name, context)
+
+
+class BacklogUnassignedUsApi(BacklogView):
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = self.initialize_unassigned(project)
+        return self.render_json(context, ok=True)
+
+
+class BacklogMilestonesApi(BacklogView):
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = self.initialize_milestones(project)
+        return self.render_json(context, ok=True)
 
 
 class BacklogBurndownApi(GenericView):
@@ -274,27 +303,3 @@ class BacklogStatsApi(GenericView):
         return self.render_json(context)
 
 
-class BacklogView(GenericView):
-    """
-    General dasboard view,  with all milestones and all tasks.
-    """
-
-    template_name = 'backlog.html'
-    menu = ['backlog']
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
-        context = {
-            'project': project,
-            'project_extras': project.get_extras()
-        }
-
-        return self.render_to_response(self.template_name, context)

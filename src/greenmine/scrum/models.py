@@ -304,15 +304,14 @@ class Milestone(models.Model):
         total = 0.0
 
         for item in self.user_stories.filter(status__in=SCRUM_STATES.get_finished_us_states()):
-            if item.tasks.filter(finished_date__lt=date).count() > 0:
-                if item.points == -1:
-                    continue
-
-                if item.points == -2:
-                    total += 0.5
-                    continue
-
-                total += item.points
+            if item.tasks.filter(finished_date__lt=date).count() == 0:
+                continue
+            if item.points == -1:
+                continue
+            if item.points == -2:
+                total += 0.5
+                continue
+            total += item.points
 
         return "{0:.1f}".format(total)
 
@@ -635,7 +634,6 @@ class TaskQuerySet(models.query.QuerySet):
         }
 
     def filter_and_build_filter_dict(self, milestone=None, status=None, tags=None, assigned_to=None, severity=None):
-
         queryset = self
         if milestone:
             queryset = queryset.filter(milestone = milestone)
