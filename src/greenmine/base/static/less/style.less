@@ -137,7 +137,6 @@ body {
 }
 
 
-
 progress {background-color: black; border-radius: 20px; -webkit-appearance: none;}
 progress::-webkit-progress-bar {
     border-radius: 20px;
@@ -171,6 +170,20 @@ progress::-moz-progress-bar {
     cursor: pointer;
 }
 
+.button-text {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: bottom;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &.white {
+        color: @white;
+    }
+}
+
 
 .button-gray {
     padding: 0px 10px;
@@ -183,10 +196,9 @@ progress::-moz-progress-bar {
     background-color: #666666;
     border: 0px;
     line-height: 28px;
-
     .border-radius(4px);
-
     font-family: @DroidSansBold;
+
     a {
         color: @white;
         padding: 2px 3px;

@@ -54,7 +54,6 @@ Greenmine.Views.TagView = Backbone.View.extend({
 
 Greenmine.Views.UserStory = Backbone.View.extend({
     tagName: "div",
-    attributes: {},
     render: function() {
         if (this.model.get('assignedTo')) {
             this.$el.html(Greenmine.Templates.assignedUserstory(this.model.toJSON()));
@@ -296,7 +295,6 @@ Greenmine.Views.StatsView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.reload();
     },
 
     reload: function() {
@@ -304,10 +302,11 @@ Greenmine.Views.StatsView = Backbone.View.extend({
     },
 
     reloadSuccess: function(data) {
-        this.renderStats(new Backbone.Model(data.stats));
+        this.renderStats(new Backbone.Model(data));
     },
 
     renderStats: function(model) {
+        console.log(model);
         console.log("Render stats");
     }
 });
@@ -316,7 +315,13 @@ Greenmine.Views.StatsView = Backbone.View.extend({
 Greenmine.Views.Backlog = Backbone.View.extend({
     el: "#backlog",
 
-    events: {},
+    events: {
+        "click .milestones-form .create": "submitMilestone",
+        "click .milestones-form .cancel": "hideMilestoneForm",
+        "click .milestones-header .show-milestone-form": "showMilestoneForm",
+
+        "click .show-hide-graphics a": "toggleGraphsVisibility",
+    },
 
     initialize: function() {
         _.bindAll(this);
@@ -325,8 +330,34 @@ Greenmine.Views.Backlog = Backbone.View.extend({
         Greenmine.Views.stats = new Greenmine.Views.StatsView();
 
         Greenmine.Collections.milestones.on("reset", this.resetMilestones);
+    },
 
-        this.reloadMilestones();
+    toggleGraphsVisibility: function(event) {
+        event.preventDefault();
+        var target = $(event.currentTarget);
+        var graphs = this.$("#graphs");
+
+        if (graphs.hasClass("hidden")) {
+            graphs.removeClass("hidden");
+            target.html(gettext("Hide graphics"));
+        } else {
+            graphs.addClass("hidden");
+            target.html(gettext("Show graphics"));
+        }
+    },
+
+    submitMilestone: function(event) {
+        event.preventDefault();
+    },
+
+    hideMilestoneForm: function(event) {
+        event.preventDefault();
+        this.$(".milestones-form").addClass("hidden");
+    },
+
+    showMilestoneForm: function(event) {
+        event.preventDefault();
+        this.$(".milestones-form").removeClass("hidden");
     },
 
     reloadMilestones: function() {
@@ -348,6 +379,7 @@ Greenmine.Views.Backlog = Backbone.View.extend({
     resetMilestones: function() {
         var self = this;
         this.$("#milestones").empty();
+
         Greenmine.Collections.milestones.each(function(item) {
             self.addMilestone(item);
         });

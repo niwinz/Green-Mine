@@ -14,16 +14,59 @@
 {% block wrapper %}
 <div class="backlog" id="backlog">
     <div class="milestones right">
-        <div class="milestones-header"></div>
-        <div class="milestones-list" id="milestones" data-api-url="{{ project.get_backlog_milestones_url }}">
+        <div class="milestones-header">
+            <div class="bar-title left">
+                <div class="sprints-number">5</div>
+                <div clasS="sprints-number-help">sprints planned</div>
+            </div>
+            <div class="bar-right right">
+                <div class="bar-button button-unbordered">
+                    <a href="#" class="show-milestone-form">{% trans "New sprint" %}</a>
+                </div>
+            </div>
         </div>
+        <div class="milestones-form hidden">
+            <div class="form-box">
+                <form method="post" action="">
+                    <div class="form-row">
+                        <div class="form-field width100 sprint-name">
+                            <label for="">Sprint name</label>
+                            <input name="name" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-row inline-row sprint-dates">
+                        <div class="form-field first">
+                            <label for="">Estimated start</label>
+                            <input name="start_date" type="text" />
+                        </div>
+                        <div class="form-field">
+                            <label for="">Estimated end</label>
+                            <input name="end_date" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-row inline-row sprint-disponibility">
+                        <div class="form-field first">
+                            <label for="">Disponibility</label>
+                            <input name="disponibility" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-row submit-row">
+                        <div class="button create">{% trans "Create" %}</div>
+                        <div class="button-text white cancel">{% trans "Cancel" %}</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="milestones-list" id="milestones" data-api-url="{{ project.get_backlog_milestones_url }}"></div>
     </div>
 
     <div class="backlog-container">
         <div class="backlog-box">
             <div class="stats-box" id="stats-box">
-                <div class="stats-container" id="stats"
-                    data-stats-api-url="{{ project.get_backlog_stats_url }}">
+                <div class="stats-container" id="stats" data-stats-api-url="{{ project.get_backlog_stats_url }}">
+                    <div class="progress-bar-container">
+                        <progress value="20" max="100" />
+                    </div>
                 </div>
 
                 <div class="graphs-container" id="graphs"
@@ -44,7 +87,7 @@
 
             <div class="uslist-box">
                 <div class="top-box">
-                    <div class="filters-container clearfix">
+                    <div class="filters-container">
                         {% comment %}
                         <div id ="tags-filter-section" class="filter-section" related="#tags-body">{% trans "Tags" %}</div>
                         <div id="tags-body" class="filter-group selected"></div>
@@ -73,7 +116,6 @@
                                 <a href="#">{% trans "New user story" %}</a>
                             </div>
                         </div>
-                        <div class="clearfix"></div>
                     </div>
                 </div>
                 <div class="middle-box">
@@ -107,7 +149,15 @@
 {% raw_include "dot/milestone.html" %}
 {% raw_include "dot/tag-include.html" %}
 
+{% to_json milestones as milestones_json %}
+{% to_json stats as stats_json %}
+
 <script src="{% static 'js/bb/backlog.js' %}"></script>
 <script>
+Greenmine.Collections.milestones.reset({{ milestones_json }});
+
+// Initialize stats
+Greenmine.Views.statsView = new Greenmine.Views.StatsView();
+Greenmine.Views.statsView.reloadSuccess({{ stats_json }});
 </script>
 {% endblock %}

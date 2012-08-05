@@ -55,6 +55,41 @@ class BacklogView(GenericView):
         }
         return context
 
+    def initialize_stats(self, project):
+        unassigned = project.user_stories\
+            .filter(milestone__isnull=True)\
+            .only('points')
+
+        assigned = project.user_stories\
+            .filter(milestone__isnull=False)\
+            .only('points')
+
+        completed = assigned.filter(status__in=['completed', 'closed'])
+
+        unassigned_points = sum(iter_points(unassigned))
+        assigned_points = sum(iter_points(assigned))
+        completed_points = sum(iter_points(completed))
+
+        total_points = unassigned_points + assigned_points
+
+        try:
+            percentage_assigned = (assigned_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_assigned = 0
+
+        try:
+            percentage_completed = (completed_points * 100) / total_points
+        except ZeroDivisionError:
+            percentage_completed = 0
+
+        return {
+            'unassigned_points': unassigned_points,
+            'assigned_points': assigned_points,
+            'total_points': total_points,
+            'percentage_completed': "{0:.2f}".format(percentage_completed),
+            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
+        }
+
     @login_required
     def get(self, request, pslug):
         project = get_object_or_404(Project, slug=pslug)
@@ -72,6 +107,8 @@ class BacklogView(GenericView):
 
         context.update(self.initialize_unassigned(project))
         context.update(self.initialize_milestones(project))
+        context.update({'stats': self.initialize_stats(project)})
+
         return self.render_to_response(self.template_name, context)
 
 
@@ -103,6 +140,21 @@ class BacklogMilestonesApi(BacklogView):
 
         context = self.initialize_milestones(project)
         return self.render_json(context, ok=True)
+
+
+class BacklogStatsApi(BacklogView):
+    @login_required
+    def get(self, request, pslug):
+        project = get_object_or_404(Project, slug=pslug)
+
+        self.check_role(request.user, project, [
+            ('project', 'view'),
+            ('milestone', 'view'),
+            ('userstory', 'view'),
+        ])
+
+        context = self.initialize_stats(project)
+        return self.render_json(context)
 
 
 class BacklogBurndownApi(GenericView):
@@ -252,54 +304,5 @@ class BacklogBurnupApi(GenericView):
 
         return self.render_to_ok(context)
 
-
-class BacklogStatsApi(GenericView):
-    def calculate_stats(self, project):
-        unassigned = project.user_stories\
-            .filter(milestone__isnull=True)\
-            .only('points')
-
-        assigned = project.user_stories\
-            .filter(milestone__isnull=False)\
-            .only('points')
-
-        completed = assigned.filter(status__in=['completed', 'closed'])
-
-        unassigned_points = sum(iter_points(unassigned))
-        assigned_points = sum(iter_points(assigned))
-        completed_points = sum(iter_points(completed))
-
-        total_points = unassigned_points + assigned_points
-
-        try:
-            percentage_assigned = (assigned_points * 100) / total_points
-        except ZeroDivisionError:
-            percentage_assigned = 0
-
-        try:
-            percentage_completed = (completed_points * 100) / total_points
-        except ZeroDivisionError:
-            percentage_completed = 0
-
-        return {
-            'unassigned_points': unassigned_points,
-            'assigned_points': assigned_points,
-            'total_points': total_points,
-            'percentage_completed': "{0:.2f}".format(percentage_completed),
-            'percentage_assigned': "{0:.2f}".format(percentage_assigned),
-        }
-
-    @login_required
-    def get(self, request, pslug):
-        project = get_object_or_404(Project, slug=pslug)
-
-        self.check_role(request.user, project, [
-            ('project', 'view'),
-            ('milestone', 'view'),
-            ('userstory', 'view'),
-        ])
-
-        context = self.calculate_stats(project)
-        return self.render_json(context)
 
 

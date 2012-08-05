@@ -8,6 +8,82 @@
         width: 450px;
         min-height: 200px;
 
+        .milestones-header {
+            background: @gray;
+            overflow: hidden;
+
+            .bar-right {
+                padding: 8px;
+            }
+
+            .bar-title {
+                padding: 8px;
+                .sprints-number, .sprints-number-help {
+                    display: inline-block;
+                    color: @white;
+                }
+                .sprints-number {
+                    padding: 4px 10px;
+                    font-size: 25px;
+                }
+
+                .sprints-number-help {
+                    width: 73px;
+                    font-size: 10px;
+                    line-height: 10px;
+                }
+            }
+        }
+        .milestones-form {
+            background: @grayDark;
+
+            form {
+                margin: 0px;
+            }
+
+            .form-box {
+                padding: 0px 10px;
+                padding-top: 20px;
+                padding-bottom: 5px;
+
+                font-size: 11px;
+
+                .form-row {
+                    margin-bottom: 10px;
+
+                    .form-field {
+                        &.width100 {
+                            input[type="text"], select, textarea { width: 420px; }
+                        }
+                    }
+
+                    &.inline-row {
+                        .form-field {
+                            display: inline-block;
+                            &.first {
+                                margin-right: 11px;
+                            }
+                        }
+                        input { width: 196px; }
+                    }
+                }
+
+                label {
+                    font-size: 12px;
+                    font-family: @DroidSansBold;
+                    color: @white;
+                }
+
+                label, input, button, select, textarea {
+                    line-height: 10px;
+                }
+            }
+        }
+
+        .milestones-list {
+            margin-top: 10px;
+        }
+
         .milestone-item.first {
             background: @grayDark;
             margin-bottom: 10px;
@@ -120,13 +196,23 @@
             .stats-container{
                 color: @white;
                 padding: 0px;
-            }
 
-            #burndown-graph, #burnup-graph {
-                min-height: 200px;
-                background-color: @white;
-            }
+                .progress-bar-container {
+                    display: inline-block;
+                    progress { height: 25px; width: 230px; }
+                }
 
+                .progress-text-container {
+                    display: inline-block;
+                }
+            }
+            .graphs-container {
+                margin-top: 10px;
+                #burndown-graph, #burnup-graph {
+                    min-height: 200px;
+                    background-color: @white;
+                }
+            }
         }
 
         .show-hide-graphics{
@@ -145,8 +231,14 @@
                 margin-top: 10px;
             }
 
+            .filters-container {
+                overflow: hidden;
+            }
+
             .filters-bar {
+                overflow: hidden;
                 background-color: @gray;
+
                 .bar-title {
                     font-size: 12px;
                     padding: 8px;
