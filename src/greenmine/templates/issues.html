@@ -2,7 +2,7 @@
 {% load url from future %}
 {% load static from staticfiles %}
 {% load i18n %}
-{% load rawinclude greenmine_utils %}
+{% load rawinclude greenmine_utils superview %}
 
 {% block title %}
     <span class="separator"> &rsaquo; </span>
@@ -87,27 +87,19 @@
     {% raw_include "dot/task-include.html" %}
     {% raw_include "dot/tag-include.html" %}
 
-    {% to_json tasks as tasks_json %}
-    {% to_json filter_dict.tags as tags_json %}
-    {% to_json filter_dict.milestones as milestones_json %}
-    {% to_json filter_dict.status as status_json %}
-    {% to_json filter_dict.assigned_to as assigned_to_json %}
-    {% to_json filter_dict.severity as severities_json %}
-    {% to_json statuses as statuses_json %}
-    {% to_json participants as participants_json %}
-
     <script type="text/javascript" src="{% static "js/bb/issues.js" %}"></script>
     <script type="text/javascript">
-        Greenmine.statuses = {{ statuses_json }};
-        Greenmine.participants = {{ participants_json }};
-        Greenmine.Filters.tagCollection.reset({{ tags_json }});
-        Greenmine.Filters.statusCollection.reset({{ status_json }});
-        Greenmine.Filters.assignedToCollection.reset({{ assigned_to_json }});
-        Greenmine.Filters.severityCollection.reset({{ severities_json }});
+        Greenmine.statuses = {% as_json statuses %};
+        Greenmine.participants = {% as_json participants %};
+
+        Greenmine.Filters.tagCollection.reset({% as_json filter_dict.tags %});
+        Greenmine.Filters.statusCollection.reset({% as_json filter_dict.status %});
+        Greenmine.Filters.assignedToCollection.reset({% as_json filter_dict.assigned_to %});
+        Greenmine.Filters.severityCollection.reset({% as_json filter_dict.severity %});
 
         Greenmine.issuesView = new Greenmine.TasksView();
 
-        Greenmine.milestoneCollection.reset({{ milestones_json }});
-        Greenmine.taskCollection.reset({{ tasks_json }});
+        Greenmine.milestoneCollection.reset({% as_json filter_dict.milestones %});
+        Greenmine.taskCollection.reset({% as_json tasks %});
     </script>
 {% endblock %}

@@ -1,39 +1,39 @@
-<script type="template/dot" id="task-template">
-    <div class="body-right right" data-delete-url="{{=it.deleteUrl }}">
+<script type="text/x-handlebars-template" id="task-template">
+    <div class="body-right right" data-delete-url="{{ deleteUrl }}">
         <div class="body-item meta left">
             <div class="button-gray">
-                <a href="{{=it.viewUrl }}">Detail</a>
+                <a href="{{ viewUrl }}">Detail</a>
             </div>
             <div class="button-gray">
-                <a href="{{=it.editUrl}}">Edit</a>
+                <a href="{{ editUrl}}">Edit</a>
             </div>
             <div class="button-gray">
-                <a href="{{=it.deleteUrl }}" class="delete">Delete</a>
+                <a href="{{ deleteUrl }}" class="delete">Delete</a>
             </div>
         </div>
 
-        <div class="body-item state left">{{=it.statusDisplay }}</div>
-        <div class="body-item priority left">{{=it.priorityDisplay }}</div>
+        <div class="body-item state left">{{ statusDisplay }}</div>
+        <div class="body-item priority left">{{ priorityDisplay }}</div>
         <div class="body-item assigned-to left">
-            <div class="assigned-button left" data-assigned-to-id="{{=it.assignedTo }}">
+            <div class="assigned-button left" data-assigned-to-id="{{ assignedTo }}">
                 <div class="assigned-color left"></div>
-                <div class="assigned-name left">{{=it.assignedToDisplay }}</div>
+                <div class="assigned-name left">{{ assignedToDisplay }}</div>
                 <div class="clearfix"></div>
             </div>
         </div>
         <div class="clearfix"></div>
     </div>
     <div class="body-left">
-        <div class="body-item severity button left severity-color-{{=it.severity}}">{{=it.severityDisplay}}</div>
+        <div class="body-item severity button left severity-color-{{ severity }}">{{ severityDisplay }}</div>
         <div class="body-item title">
             <div class="title-tags">
-                {{~it.tags :value:index}}
+                {{#each tags }}
                 <div class="tag">
-                    <span class="category unselected" category="{{=value.id }}">{{=value.name}}</span>
+                    <span class="category unselected" category="{{ this.id }}">{{ this.name }}</span>
                 </div>
-                {{~}}
+                {{/each}}
             </div>
-            <div class="title-text" data-url="{{=it.viewUrl }}">{{=it.subject }}</div>
+            <div class="title-text" data-url="{{ viewUrl }}">{{ subject }}</div>
         </div>
         <div class="clearfix"></div>
     </div>

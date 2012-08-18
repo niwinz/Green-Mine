@@ -1,5 +1,5 @@
-<script type="template/dot" id="filter-template">
-    <span class="category {{? it.selected == true}}selected{{??}}unselected{{?}}" category="{{=it.id}}" >
-        {{=it.element}} {{=it.count}}
+<script type="text/x-handlebars-template" id="filter-template">
+    <span class="category {{#if selected }}selected{{ else }}unselected{{/if}}" category="{{ id }}" >
+        {{ element }} {{ count }}
     </span>
 </script>

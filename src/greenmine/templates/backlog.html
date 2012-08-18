@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load static from staticfiles %}
-{% load i18n %}
+{% load i18n superview %}
 {% load rawinclude greenmine_utils %}
 
 {% block title %}
@@ -177,20 +177,19 @@
 {% endblock %}
 
 {% block bottom-headers %}
+
 {% raw_include "dot/unassigned-us-include.html" %}
 {% raw_include "dot/assigned-us-include.html" %}
 {% raw_include "dot/milestone.html" %}
 {% raw_include "dot/tag-include.html" %}
 
-{% to_json milestones as milestones_json %}
-{% to_json stats as stats_json %}
 
 <script src="{% static 'js/bb/backlog.js' %}"></script>
 <script>
-Greenmine.Collections.milestones.reset({{ milestones_json }});
+Greenmine.Collections.milestones.reset({% to_json milestones %});
 
 // Initialize stats
 Greenmine.Views.statsView = new Greenmine.Views.StatsView();
-Greenmine.Views.statsView.reloadSuccess({{ stats_json }});
+Greenmine.Views.statsView.reloadSuccess({% to_json stats %});
 </script>
 {% endblock %}

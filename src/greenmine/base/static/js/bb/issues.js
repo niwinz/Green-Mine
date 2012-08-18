@@ -50,8 +50,10 @@ Greenmine.Filters.severityCollection = new Greenmine.Filters.SeverityCollection(
 
 /* Templates */
 
-Greenmine.filter_template = doT.template($("#filter-template").html());
-Greenmine.task_template = doT.template($("#task-template").html());
+//Greenmine.filter_template = doT.template($("#filter-template").html());
+//Greenmine.task_template = doT.template($("#task-template").html());
+Greenmine.filter_template = Handlebars.compile($("#filter-template").html());
+Greenmine.task_template = Handlebars.compile($("#task-template").html());
 
 
 /* Views */
