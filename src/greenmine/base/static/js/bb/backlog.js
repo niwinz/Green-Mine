@@ -35,8 +35,10 @@ Greenmine.Collections.tags = new Greenmine.Collections.Tags();
 
 //Greenmine.Templates.unassignedUserstory = doT.template($("#unassigned-us-template").html());
 //Greenmine.Templates.assignedUserstory = doT.template($("#unassigned-us-template").html());
-Greenmine.Templates.tag = doT.template($("#filter-template").html());
-Greenmine.Templates.milestone = doT.template($("#milestone-template").html());
+
+Greenmine.Templates.tag = Handlebars.compile($("#filter-template").html());
+Greenmine.Templates.milestone = Handlebars.compile($("#milestone-template").html());
+
 
 
 /* Views */

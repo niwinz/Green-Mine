@@ -186,10 +186,10 @@
 
 <script src="{% static 'js/bb/backlog.js' %}"></script>
 <script>
-Greenmine.Collections.milestones.reset({% to_json milestones %});
+Greenmine.Collections.milestones.reset({% as_json milestones %});
 
 // Initialize stats
 Greenmine.Views.statsView = new Greenmine.Views.StatsView();
-Greenmine.Views.statsView.reloadSuccess({% to_json stats %});
+Greenmine.Views.statsView.reloadSuccess({% as_json stats %});
 </script>
 {% endblock %}
