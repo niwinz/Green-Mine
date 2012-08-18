@@ -99,7 +99,7 @@
                 <a href="#" >{% trans "Hide graphics" %}</a>
             </div>
 
-            <div class="uslist-box">
+            <div class="uslist-box" data-url="{{ project.get_backlog_unassigned_us_url }}">
                 <div class="top-box">
                     <div class="filters-container">
                         {% comment %}
@@ -175,7 +175,6 @@
 {% endblock %}
 
 {% block bottom-headers %}
-
 {% raw_include "dot/unassigned-us-include.html" %}
 {% raw_include "dot/assigned-us-include.html" %}
 {% raw_include "dot/milestone.html" %}

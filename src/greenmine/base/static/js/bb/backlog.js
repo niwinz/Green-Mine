@@ -404,11 +404,11 @@ Greenmine.Views.Backlog = Backbone.View.extend({
     },
 
     reloadUnassigned: function() {
-
+        $.get(this.$(".uslist-box").data('url'), this.reloadUnassignedSuccess, 'json');
     },
 
     reloadUnassignedSuccess: function(data) {
-
+        Greenmine.Collections.unassignedUserstories.reset(data.unassigned_us);
     },
 
     resetMilestones: function() {
