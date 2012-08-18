@@ -33,13 +33,10 @@ Greenmine.Collections.tags = new Greenmine.Collections.Tags();
 
 /* Templates */
 
-//Greenmine.Templates.unassignedUserstory = doT.template($("#unassigned-us-template").html());
-//Greenmine.Templates.assignedUserstory = doT.template($("#unassigned-us-template").html());
-
 Greenmine.Templates.tag = Handlebars.compile($("#filter-template").html());
 Greenmine.Templates.milestone = Handlebars.compile($("#milestone-template").html());
 Greenmine.Templates.unassignedUserstory = Handlebars.compile($("#unassigned-us-template").html());
-
+Greenmine.Templates.assignedUserstory = Handlebars.compile($("#assigned-us-template").html());
 
 
 /* Views */
@@ -57,11 +54,24 @@ Greenmine.Views.TagView = Backbone.View.extend({
 
 Greenmine.Views.UserStory = Backbone.View.extend({
     tagName: "div",
+
     attributes: {
         "class": "list-item"
     },
+
+    initialize: function() {
+        _.bindAll(this);
+        this.$el.attr('data-id', this.model.get('id'));
+        this.$el.attr('id', 'user-story-' + this.model.get('id'));
+    },
+
     render: function() {
-        this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
+        if (this.options.assigned === undefined) {
+            this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
+        } else {
+            this.$el.html(Greenmine.Templates.assignedUserstory(this.model.toJSON()));
+        }
+
         return this;
     }
 });
@@ -71,12 +81,23 @@ Greenmine.Views.Milestone = Backbone.View.extend({
     attributes: {
         "class": "milestone-item"
     },
+
     initialize: function() {
+        _.bindAll(this);
+
         this.$el.attr('id', 'milestone-' + this.model.get('id'));
+        this.$el.data('view', this);
+        this.model.userStories.on("add", this.renderUserStory);
+    },
+
+    renderUserStory: function(item) {
+        var view = new Greenmine.Views.UserStory({model:item, assigned: true})
+        this.$(".milestone-userstorys").append(view.render().el);
     },
 
     render: function() {
         this.$el.html(Greenmine.Templates.milestone(this.model.toJSON()));
+        this.model.userStories.each(this.renderUserStory);
         return this;
     }
 });
