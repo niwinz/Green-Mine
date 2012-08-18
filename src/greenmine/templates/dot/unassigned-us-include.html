@@ -1,31 +1,23 @@
-<script type="text/x-handlebars-template" id="task-template">
-    <div class="body-right right" data-delete-url="{{ deleteUrl }}">
+<script type="text/x-handlebars-template" id="unassigned-us-template">
+    <div class="body-right right" data-delete-url="">
         <div class="body-item meta left">
             <div class="button-gray">
                 <a href="{{ viewUrl }}">Detail</a>
             </div>
             <div class="button-gray">
-                <a href="{{ editUrl}}">Edit</a>
+                <a href="">Edit</a>
             </div>
             <div class="button-gray">
-                <a href="{{ deleteUrl }}" class="delete">Delete</a>
+                <a href="" class="delete">Delete</a>
             </div>
         </div>
 
-        <div class="body-item state left">{{ statusDisplay }}</div>
-        <div class="body-item priority left">{{ priorityDisplay }}</div>
-        <div class="body-item assigned-to left">
-            <div class="assigned-button left" data-assigned-to-id="{{ assignedTo }}">
-                <div class="assigned-color left"></div>
-                <div class="assigned-name left">{{ assignedToDisplay }}</div>
-                <div class="clearfix"></div>
-            </div>
-        </div>
+        <div class="body-item points left">{{ pointsDisplay }}</div>
+        <div class="body-item priority left">{{ priority }}</div>
         <div class="clearfix"></div>
     </div>
     <div class="body-left">
-        <div class="body-item severity button left severity-color-{{ severity }}">{{ severityDisplay }}</div>
-        <div class="body-item title">
+        <div class="body-item us-title">
             <div class="title-tags">
                 {{#each tags }}
                 <div class="tag">

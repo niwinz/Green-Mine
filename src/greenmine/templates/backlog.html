@@ -151,18 +151,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="middle-box">
+                <div class="middle-box backlog-middle-box">
                     <div class="list-header">
                         <div class="header-right right">
                             <div class="header-item buttons left"></div>
-                            <div class="header-item state left">{% trans "State" %}</div>
+                            <div class="header-item points left">{% trans "Points" %}</div>
                             <div class="header-item priority left">{% trans "Priority" %}</div>
-                            <div class="header-item assigned-to left">{% trans "Assigned to" %}</div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="header-left">
-                            <div class="header-item severity left">{% trans "Severity" %}</div>
-                            <div class="header-item title">{% trans "Bug" %}</div>
+                            <div class="header-item us-title">{% trans "User story title" %}</div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="clearfix"></div>
@@ -187,6 +185,7 @@
 <script src="{% static 'js/bb/backlog.js' %}"></script>
 <script>
 Greenmine.Collections.milestones.reset({% as_json milestones %});
+Greenmine.Collections.unassignedUserstories.reset({% as_json unassigned_us %});
 
 // Initialize stats
 Greenmine.Views.statsView = new Greenmine.Views.StatsView();

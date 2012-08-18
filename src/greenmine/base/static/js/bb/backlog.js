@@ -38,6 +38,7 @@ Greenmine.Collections.tags = new Greenmine.Collections.Tags();
 
 Greenmine.Templates.tag = Handlebars.compile($("#filter-template").html());
 Greenmine.Templates.milestone = Handlebars.compile($("#milestone-template").html());
+Greenmine.Templates.unassignedUserstory = Handlebars.compile($("#unassigned-us-template").html());
 
 
 
@@ -56,12 +57,11 @@ Greenmine.Views.TagView = Backbone.View.extend({
 
 Greenmine.Views.UserStory = Backbone.View.extend({
     tagName: "div",
+    attributes: {
+        "class": "list-item"
+    },
     render: function() {
-        if (this.model.get('assignedTo')) {
-            this.$el.html(Greenmine.Templates.assignedUserstory(this.model.toJSON()));
-        } else {
-            this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
-        }
+        this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
         return this;
     }
 });
@@ -336,6 +336,7 @@ Greenmine.Views.Backlog = Backbone.View.extend({
         Greenmine.Views.stats = new Greenmine.Views.StatsView();
 
         Greenmine.Collections.milestones.on("reset", this.resetMilestones);
+        Greenmine.Collections.unassignedUserstories.on("reset", this.resetUnassingedUserStories);
     },
 
     addAdditionalUserstoryInput: function(event) {
@@ -363,6 +364,8 @@ Greenmine.Views.Backlog = Backbone.View.extend({
 
         }
     },
+
+    /* Display or hide graphs block */
 
     toggleGraphsVisibility: function(event) {
         event.preventDefault();
@@ -420,6 +423,20 @@ Greenmine.Views.Backlog = Backbone.View.extend({
     addMilestone: function(item) {
         var mview = new Greenmine.Views.Milestone({model:item});
         this.$("#milestones").append(mview.render().el);
+    },
+
+    resetUnassingedUserStories: function() {
+        var self = this;
+        this.$(".middle-box .list-body").empty();
+
+        Greenmine.Collections.unassignedUserstories.each(function(item) {
+            self.addUnassignedUserStory(item);
+        });
+    },
+
+    addUnassignedUserStory: function(item) {
+        var view = new Greenmine.Views.UserStory({model: item});
+        this.$(".middle-box .list-body").append(view.render().el);
     }
 });
 
