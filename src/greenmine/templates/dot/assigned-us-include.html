@@ -1,3 +1,14 @@
 <script type="text/x-handlebars-template" id="assigned-us-template">
-    <div>{{ subject }}</div>
+    <div class="completed-icon left"></div>
+    <div class="user-story-subject truncate-text left">
+        <div class="title-tags">
+            {{#each tags }}
+            <div class="tag">
+                <span class="category unselected" category="{{ this.id }}">{{ this.name }}</span>
+            </div>
+            {{/each}}
+        </div>
+        <div class="title-text" data-url="{{ viewUrl }}">{{ subject }}</div>
+    </div>
+    <div class="user-story-points left">{{ pointsDisplay }}</div>
 </script>

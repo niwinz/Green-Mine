@@ -139,47 +139,46 @@
                 padding: 10px;
                 background: @white;
                 color: @black;
-                line-height: 30px;
+                overflow: hidden;
 
-                hr{
+                hr {
                     margin: 0px 0px;
                 }
 
-                .us-item{
-                    padding: 5px;
+                .list-item{
+                    overflow: hidden;
+                    cursor: pointer;
+                    margin: 4px;
 
                     &:hover{
                         background:@grayLight;
-                        cursor: pointer;
                     }
+                }
 
-                    .us-meta{
-                        float:right;
-                        text-align:right;
-                        width: 50px;
-                        color: @grayDark;
-                    }
+                .user-story-subject {
+                    overflow: hidden;
+                    line-height: 10px;
+                    width: 390px;
 
-                    .us-title{
-                        margin-right: 60px;
+                    .title-tags {
+                        overflow: hidden;
+                        float: left;
 
-                        .status{
-                            width: 12px;
-                            height: 12px;
-                            background-color: @grayLight;
-                            -webkit-border-radius: 6px;
+                        .tag {
                             float: left;
-                            margin: 8px 8px 0 0;
-                            &.completed{
-                                background-color: @green;
+
+                            .category {
+                                background: @gray;
+                                padding: 5px;
+                                color: @white;
                             }
                         }
-
-                        .tag{
-                            background: @gray;
-                            padding: 5px;
-                            color: @white;
-                        }
+                    }
+                    .title-text {
+                        max-width: 200px;
+                        overflow: hidden;
+                        float: left;
+                        line-height: 20px;
                     }
                 }
             }

@@ -191,7 +191,6 @@ class BacklogBurndownApi(GenericView):
                 .filter(client_requirement=True, team_requirement=True)
             extra_points_sum += sum(x/2.0 for x in iter_points(extra_points_user_stories_shareds))
 
-
             extra_points_user_stories = extra_points_user_stories\
                 .filter(client_requirement=True, team_requirement=False)
             extra_points_sum += sum(iter_points(extra_points_user_stories))
