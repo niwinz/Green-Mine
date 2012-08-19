@@ -56,17 +56,23 @@ Greenmine.Views.UserStory = Backbone.View.extend({
     tagName: "div",
 
     attributes: {
-        "class": "list-item"
+        "class": "list-item",
+        "draggable": "true"
     },
 
     initialize: function() {
         _.bindAll(this);
         this.$el.attr('data-id', this.model.get('id'));
         this.$el.attr('id', 'user-story-' + this.model.get('id'));
+        this.$el.data('view', this);
+    },
+
+    setAssigned: function(value) {
+        this.options.assigned = value;
     },
 
     render: function() {
-        if (this.options.assigned === undefined) {
+        if (this.options.assigned === undefined || this.options.assigned === false) {
             this.$el.html(Greenmine.Templates.unassignedUserstory(this.model.toJSON()));
         } else {
             this.$el.html(Greenmine.Templates.assignedUserstory(this.model.toJSON()));
@@ -136,7 +142,6 @@ Greenmine.Views.GraphsView = Backbone.View.extend({
     },
 
     renderBurnup: function(model) {
-        console.log("Render burnup");
         this.burnup.find("#burnup-graph").show();
 
         var d1 = new Array(),
@@ -239,7 +244,6 @@ Greenmine.Views.GraphsView = Backbone.View.extend({
     },
 
     renderBurndown: function(model) {
-        console.log("Render burndown");
         this.burndown.find("#burndown-graph").show();
 
         var d1 = new Array(),
@@ -348,7 +352,27 @@ Greenmine.Views.Backlog = Backbone.View.extend({
         "click .show-hide-graphics a": "toggleGraphsVisibility",
         "click #show-userstory-form": "toggleUserstoryFormVisibility",
         "click .userstory-form .plus": "addAdditionalUserstoryInput",
+
+        "drop .milestones .milestone-item": "onDropToMilestones",
+        "drop .uslist-box": "onDropToUnassigned",
+        "dragstart .uslist-box .list-item": "dragStart",
+        "dragstart .milestones-list .list-item": "dragStart",
+
+        "dragend .uslist-box .list-item": "dragEnd",
+        "dragend .milestones-list .list-item": "dragEnd",
+
+        "dragover .uslist-box": "onUnassginedDragover",
+        "dragover .milestones .milestone-item": "onMilestonesDragover",
+
+        "dragenter .milestones .milestone-item": "onMilestonesDragenter",
+        "dragenter .uslist-box": "onUnassginedDragenter",
+
+        "dragleave .milestones .milestone-item": "onMilestonesDragleave",
+        "dragleave .uslist-box": "onUnassginedDragleave",
     },
+
+    dragEffect: "move",
+    dragEffectAllowed: "move",
 
     initialize: function() {
         _.bindAll(this);
@@ -358,6 +382,85 @@ Greenmine.Views.Backlog = Backbone.View.extend({
 
         Greenmine.Collections.milestones.on("reset", this.resetMilestones);
         Greenmine.Collections.unassignedUserstories.on("reset", this.resetUnassingedUserStories);
+    },
+
+    dragStart: function(event) {
+        //event.originalEvent.dataTransfer.effectAllowed = 'copy'
+        var target = $(event.currentTarget);
+        target.css('opacity', '0.4');
+        event.originalEvent.dataTransfer.effectAllowed = this.dragEffectAllowed;
+        event.originalEvent.dataTransfer.setData('source', "#" + target.attr('id'));
+
+    },
+
+    dragEnd: function(event) {
+        var target = $(event.currentTarget);
+        target.css('opacity', '1.0');
+    },
+
+    onUnassginedDragover: function(event) {
+        if (event.preventDefault) { event.preventDefault(); }
+        event.originalEvent.dataTransfer.dropEffect = this.dragEffect;
+        return false;
+    },
+
+    onUnassginedDragenter: function(event) {
+        event.originalEvent.dataTransfer.effectAllowed = 'move'
+        var target = $(event.currentTarget);
+        target.addClass('over');
+    },
+
+    onUnassginedDragleave: function(event) {
+        var target = $(event.currentTarget);
+        target.removeClass('over');
+    },
+
+    onMilestonesDragover: function(event) {
+        if (event.preventDefault) { event.preventDefault(); }
+        event.originalEvent.dataTransfer.dropEffect = this.dragEffect;
+        return false;
+    },
+
+    onMilestonesDragenter: function(event) {
+        var target = $(event.currentTarget);
+        target.addClass('over');
+    },
+
+    onMilestonesDragleave: function(event) {
+        var target = $(event.currentTarget);
+        target.removeClass('over');
+    },
+
+    onDropToMilestones: function(event) {
+        event.originalEvent.dataTransfer.dropEffect = this.dragEffect;
+        event.stopPropagation();
+
+        var sourceId, view, target;
+
+        sourceId = event.originalEvent.dataTransfer.getData('source');
+        view = this.$(sourceId).data('view');
+        view.setAssigned(true);
+
+        target = $(event.currentTarget);
+        target.find(".milestone-userstorys").append(view.render().el);
+
+        sourceId = view = target = null;
+    },
+
+    onDropToUnassigned: function(event) {
+        event.originalEvent.dataTransfer.dropEffect = this.dragEffect;
+        event.stopPropagation();
+
+        var sourceId, view, target;
+
+        sourceId = event.originalEvent.dataTransfer.getData('source');
+        view = this.$(sourceId).data('view');
+        view.setAssigned(false);
+
+        target = $(event.currentTarget);
+        target.find(".list-body").append(view.render().el);
+
+        sourceId = view = target = null;
     },
 
     addAdditionalUserstoryInput: function(event) {
@@ -462,421 +565,3 @@ Greenmine.Views.Backlog = Backbone.View.extend({
 });
 
 Greenmine.Views.backlog = new Greenmine.Views.Backlog();
-
-
-//var LeftBlockView = Backbone.View.extend({
-//    el: $("#backlog-left-block"),
-//
-//    events: {
-//        "dragstart .un-us-item": "unassigned_us_dragstart",
-//        "dragover .uslist-box": "left_block_dragover",
-//        "dragleave .uslist-box": "left_block_dragleave",
-//        "drop .uslist-box": "left_block_drop",
-//
-//        /* Iniline edit */
-//        "click .un-us-item .config-us-inline": "on_us_edit_inline",
-//        "click .un-us-item .user-story-inline-submit": "on_us_edit_inline_submit",
-//        "click .un-us-item .user-story-inline-cancel": "on_us_edit_form_cancel",
-//
-//        "click .un-us-item .delete": "onUserStoryDeleteClick",
-//
-//        /* Ordering */
-//        "click .head-title .row a": "on_order_link_clicked",
-//
-//        /*Tag filtering */
-//        "click .category.selected": "on_tag_remove_filter_clicked",
-//        "click .category.unselected": "on_tag_add_filter_clicked",
-//
-//        /*Filters box*/
-//        "click .filters-bar .show-hide-filters-box": "toggle_filters_box_visibility",
-//        "click .filters-bar .remove-filters": "remove_filters",
-//        "click .show-hide-graphics a": "toggle_graph_box_visibility"
-//
-//    },
-//
-//    initialize: function() {
-//        _.bindAll(this, 'render', 'reload', 'fetch_url', 'onUserStoryDeleteClick');
-//
-//        var order_by = getUrlVars()["order_by"];
-//        if (order_by === undefined){
-//            this.options.order_by = "-priority";
-//        }
-//        else{
-//            this.options.order_by = order_by;
-//        }
-//
-//        this.options.tag_filter = getIntListFromURLParam('tags');
-//
-//        this.model = new LeftBlockModel({view:this});
-//        this.model.fetch({success: this.render});
-//        this.filters_box_visible = false;
-//    },
-//
-//    render: function() {
-//        this.$('.uslist-box').html(this.model.get('html'))
-//        if (this.filters_box_visible){
-//            this.$('.filters-box').toggle();
-//        }
-//        this.trigger('load');
-//        Greenmine.main.colorizeTags();
-//    },
-//
-//    fetch_url: function() {
-//        var base_url = this.$el.attr('url');
-//        var params = "?order_by=" + this.options.order_by;
-//        params += "&tags=" + this.options.tag_filter;
-//
-//        if (typeof(window.history.pushState) == 'function'){
-//            history.pushState({}, "backlog ", params);
-//        }
-//        return base_url + params;
-//    },
-//
-//    /*
-//     * Reload state fetching new content from server.
-//    */
-//
-//    reload: function() {
-//        this.model.fetch({success:this.render});
-//    },
-//
-//    on_order_link_clicked: function(event) {
-//        event.preventDefault();
-//        var self = $(event.currentTarget);
-//
-//        var order_by = self.attr('order_by');
-//        var opt_key = "backlog_order_by_" + order_by + "_opt";
-//        var opt = localStorage.getItem(opt_key)
-//
-//        if (opt == "" || opt === null) {
-//            this.options.order_by = order_by;
-//            localStorage.setItem(opt_key, "-")
-//        } else {
-//            this.options.order_by = "-" + order_by;
-//            localStorage.setItem(opt_key, "");
-//        }
-//
-//        this.model.fetch({success:this.render});
-//    },
-//
-//    on_tag_add_filter_clicked: function(event) {
-//        event.preventDefault();
-//        var self = $(event.currentTarget);
-//        var tag_filter = parseInt(self.attr('category'));
-//
-//        if ($.inArray(tag_filter, this.options.tag_filter)<0){
-//            this.options.tag_filter.push(tag_filter);
-//            this.model.fetch({success:this.render});
-//        }
-//    },
-//
-//    on_tag_remove_filter_clicked: function(event) {
-//        event.preventDefault();
-//        event.stopPropagation();
-//        var self = $(event.currentTarget).parent();
-//        var tag_filter = parseInt(self.attr('category'));
-//
-//        this.options.tag_filter.pop(tag_filter);
-//        this.model.fetch({success:this.render});
-//    },
-//
-//    /*
-//     * On click to delete button on unassigned user story list.
-//    */
-//
-//    onUserStoryDeleteClick: function(event) {
-//        event.preventDefault();
-//
-//        var target = $(event.currentTarget);
-//        var self = this;
-//        var buttons = {};
-//
-//        buttons[gettext('Delete')] = function() {
-//            $(this).dialog('close');
-//            $.post(target.attr('href'), {}, function(data) {
-//                target.parents('.un-us-item').remove();
-//                self.trigger('change');
-//            });
-//        };
-//
-//        buttons[gettext('Cancel')] = function() {
-//            $(this).dialog('close');
-//        };
-//
-//        //TODO: we have no dialogs
-//        $(".delete-us-dialog").dialog({
-//            modal: true,
-//            width: '220px',
-//            buttons: buttons
-//        });
-//    },
-//
-//    left_block_drop: function(event) {
-//        var self = $(event.currentTarget);
-//        if (self.hasClass('drag-over')) {
-//            self.removeClass('drag-over');
-//        }
-//
-//        var source_id = event.originalEvent.dataTransfer.getData('source_id');
-//        var source = $("#" + source_id);
-//        var unassign_url = source.attr('unassignurl');
-//        var $this = this;
-//
-//        $.post(unassign_url, {}, function(data) {
-//            self.append(data);
-//            if(source.parent().find(".us-item").length == 1) {
-//                source.find(".us-meta").remove()
-//                source.find(".us-title").html(gettext("No user storys"));
-//                source.addClass('us-item-empty');
-//                source.attr('draggable', 'false');
-//                source.attr('unassignurl', '');
-//            } else {
-//                source.remove();
-//            }
-//
-//            // Reload some views.
-//            $this.trigger('change');
-//            $this.reload();
-//        }, 'html');
-//
-//    },
-//
-//    left_block_dragleave: function(event) {
-//        var self = $(event.currentTarget);
-//        if (self.hasClass('drag-over')) {
-//            self.removeClass('drag-over');
-//        }
-//        event.preventDefault();
-//    },
-//
-//    left_block_dragover: function(event) {
-//        var self = $(event.currentTarget);
-//        event.originalEvent.dataTransfer.dropEffect = 'copy';
-//        event.preventDefault();
-//    },
-//
-//    unassigned_us_dragstart: function(event) {
-//        var self = $(event.currentTarget);
-//        event.originalEvent.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-//        event.originalEvent.dataTransfer.setData('source_id', self.attr('id')); // required otherwise doesn't work
-//    },
-//
-//    toggle_filters_box_visibility: function(event) {
-//        this.$('.filters-box').toggle();
-//        this.filters_box_visible = this.$('.filters-box').is(":visible");
-//    },
-//
-//    remove_filters: function(event){
-//        this.options.tag_filter = [];
-//        this.reload();
-//    },
-//
-//    toggle_graph_box_visibility: function(event){
-//        event.preventDefault();
-//        this.$('#graphs').toggle();
-//        this.$('#graphs').toggleClass('visible');
-//        if (this.$('#graphs').hasClass('visible')){
-//            $(event.target).text(gettext("Show graphics"));
-//        }
-//        else{
-//            $(event.target).text(gettext("Hide graphics"));
-//        }
-//    }
-//
-//});
-//
-//
-///* Milestones (right block) */
-//
-//var MilestonesModel = Backbone.Model.extend({
-//    url: function() {
-//        return this.get('view').$el.attr('url');
-//    }
-//});
-//
-//var RightBlockView = Backbone.View.extend({
-//    el: $("#backlog-right-block"),
-//
-//    events: {
-//        "dragover .milestones .milestone-item": "milestones_dragover",
-//        "dragleave .milestones .milestone-item": "milestones_drageleave",
-//        "drop .milestones .milestone-item": "milestones_on_drop",
-//        "dragstart .milestones .us-item": "milestones_dragstart",
-//
-//        /* Milestone delete */
-//        "click .milestone-item .milestone-title a.delete": "on_milestone_delete_click"
-//    },
-//
-//    initialize: function() {
-//        _.bindAll(this, 'render');
-//        this.model = new MilestonesModel({view:this});
-//        this.model.on('change', this.render);
-//        this.model.fetch();
-//    },
-//
-//    render: function() {
-//        var self = this;
-//        self.$el.html(this.model.get('html'));
-//        this.trigger('load');
-//        Greenmine.main.colorizeTags();
-//    },
-//
-//    milestones_dragover: function(event) {
-//        event.originalEvent.dataTransfer.dropEffect = 'copy';
-//        event.preventDefault();
-//
-//        var target = $(event.currentTarget);
-//
-//        if (!target.hasClass("drag-over")) {
-//            target.addClass("drag-over");
-//        }
-//    },
-//
-//    milestones_drageleave: function(event) {
-//        event.preventDefault();
-//
-//        var target = $(event.currentTarget);
-//        if (target.hasClass('drag-over')) {
-//            target.removeClass('drag-over');
-//        }
-//    },
-//
-//    milestones_on_drop: function(event) {
-//
-//        var target = $(event.currentTarget);
-//        if (target.hasClass('drag-over')) {
-//            target.removeClass('drag-over');
-//        }
-//
-//        var source_id = event.originalEvent.dataTransfer.getData('source_id');
-//        var source = $("#" + source_id);
-//
-//        console.log(source_id, source);
-//
-//        var assign_url = source.attr('assignurl');
-//        var milestone_id = target.attr('ref');
-//        var self = this;
-//
-//        $.post(assign_url, {mid: milestone_id}, function(data) {
-//            var data_object = $(data);
-//            target.find(".us-item-empty").remove()
-//            target.find(".milestone-userstorys").append(data_object);
-//            source.remove()
-//
-//            self.trigger('change');
-//        }, 'html');
-//    },
-//
-//    milestones_dragstart: function(event) {
-//        var self = $(event.currentTarget);
-//        event.originalEvent.dataTransfer.effectAllowed = 'copy';
-//        event.originalEvent.dataTransfer.setData('source_id', self.attr('id'));
-//    },
-//
-//    on_milestone_delete_click: function(event) {
-//        event.preventDefault();
-//        var target = $(event.currentTarget);
-//        var self = this;
-//        var buttons = {};
-//
-//        buttons[gettext('Delete')] = function() {
-//            $(this).dialog('close');
-//            $.post(target.attr('href'), {}, function(data) {
-//                if (data.valid) {
-//                    target.parents('.milestone-item').remove();
-//                }
-//                self.trigger('change');
-//            }, 'json');
-//        };
-//
-//        buttons[gettext('Cancel')] = function() {
-//            $(this).dialog('close');
-//        };
-//
-//        $(".delete-milestone-dialog").dialog({
-//            modal: true,
-//            width: '220px',
-//            buttons: buttons
-//        });
-//    }
-//});
-//
-//var Backlog = Backbone.View.extend({
-//    el: $("#backlog"),
-//
-//    initialize: function() {
-//        _.bindAll(this, 'render', 'calculateLimit', 'assignedPoints');
-//
-//        var stats_view = new StatsView();
-//        var burndown_view = new BurndownView();
-//        var burnup_view = new BurnupView();
-//
-//        this.left_block = new LeftBlockView();
-//        this.right_block = new RightBlockView();
-//
-//        this.left_block.on('load', this.calculateLimit);
-//        this.left_block.on('change', stats_view.reload);
-//        this.left_block.on('change', burndown_view.reload);
-//        this.left_block.on('change', burndown_view.reload);
-//        this.left_block.on('change', this.calculateLimit);
-//
-//        this.right_block.on('load', this.calculateLimit);
-//        this.right_block.on('change', this.calculateLimit);
-//        this.right_block.on('change', this.left_block.reload);
-//        this.right_block.on('change', stats_view.reload);
-//        this.right_block.on('change', burndown_view.reload);
-//    },
-//
-//    assignedPoints: function() {
-//        var total = 0;
-//        _.each(this.$(".milestone-userstorys .us-item"), function(item) {
-//            var points = $(item).find(".us-meta").html();
-//            if (points === '?') return;
-//
-//            points = parseFloat(points);
-//            total += points;
-//        }, this);
-//
-//        return total;
-//    },
-//
-//    calculateLimit: _.after(2, function(){
-//        this.$(".limit-line").removeClass("limit-line");
-//
-//        var items = _.filter(this.$(".un-us-item"), function(item) {
-//            return !$(item).hasClass("head-title");
-//        });
-//
-//        var total_limit = parseFloat(this.$el.attr('total_story_points'));
-//        if (_.isNaN(total_limit)) {
-//            return;
-//        }
-//
-//        //console.log(total_limit, this.assignedPoints(), total_limit - this.assignedPoints());
-//        var total_limit = total_limit - this.assignedPoints();
-//
-//        if (total_limit <= 0) {
-//            this.$(".head-title").addClass("limit-line");
-//        } else {
-//            var total = 0;
-//            var finished = false;
-//
-//            _.each(items, function(item) {
-//                var points = $(item).find(".row.points span").html();
-//                if (points === '?') return;
-//
-//                var points = parseFloat(points);
-//                total += points;
-//
-//                if (total >= total_limit && !finished) {
-//                    $(item).addClass("limit-line");
-//                    finished = true;
-//                }
-//            }, this);
-//        }
-//    }),
-//
-//    render: function() {},
-//});
-//
-//var backlog = new Backlog();
